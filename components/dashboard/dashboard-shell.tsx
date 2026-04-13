@@ -7,6 +7,7 @@ import { signOut, useSession } from "next-auth/react";
 import {
   Banknote,
   Bell,
+  CalendarClock,
   ChevronLeft,
   ChevronRight,
   HandCoins,
@@ -55,6 +56,7 @@ const SIDEBAR_COLLAPSED_KEY = "finansiq-sidebar-collapsed";
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transactions", label: "İşlemler", icon: Wallet },
+  { href: "/recurring", label: "Tekrarlayan", icon: CalendarClock },
   { href: "/goals", label: "Hedefler", icon: PiggyBank },
   { href: "/debts", label: "Borç & Alacak", icon: HandCoins },
   { href: "/investments", label: "Yatırım", icon: TrendingUp },
@@ -66,6 +68,7 @@ const titles: Record<string, string> = {
   "/dashboard": "Ana Panel",
   "/transactions": "İşlemler",
   "/transactions/new": "Yeni İşlem",
+  "/recurring": "Tekrarlayan işlemler",
   "/goals": "Hedefler",
   "/debts": "Borç & Alacak",
   "/investments": "Yatırım",

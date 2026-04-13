@@ -4,6 +4,13 @@ import transactionReducer from "./slices/transactionSlice";
 import goalsReducer from "./slices/goalsSlice";
 import debtsReducer from "./slices/debtsSlice";
 import investmentsReducer from "./slices/investmentsSlice";
+import recurringReducer from "./slices/recurringSlice";
+import type { AuthState } from "./slices/authSlice";
+import type { DebtsState } from "./slices/debtsSlice";
+import type { GoalsState } from "./slices/goalsSlice";
+import type { InvestmentsState } from "./slices/investmentsSlice";
+import type { RecurringState } from "./slices/recurringSlice";
+import type { TransactionState } from "./slices/transactionSlice";
 
 export const makeStore = () =>
   configureStore({
@@ -13,9 +20,17 @@ export const makeStore = () =>
       goals: goalsReducer,
       debts: debtsReducer,
       investments: investmentsReducer,
+      recurring: recurringReducer,
     },
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore["getState"]>;
+export type RootState = {
+  auth: AuthState;
+  transactions: TransactionState;
+  goals: GoalsState;
+  debts: DebtsState;
+  investments: InvestmentsState;
+  recurring: RecurringState;
+};
 export type AppDispatch = AppStore["dispatch"];

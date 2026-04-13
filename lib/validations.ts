@@ -28,6 +28,46 @@ export const transactionCreateSchema = z.object({
 
 export const transactionUpdateSchema = transactionCreateSchema.partial();
 
+const recurringFieldsObject = z.object({
+  type: z.enum(["income", "expense"]),
+  amount: z.number().positive("Tutar pozitif olmalı"),
+  category: z.string().min(1, "Kategori seçin"),
+  description: z.string().optional().nullable(),
+  frequency: z.enum(["WEEKLY", "MONTHLY", "YEARLY"]),
+  interval: z.number().int().min(1).max(52),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date().optional().nullable(),
+  mode: z.enum(["AUTO", "REMINDER"]),
+  isActive: z.boolean().optional(),
+});
+
+export const recurringCreateSchema = recurringFieldsObject
+  .extend({
+    isActive: z.boolean().optional().default(true),
+  })
+  .refine((d) => !d.endDate || d.startDate <= d.endDate, {
+    message: "Bitiş tarihi başlangıçtan önce olamaz",
+    path: ["endDate"],
+  });
+
+export const recurringUpdateSchema = recurringFieldsObject
+  .partial()
+  .extend({
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional().nullable(),
+  })
+  .refine(
+    (d) =>
+      d.startDate === undefined ||
+      d.endDate === undefined ||
+      d.endDate === null ||
+      d.startDate <= d.endDate,
+    {
+      message: "Bitiş tarihi başlangıçtan önce olamaz",
+      path: ["endDate"],
+    },
+  );
+
 export const goalCreateSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
   targetAmount: z.number().positive("Hedef tutar pozitif olmalı"),
@@ -142,4 +182,5 @@ export const investmentUpdateSchema = z
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>;
+export type RecurringCreateInput = z.infer<typeof recurringCreateSchema>;
 export type GoalCreateInput = z.infer<typeof goalCreateSchema>;

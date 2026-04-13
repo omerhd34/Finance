@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import type { Debt } from "@/types/debt";
 import type { InvestmentPosition } from "@/types/investment";
+import type { RecurringRule } from "@/types/recurring";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -31,7 +32,18 @@ type InvestmentPositionDelegate = {
   delete(args: { where: object }): Promise<InvestmentPosition>;
 };
 
-/** PrismaClient tipi bazen IDE/tsbuild ile senkron olmayabildiği için delegasyon. */
 export const investmentPosition: InvestmentPositionDelegate = (
   prisma as unknown as { investmentPosition: InvestmentPositionDelegate }
 ).investmentPosition;
+
+type RecurringRuleDelegate = {
+  findMany(args?: object): Promise<RecurringRule[]>;
+  findFirst(args: object): Promise<RecurringRule | null>;
+  create(args: { data: object }): Promise<RecurringRule>;
+  update(args: { where: object; data: object }): Promise<RecurringRule>;
+  delete(args: { where: object }): Promise<RecurringRule>;
+};
+
+export const recurringRule: RecurringRuleDelegate = (
+  prisma as unknown as { recurringRule: RecurringRuleDelegate }
+).recurringRule;

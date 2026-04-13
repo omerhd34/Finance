@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { dedupeTransactionRows } from "@/lib/dedupe-transactions-display";
 import { prisma } from "@/lib/prisma";
 import { transactionCreateSchema } from "@/lib/validations";
 import type { Prisma } from "@prisma/client";
+
+const transactionTotalDedupeSelect = {
+  id: true,
+  recurringSlotKey: true,
+  date: true,
+  amount: true,
+  category: true,
+  description: true,
+} as Prisma.TransactionSelect;
 
 export async function GET(req: Request) {
   try {
@@ -50,21 +60,29 @@ export async function GET(req: Request) {
     }
 
     if (limit) {
-      const take = Math.min(2000, Math.max(1, Number(limit)));
-      const items = await prisma.transaction.findMany({
+      const cap = Math.min(2000, Math.max(1, Number(limit)));
+      const fetchRaw = Math.min(8000, cap * 4);
+      const raw = await prisma.transaction.findMany({
         where,
         orderBy: { date: "desc" },
-        take,
+        take: fetchRaw,
       });
+      const deduped = dedupeTransactionRows(raw);
+      const items = deduped.slice(0, cap);
       return NextResponse.json({
         items,
-        total: items.length,
+        total: deduped.length,
         page: 1,
-        pageSize: take,
+        pageSize: cap,
       });
     }
 
-    const total = await prisma.transaction.count({ where });
+    const rowsForTotal = await prisma.transaction.findMany({
+      where,
+      select: transactionTotalDedupeSelect,
+    });
+    const total = dedupeTransactionRows(rowsForTotal).length;
+
     const items = await prisma.transaction.findMany({
       where,
       orderBy: { date: "desc" },

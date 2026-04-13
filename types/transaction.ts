@@ -6,5 +6,7 @@ export type Transaction = {
   description: string | null;
   date: string;
   userId: string;
+  recurringRuleId?: string | null;
+  recurringSlotKey?: string | null;
   createdAt: string;
 };

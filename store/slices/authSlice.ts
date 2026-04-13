@@ -9,7 +9,7 @@ export type AuthUser = {
   phone: string | null;
 };
 
-type AuthState = {
+export type AuthState = {
   user: AuthUser | null;
   loading: boolean;
 };

@@ -9,6 +9,7 @@ import { endOfMonth, startOfMonth, subMonths } from "date-fns";
 import {
   ArrowDownRight,
   ArrowUpRight,
+  CalendarClock,
   CalendarDays,
   Coins,
   LineChart,
@@ -24,6 +25,7 @@ import {
 } from "@/lib/investment-position-math";
 import type { Debt } from "@/types/debt";
 import type { InvestmentPosition } from "@/types/investment";
+import type { RecurringRule } from "@/types/recurring";
 import type { Transaction } from "@/types/transaction";
 import { apiClient } from "@/lib/api-client";
 import {
@@ -39,7 +41,8 @@ import {
   formatMoneyAmount,
   formatDateShort,
 } from "@/lib/utils";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -61,6 +64,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { QuickTransactionDialog } from "@/components/dashboard/quick-transaction-dialog";
+
+const RECURRING_FREQUENCY_LABEL: Record<string, string> = {
+  WEEKLY: "Haftalık",
+  MONTHLY: "Aylık",
+  YEARLY: "Yıllık",
+};
+
+const RECURRING_MODE_LABEL: Record<string, string> = {
+  AUTO: "Otomatik kayıt",
+  REMINDER: "Hatırlatıcı",
+};
 
 function DashboardKpiCard({
   icon: Icon,
@@ -138,6 +152,7 @@ function debtRemaining(d: Debt): number {
 }
 
 export default function DashboardPage() {
+  const dispatch = useAppDispatch();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [items, setItems] = useState<Transaction[]>([]);
   const [investmentPositions, setInvestmentPositions] = useState<
@@ -149,18 +164,25 @@ export default function DashboardPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [txRes, debtRes, invRes] = await Promise.all([
+      try {
+        await dispatch(processDueRecurring()).unwrap();
+      } catch {
+      }
+      const [txRes, debtRes, invRes, recRes] = await Promise.all([
         apiClient.get<{ items: Transaction[] }>("/api/transactions?limit=2000"),
         apiClient.get<{ items: Debt[] }>("/api/debts"),
         apiClient.get<{ items: InvestmentPosition[] }>("/api/investments"),
+        apiClient.get<{ items: RecurringRule[] }>("/api/recurring"),
       ]);
       setItems(txRes.data.items);
       setInvestmentPositions(invRes.data.items);
+      setRecurringRules(recRes.data.items);
       let receivable = 0;
       let payable = 0;
       for (const d of debtRes.data.items) {
@@ -173,10 +195,11 @@ export default function DashboardPage() {
       setError("Veriler yüklenemedi");
       setInvestmentPositions([]);
       setDebtTotals(null);
+      setRecurringRules([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     load();
@@ -232,6 +255,22 @@ export default function DashboardPage() {
     [investmentPositions],
   );
 
+  const upcomingRecurring = useMemo(() => {
+    return [...recurringRules]
+      .filter((r) => r.isActive)
+      .sort(
+        (a, b) =>
+          new Date(a.nextDueDate).getTime() -
+          new Date(b.nextDueDate).getTime(),
+      )
+      .slice(0, 5);
+  }, [recurringRules]);
+
+  const activeRecurringCount = useMemo(
+    () => recurringRules.filter((r) => r.isActive).length,
+    [recurringRules],
+  );
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -242,6 +281,7 @@ export default function DashboardPage() {
         </div>
         <Skeleton className="h-[320px] rounded-xl" />
         <Skeleton className="h-[400px] rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
         <div className="grid gap-4 lg:grid-cols-2">
           <Skeleton className="h-40 rounded-xl" />
           <Skeleton className="h-40 rounded-xl" />
@@ -416,6 +456,83 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CalendarClock
+                className="h-5 w-5 text-muted-foreground"
+                aria-hidden
+              />
+              Tekrarlayan işlemler
+            </CardTitle>
+            <CardDescription>
+              {activeRecurringCount === 0
+                ? "Aktif tekrarlayan kural yok"
+                : `${activeRecurringCount} aktif kural · Yaklaşan vadeler`}
+            </CardDescription>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/recurring">Tümünü gör</Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {upcomingRecurring.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Henüz tekrarlayan kural yok veya tüm kurallar pasif.{" "}
+              <Link
+                href="/recurring"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Kural ekleyin
+              </Link>
+            </p>
+          ) : (
+            <ul className="space-y-4">
+              {upcomingRecurring.map((rule) => (
+                <li
+                  key={rule.id}
+                  className="flex flex-col gap-2 border-b border-border/60 pb-4 last:border-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between"
+                >
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p className="font-medium leading-tight">{rule.category}</p>
+                    {rule.description ? (
+                      <p className="truncate text-xs text-muted-foreground">
+                        {rule.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end sm:self-center">
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                      <Badge variant="outline" className="text-[10px]">
+                        {RECURRING_MODE_LABEL[rule.mode] ?? rule.mode}
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        {RECURRING_FREQUENCY_LABEL[rule.frequency] ??
+                          rule.frequency}
+                      </Badge>
+                      <Badge
+                        variant={
+                          rule.type === "income" ? "income" : "expense"
+                        }
+                      >
+                        {rule.type === "income" ? "Gelir" : "Gider"}
+                      </Badge>
+                      <span className="text-sm font-semibold tabular-nums">
+                        {formatMoneyAmount(rule.amount, currency)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground sm:text-right">
+                      Sonraki: {formatDateShort(rule.nextDueDate)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>

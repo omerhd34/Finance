@@ -29,7 +29,7 @@ const initialFilters: TransactionFilters = {
   search: "",
 };
 
-type TransactionState = {
+export type TransactionState = {
   items: Transaction[];
   loading: boolean;
   error: string | null;

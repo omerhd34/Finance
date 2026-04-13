@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
 import type { Goal } from "@/types/goal";
 
-type GoalsState = {
+export type GoalsState = {
   items: Goal[];
   loading: boolean;
   error: string | null;

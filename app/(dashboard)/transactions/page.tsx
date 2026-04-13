@@ -25,6 +25,7 @@ import {
   updateTransaction,
   type TransactionFilters,
 } from "@/store/slices/transactionSlice";
+import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Pencil, Trash2, Download, FileText, ChevronDown } from "lucide-react";
 import { downloadTransactionsPdf } from "@/lib/export-transactions-pdf";
+import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
 
 const ALL_FILTER_CATEGORIES = Array.from(
   new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]),
@@ -98,7 +100,14 @@ function TransactionsPageContent() {
   });
 
   useEffect(() => {
-    void dispatch(fetchTransactions({ filters, page, pageSize }));
+    void (async () => {
+      try {
+        await dispatch(processDueRecurring()).unwrap();
+      } catch {
+        /* process-due isteğe bağlı; hata olsa da listeyi yükleyelim */
+      }
+      await dispatch(fetchTransactions({ filters, page, pageSize }));
+    })();
   }, [dispatch, filters, page, pageSize]);
 
   useEffect(() => {
@@ -129,6 +138,11 @@ function TransactionsPageContent() {
   }, [editing, form, currency]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  const displayItems = useMemo(
+    () => dedupeTransactionsForDisplay(items),
+    [items],
+  );
 
   const filterFields = (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
@@ -234,7 +248,7 @@ function TransactionsPageContent() {
     const { data } = await apiClient.get<{ items: Transaction[] }>(
       `/api/transactions?${p.toString()}`,
     );
-    return data.items;
+    return dedupeTransactionsForDisplay(data.items);
   }
 
   async function exportCsv() {
@@ -409,7 +423,7 @@ function TransactionsPageContent() {
                       Yükleniyor...
                     </TableCell>
                   </TableRow>
-                ) : items.length === 0 ? (
+                ) : displayItems.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={6}
@@ -419,7 +433,7 @@ function TransactionsPageContent() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  items.map((t) => (
+                  displayItems.map((t) => (
                     <TableRow key={t.id}>
                       <TableCell>{formatDateShort(t.date)}</TableCell>
                       <TableCell>

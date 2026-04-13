@@ -17,26 +17,52 @@ model User {
   phone         String?
   currency      String        @default("TL")
   createdAt     DateTime      @default(now())
-  transactions  Transaction[]
-  goals         Goal[]
-  debts         Debt[]
-  investments   InvestmentPosition[]
-  accounts      Account[]
-  sessions      Session[]
+  transactions    Transaction[]
+  goals           Goal[]
+  debts           Debt[]
+  investments     InvestmentPosition[]
+  recurringRules  RecurringRule[]
+  accounts        Account[]
+  sessions        Session[]
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
+  id                String         @id @default(cuid())
+  type              String
+  amount            Float
+  category          String
+  description       String?
+  date              DateTime       @default(now())
+  userId            String
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurringRuleId   String?
+  recurringRule     RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
+  recurringSlotKey  String?        @unique
+  createdAt         DateTime       @default(now())
+
+  @@index([userId, date])
+}
+
+model RecurringRule {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
   type        String
   amount      Float
   category    String
   description String?
-  date        DateTime @default(now())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  frequency   String
+  interval    Int       @default(1)
+  startDate   DateTime
+  endDate     DateTime?
+  mode        String
+  isActive    Boolean   @default(true)
+  nextDueDate DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@index([userId, date])
+  @@index([userId, isActive, nextDueDate])
 }
 
 model Goal {
