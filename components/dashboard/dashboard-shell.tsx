@@ -14,13 +14,11 @@ import {
   LayoutDashboard,
   LineChart,
   Menu,
-  Monitor,
   Moon,
   PiggyBank,
   Settings,
   Sparkles,
   Sun,
-  SunMoon,
   TrendingUp,
   Wallet,
   X,
@@ -90,12 +88,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { data: session, update: updateSession } = useSession();
-  const { theme, setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [themeReady, setThemeReady] = useState(false);
   const [currencySaving, setCurrencySaving] = useState(false);
   const title = titleForPath(pathname);
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   const sidebarCurrency = normalizeUserCurrency(
     (session?.user as { currency?: string })?.currency,
@@ -247,43 +249,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   variant="ghost"
                   size="icon"
                   className="h-9 w-9 cursor-pointer rounded-lg border border-border/70 bg-muted/25"
-                  disabled={!themeReady}
-                  title="Tema"
-                >
-                  <SunMoon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="start" sideOffset={8}>
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  className="gap-2"
-                >
-                  <Sun className="h-4 w-4" />
-                  Açık
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  className="gap-2"
-                >
-                  <Moon className="h-4 w-4" />
-                  Koyu
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("system")}
-                  className="gap-2"
-                >
-                  <Monitor className="h-4 w-4" />
-                  Sistem
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 cursor-pointer rounded-lg border border-border/70 bg-muted/25"
                   disabled={currencySaving || !session?.user}
                   title="Para birimi"
                 >
@@ -331,55 +296,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <>
-            <div className="border-t border-border p-3">
-              <div className="flex flex-col gap-2">
-                <Label
-                  htmlFor="sidebar-theme"
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                >
-                  <SunMoon
-                    className="h-3.5 w-3.5 shrink-0 opacity-80"
-                    aria-hidden
-                  />
-                  Tema
-                </Label>
-                <Select
-                  value={themeReady ? (theme ?? "dark") : "dark"}
-                  onValueChange={setTheme}
-                  disabled={!themeReady}
-                >
-                  <SelectTrigger
-                    id="sidebar-theme"
-                    className={cn(
-                      "h-9 w-full rounded-lg border-border/70 bg-muted/25 text-sm shadow-none",
-                      "[&_span]:flex [&_span]:min-w-0 [&_span]:items-center [&_span]:gap-2",
-                    )}
-                  >
-                    <SelectValue placeholder="Tema" />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="light">
-                      <span className="flex items-center gap-2">
-                        <Sun className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        Açık
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="dark">
-                      <span className="flex items-center gap-2">
-                        <Moon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        Koyu
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="system">
-                      <span className="flex items-center gap-2">
-                        <Monitor className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        Sistem
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
             <div className="border-t border-border p-3">
               <div className="flex flex-col gap-2">
                 <Label
@@ -486,6 +402,25 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" aria-label="Bildirimler">
               <Bell className="h-5 w-5 text-muted-foreground" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={!themeReady}
+              aria-label={
+                resolvedTheme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"
+              }
+              title={
+                resolvedTheme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"
+              }
+              onClick={toggleTheme}
+            >
+              {resolvedTheme === "dark" ? (
+                <Moon className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <Sun className="h-5 w-5 text-muted-foreground" />
+              )}
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <DropdownMenu>
