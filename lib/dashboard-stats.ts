@@ -36,7 +36,7 @@ export function lastNMonthsBars(
     }
     return {
       key: format(m, "yyyy-MM"),
-      label: format(m, "MMM", { locale: tr }),
+      label: format(m, "MMMM", { locale: tr }),
       gelir,
       gider,
     };
