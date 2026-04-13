@@ -61,7 +61,14 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pencil, Trash2, Download } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash2, Download, FileText, ChevronDown } from "lucide-react";
+import { downloadTransactionsPdf } from "@/lib/export-transactions-pdf";
 
 const ALL_FILTER_CATEGORIES = Array.from(
   new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES]),
@@ -84,7 +91,7 @@ function TransactionsPageContent() {
 
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
-  const [exporting, setExporting] = useState(false);
+  const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
 
   const form = useForm<EditForm>({
     resolver: zodResolver(editSchema),
@@ -197,7 +204,7 @@ function TransactionsPageContent() {
       <div className="flex items-end gap-2">
         <Button
           variant="secondary"
-          className="w-full"
+          className="w-full cursor-pointer"
           onClick={() =>
             dispatch(
               setFilters({
@@ -216,20 +223,24 @@ function TransactionsPageContent() {
     </div>
   );
 
+  async function fetchExportRows(): Promise<Transaction[]> {
+    const p = new URLSearchParams();
+    if (filters.type) p.set("type", filters.type);
+    if (filters.category) p.set("category", filters.category);
+    if (filters.dateFrom) p.set("from", filters.dateFrom);
+    if (filters.dateTo) p.set("to", filters.dateTo);
+    if (filters.search.trim()) p.set("search", filters.search.trim());
+    p.set("limit", "2000");
+    const { data } = await apiClient.get<{ items: Transaction[] }>(
+      `/api/transactions?${p.toString()}`,
+    );
+    return data.items;
+  }
+
   async function exportCsv() {
-    setExporting(true);
+    setExporting("csv");
     try {
-      const p = new URLSearchParams();
-      if (filters.type) p.set("type", filters.type);
-      if (filters.category) p.set("category", filters.category);
-      if (filters.dateFrom) p.set("from", filters.dateFrom);
-      if (filters.dateTo) p.set("to", filters.dateTo);
-      if (filters.search.trim()) p.set("search", filters.search.trim());
-      p.set("limit", "2000");
-      const { data } = await apiClient.get<{ items: Transaction[] }>(
-        `/api/transactions?${p.toString()}`,
-      );
-      const rows = data.items;
+      const rows = await fetchExportRows();
       const sep = ";";
       const q = (value: string) => {
         if (!/[;\r\n"]/.test(value)) return value;
@@ -242,7 +253,9 @@ function TransactionsPageContent() {
         `Tutar (${currencySymbolLabel(currency)})`,
         "Tür",
       ];
+      const brandRow = ["FinansIQ", "", "", "", ""].join(sep);
       const lines = [
+        brandRow,
         header.join(sep),
         ...rows.map((t) =>
           [
@@ -264,7 +277,18 @@ function TransactionsPageContent() {
       a.click();
       URL.revokeObjectURL(url);
     } finally {
-      setExporting(false);
+      setExporting(null);
+    }
+  }
+
+  async function exportPdf() {
+    setExporting("pdf");
+    try {
+      const rows = await fetchExportRows();
+      const name = `islemler-${new Date().toISOString().slice(0, 10)}.pdf`;
+      await downloadTransactionsPdf(rows, currency, name);
+    } finally {
+      setExporting(null);
     }
   }
 
@@ -306,15 +330,47 @@ function TransactionsPageContent() {
         <div>
           <h2 className="text-lg font-semibold">İşlem listesi</h2>
           <p className="text-sm text-muted-foreground">
-            Filtreleyin, düzenleyin veya CSV olarak indirin.
+            Filtreleyin, düzenleyin veya dışa aktar menüsünden format seçin.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={exportCsv} disabled={exporting}>
-            <Download className="h-4 w-4" />
-            {exporting ? "İndiriliyor..." : "CSV dışa aktar"}
-          </Button>
-          <Button asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                disabled={exporting !== null}
+                className="cursor-pointer"
+              >
+                <Download className="h-4 w-4" />
+                {exporting !== null ? "İndiriliyor..." : "Dışa aktar"}
+                <ChevronDown className="h-4 w-4 opacity-70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="min-w-(--radix-dropdown-menu-trigger-width) w-(--radix-dropdown-menu-trigger-width)"
+            >
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  void exportCsv();
+                }}
+              >
+                <Download className="h-4 w-4" />
+                Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  void exportPdf();
+                }}
+              >
+                <FileText className="h-4 w-4" />
+                PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button asChild className="cursor-pointer">
             <Link href="/transactions/new">Yeni İşlem Ekle</Link>
           </Button>
         </div>
@@ -393,13 +449,14 @@ function TransactionsPageContent() {
                           size="icon"
                           aria-label="Düzenle"
                           onClick={() => setEditing(t)}
+                          className="cursor-pointer"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-destructive"
+                          className="text-destructive cursor-pointer"
                           aria-label="Sil"
                           onClick={() => setDeleting(t)}
                         >
@@ -419,6 +476,7 @@ function TransactionsPageContent() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                className="cursor-pointer"
                 size="sm"
                 disabled={page <= 1}
                 onClick={() => dispatch(setPage(page - 1))}
@@ -427,6 +485,7 @@ function TransactionsPageContent() {
               </Button>
               <Button
                 variant="outline"
+                className="cursor-pointer"
                 size="sm"
                 disabled={page >= totalPages}
                 onClick={() => dispatch(setPage(page + 1))}
@@ -506,7 +565,9 @@ function TransactionsPageContent() {
                 />
               </div>
               <DialogFooter>
-                <Button type="submit">Kaydet</Button>
+                <Button type="submit" className="cursor-pointer">
+                  Kaydet
+                </Button>
               </DialogFooter>
             </form>
           )}
