@@ -51,20 +51,76 @@ type AnalyzePayload = {
   };
 };
 
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503]);
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableGeminiError(e: unknown): boolean {
+  if (e instanceof GoogleGenerativeAIFetchError) {
+    const s = e.status;
+    return s != null && RETRYABLE_STATUSES.has(s);
+  }
+  const msg = e instanceof Error ? e.message : String(e);
+  return (
+    msg.includes("503") ||
+    msg.includes("502") ||
+    msg.includes("429") ||
+    msg.includes("500") ||
+    msg.includes("Service Unavailable") ||
+    msg.includes("RESOURCE_EXHAUSTED")
+  );
+}
+
+function resolveModelChain(): string[] {
+  const primary = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
+  const fromEnv = process.env.GEMINI_MODEL_FALLBACKS?.split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const defaults = ["gemini-2.0-flash", "gemini-1.5-flash"];
+  const fallbacks = fromEnv?.length ? fromEnv : defaults;
+  const chain = [primary, ...fallbacks.filter((m) => m !== primary)];
+  return [...new Set(chain)];
+}
+
 async function analyzeWithGemini(
   apiKey: string,
   payload: AnalyzePayload,
 ): Promise<string> {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const modelName = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-  const model = genAI.getGenerativeModel({
-    model: modelName,
-    systemInstruction: SYSTEM_PROMPT,
-  });
   const userContent = `Finans analizi için veri (JSON):\n${JSON.stringify(payload, null, 2)}`;
-  const result = await model.generateContent(userContent);
-  const text = result.response.text();
-  return text.trim() || "Yanıt oluşturulamadı.";
+  const models = resolveModelChain();
+  const maxAttemptsPerModel = 3;
+  const baseDelayMs = 1200;
+  let lastError: unknown;
+
+  for (const modelName of models) {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: modelName,
+      systemInstruction: SYSTEM_PROMPT,
+    });
+
+    for (let attempt = 0; attempt < maxAttemptsPerModel; attempt++) {
+      try {
+        const result = await model.generateContent(userContent);
+        const text = result.response.text();
+        return text.trim() || "Yanıt oluşturulamadı.";
+      } catch (e) {
+        lastError = e;
+        if (!isRetryableGeminiError(e)) {
+          throw e;
+        }
+        if (attempt < maxAttemptsPerModel - 1) {
+          await sleep(baseDelayMs * 2 ** attempt);
+          continue;
+        }
+        break;
+      }
+    }
+  }
+
+  throw lastError ?? new Error("Gemini yanıt veremedi.");
 }
 
 export async function POST() {
@@ -148,17 +204,27 @@ export async function POST() {
   } catch (e) {
     console.error(e);
     const errMsg = e instanceof Error ? e.message : String(e);
+    const fetchErr = e instanceof GoogleGenerativeAIFetchError ? e : null;
     const looksLikeQuota =
       errMsg.includes("RESOURCE_EXHAUSTED") ||
       errMsg.toLowerCase().includes("quota") ||
       errMsg.includes("429");
-    if (looksLikeQuota) {
+    if (looksLikeQuota || fetchErr?.status === 429) {
       return NextResponse.json(
         {
           error:
             "Gemini kotası veya istek limiti aşıldı. Birkaç dakika sonra tekrar deneyin. Kotayı AI Studio’dan kontrol edin; daha yüksek limit için faturalandırma gerekebilir.",
         },
         { status: 429 },
+      );
+    }
+    if (fetchErr?.status === 503 || errMsg.includes("503")) {
+      return NextResponse.json(
+        {
+          error:
+            "Gemini şu an yoğunluk nedeniyle yanıt veremedi. Bir süre sonra tekrar deneyin; sorun sürerse .env içinde GEMINI_MODEL veya GEMINI_MODEL_FALLBACKS ile başka bir model deneyebilirsiniz.",
+        },
+        { status: 503 },
       );
     }
     if (e instanceof GoogleGenerativeAIFetchError) {
