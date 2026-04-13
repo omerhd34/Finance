@@ -179,10 +179,7 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
         aria-hidden
       >
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Bu ay
-          </span>
+        <div className="text-center">
           <span className="text-xl font-semibold tabular-nums tracking-tight text-foreground">
             {formatMoney(monthTotal, currency)}
           </span>

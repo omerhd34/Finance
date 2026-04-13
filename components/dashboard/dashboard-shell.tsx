@@ -23,7 +23,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@wrksz/themes/client";
 import { normalizeUserCurrency } from "@/lib/currency";
 import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
@@ -96,8 +96,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const title = titleForPath(pathname);
 
   const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    const current = resolvedTheme ?? "dark";
+    setTheme(current === "dark" ? "light" : "dark");
   };
+
+  const themeResolved =
+    themeReady && (resolvedTheme === "light" || resolvedTheme === "dark");
 
   const sidebarCurrency = normalizeUserCurrency(
     (session?.user as { currency?: string })?.currency,
@@ -409,17 +413,29 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               size="icon"
               disabled={!themeReady}
               aria-label={
-                resolvedTheme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"
+                themeResolved
+                  ? resolvedTheme === "dark"
+                    ? "Açık temaya geç"
+                    : "Koyu temaya geç"
+                  : "Tema"
               }
               title={
-                resolvedTheme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"
+                themeResolved
+                  ? resolvedTheme === "dark"
+                    ? "Açık temaya geç"
+                    : "Koyu temaya geç"
+                  : "Tema"
               }
               onClick={toggleTheme}
             >
-              {resolvedTheme === "dark" ? (
-                <Moon className="h-5 w-5 text-muted-foreground" />
+              {themeResolved ? (
+                resolvedTheme === "dark" ? (
+                  <Moon className="h-5 w-5 text-muted-foreground" />
+                ) : (
+                  <Sun className="h-5 w-5 text-muted-foreground" />
+                )
               ) : (
-                <Sun className="h-5 w-5 text-muted-foreground" />
+                <Moon className="h-5 w-5 text-muted-foreground opacity-60" />
               )}
             </Button>
             <Separator orientation="vertical" className="h-6" />
