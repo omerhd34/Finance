@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "react-day-picker/style.css";
+@import "../components/landing/landing.css";
 
 :root {
   --radius: 0.5rem;

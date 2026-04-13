@@ -1,0 +1,43 @@
+@layer components {
+  .landing-card {
+    @apply border border-zinc-800/80 bg-zinc-900/40 text-white shadow-sm shadow-black/20 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .landing-card--interactive:hover {
+    @apply border-emerald-500/25 shadow-lg;
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.08),
+      0 0 0 1px rgb(16 185 129 / 0.06);
+  }
+
+  .landing-pricing-card--featured {
+    @apply rounded-2xl border border-emerald-500/35 bg-linear-to-b from-emerald-950/30 to-zinc-900/50 text-white shadow-lg shadow-emerald-900/20 ring-1 ring-emerald-500/25 backdrop-blur-sm transition-all duration-300;
+  }
+
+  @media (min-width: 768px) {
+    .landing-pricing-card--featured {
+      transform: scale(1.02);
+    }
+
+    .landing-pricing-card--featured:hover {
+      @apply shadow-xl shadow-emerald-900/25;
+      transform: scale(1.03);
+    }
+  }
+
+  .landing-cta-primary {
+    @apply bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50;
+  }
+
+  .landing-cta-muted {
+    @apply bg-zinc-800 text-white transition hover:bg-zinc-700;
+  }
+
+  .landing-cta-ghost {
+    @apply border-zinc-700 bg-transparent text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800/50;
+  }
+
+  .landing-eyebrow {
+    @apply inline-flex items-center rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium tracking-wide text-emerald-400;
+  }
+}

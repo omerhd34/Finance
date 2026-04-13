@@ -1,0 +1,39 @@
+import { LANDING_FEATURES } from "./landing-content";
+import { LandingFeatureCard } from "./landing-feature-card";
+
+export function LandingFeaturesSection() {
+  return (
+    <section
+      className="relative px-4 py-20 md:py-28"
+      aria-labelledby="landing-features-heading"
+    >
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+
+      <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="landing-eyebrow">Özellikler</p>
+          <h2
+            id="landing-features-heading"
+            className="mt-4 text-balance text-3xl font-bold tracking-tight text-white md:text-4xl"
+          >
+            Finansını tek uygulamada topla
+          </h2>
+          <p className="mt-4 text-pretty text-lg text-zinc-400">
+            Kişisel bütçenden AI önerilerine kadar ihtiyacın olan her şey.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {LANDING_FEATURES.map((f) => (
+            <LandingFeatureCard
+              key={f.title}
+              title={f.title}
+              description={f.description}
+              icon={f.icon}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
