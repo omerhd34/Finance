@@ -57,7 +57,7 @@ const nav = [
   { href: "/transactions", label: "İşlemler", icon: Wallet },
   { href: "/goals", label: "Hedefler", icon: PiggyBank },
   { href: "/debts", label: "Borç & Alacak", icon: HandCoins },
-  { href: "/investments", label: "Borsa", icon: TrendingUp },
+  { href: "/investments", label: "Yatırım", icon: TrendingUp },
   { href: "/ai-insights", label: "AI Analiz", icon: Sparkles },
   { href: "/settings", label: "Ayarlar", icon: Settings },
 ];
@@ -68,7 +68,7 @@ const titles: Record<string, string> = {
   "/transactions/new": "Yeni İşlem",
   "/goals": "Hedefler",
   "/debts": "Borç & Alacak",
-  "/investments": "Borsa",
+  "/investments": "Yatırım",
   "/ai-insights": "AI Analiz",
   "/settings": "Ayarlar",
 };
