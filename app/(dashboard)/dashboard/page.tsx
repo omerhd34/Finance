@@ -2,15 +2,21 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { endOfMonth, startOfMonth, subMonths } from "date-fns";
 import {
   ArrowDownRight,
   ArrowUpRight,
+  CalendarDays,
   Coins,
   LineChart,
+  Receipt,
+  Scale,
   TrendingDown,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 import {
   aggregatePositionsTry,
@@ -28,6 +34,7 @@ import {
   sumExpenseInRange,
 } from "@/lib/dashboard-stats";
 import {
+  cn,
   currencySymbolLabel,
   formatMoneyAmount,
   formatDateShort,
@@ -54,6 +61,77 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar-chart";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { QuickTransactionDialog } from "@/components/dashboard/quick-transaction-dialog";
+
+function DashboardKpiCard({
+  icon: Icon,
+  iconClassName,
+  glowClassName,
+  label,
+  value,
+  valueClassName,
+  footer,
+  headerRight,
+}: {
+  icon: LucideIcon;
+  iconClassName: string;
+  glowClassName: string;
+  label: ReactNode;
+  value: ReactNode;
+  valueClassName?: string;
+  footer?: ReactNode;
+  headerRight?: ReactNode;
+}) {
+  return (
+    <Card
+      className={cn(
+        "relative overflow-hidden border-border/50",
+        "bg-linear-to-br from-card via-card to-muted/30",
+        "shadow-sm ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10",
+        "hover:border-border hover:shadow-md",
+      )}
+    >
+      <div
+        className={cn(
+          "pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full opacity-80 blur-3xl",
+          glowClassName,
+        )}
+      />
+      <CardHeader className="relative space-y-0 p-5 pb-4">
+        <div className="flex items-start gap-4">
+          <div
+            className={cn(
+              "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1",
+              iconClassName,
+            )}
+          >
+            <Icon className="h-5 w-5" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <CardDescription className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                {label}
+              </CardDescription>
+              {headerRight}
+            </div>
+            <CardTitle
+              className={cn(
+                "text-2xl font-semibold tracking-tight tabular-nums sm:text-[1.625rem]",
+                valueClassName,
+              )}
+            >
+              {value}
+            </CardTitle>
+          </div>
+        </div>
+      </CardHeader>
+      {footer ? (
+        <CardContent className="relative border-t border-border/50 bg-muted/20 px-5 pb-4 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+          {footer}
+        </CardContent>
+      ) : null}
+    </Card>
+  );
+}
 
 function debtRemaining(d: Debt): number {
   return Math.max(0, d.totalAmount - d.paidAmount);
@@ -159,7 +237,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
+            <Skeleton key={i} className="h-36 rounded-xl" />
           ))}
         </div>
         <Skeleton className="h-[320px] rounded-xl" />
@@ -188,105 +266,98 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">
-          Hoş geldiniz. Finans özetiniz aşağıda.
-        </p>
+      <div className="flex justify-end">
         <QuickTransactionDialog onSaved={load} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              Toplam Gelir ({currencySymbolLabel(currency)})
-            </CardDescription>
-            <CardTitle className="text-2xl text-emerald-500">
-              {formatMoneyAmount(stats.totalIncome, currency)}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              Toplam Gider ({currencySymbolLabel(currency)})
-            </CardDescription>
-            <CardTitle className="text-2xl text-red-500">
-              {formatMoneyAmount(stats.totalExpense, currency)}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              Net Bakiye ({currencySymbolLabel(currency)})
-            </CardDescription>
-            <CardTitle className="text-2xl">
-              {formatMoneyAmount(stats.net, currency)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0 text-xs text-muted-foreground">
-            Gelir − gider (işlemler)
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>
-              Yatırım K/Z ({currencySymbolLabel(currency)})
-            </CardDescription>
-            <CardTitle
-              className={`text-2xl tabular-nums ${
-                investmentPnl > 0
-                  ? "text-emerald-500"
-                  : investmentPnl < 0
-                    ? "text-red-500"
-                    : ""
-              }`}
-            >
+        <DashboardKpiCard
+          icon={Wallet}
+          iconClassName="bg-emerald-500/15 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400"
+          glowClassName="bg-emerald-500/25"
+          label={`Toplam Gelir (${currencySymbolLabel(currency)})`}
+          value={formatMoneyAmount(stats.totalIncome, currency)}
+          valueClassName="text-emerald-600 dark:text-emerald-400"
+        />
+        <DashboardKpiCard
+          icon={Receipt}
+          iconClassName="bg-rose-500/15 text-rose-600 ring-rose-500/25 dark:text-rose-400"
+          glowClassName="bg-rose-500/20"
+          label={`Toplam Gider (${currencySymbolLabel(currency)})`}
+          value={formatMoneyAmount(stats.totalExpense, currency)}
+          valueClassName="text-rose-600 dark:text-rose-400"
+        />
+        <DashboardKpiCard
+          icon={Scale}
+          iconClassName="bg-sky-500/15 text-sky-700 ring-sky-500/25 dark:text-sky-300"
+          glowClassName="bg-sky-500/15"
+          label={`Net Bakiye (${currencySymbolLabel(currency)})`}
+          value={formatMoneyAmount(stats.net, currency)}
+          valueClassName="text-foreground"
+          footer="Gelir − gider (işlemler)"
+        />
+        <DashboardKpiCard
+          icon={LineChart}
+          iconClassName="bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300"
+          glowClassName="bg-violet-500/20"
+          label={`Yatırım K/Z (${currencySymbolLabel(currency)})`}
+          value={
+            <>
               {investmentPnl > 0 ? "+" : ""}
               {formatMoneyAmount(investmentPnl, currency)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0 text-xs text-muted-foreground">
-            Pozisyon değeri − maliyet (tahmini).{" "}
-            <Link
-              href="/investments"
-              className="text-primary underline-offset-4 hover:underline"
-            >
-              Yatırımlar
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center justify-between gap-2">
-              <span>Bu Ay Harcama ({currencySymbolLabel(currency)})</span>
-              <span
-                className={`inline-flex items-center gap-0.5 text-xs font-medium ${
-                  spendUp ? "text-red-400" : "text-emerald-400"
-                }`}
+            </>
+          }
+          valueClassName={
+            investmentPnl > 0
+              ? "text-emerald-600 dark:text-emerald-400"
+              : investmentPnl < 0
+                ? "text-rose-600 dark:text-rose-400"
+                : "text-foreground"
+          }
+          footer={
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <span>Pozisyon değeri − maliyet (tahmini).</span>
+              <Link
+                href="/investments"
+                className="inline-flex w-fit items-center gap-1 rounded-full bg-emerald-500/12 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 transition-colors hover:bg-emerald-500/18 dark:text-emerald-300"
               >
-                {spendUp ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                {stats.prevMonthExpense === 0 && stats.thisMonthExpense === 0
-                  ? "—"
-                  : `${spendUp ? "+" : ""}${stats.pct.toLocaleString("tr-TR", {
-                      minimumFractionDigits: 1,
-                      maximumFractionDigits: 1,
-                    })}%`}
-              </span>
-            </CardDescription>
-            <CardTitle className="text-2xl">
-              {formatMoneyAmount(stats.thisMonthExpense, currency)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            Önceki ay: {formatMoneyAmount(stats.prevMonthExpense, currency)}
-          </CardContent>
-        </Card>
+                Yatırımlar
+                <ArrowUpRight className="h-3.5 w-3.5 opacity-80" aria-hidden />
+              </Link>
+            </div>
+          }
+        />
+        <DashboardKpiCard
+          icon={CalendarDays}
+          iconClassName="bg-amber-500/15 text-amber-800 ring-amber-500/25 dark:text-amber-300"
+          glowClassName="bg-amber-500/15"
+          label={`Bu Ay Harcama (${currencySymbolLabel(currency)})`}
+          value={formatMoneyAmount(stats.thisMonthExpense, currency)}
+          valueClassName="text-foreground"
+          headerRight={
+            <span
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums ring-1",
+                spendUp
+                  ? "bg-rose-500/15 text-rose-700 ring-rose-500/25 dark:text-rose-300"
+                  : "bg-emerald-500/15 text-emerald-800 ring-emerald-500/25 dark:text-emerald-300",
+              )}
+            >
+              {spendUp ? (
+                <TrendingUp className="h-3 w-3" aria-hidden />
+              ) : (
+                <TrendingDown className="h-3 w-3" aria-hidden />
+              )}
+              {stats.prevMonthExpense === 0 && stats.thisMonthExpense === 0
+                ? "—"
+                : `${spendUp ? "+" : ""}${stats.pct.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}%`}
+            </span>
+          }
+          footer={`Önceki ay: ${formatMoneyAmount(stats.prevMonthExpense, currency)}`}
+        />
       </div>
 
       {debtTotals !== null && (
