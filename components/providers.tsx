@@ -3,7 +3,6 @@
 
 import { SessionProvider } from "next-auth/react";
 import { Provider as ReduxProvider } from "react-redux";
-import { ThemeProvider } from "next-themes";
 import { useRef } from "react";
 import { makeStore, type AppStore } from "@/store";
 import { ExchangeRatesSync } from "@/components/exchange-rates-sync";
@@ -18,11 +17,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <ReduxProvider store={storeRef.current}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <SessionUserSync />
-          <ExchangeRatesSync />
-          {children}
-        </ThemeProvider>
+        <SessionUserSync />
+        <ExchangeRatesSync />
+        {children}
       </ReduxProvider>
     </SessionProvider>
   );
