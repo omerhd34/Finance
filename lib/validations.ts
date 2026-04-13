@@ -28,6 +28,16 @@ export const transactionCreateSchema = z.object({
 
 export const transactionUpdateSchema = transactionCreateSchema.partial();
 
+export const transactionEditFormSchema = transactionCreateSchema
+  .omit({ date: true, type: true })
+  .extend({
+    date: z.string().min(1),
+  });
+
+export type TransactionEditFormValues = z.infer<
+  typeof transactionEditFormSchema
+>;
+
 const recurringFieldsObject = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.number().positive("Tutar pozitif olmalı"),

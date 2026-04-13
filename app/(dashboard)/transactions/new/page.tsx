@@ -169,9 +169,7 @@ export default function NewTransactionPage() {
               <DatePickerField
                 id="date"
                 value={watch("date")}
-                onChange={(v) =>
-                  setValue("date", v, { shouldValidate: true })
-                }
+                onChange={(v) => setValue("date", v, { shouldValidate: true })}
               />
               {errors.date && (
                 <p className="text-sm text-destructive">
