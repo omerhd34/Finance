@@ -300,59 +300,61 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Şifre</CardTitle>
-          <CardDescription>
-            Sadece e-posta ile kayıtlı hesaplar için geçerlidir.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={passwordForm.handleSubmit(onPassword)}
-            className="space-y-6"
-          >
-            <div className="flex flex-col gap-4">
-              <Label className="block">Mevcut şifre</Label>
-              <Input
-                type="password"
-                autoComplete="current-password"
-                className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                {...passwordForm.register("currentPassword")}
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              <Label className="block">Yeni şifre</Label>
-              <Input
-                type="password"
-                autoComplete="new-password"
-                className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                {...passwordForm.register("newPassword")}
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              <Label className="block">Yeni şifre tekrar</Label>
-              <Input
-                type="password"
-                autoComplete="new-password"
-                className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                {...passwordForm.register("confirmPassword")}
-              />
-            </div>
-            {passwordForm.formState.errors.root && (
-              <p className="text-sm text-destructive">
-                {passwordForm.formState.errors.root.message}
-              </p>
-            )}
-            <Button
-              type="submit"
-              disabled={passwordForm.formState.isSubmitting}
+      {session?.user?.hasPassword ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Şifre</CardTitle>
+            <CardDescription>
+              E-posta ve şifre ile kayıtlı hesabınızın şifresini güncelleyin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={passwordForm.handleSubmit(onPassword)}
+              className="space-y-6"
             >
-              Şifreyi güncelle
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="flex flex-col gap-4">
+                <Label className="block">Mevcut şifre</Label>
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                  {...passwordForm.register("currentPassword")}
+                />
+              </div>
+              <div className="flex flex-col gap-4">
+                <Label className="block">Yeni şifre</Label>
+                <Input
+                  type="password"
+                  autoComplete="new-password"
+                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                  {...passwordForm.register("newPassword")}
+                />
+              </div>
+              <div className="flex flex-col gap-4">
+                <Label className="block">Yeni şifre tekrar</Label>
+                <Input
+                  type="password"
+                  autoComplete="new-password"
+                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                  {...passwordForm.register("confirmPassword")}
+                />
+              </div>
+              {passwordForm.formState.errors.root && (
+                <p className="text-sm text-destructive">
+                  {passwordForm.formState.errors.root.message}
+                </p>
+              )}
+              <Button
+                type="submit"
+                disabled={passwordForm.formState.isSubmitting}
+              >
+                Şifreyi güncelle
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="border-destructive/50">
         <CardHeader>

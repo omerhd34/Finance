@@ -64,12 +64,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user?.id) {
         token.id = user.id;
+      }
+      const shouldSyncProfile =
+        Boolean(token.id) && (Boolean(user) || token.hasPassword === undefined);
+      if (shouldSyncProfile) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { currency: true, phone: true },
+          where: { id: token.id as string },
+          select: { currency: true, phone: true, password: true },
         });
-        token.currency = dbUser?.currency ?? "TL";
-        token.phone = dbUser?.phone ?? null;
+        if (dbUser) {
+          token.currency = dbUser.currency ?? "TL";
+          token.phone = dbUser.phone ?? null;
+          token.hasPassword = Boolean(dbUser.password);
+        }
       }
       if (trigger === "update" && session && typeof session === "object") {
         const s = session as {
@@ -99,6 +106,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         session.user.currency = (token.currency as string | undefined) ?? "TL";
         session.user.phone = (token.phone as string | null | undefined) ?? null;
+        session.user.hasPassword = Boolean(token.hasPassword);
       }
       return session;
     },
