@@ -21,22 +21,22 @@ export default function RootError({ error, reset }: Props) {
           <AlertTriangle className="h-5 w-5" />
         </div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Bir hata olustu
+          Bir hata oluştu.
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Bu beklenmedik bir durum. Sayfayi tekrar yuklemeyi deneyebilirsin.
+          Bu beklenmedik bir durum. Sayfayı tekrar yüklemeyi deneyebilirsin.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button onClick={reset} className="cursor-pointer">
             <RefreshCw className="h-4 w-4" />
-            Tekrar dene
+            Tekrar deneyin.
           </Button>
           <Button
             variant="outline"
             onClick={() => window.location.assign("/")}
             className="cursor-pointer"
           >
-            Ana sayfaya don
+            Ana sayfaya git.
           </Button>
         </div>
       </section>

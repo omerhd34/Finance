@@ -21,21 +21,21 @@ export default function GlobalError({ error, reset }: Props) {
               <AlertOctagon className="h-5 w-5" />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              Uygulama gecici olarak kullanilamiyor
+              Uygulama geçici olarak kullanılamıyor.
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Kritik bir hata alindi. Tekrar denemek genelde sorunu cozer.
+              Kritik bir hata alındı. Tekrar denemek genelde sorunu çözer.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button onClick={reset} className="cursor-pointer">
-                Yeniden dene
+                Yeniden deneyin.
               </Button>
               <Button
                 variant="outline"
                 onClick={() => window.location.assign("/")}
                 className="cursor-pointer"
               >
-                Ana sayfaya don
+                Ana sayfaya git.
               </Button>
             </div>
           </section>

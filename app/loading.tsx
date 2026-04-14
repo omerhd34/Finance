@@ -9,10 +9,10 @@ export default function RootLoading() {
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-border/70 bg-card/85 px-8 py-6 text-center shadow-xl backdrop-blur">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="text-sm font-medium text-foreground">
-          Sayfa hazirlaniyor...
+          Sayfa hazırlanıyor...
         </p>
         <p className="max-w-sm text-xs text-muted-foreground">
-          Veriler yuklenirken kisa bir bekleme olabilir.
+          Veriler yüklenirken kısa bir bekleme olabilir.
         </p>
       </div>
     </main>

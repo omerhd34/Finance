@@ -17,21 +17,21 @@ export default function DashboardError({ error, reset }: Props) {
         <AlertTriangle className="h-5 w-5" />
       </div>
       <h2 className="text-xl font-semibold tracking-tight">
-        Bu bolum yuklenemedi
+        Bu bölüm yüklenemedi.
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Gecici bir hata olusmus olabilir. Verileri tekrar yuklemeyi dene.
+        Geçici bir hata olusmus olabilir. Verileri tekrar yüklemeyi deneyin.
       </p>
       <div className="mt-5 flex gap-3">
         <Button onClick={reset} className="cursor-pointer">
-          Tekrar dene
+          Tekrar deneyin.
         </Button>
         <Button
           variant="outline"
           onClick={() => window.location.assign("/dashboard")}
           className="cursor-pointer"
         >
-          Dashboard ana sayfasi
+          Dashboard ana sayfasına git.
         </Button>
       </div>
     </section>

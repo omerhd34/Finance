@@ -13,17 +13,17 @@ export default function NotFound() {
           404
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">
-          Bu sayfa bulunamadi
+          Bu sayfa bulunamadı.
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Link degismis olabilir ya da adres hatali yazilmis olabilir.
+          Link değişmiş olabilir ya da adres hatalı yazılmış olabilir.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Button asChild>
-            <Link href="/">Ana sayfaya git</Link>
+            <Link href="/">Ana sayfaya git.</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard">Panele git</Link>
+            <Link href="/dashboard">Panele git.</Link>
           </Button>
         </div>
       </section>
