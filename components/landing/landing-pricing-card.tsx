@@ -18,7 +18,7 @@ export function LandingPricingCard({ plan }: Props) {
   const isHighlight = plan.highlighted;
 
   const cardClass = cn(
-    "rounded-2xl",
+    "flex h-full flex-col rounded-2xl",
     isHighlight
       ? "landing-pricing-card--featured"
       : "landing-card landing-card--interactive",
@@ -36,11 +36,11 @@ export function LandingPricingCard({ plan }: Props) {
           </span>
         )}
         <CardTitle className="text-2xl text-white">{plan.title}</CardTitle>
-        <CardDescription className="text-base text-zinc-400">
+        <CardDescription className="min-h-12 text-base leading-relaxed text-zinc-400">
           {plan.subtitle}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6 px-8 pb-8">
+      <CardContent className="flex flex-1 flex-col px-8 pb-8">
         <p className="text-3xl font-bold tracking-tight text-white">
           {plan.priceMain}
           {plan.priceSuffix && (
@@ -54,7 +54,7 @@ export function LandingPricingCard({ plan }: Props) {
             </span>
           )}
         </p>
-        <ul className="space-y-3 text-sm leading-relaxed text-zinc-300">
+        <ul className="my-6 space-y-3 text-sm leading-relaxed text-zinc-300">
           {plan.perks.map((line) => (
             <li key={line} className="flex gap-3">
               <Check
@@ -68,7 +68,7 @@ export function LandingPricingCard({ plan }: Props) {
         <Button
           asChild
           size="lg"
-          className={cn("w-full rounded-full font-semibold", ctaClass)}
+          className={cn("mt-auto w-full rounded-full font-semibold", ctaClass)}
         >
           <Link href={plan.ctaHref}>{plan.ctaLabel}</Link>
         </Button>

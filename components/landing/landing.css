@@ -15,13 +15,8 @@
   }
 
   @media (min-width: 768px) {
-    .landing-pricing-card--featured {
-      transform: scale(1.02);
-    }
-
     .landing-pricing-card--featured:hover {
       @apply shadow-xl shadow-emerald-900/25;
-      transform: scale(1.03);
     }
   }
 

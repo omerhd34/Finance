@@ -10,8 +10,6 @@ export function LandingHero() {
       className="relative border-b border-white/6 px-4 pb-24 pt-16 md:pb-32 md:pt-20"
       aria-labelledby="landing-hero-heading"
     >
-      <div className="pointer-events-none absolute left-1/2 top-24 h-px w-[min(90%,720px)] -translate-x-1/2 bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
-
       <div className="mx-auto max-w-3xl text-center">
         <p className="landing-eyebrow">Kişisel finans asistanınız</p>
 
@@ -49,7 +47,7 @@ export function LandingHero() {
             variant="outline"
             size="lg"
             asChild
-            className="landing-cta-ghost h-12 rounded-full border px-8 text-base"
+            className="landing-cta-ghost h-12 rounded-full border px-8 text-base cursor-pointer"
           >
             <Link href="/login">Hesabım var</Link>
           </Button>
