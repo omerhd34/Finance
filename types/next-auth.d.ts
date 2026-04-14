@@ -7,6 +7,7 @@ declare module "next-auth" {
       currency?: string;
       phone?: string | null;
       hasPassword?: boolean;
+      notificationsEnabled?: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -17,5 +18,6 @@ declare module "next-auth/jwt" {
     currency?: string;
     phone?: string | null;
     hasPassword?: boolean;
+    notificationsEnabled?: boolean;
   }
 }

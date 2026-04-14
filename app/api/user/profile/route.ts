@@ -17,7 +17,7 @@ export async function PATCH(req: Request) {
         { status: 400 },
       );
     }
-    const { name, phone, currency } = parsed.data;
+    const { name, phone, currency, notificationsEnabled } = parsed.data;
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
@@ -26,6 +26,7 @@ export async function PATCH(req: Request) {
           phone: phone.trim() === "" ? null : phone.trim(),
         }),
         ...(currency !== undefined && { currency }),
+        ...(notificationsEnabled !== undefined && { notificationsEnabled }),
       },
       select: {
         id: true,
@@ -34,6 +35,7 @@ export async function PATCH(req: Request) {
         phone: true,
         currency: true,
         image: true,
+        notificationsEnabled: true,
       },
     });
     return NextResponse.json(user);

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -55,6 +54,8 @@ export default function SettingsPage() {
   const [phoneDial, setPhoneDial] = useState(DEFAULT_PHONE_DIAL);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [phoneFieldError, setPhoneFieldError] = useState<string | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notifSaving, setNotifSaving] = useState(false);
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileUpdateSchema),
@@ -85,6 +86,7 @@ export default function SettingsPage() {
     setPhoneDial(parsed.dial);
     setPhoneLocal(parsed.local);
     setPhoneFieldError(null);
+    setNotificationsEnabled(session?.user?.notificationsEnabled !== false);
   }, [session, profileForm]);
 
   function handleProfileSubmit(values: ProfileForm) {
@@ -105,6 +107,7 @@ export default function SettingsPage() {
       email: string;
       phone: string | null;
       currency: string;
+      notificationsEnabled: boolean;
     }>("/api/user/profile", values);
     dispatch(
       setUser({
@@ -114,6 +117,7 @@ export default function SettingsPage() {
         image: session?.user?.image ?? null,
         currency: data.currency,
         phone: data.phone ?? null,
+        notificationsEnabled: data.notificationsEnabled !== false,
       }),
     );
     await updateSession({
@@ -121,8 +125,42 @@ export default function SettingsPage() {
       phone: data.phone ?? null,
       name: data.name ?? "",
       email: data.email,
+      notificationsEnabled: data.notificationsEnabled !== false,
     });
     router.refresh();
+  }
+
+  async function onNotificationsEnabledChange(checked: boolean) {
+    setNotifSaving(true);
+    try {
+      const { data } = await apiClient.patch<{
+        notificationsEnabled: boolean;
+        name: string | null;
+        email: string;
+        phone: string | null;
+        currency: string;
+      }>("/api/user/profile", { notificationsEnabled: checked });
+      setNotificationsEnabled(data.notificationsEnabled !== false);
+      dispatch(
+        setUser({
+          id: session!.user!.id,
+          name: data.name,
+          email: data.email,
+          image: session?.user?.image ?? null,
+          currency: data.currency,
+          phone: data.phone ?? null,
+          notificationsEnabled: data.notificationsEnabled !== false,
+        }),
+      );
+      await updateSession({
+        notificationsEnabled: data.notificationsEnabled !== false,
+      });
+      router.refresh();
+    } catch {
+      setNotificationsEnabled(!checked);
+    } finally {
+      setNotifSaving(false);
+    }
   }
 
   async function onPassword(values: PasswordForm) {
@@ -301,6 +339,63 @@ export default function SettingsPage() {
                 : "Kaydet"}
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Bildirimler</CardTitle>
+          <CardDescription>
+            Bütçe uyarıları uygulama içinde her zaman gösterilir. Bu anahtar
+            genel e-posta gönderimini kontrol eder; tek bir kategori için
+            e-postayı Bütçeler sayfasındaki bütçe düzeninden kapatabilirsiniz.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 rounded-xl border border-border/70 bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <p
+                id="email-notifications-label"
+                className="text-base font-medium leading-none"
+              >
+                E-posta bildirimleri
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <input
+                id="email-notifications-enabled"
+                type="checkbox"
+                className="peer sr-only"
+                checked={notificationsEnabled}
+                disabled={notifSaving || !session?.user}
+                onChange={(e) =>
+                  void onNotificationsEnabledChange(e.target.checked)
+                }
+                aria-labelledby="email-notifications-label"
+              />
+              <label
+                htmlFor="email-notifications-enabled"
+                className={cn(
+                  "relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full border border-border/80 bg-muted transition-colors",
+                  "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
+                  "peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+                  notificationsEnabled && "border-primary/40 bg-primary/25",
+                )}
+              >
+                <span className="sr-only">
+                  {notificationsEnabled
+                    ? "E-posta bildirimleri açık, kapatmak için tıklayın"
+                    : "E-posta bildirimleri kapalı, açmak için tıklayın"}
+                </span>
+                <span
+                  className={cn(
+                    "pointer-events-none block h-6 w-6 translate-x-1 rounded-full bg-background shadow-sm ring-1 ring-border transition-transform",
+                    notificationsEnabled && "translate-x-7 bg-primary",
+                  )}
+                />
+              </label>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

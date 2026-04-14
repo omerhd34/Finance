@@ -100,7 +100,7 @@ export const categoryBudgetCreateSchema = z.object({
     .max(100, "En fazla %100")
     .optional()
     .default(80),
-  emailAlertsEnabled: z.boolean().optional().default(false),
+  emailAlertsEnabled: z.boolean().optional().default(true),
 });
 
 export const categoryBudgetUpdateSchema = z.object({
@@ -139,6 +139,7 @@ export const profileUpdateSchema = z.object({
   name: z.string().min(1, "Ad ve soyad gerekli").optional(),
   phone: z.string().max(48, "En fazla 48 karakter").optional(),
   currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
+  notificationsEnabled: z.boolean().optional(),
 });
 
 export const passwordChangeSchema = z

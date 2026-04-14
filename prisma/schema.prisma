@@ -14,9 +14,10 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
-  phone         String?
-  currency      String        @default("TL")
-  createdAt     DateTime      @default(now())
+  phone                 String?
+  currency              String        @default("TL")
+  notificationsEnabled  Boolean       @default(true)
+  createdAt             DateTime      @default(now())
   transactions    Transaction[]
   goals           Goal[]
   debts           Debt[]
@@ -85,7 +86,7 @@ model CategoryBudget {
   category               String
   monthlyLimit           Float
   alertThresholdPercent  Float            @default(80)
-  emailAlertsEnabled     Boolean          @default(false)
+  emailAlertsEnabled     Boolean          @default(true)
   createdAt              DateTime         @default(now())
   updatedAt              DateTime         @updatedAt
   alertLogs              BudgetAlertLog[]

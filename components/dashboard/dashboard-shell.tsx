@@ -164,6 +164,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         email: string;
         phone: string | null;
         currency: string;
+        notificationsEnabled: boolean;
       }>("/api/user/profile", { currency });
       dispatch(
         setUser({
@@ -173,6 +174,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           image: session.user.image ?? null,
           currency: data.currency,
           phone: data.phone ?? null,
+          notificationsEnabled: data.notificationsEnabled !== false,
         }),
       );
       await updateSession({
@@ -180,6 +182,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         phone: data.phone ?? null,
         name: data.name ?? "",
         email: data.email,
+        notificationsEnabled: data.notificationsEnabled !== false,
       });
       router.refresh();
     } finally {

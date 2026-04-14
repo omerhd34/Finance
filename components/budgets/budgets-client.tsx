@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -40,16 +41,17 @@ export type CategoryBudgetRow = {
 type Props = { currency: string };
 
 export function BudgetsClient({ currency }: Props) {
+  const { data: session } = useSession();
+  const globalEmailNotificationsOn =
+    session?.user?.notificationsEnabled !== false;
+
   const [items, setItems] = useState<CategoryBudgetRow[]>([]);
   const [loading, setLoading] = useState(true);
-  /** Liste yükleme / silme — sayfa üstünde */
   const [listError, setListError] = useState<string | null>(null);
-  /** Form doğrulama — ilgili input altında */
   const [monthlyLimitError, setMonthlyLimitError] = useState<string | null>(
     null,
   );
   const [thresholdError, setThresholdError] = useState<string | null>(null);
-  /** Kayıt API hatası — form içinde */
   const [saveError, setSaveError] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryBudgetRow | null>(null);
@@ -59,7 +61,7 @@ export function BudgetsClient({ currency }: Props) {
   const [category, setCategory] = useState<string>(EXPENSE_CATEGORIES[0]);
   const [monthlyLimit, setMonthlyLimit] = useState("");
   const [threshold, setThreshold] = useState("80");
-  const [emailAlerts, setEmailAlerts] = useState(false);
+  const [emailAlerts, setEmailAlerts] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,7 +105,7 @@ export function BudgetsClient({ currency }: Props) {
     setCategory(EXPENSE_CATEGORIES[0]);
     setMonthlyLimit("");
     setThreshold("80");
-    setEmailAlerts(false);
+    setEmailAlerts(true);
     clearFormErrors();
     setFormOpen(true);
   }
@@ -285,8 +287,17 @@ export function BudgetsClient({ currency }: Props) {
                   <span>
                     Uyarı eşiği: %{Math.round(b.alertThresholdPercent)}
                   </span>
-                  <span>
-                    E-posta: {b.emailAlertsEnabled ? "Açık" : "Kapalı"}
+                  <span
+                    title={
+                      b.emailAlertsEnabled && !globalEmailNotificationsOn
+                        ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
+                        : undefined
+                    }
+                  >
+                    E-posta:{" "}
+                    {globalEmailNotificationsOn && b.emailAlertsEnabled
+                      ? "Açık"
+                      : "Kapalı"}
                   </span>
                 </div>
                 <Link

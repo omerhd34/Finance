@@ -20,6 +20,7 @@ export function SessionUserSync() {
         image: session.user.image ?? null,
         currency: session.user.currency ?? "TL",
         phone: session.user.phone ?? null,
+        notificationsEnabled: session.user.notificationsEnabled !== false,
       };
       dispatch(setUser(u));
     } else {

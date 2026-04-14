@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
@@ -5,6 +6,20 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { normalizeUserCurrency } from "@/lib/currency";
+
+type JwtProfileRow = {
+  currency: string;
+  phone: string | null;
+  password: string | null;
+  notificationsEnabled: boolean;
+};
+
+const jwtProfileSelect = {
+  currency: true,
+  phone: true,
+  password: true,
+  notificationsEnabled: true,
+} as const satisfies Record<keyof JwtProfileRow, true>;
 
 function resolveAuthSecret(): string | undefined {
   const fromEnv = process.env.AUTH_SECRET;
@@ -68,14 +83,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const shouldSyncProfile =
         Boolean(token.id) && (Boolean(user) || token.hasPassword === undefined);
       if (shouldSyncProfile) {
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = (await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { currency: true, phone: true, password: true },
-        });
+          select: jwtProfileSelect as unknown as Prisma.UserSelect,
+        })) as JwtProfileRow | null;
         if (dbUser) {
           token.currency = dbUser.currency ?? "TL";
           token.phone = dbUser.phone ?? null;
           token.hasPassword = Boolean(dbUser.password);
+          token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
         }
       }
       if (trigger === "update" && session && typeof session === "object") {
@@ -84,6 +100,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           phone?: unknown;
           name?: unknown;
           email?: unknown;
+          notificationsEnabled?: unknown;
         };
         if (typeof s.currency === "string") {
           token.currency = normalizeUserCurrency(s.currency);
@@ -98,6 +115,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         if (typeof s.name === "string") token.name = s.name;
         if (typeof s.email === "string") token.email = s.email;
+        if (typeof s.notificationsEnabled === "boolean") {
+          token.notificationsEnabled = s.notificationsEnabled;
+        }
       }
       return token;
     },
@@ -107,6 +127,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.currency = (token.currency as string | undefined) ?? "TL";
         session.user.phone = (token.phone as string | null | undefined) ?? null;
         session.user.hasPassword = Boolean(token.hasPassword);
+        session.user.notificationsEnabled =
+          (token.notificationsEnabled as boolean | undefined) !== false;
       }
       return session;
     },

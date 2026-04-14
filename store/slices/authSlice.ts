@@ -7,6 +7,7 @@ export type AuthUser = {
   image: string | null;
   currency: string;
   phone: string | null;
+  notificationsEnabled?: boolean;
 };
 
 export type AuthState = {

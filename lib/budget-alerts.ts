@@ -94,6 +94,7 @@ async function createNotificationAndMaybeEmail(opts: {
   alertType: typeof THRESHOLD | typeof EXCEEDED;
   emailAlertsEnabled: boolean;
   thresholdPercent: number;
+  emailNotificationsEnabled: boolean;
 }): Promise<void> {
   const {
     userId,
@@ -107,6 +108,7 @@ async function createNotificationAndMaybeEmail(opts: {
     alertType,
     emailAlertsEnabled,
     thresholdPercent,
+    emailNotificationsEnabled,
   } = opts;
 
   const monthLabel = format(new Date(`${monthKey}-01T12:00:00`), "MMMM yyyy", {
@@ -140,7 +142,7 @@ async function createNotificationAndMaybeEmail(opts: {
     },
   });
 
-  if (emailAlertsEnabled && userEmail) {
+  if (emailNotificationsEnabled && emailAlertsEnabled && userEmail) {
     const spentFormatted = formatMoney(spent, currency);
     const limitFormatted = formatMoney(monthlyLimit, currency);
     const progressPercent =
@@ -182,9 +184,15 @@ export async function evaluateCategoryBudgetForMonth(
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, currency: true },
+    select: {
+      email: true,
+      currency: true,
+      notificationsEnabled: true,
+    } as { email: true; currency: true; notificationsEnabled: true },
   });
   if (!user) return;
+
+  const emailNotificationsEnabled = user.notificationsEnabled !== false;
 
   const currency = user.currency ?? "TL";
   const limit = budget.monthlyLimit;
@@ -221,6 +229,7 @@ export async function evaluateCategoryBudgetForMonth(
       alertType: EXCEEDED,
       emailAlertsEnabled: budget.emailAlertsEnabled,
       thresholdPercent: budget.alertThresholdPercent,
+      emailNotificationsEnabled,
     });
     return;
   }
@@ -244,6 +253,7 @@ export async function evaluateCategoryBudgetForMonth(
       alertType: THRESHOLD,
       emailAlertsEnabled: budget.emailAlertsEnabled,
       thresholdPercent: budget.alertThresholdPercent,
+      emailNotificationsEnabled,
     });
   }
 }
