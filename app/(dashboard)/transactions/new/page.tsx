@@ -78,7 +78,7 @@ export default function NewTransactionPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <div>
         <Button variant="ghost" asChild className="mb-2 -ml-2">
           <Link href="/transactions">← İşlemlere dön</Link>

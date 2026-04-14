@@ -9,7 +9,7 @@ export function LandingFeaturesSection() {
     >
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
           <p className="landing-eyebrow">Özellikler</p>
           <h2

@@ -137,7 +137,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-8">
+    <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h2 className="text-lg font-semibold">Ayarlar</h2>
         <p className="text-sm text-muted-foreground">Profil ve güvenlik.</p>

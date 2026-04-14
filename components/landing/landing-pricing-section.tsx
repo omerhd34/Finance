@@ -7,7 +7,7 @@ export function LandingPricingSection() {
       className="relative border-t border-white/6 px-4 py-20 md:py-28"
       aria-labelledby="landing-pricing-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-14 max-w-2xl text-center">
           <p className="landing-eyebrow">Fiyatlandırma</p>
           <h2
