@@ -15,6 +15,7 @@ import {
   LineChart,
   Menu,
   Moon,
+  PieChart,
   PiggyBank,
   Settings,
   Sparkles,
@@ -28,6 +29,7 @@ import { normalizeUserCurrency } from "@/lib/currency";
 import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
+import { NotificationsPopover } from "@/components/notifications/notifications-popover";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,9 +58,11 @@ const nav = [
   { href: "/transactions", label: "İşlemler", icon: Wallet },
   { href: "/recurring", label: "Tekrarlayan", icon: CalendarClock },
   { href: "/goals", label: "Hedefler", icon: PiggyBank },
+  { href: "/budgets", label: "Bütçeler", icon: PieChart },
   { href: "/debts", label: "Borç ve Alacak", icon: HandCoins },
   { href: "/investments", label: "Yatırım", icon: TrendingUp },
   { href: "/ai-insights", label: "AI Analiz", icon: Sparkles },
+  { href: "/notifications", label: "Bildirimler", icon: Bell },
   { href: "/settings", label: "Ayarlar", icon: Settings },
 ];
 
@@ -68,9 +72,11 @@ const titles: Record<string, string> = {
   "/transactions/new": "Yeni İşlem",
   "/recurring": "Tekrarlayan işlemler",
   "/goals": "Hedefler",
+  "/budgets": "Kategori bütçeleri",
   "/debts": "Borç ve Alacak",
   "/investments": "Yatırım",
   "/ai-insights": "AI Analiz",
+  "/notifications": "Bildirimler",
   "/settings": "Ayarlar",
 };
 
@@ -412,14 +418,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <h1 className="truncate text-lg font-semibold">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Bildirimler"
-              className="cursor-pointer"
-            >
-              <Bell className="h-5 w-5 text-muted-foreground" />
-            </Button>
+            <NotificationsPopover />
             <Button
               type="button"
               variant="ghost"

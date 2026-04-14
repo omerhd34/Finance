@@ -21,9 +21,11 @@ model User {
   goals           Goal[]
   debts           Debt[]
   investments     InvestmentPosition[]
-  recurringRules  RecurringRule[]
-  accounts        Account[]
-  sessions        Session[]
+  recurringRules   RecurringRule[]
+  accounts         Account[]
+  sessions         Session[]
+  categoryBudgets  CategoryBudget[]
+  notifications    Notification[]
 }
 
 model Transaction {
@@ -74,6 +76,49 @@ model Goal {
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt     DateTime  @default(now())
+}
+
+model CategoryBudget {
+  id                     String           @id @default(cuid())
+  userId                 String
+  user                   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category               String
+  monthlyLimit           Float
+  alertThresholdPercent  Float            @default(80)
+  emailAlertsEnabled     Boolean          @default(false)
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  alertLogs              BudgetAlertLog[]
+
+  @@unique([userId, category])
+  @@index([userId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String    @db.Text
+  readAt    DateTime?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+model BudgetAlertLog {
+  id         String         @id @default(cuid())
+  budgetId   String
+  budget     CategoryBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  monthKey   String
+  alertType  String
+  createdAt  DateTime       @default(now())
+
+  @@unique([budgetId, monthKey, alertType])
+  @@index([budgetId])
 }
 
 model Debt {

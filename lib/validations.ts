@@ -91,6 +91,25 @@ export const goalUpdateSchema = z.object({
   deadline: z.coerce.date().optional().nullable(),
 });
 
+export const categoryBudgetCreateSchema = z.object({
+  category: z.string().min(1, "Kategori seçin"),
+  monthlyLimit: z.number().positive("Aylık limit pozitif olmalı"),
+  alertThresholdPercent: z
+    .number()
+    .min(1, "En az %1")
+    .max(100, "En fazla %100")
+    .optional()
+    .default(80),
+  emailAlertsEnabled: z.boolean().optional().default(false),
+});
+
+export const categoryBudgetUpdateSchema = z.object({
+  category: z.string().min(1).optional(),
+  monthlyLimit: z.number().positive().optional(),
+  alertThresholdPercent: z.number().min(1).max(100).optional(),
+  emailAlertsEnabled: z.boolean().optional(),
+});
+
 export const debtCreateSchema = z
   .object({
     direction: z.enum(["RECEIVABLE", "PAYABLE"]),

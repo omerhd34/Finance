@@ -47,3 +47,69 @@ type RecurringRuleDelegate = {
 export const recurringRule: RecurringRuleDelegate = (
   prisma as unknown as { recurringRule: RecurringRuleDelegate }
 ).recurringRule;
+
+type CategoryBudgetDelegate = {
+  findMany(args?: object): Promise<CategoryBudgetRow[]>;
+  findFirst(args: object): Promise<CategoryBudgetRow | null>;
+  findUnique(args: object): Promise<CategoryBudgetRow | null>;
+  create(args: { data: object }): Promise<CategoryBudgetRow>;
+  update(args: { where: object; data: object }): Promise<CategoryBudgetRow>;
+  delete(args: { where: object }): Promise<CategoryBudgetRow>;
+};
+
+export const categoryBudget: CategoryBudgetDelegate = (
+  prisma as unknown as { categoryBudget: CategoryBudgetDelegate }
+).categoryBudget;
+
+type NotificationDelegate = {
+  findMany(args?: object): Promise<NotificationRow[]>;
+  findFirst(args: object): Promise<NotificationRow | null>;
+  create(args: { data: object }): Promise<NotificationRow>;
+  update(args: { where: object; data: object }): Promise<NotificationRow>;
+  updateMany(args: { where: object; data: object }): Promise<{ count: number }>;
+  delete(args: { where: object }): Promise<NotificationRow>;
+  count(args?: object): Promise<number>;
+};
+
+export const notification: NotificationDelegate = (
+  prisma as unknown as { notification: NotificationDelegate }
+).notification;
+
+type BudgetAlertLogDelegate = {
+  findMany(args?: object): Promise<BudgetAlertLogRow[]>;
+  create(args: { data: object }): Promise<BudgetAlertLogRow>;
+};
+
+export const budgetAlertLog: BudgetAlertLogDelegate = (
+  prisma as unknown as { budgetAlertLog: BudgetAlertLogDelegate }
+).budgetAlertLog;
+
+type CategoryBudgetRow = {
+  id: string;
+  userId: string;
+  category: string;
+  monthlyLimit: number;
+  alertThresholdPercent: number;
+  emailAlertsEnabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type NotificationRow = {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  body: string;
+  readAt: Date | null;
+  metadata: unknown;
+  createdAt: Date;
+};
+
+type BudgetAlertLogRow = {
+  id: string;
+  budgetId: string;
+  monthKey: string;
+  alertType: string;
+  createdAt: Date;
+};

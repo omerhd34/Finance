@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
 import { prisma } from "@/lib/prisma";
 import { transactionUpdateSchema } from "@/lib/validations";
 
@@ -39,6 +40,22 @@ export async function PUT(req: Request, context: RouteContext) {
         ...(data.date !== undefined && { date: data.date }),
       },
     });
+    if (existing.type === "expense") {
+      await evaluateCategoryBudgetsForTransactionContext({
+        userId: session.user.id,
+        type: "expense",
+        category: existing.category,
+        date: new Date(existing.date),
+      });
+    }
+    if (tx.type === "expense") {
+      await evaluateCategoryBudgetsForTransactionContext({
+        userId: session.user.id,
+        type: "expense",
+        category: tx.category,
+        date: tx.date,
+      });
+    }
     return NextResponse.json(tx);
   } catch {
     return NextResponse.json({ error: "Güncellenemedi" }, { status: 500 });
@@ -59,6 +76,14 @@ export async function DELETE(_req: Request, context: RouteContext) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
     await prisma.transaction.delete({ where: { id } });
+    if (existing.type === "expense") {
+      await evaluateCategoryBudgetsForTransactionContext({
+        userId: session.user.id,
+        type: "expense",
+        category: existing.category,
+        date: new Date(existing.date),
+      });
+    }
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Silinemedi" }, { status: 500 });

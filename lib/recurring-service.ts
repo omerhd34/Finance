@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Prisma } from "@prisma/client";
+import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
 import { prisma, recurringRule } from "@/lib/prisma";
 import {
   addRecurringInterval,
@@ -97,6 +98,14 @@ async function runProcessAutoRecurringForUser(
             recurringSlotKey: slotKey,
           } as Prisma.TransactionUncheckedCreateInput,
         });
+        if (rule.type === "expense") {
+          await evaluateCategoryBudgetsForTransactionContext({
+            userId,
+            type: "expense",
+            category: rule.category,
+            date: cursor,
+          });
+        }
         created++;
       } catch (e) {
         if (!isUniqueConstraintError(e)) throw e;
@@ -179,6 +188,15 @@ export async function fulfillRecurringReminder(
       },
     });
   });
+
+  if (rule.type === "expense") {
+    await evaluateCategoryBudgetsForTransactionContext({
+      userId,
+      type: "expense",
+      category: rule.category,
+      date: due,
+    });
+  }
 
   return { ok: true };
 }

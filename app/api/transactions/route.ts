@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { dedupeTransactionRows } from "@/lib/dedupe-transactions-display";
 import { prisma } from "@/lib/prisma";
+import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
 import { transactionCreateSchema } from "@/lib/validations";
 import type { Prisma } from "@prisma/client";
 
@@ -119,6 +120,12 @@ export async function POST(req: Request) {
         date,
         userId: session.user.id,
       },
+    });
+    await evaluateCategoryBudgetsForTransactionContext({
+      userId: session.user.id,
+      type: tx.type,
+      category: tx.category,
+      date: tx.date,
     });
     return NextResponse.json(tx, { status: 201 });
   } catch {
