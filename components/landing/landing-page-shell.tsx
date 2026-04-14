@@ -7,7 +7,6 @@ type Props = {
 export function LandingPageShell({ children }: Props) {
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#09090b] text-foreground antialiased">
-      {/* Arka plan: ızgara + yumuşak ışık lekeleri */}
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#09090b_0%,#0c0c0e_50%,#09090b_100%)]" />
         <div
