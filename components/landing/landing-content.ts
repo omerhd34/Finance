@@ -93,7 +93,10 @@ export const LANDING_PLANS: LandingPlan[] = [
     priceNote: "özel fiyat",
     perks: [
       "Ücretsiz plandaki her şey",
-      "Yapay zekâ ile kişiselleştirilmiş AI analizi",
+      "Yapay zekâ ile kişiselleştirilmiş harcama ve gelir analizi",
+      "Aylık finans sağlığı skoru ve gelişim önerileri",
+      "Kategori bazlı otomatik bütçe önerileri",
+      "Haftalık performans özeti ve trend uyarıları",
       "Öncelikli yeni özellikler",
     ],
     ctaLabel: "Listeye katıl",
