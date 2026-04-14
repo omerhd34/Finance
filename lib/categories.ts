@@ -1,5 +1,6 @@
 export const EXPENSE_CATEGORIES = [
   "Yiyecek",
+  "Market",
   "Ulaşım",
   "Kira",
   "Faturalar",
