@@ -55,10 +55,7 @@ export function NewPositionDialog({
     if (open) {
       form.setValue("assetType", listTab);
       if (listTab === "GOLD") {
-        form.setValue(
-          "goldSubtype",
-          form.getValues("goldSubtype") ?? "GRAM",
-        );
+        form.setValue("goldSubtype", form.getValues("goldSubtype") ?? "GRAM");
       } else {
         form.setValue("goldSubtype", undefined);
       }
@@ -83,7 +80,7 @@ export function NewPositionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="cursor-pointer">
           <Plus className="h-4 w-4" />
           Pozisyon ekle
         </Button>
@@ -92,10 +89,7 @@ export function NewPositionDialog({
         <DialogHeader>
           <DialogTitle>Yeni pozisyon</DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">
             Birim fiyatlar {currencySymbolLabel(currency)} ile girilir; kayıt TL
             bazında saklanır.
@@ -106,7 +100,9 @@ export function NewPositionDialog({
             stockPlaceholders
           />
           <DialogFooter>
-            <Button type="submit">Kaydet</Button>
+            <Button type="submit" className="cursor-pointer">
+              Kaydet
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

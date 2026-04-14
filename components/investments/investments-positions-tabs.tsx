@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  formatGoldQuantityCell,
-  goldSubtypeLabel,
-} from "@/lib/gold-subtypes";
+import { formatGoldQuantityCell, goldSubtypeLabel } from "@/lib/gold-subtypes";
 import { costBasisTry, pnlTry, valueTry } from "@/lib/investment-position-math";
 import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
 import type { InvestmentPosition } from "@/types/investment";
@@ -47,13 +44,14 @@ export function InvestmentsPositionsTabs({
   onDelete,
 }: Props) {
   return (
-    <Tabs
-      value={tab}
-      onValueChange={(v) => onTabChange(v as "GOLD" | "STOCK")}
-    >
+    <Tabs value={tab} onValueChange={(v) => onTabChange(v as "GOLD" | "STOCK")}>
       <TabsList>
-        <TabsTrigger value="GOLD">Altın</TabsTrigger>
-        <TabsTrigger value="STOCK">Hisse senedi</TabsTrigger>
+        <TabsTrigger value="GOLD" className="cursor-pointer">
+          Altın
+        </TabsTrigger>
+        <TabsTrigger value="STOCK" className="cursor-pointer">
+          Hisse senedi
+        </TabsTrigger>
       </TabsList>
       <TabsContent value={tab} className="mt-4">
         <Card>
@@ -180,6 +178,7 @@ export function InvestmentsPositionsTabs({
                             size="icon"
                             aria-label="Düzenle"
                             onClick={() => onEdit(p)}
+                            className="cursor-pointer"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -187,7 +186,7 @@ export function InvestmentsPositionsTabs({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive cursor-pointer"
                             aria-label="Sil"
                             onClick={() => onDelete(p.id)}
                           >

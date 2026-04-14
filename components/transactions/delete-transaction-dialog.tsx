@@ -30,10 +30,18 @@ export function DeleteTransactionDialog({
           Bu işlemi kalıcı olarak silmek istediğinize emin misiniz?
         </p>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="cursor-pointer"
+          >
             Vazgeç
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            className="cursor-pointer"
+          >
             Sil
           </Button>
         </DialogFooter>

@@ -59,13 +59,13 @@ export function NewRecurringDialog({
           className="space-y-4"
           onSubmit={form.handleSubmit((v) => void handleSubmit(v))}
         >
-          <RecurringFormFields
-            form={form}
-            currency={currency}
-            variant="new"
-          />
+          <RecurringFormFields form={form} currency={currency} variant="new" />
           <DialogFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="cursor-pointer"
+            >
               Kaydet
             </Button>
           </DialogFooter>

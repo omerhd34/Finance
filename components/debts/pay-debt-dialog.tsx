@@ -66,7 +66,9 @@ export function PayDebtDialog({ open, onOpenChange, currency, onPay }: Props) {
             )}
           </div>
           <DialogFooter>
-            <Button type="submit">Uygula</Button>
+            <Button type="submit" className="cursor-pointer">
+              Uygula
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -31,8 +31,12 @@ export function DebtsList({
       onValueChange={(v) => onTabChange(v as "RECEIVABLE" | "PAYABLE")}
     >
       <TabsList>
-        <TabsTrigger value="RECEIVABLE">Bana borçlular</TabsTrigger>
-        <TabsTrigger value="PAYABLE">Benim borçlarım</TabsTrigger>
+        <TabsTrigger value="RECEIVABLE" className="cursor-pointer">
+          Bana borçlular
+        </TabsTrigger>
+        <TabsTrigger value="PAYABLE" className="cursor-pointer">
+          Benim borçlarım
+        </TabsTrigger>
       </TabsList>
       <TabsContent value={tab} className="mt-4">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

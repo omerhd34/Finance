@@ -291,7 +291,11 @@ export default function SettingsPage() {
                 <p className="text-sm text-destructive">{phoneFieldError}</p>
               )}
             </div>
-            <Button type="submit" disabled={profileForm.formState.isSubmitting}>
+            <Button
+              type="submit"
+              disabled={profileForm.formState.isSubmitting}
+              className="cursor-pointer"
+            >
               {profileForm.formState.isSubmitting
                 ? "Kaydediliyor..."
                 : "Kaydet"}
@@ -348,6 +352,7 @@ export default function SettingsPage() {
               <Button
                 type="submit"
                 disabled={passwordForm.formState.isSubmitting}
+                className="cursor-pointer"
               >
                 Şifreyi güncelle
               </Button>
@@ -386,6 +391,7 @@ export default function SettingsPage() {
               type="submit"
               variant="destructive"
               disabled={deleteForm.formState.isSubmitting}
+              className="cursor-pointer"
             >
               Hesabı sil
             </Button>

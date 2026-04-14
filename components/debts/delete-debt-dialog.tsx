@@ -15,11 +15,7 @@ type Props = {
   onConfirm: () => void;
 };
 
-export function DeleteDebtDialog({
-  open,
-  onOpenChange,
-  onConfirm,
-}: Props) {
+export function DeleteDebtDialog({ open, onOpenChange, onConfirm }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -30,10 +26,18 @@ export function DeleteDebtDialog({
           Bu kaydı silmek istediğinize emin misiniz?
         </p>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="cursor-pointer"
+          >
             Vazgeç
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            className="cursor-pointer"
+          >
             Sil
           </Button>
         </DialogFooter>

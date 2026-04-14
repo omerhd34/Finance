@@ -54,13 +54,18 @@ export function GoalCard({ goal: g, currency, onUpdate, onDelete }: Props) {
         </p>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button variant="secondary" size="sm" onClick={onUpdate}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onUpdate}
+          className="cursor-pointer"
+        >
           Güncelle
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="text-destructive"
+          className="text-destructive cursor-pointer"
           onClick={onDelete}
         >
           Sil

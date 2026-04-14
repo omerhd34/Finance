@@ -28,10 +28,18 @@ export function DeleteInvestmentDialog({
         </DialogHeader>
         <p className="text-sm text-muted-foreground">Bu işlem geri alınamaz.</p>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="cursor-pointer"
+          >
             Vazgeç
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            className="cursor-pointer"
+          >
             Sil
           </Button>
         </DialogFooter>

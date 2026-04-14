@@ -85,7 +85,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full cursor-pointer"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           >
             Google ile kayıt
@@ -152,7 +152,11 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
           {errors.root && (
             <p className="text-sm text-destructive">{errors.root.message}</p>
           )}
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Kaydediliyor..." : "Kayıt ol"}
           </Button>
         </form>

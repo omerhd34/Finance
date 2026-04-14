@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import { useEffect, useMemo } from "react";
@@ -139,6 +140,7 @@ export function EditTransactionDialog({
             <div className="space-y-2">
               <Label>Tarih</Label>
               <DatePickerField
+                className="cursor-pointer"
                 value={form.watch("date")}
                 onChange={(v) =>
                   form.setValue("date", v, {

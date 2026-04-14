@@ -66,9 +66,7 @@ export function DebtCard({
             : ""}
         </p>
         {d.note ? (
-          <p className="text-xs text-muted-foreground line-clamp-3">
-            {d.note}
-          </p>
+          <p className="text-xs text-muted-foreground line-clamp-3">{d.note}</p>
         ) : null}
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2">
@@ -77,16 +75,22 @@ export function DebtCard({
           size="sm"
           disabled={settled}
           onClick={onPay}
+          className="cursor-pointer"
         >
           Ödeme ekle
         </Button>
-        <Button variant="outline" size="sm" onClick={onEdit}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onEdit}
+          className="cursor-pointer"
+        >
           Düzenle
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="text-destructive"
+          className="text-destructive cursor-pointer"
           onClick={onDelete}
         >
           Sil

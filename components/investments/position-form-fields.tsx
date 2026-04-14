@@ -56,8 +56,12 @@ export function PositionFormFields({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="GOLD">Altın</SelectItem>
-            <SelectItem value="STOCK">Hisse senedi</SelectItem>
+            <SelectItem value="GOLD" className="cursor-pointer">
+              Altın
+            </SelectItem>
+            <SelectItem value="STOCK" className="cursor-pointer">
+              Hisse senedi
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -78,7 +82,11 @@ export function PositionFormFields({
             </SelectTrigger>
             <SelectContent>
               {GOLD_SUBTYPE_OPTIONS.map(({ value, label }) => (
-                <SelectItem key={value} value={value}>
+                <SelectItem
+                  key={value}
+                  value={value}
+                  className="cursor-pointer"
+                >
                   {label}
                 </SelectItem>
               ))}

@@ -112,8 +112,12 @@ export default function NewTransactionPage() {
               }}
             >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="expense">Gider</TabsTrigger>
-                <TabsTrigger value="income">Gelir</TabsTrigger>
+                <TabsTrigger value="expense" className="cursor-pointer">
+                  Gider
+                </TabsTrigger>
+                <TabsTrigger value="income" className="cursor-pointer">
+                  Gelir
+                </TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -141,7 +145,7 @@ export default function NewTransactionPage() {
                 value={watch("category")}
                 onValueChange={(v) => setValue("category", v)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="cursor-pointer">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,6 +172,7 @@ export default function NewTransactionPage() {
               <Label htmlFor="date">Tarih</Label>
               <DatePickerField
                 id="date"
+                className="cursor-pointer"
                 value={watch("date")}
                 onChange={(v) => setValue("date", v, { shouldValidate: true })}
               />
@@ -179,10 +184,19 @@ export default function NewTransactionPage() {
             </div>
 
             <div className="flex gap-2 pt-2">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="cursor-pointer"
+              >
                 {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
               </Button>
-              <Button type="button" variant="outline" asChild>
+              <Button
+                type="button"
+                variant="outline"
+                asChild
+                className="cursor-pointer"
+              >
                 <Link href="/transactions">İptal</Link>
               </Button>
             </div>

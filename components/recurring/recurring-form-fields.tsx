@@ -96,10 +96,7 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
           <Select
             value={form.watch("frequency")}
             onValueChange={(v) =>
-              form.setValue(
-                "frequency",
-                v as RecurringFormValues["frequency"],
-              )
+              form.setValue("frequency", v as RecurringFormValues["frequency"])
             }
           >
             <SelectTrigger>
@@ -133,6 +130,7 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
           {variant === "new" ? "İlk / referans tarih" : "Başlangıç tarihi"}
         </Label>
         <DatePickerField
+          className="cursor-pointer"
           value={form.watch("startDate")}
           onChange={(v) =>
             form.setValue("startDate", v, { shouldValidate: true })
@@ -143,6 +141,7 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
       <div className="space-y-2">
         <Label>Bitiş tarihi (isteğe bağlı)</Label>
         <DatePickerField
+          className="cursor-pointer"
           value={form.watch("endDate") ?? ""}
           onChange={(v) => form.setValue("endDate", v)}
         />

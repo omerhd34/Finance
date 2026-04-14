@@ -3,10 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import {
-  newGoalSchema,
-  type NewGoalFormValues,
-} from "@/lib/goals-schema";
+import { newGoalSchema, type NewGoalFormValues } from "@/lib/goals-schema";
 import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -56,7 +53,7 @@ export function NewGoalDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="cursor-pointer">
           <Plus className="h-4 w-4" />
           Yeni Hedef
         </Button>
@@ -65,10 +62,7 @@ export function NewGoalDialog({
         <DialogHeader>
           <DialogTitle>Yeni hedef</DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">
             Tutarlar {currencySymbolLabel(currency)} cinsinden girilir; kayıt TL
             olarak saklanır.
@@ -93,6 +87,7 @@ export function NewGoalDialog({
           <div className="space-y-2">
             <Label>Bitiş tarihi (isteğe bağlı)</Label>
             <DatePickerField
+              className="cursor-pointer"
               value={form.watch("deadline") ?? ""}
               onChange={(v) => form.setValue("deadline", v)}
               allowClear
@@ -100,7 +95,9 @@ export function NewGoalDialog({
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Oluştur</Button>
+            <Button type="submit" className="cursor-pointer">
+              Oluştur
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -4,10 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import {
-  newDebtSchema,
-  type NewDebtFormValues,
-} from "@/lib/debts-schema";
+import { newDebtSchema, type NewDebtFormValues } from "@/lib/debts-schema";
 import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -80,10 +77,7 @@ export function NewDebtDialog({
         <DialogHeader>
           <DialogTitle>Yeni borç / alacak</DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">
             Tutarlar {currencySymbolLabel(currency)} cinsinden; kayıt TL olarak
             saklanır.
@@ -100,8 +94,12 @@ export function NewDebtDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="RECEIVABLE">Bana borçlu (alacak)</SelectItem>
-                <SelectItem value="PAYABLE">Benim borcum</SelectItem>
+                <SelectItem value="RECEIVABLE" className="cursor-pointer">
+                  Bana borçlu (alacak)
+                </SelectItem>
+                <SelectItem value="PAYABLE" className="cursor-pointer">
+                  Benim borcum
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -138,6 +136,7 @@ export function NewDebtDialog({
           <div className="space-y-2">
             <Label>Vade (isteğe bağlı)</Label>
             <DatePickerField
+              className="cursor-pointer"
               value={form.watch("dueDate") ?? ""}
               onChange={(v) => form.setValue("dueDate", v)}
               allowClear
@@ -149,7 +148,9 @@ export function NewDebtDialog({
             <Textarea rows={3} {...form.register("note")} />
           </div>
           <DialogFooter>
-            <Button type="submit">Kaydet</Button>
+            <Button type="submit" className="cursor-pointer">
+              Kaydet
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

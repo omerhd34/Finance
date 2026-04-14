@@ -59,10 +59,7 @@ export function UpdateGoalAmountDialog({
         <DialogHeader>
           <DialogTitle>Mevcut tutarı güncelle</DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Mevcut tutar ({currencySymbolLabel(currency)})</Label>
             <Input
@@ -72,7 +69,9 @@ export function UpdateGoalAmountDialog({
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Kaydet</Button>
+            <Button type="submit" className="cursor-pointer">
+              Kaydet
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

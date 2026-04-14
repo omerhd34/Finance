@@ -121,6 +121,7 @@ export function EditDebtDialog({
           <div className="space-y-2">
             <Label>Vade</Label>
             <DatePickerField
+              className="cursor-pointer"
               value={form.watch("dueDate") ?? ""}
               onChange={(v) => form.setValue("dueDate", v)}
               allowClear
@@ -132,7 +133,9 @@ export function EditDebtDialog({
             <Textarea rows={3} {...form.register("note")} />
           </div>
           <DialogFooter>
-            <Button type="submit">Kaydet</Button>
+            <Button type="submit" className="cursor-pointer">
+              Kaydet
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

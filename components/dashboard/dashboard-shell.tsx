@@ -322,10 +322,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     <SelectValue placeholder="Para birimi" />
                   </SelectTrigger>
                   <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="TL">TL (₺)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="GBP">GBP (£)</SelectItem>
+                    <SelectItem value="TL" className="cursor-pointer">
+                      TL (₺)
+                    </SelectItem>
+                    <SelectItem value="USD" className="cursor-pointer">
+                      USD ($)
+                    </SelectItem>
+                    <SelectItem value="EUR" className="cursor-pointer">
+                      EUR (€)
+                    </SelectItem>
+                    <SelectItem value="GBP" className="cursor-pointer">
+                      GBP (£)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -404,7 +412,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <h1 className="truncate text-lg font-semibold">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" aria-label="Bildirimler">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Bildirimler"
+              className="cursor-pointer"
+            >
               <Bell className="h-5 w-5 text-muted-foreground" />
             </Button>
             <Button
@@ -412,6 +425,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               variant="ghost"
               size="icon"
               disabled={!themeReady}
+              className="cursor-pointer"
               aria-label={
                 themeResolved
                   ? resolvedTheme === "dark"
@@ -430,7 +444,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             >
               {themeResolved ? (
                 resolvedTheme === "dark" ? (
-                  <Moon className="h-5 w-5 text-muted-foreground" />
+                  <Moon className="h-5 w-5 text-muted-foreground " />
                 ) : (
                   <Sun className="h-5 w-5 text-muted-foreground" />
                 )
@@ -443,7 +457,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-9 w-9 rounded-full p-0"
+                  className="relative h-9 w-9 rounded-full p-0 cursor-pointer"
                 >
                   <Avatar className="h-9 w-9">
                     <AvatarImage
@@ -460,11 +474,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/settings">Ayarlar</Link>
+                  <Link href="/settings" className="cursor-pointer">
+                    Ayarlar
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="text-destructive"
+                  className="text-destructive cursor-pointer"
                 >
                   Çıkış yap
                 </DropdownMenuItem>

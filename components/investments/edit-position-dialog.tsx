@@ -87,7 +87,9 @@ export function EditPositionDialog({
           >
             <PositionFormFields form={form} currency={currency} />
             <DialogFooter>
-              <Button type="submit">Kaydet</Button>
+              <Button type="submit" className="cursor-pointer">
+                Kaydet
+              </Button>
             </DialogFooter>
           </form>
         )}
