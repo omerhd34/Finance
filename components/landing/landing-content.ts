@@ -32,7 +32,7 @@ export const LANDING_FEATURES: LandingFeatureItem[] = [
     icon: Target,
   },
   {
-    title: "Borç & Alacak",
+    title: "Borç ve Alacak",
     description:
       "Size borçlu olanları ve sizin borçlarınızı kaydedin, ödemeleri takip edin.",
     icon: HandCoins,
