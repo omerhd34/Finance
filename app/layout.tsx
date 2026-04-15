@@ -19,6 +19,21 @@ export const metadata: Metadata = {
     default: "FinansIQ · Bütçe, yatırım ve harcama takibi",
     template: "%s · FinansIQ",
   },
+  icons: {
+    icon: [
+      { url: "/FinansIQ-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/FinansIQ-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    apple: [
+      {
+        url: "/FinansIQ-apple-touch.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+    shortcut: ["/favicon.ico"],
+  },
   description:
     "Gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri ve içgörüler alın — finansınızı netleştirin.",
   keywords: [
