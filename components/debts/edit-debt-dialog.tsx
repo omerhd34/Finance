@@ -76,7 +76,7 @@ export function EditDebtDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Kaydı düzenle</DialogTitle>
         </DialogHeader>
@@ -102,21 +102,23 @@ export function EditDebtDialog({
             <Label>Kişi / başlık</Label>
             <Input {...form.register("counterparty")} />
           </div>
-          <div className="space-y-2">
-            <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
-            <Input
-              type="number"
-              step="0.01"
-              {...form.register("totalAmount", { valueAsNumber: true })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Ödenen ({currencySymbolLabel(currency)})</Label>
-            <Input
-              type="number"
-              step="0.01"
-              {...form.register("paidAmount", { valueAsNumber: true })}
-            />
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
+              <Input
+                type="number"
+                step="0.01"
+                {...form.register("totalAmount", { valueAsNumber: true })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Ödenen ({currencySymbolLabel(currency)})</Label>
+              <Input
+                type="number"
+                step="0.01"
+                {...form.register("paidAmount", { valueAsNumber: true })}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Vade</Label>

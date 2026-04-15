@@ -49,19 +49,48 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
         </TabsList>
       </Tabs>
 
-      <div className="space-y-2">
-        <Label>Tutar ({currencySymbolLabel(currency)})</Label>
-        <Input
-          type="number"
-          step="0.01"
-          min={0}
-          {...form.register("amount", { valueAsNumber: true })}
-        />
-        {variant === "new" && form.formState.errors.amount && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.amount.message}
-          </p>
-        )}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="space-y-2">
+          <Label>Tutar ({currencySymbolLabel(currency)})</Label>
+          <Input
+            type="number"
+            step="0.01"
+            min={0}
+            {...form.register("amount", { valueAsNumber: true })}
+          />
+          {variant === "new" && form.formState.errors.amount && (
+            <p className="text-sm text-destructive">
+              {form.formState.errors.amount.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>
+            {variant === "new" ? "İlk / referans tarih" : "Başlangıç tarihi"}
+          </Label>
+          <DatePickerField
+            className="cursor-pointer"
+            value={form.watch("startDate")}
+            onChange={(v) =>
+              form.setValue("startDate", v, { shouldValidate: true })
+            }
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Bitiş tarihi (isteğe bağlı)</Label>
+          <DatePickerField
+            className="cursor-pointer"
+            value={form.watch("endDate") ?? ""}
+            onChange={(v) => form.setValue("endDate", v)}
+          />
+          {variant === "new" && form.formState.errors.endDate && (
+            <p className="text-sm text-destructive">
+              {form.formState.errors.endDate.message}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -123,33 +152,6 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
             </p>
           )}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>
-          {variant === "new" ? "İlk / referans tarih" : "Başlangıç tarihi"}
-        </Label>
-        <DatePickerField
-          className="cursor-pointer"
-          value={form.watch("startDate")}
-          onChange={(v) =>
-            form.setValue("startDate", v, { shouldValidate: true })
-          }
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Bitiş tarihi (isteğe bağlı)</Label>
-        <DatePickerField
-          className="cursor-pointer"
-          value={form.watch("endDate") ?? ""}
-          onChange={(v) => form.setValue("endDate", v)}
-        />
-        {variant === "new" && form.formState.errors.endDate && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.endDate.message}
-          </p>
-        )}
       </div>
 
       <div className="space-y-2">

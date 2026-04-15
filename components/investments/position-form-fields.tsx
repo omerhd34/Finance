@@ -139,22 +139,24 @@ export function PositionFormFields({
           {...form.register("quantity", { valueAsNumber: true })}
         />
       </div>
-      <div className="space-y-2">
-        <Label>Alış fiyatı ({currencySymbolLabel(currency)})</Label>
-        <Input
-          type="number"
-          step="0.01"
-          {...form.register("avgCostPerUnit", { valueAsNumber: true })}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Güncel fiyat ({currencySymbolLabel(currency)})</Label>
-        <Input
-          type="text"
-          inputMode="decimal"
-          placeholder={stockPlaceholders ? "Boş bırakılabilir" : undefined}
-          {...form.register("marketPricePerUnit")}
-        />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Alış fiyatı ({currencySymbolLabel(currency)})</Label>
+          <Input
+            type="number"
+            step="0.01"
+            {...form.register("avgCostPerUnit", { valueAsNumber: true })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Güncel fiyat ({currencySymbolLabel(currency)})</Label>
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder={stockPlaceholders ? "Boş bırakılabilir" : undefined}
+            {...form.register("marketPricePerUnit")}
+          />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Not</Label>

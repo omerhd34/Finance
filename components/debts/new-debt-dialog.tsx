@@ -73,7 +73,7 @@ export function NewDebtDialog({
           Yeni kayıt
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Yeni borç / alacak</DialogTitle>
         </DialogHeader>
@@ -112,26 +112,30 @@ export function NewDebtDialog({
               </p>
             )}
           </div>
-          <div className="space-y-2">
-            <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
-            <Input
-              type="number"
-              step="0.01"
-              {...form.register("totalAmount", { valueAsNumber: true })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Şu ana kadar ödenen ({currencySymbolLabel(currency)})</Label>
-            <Input
-              type="number"
-              step="0.01"
-              {...form.register("paidAmount", { valueAsNumber: true })}
-            />
-            {form.formState.errors.paidAmount && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.paidAmount.message}
-              </p>
-            )}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
+              <Input
+                type="number"
+                step="0.01"
+                {...form.register("totalAmount", { valueAsNumber: true })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>
+                Şu ana kadar ödenen ({currencySymbolLabel(currency)})
+              </Label>
+              <Input
+                type="number"
+                step="0.01"
+                {...form.register("paidAmount", { valueAsNumber: true })}
+              />
+              {form.formState.errors.paidAmount && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.paidAmount.message}
+                </p>
+              )}
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Vade (isteğe bağlı)</Label>
