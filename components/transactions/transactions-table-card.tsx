@@ -9,10 +9,7 @@ import {
 } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,6 +24,10 @@ type Props = {
   items: Transaction[];
   loading: boolean;
   currency: string;
+  dateSortOrder: "desc" | "asc" | null;
+  onDateSortToggle: () => void;
+  amountSortOrder: "desc" | "asc" | null;
+  onAmountSortToggle: () => void;
   total: number;
   page: number;
   totalPages: number;
@@ -40,6 +41,8 @@ export function TransactionsTableCard({
   items,
   loading,
   currency,
+  onDateSortToggle,
+  onAmountSortToggle,
   total,
   page,
   totalPages,
@@ -55,10 +58,28 @@ export function TransactionsTableCard({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tarih</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={onDateSortToggle}
+                    className="inline-flex items-center gap-1 text-left transition-colors hover:text-foreground cursor-pointer"
+                    aria-label="Tarihe göre sırala"
+                  >
+                    Tarih
+                  </button>
+                </TableHead>
                 <TableHead>Kategori</TableHead>
                 <TableHead>Açıklama</TableHead>
-                <TableHead>Tutar ({currencySymbolLabel(currency)})</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={onAmountSortToggle}
+                    className="inline-flex items-center gap-1 text-left transition-colors hover:text-foreground cursor-pointer"
+                    aria-label="Tutara göre sırala"
+                  >
+                    Tutar ({currencySymbolLabel(currency)})
+                  </button>
+                </TableHead>
                 <TableHead>Tür</TableHead>
                 <TableHead className="text-right">İşlemler</TableHead>
               </TableRow>

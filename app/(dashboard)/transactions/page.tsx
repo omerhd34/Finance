@@ -37,6 +37,12 @@ function TransactionsPageContent() {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
+  const [dateSortOrder, setDateSortOrder] = useState<"desc" | "asc" | null>(
+    null,
+  );
+  const [amountSortOrder, setAmountSortOrder] = useState<"desc" | "asc" | null>(
+    null,
+  );
 
   useEffect(() => {
     void (async () => {
@@ -72,6 +78,20 @@ function TransactionsPageContent() {
     () => dedupeTransactionsForDisplay(items),
     [items],
   );
+
+  const sortedDisplayItems = useMemo(() => {
+    if (dateSortOrder) {
+      return [...displayItems].sort((a, b) =>
+        dateSortOrder === "desc"
+          ? new Date(b.date).getTime() - new Date(a.date).getTime()
+          : new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+    }
+    if (!amountSortOrder) return displayItems;
+    return [...displayItems].sort((a, b) =>
+      amountSortOrder === "desc" ? b.amount - a.amount : a.amount - b.amount,
+    );
+  }, [displayItems, dateSortOrder, amountSortOrder]);
 
   async function exportCsv() {
     setExporting("csv");
@@ -150,9 +170,19 @@ function TransactionsPageContent() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <TransactionsTableCard
-        items={displayItems}
+        items={sortedDisplayItems}
         loading={loading}
         currency={currency}
+        dateSortOrder={dateSortOrder}
+        onDateSortToggle={() => {
+          setAmountSortOrder(null);
+          setDateSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+        }}
+        amountSortOrder={amountSortOrder}
+        onAmountSortToggle={() => {
+          setDateSortOrder(null);
+          setAmountSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+        }}
         total={total}
         page={page}
         totalPages={totalPages}
