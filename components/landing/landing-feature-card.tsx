@@ -16,7 +16,7 @@ export function LandingFeatureCard({ title, description, icon: Icon }: Props) {
   return (
     <Card
       className={cn(
-        "group rounded-2xl landing-card landing-card--interactive",
+        "group rounded-2xl border border-border bg-card text-card-foreground shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/25 hover:shadow-lg",
       )}
     >
       <CardHeader className="gap-4 p-6 sm:p-7">
@@ -24,10 +24,10 @@ export function LandingFeatureCard({ title, description, icon: Icon }: Props) {
           <Icon className="h-6 w-6 text-emerald-400" aria-hidden />
         </div>
         <div className="space-y-2">
-          <CardTitle className="text-lg font-semibold leading-snug text-white">
+          <CardTitle className="text-lg font-semibold leading-snug text-card-foreground">
             {title}
           </CardTitle>
-          <CardDescription className="text-[15px] leading-relaxed text-zinc-400">
+          <CardDescription className="text-[15px] leading-relaxed text-muted-foreground">
             {description}
           </CardDescription>
         </div>

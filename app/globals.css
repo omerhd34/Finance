@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "react-day-picker/style.css";
-@import "../components/landing/landing.css";
 
 :root {
   --radius: 0.5rem;
@@ -121,7 +120,6 @@ body {
   width: 100%;
 }
 
-/* Kütüphane fit-content kullanıyor; kutu tablodan geniş olunca tablo solda kalıp sağda boşluk oluşuyor */
 .rdp-root .rdp-months {
   width: 100%;
   max-width: none;

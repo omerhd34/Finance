@@ -16,45 +16,58 @@ type Props = {
 
 export function LandingPricingCard({ plan }: Props) {
   const isHighlight = plan.highlighted;
+  const titleClass = "text-card-foreground";
+  const subtitleClass = "text-muted-foreground";
+  const priceClass = "text-card-foreground";
+  const helperTextClass = "text-muted-foreground";
+  const perksClass = "text-muted-foreground";
 
   const cardClass = cn(
     "flex h-full flex-col rounded-2xl",
     isHighlight
-      ? "landing-pricing-card--featured"
-      : "landing-card landing-card--interactive",
+      ? "rounded-2xl border border-emerald-500/35 bg-linear-to-b from-emerald-500/12 to-card text-card-foreground shadow-lg ring-1 ring-emerald-500/25 backdrop-blur-sm transition-all duration-300 md:hover:shadow-xl md:hover:shadow-emerald-900/25"
+      : "border border-border bg-card text-card-foreground shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/25 hover:shadow-lg",
   );
 
   const ctaClass =
-    plan.ctaVariant === "primary" ? "landing-cta-primary" : "landing-cta-muted";
+    plan.ctaVariant === "primary"
+      ? "bg-emerald-500 text-black shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 dark:text-white"
+      : "bg-foreground text-background transition hover:opacity-90";
 
   return (
     <Card className={cardClass}>
       <CardHeader className="space-y-1 pb-2 pt-8 sm:px-8">
         {isHighlight && (
-          <span className="mb-2 inline-block w-fit rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+          <span className="mb-2 inline-block w-fit rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600">
             Önerilen
           </span>
         )}
-        <CardTitle className="text-2xl text-white">{plan.title}</CardTitle>
-        <CardDescription className="min-h-12 text-base leading-relaxed text-zinc-400">
+        <CardTitle className={cn("text-2xl", titleClass)}>
+          {plan.title}
+        </CardTitle>
+        <CardDescription
+          className={cn("min-h-12 text-base leading-relaxed", subtitleClass)}
+        >
           {plan.subtitle}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col px-8 pb-8">
-        <p className="text-3xl font-bold tracking-tight text-white">
+        <p className={cn("text-3xl font-bold tracking-tight", priceClass)}>
           {plan.priceMain}
           {plan.priceSuffix && (
-            <span className="text-lg font-normal text-zinc-500">
+            <span className={cn("text-lg font-normal", helperTextClass)}>
               {plan.priceSuffix}
             </span>
           )}
           {plan.priceNote && (
-            <span className="ml-2 text-lg font-normal text-zinc-500">
+            <span className={cn("ml-2 text-lg font-normal", helperTextClass)}>
               {plan.priceNote}
             </span>
           )}
         </p>
-        <ul className="my-6 space-y-3 text-sm leading-relaxed text-zinc-300">
+        <ul
+          className={cn("my-6 space-y-3 text-sm leading-relaxed", perksClass)}
+        >
           {plan.perks.map((line) => (
             <li key={line} className="flex gap-3">
               <Check
