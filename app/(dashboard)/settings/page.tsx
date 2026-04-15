@@ -193,31 +193,30 @@ export default function SettingsPage() {
             onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
             className="space-y-6"
           >
-            <div className="flex flex-col gap-4">
-              <Label htmlFor="name" className="block">
-                Ad ve Soyad
-              </Label>
-              <Input
-                id="name"
-                className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                {...profileForm.register("name")}
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              <Label htmlFor="email" className="block">
-                E-posta
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={session?.user?.email ?? ""}
-                readOnly
-                className="h-12 min-h-12 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
-                aria-readonly="true"
-              />
-              <p className="text-xs text-muted-foreground">
-                E-posta adresi değiştirilemez.
-              </p>
+            <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+              <div className="flex flex-col gap-4">
+                <Label htmlFor="name" className="block">
+                  Ad ve Soyad
+                </Label>
+                <Input
+                  id="name"
+                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                  {...profileForm.register("name")}
+                />
+              </div>
+              <div className="flex flex-col gap-4">
+                <Label htmlFor="email" className="block">
+                  E-posta
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={session?.user?.email ?? ""}
+                  readOnly
+                  className="h-12 min-h-12 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
+                  aria-readonly="true"
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-4">
               <Label htmlFor="phone-local" className="block">
@@ -421,23 +420,25 @@ export default function SettingsPage() {
                   {...passwordForm.register("currentPassword")}
                 />
               </div>
-              <div className="flex flex-col gap-4">
-                <Label className="block">Yeni şifre</Label>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                  {...passwordForm.register("newPassword")}
-                />
-              </div>
-              <div className="flex flex-col gap-4">
-                <Label className="block">Yeni şifre tekrar</Label>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                  {...passwordForm.register("confirmPassword")}
-                />
+              <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+                <div className="flex flex-col gap-4">
+                  <Label className="block">Yeni şifre</Label>
+                  <Input
+                    type="password"
+                    autoComplete="new-password"
+                    className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                    {...passwordForm.register("newPassword")}
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <Label className="block">Yeni şifre tekrar</Label>
+                  <Input
+                    type="password"
+                    autoComplete="new-password"
+                    className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
+                    {...passwordForm.register("confirmPassword")}
+                  />
+                </div>
               </div>
               {passwordForm.formState.errors.root && (
                 <p className="text-sm text-destructive">
