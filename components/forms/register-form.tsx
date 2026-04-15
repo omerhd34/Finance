@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
@@ -20,6 +23,8 @@ import { apiClient } from "@/lib/api-client";
 
 export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -88,6 +93,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             className="w-full cursor-pointer"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           >
+            <FcGoogle className="h-5 w-5" />
             Google ile kayıt
           </Button>
         )}
@@ -123,12 +129,28 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Şifre</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              {...register("password")}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="pr-10"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
+                aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-sm text-destructive">
                 {errors.password.message}
@@ -137,12 +159,36 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Şifre tekrar</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              {...register("confirmPassword")}
-            />
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="pr-10"
+                {...register("confirmPassword")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
+                aria-label={
+                  showConfirmPassword
+                    ? "Şifre tekrarını gizle"
+                    : "Şifre tekrarını göster"
+                }
+                title={
+                  showConfirmPassword
+                    ? "Şifre tekrarını gizle"
+                    : "Şifre tekrarını göster"
+                }
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
             {errors.confirmPassword && (
               <p className="text-sm text-destructive">
                 {errors.confirmPassword.message}

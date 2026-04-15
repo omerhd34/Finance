@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
@@ -19,6 +22,7 @@ import {
 
 export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -57,6 +61,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             className="w-full cursor-pointer"
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           >
+            <FcGoogle className="h-5 w-5" />
             Google ile giriş
           </Button>
         )}
@@ -85,12 +90,28 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Şifre</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              {...register("password")}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                className="pr-10"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
+                aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-sm text-destructive">
                 {errors.password.message}

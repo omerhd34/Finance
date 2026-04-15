@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { LoginForm } from "@/components/forms/login-form";
 
 export default function LoginPage() {
@@ -10,9 +11,16 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f0f0f] px-4 py-12">
       <Link
         href="/"
-        className="mb-8 text-xl font-bold text-white hover:text-primary"
+        className="mb-8 inline-flex items-center gap-2 text-white transition hover:opacity-90"
       >
-        ← FinansIQ
+        <Image
+          src="/FinansIQ-192.png"
+          alt="FinansIQ logosu"
+          width={164}
+          height={44}
+          className="h-11 w-auto"
+          priority
+        />
       </Link>
       <LoginForm googleEnabled={googleEnabled} />
     </div>
