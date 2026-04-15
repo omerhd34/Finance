@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -12,7 +13,6 @@ import {
   ChevronRight,
   HandCoins,
   LayoutDashboard,
-  LineChart,
   Menu,
   Moon,
   PieChart,
@@ -195,7 +195,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <>
         {collapsed ? (
           <div className="flex shrink-0 flex-col items-center gap-2 border-b border-border py-3">
-            <LineChart className="h-8 w-8 shrink-0 text-primary" />
+            <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition">
+              <Image
+                src="/FinansIQ-192.png"
+                alt="FinansIQ logosu"
+                width={36}
+                height={36}
+                className="h-9 w-9 object-cover"
+                priority
+              />
+            </span>
             <Button
               type="button"
               variant="ghost"
@@ -209,8 +218,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-3">
-            <LineChart className="h-8 w-8 shrink-0 text-primary" />
-            <span className="min-w-0 flex-1 truncate text-lg font-bold tracking-tight">
+            <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition group-hover:ring-emerald-500/40">
+              <Image
+                src="/FinansIQ-192.png"
+                alt="FinansIQ logosu"
+                width={44}
+                height={44}
+                className="h-11 w-11 shrink-0 object-cover"
+                priority
+              />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight text-sidebar-foreground">
               FinansIQ
             </span>
             <Button
