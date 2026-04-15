@@ -19,7 +19,6 @@ export function DebtsPageHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h2 className="text-lg font-semibold">Borç &amp; Alacak</h2>
         <p className="text-sm text-muted-foreground">
           Sana borçlu olanları ve senin borçlarını tek yerden takip et.
         </p>

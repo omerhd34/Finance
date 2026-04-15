@@ -109,12 +109,6 @@ export function NotificationsPageClient() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Bildirimler</h2>
-          <p className="text-sm text-muted-foreground">
-            Bütçe ve diğer uyarılarınız burada listelenir.
-          </p>
-        </div>
         {unreadCount > 0 && (
           <Button
             type="button"

@@ -3,11 +3,11 @@
 export function RecurringPageIntro() {
   return (
     <div>
-      <h2 className="text-xl font-semibold">Tekrarlayan işlemler</h2>
       <p className="text-sm text-muted-foreground">
-        Kira, abonelik veya maaş gibi düzenli hareketleri tanımlayın. Otomatik
-        modda vadesi gelince işlem kaydı oluşur; hatırlatıcı modda sizi uyarır,
-        kaydı siz onaylarsınız.
+        Kira, abonelik ve maaş gibi düzenli işlemleri tek seferde tanımlayın.
+        Otomatik modda vade günü geldiğinde işlem kaydı sistem tarafından
+        oluşturulur; hatırlatıcı modda ise size bildirim gönderilir ve kaydı siz
+        onaylayarak eklersiniz.
       </p>
     </div>
   );

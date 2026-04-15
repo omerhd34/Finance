@@ -21,7 +21,6 @@ export function InvestmentsPageHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h2 className="text-lg font-semibold">Hisse ve Altın</h2>
         <p className="text-sm text-muted-foreground">
           BIST hisseleri ve gram altın pozisyonlarınızı takip edin. Güncel fiyat
           alanına bugünkü kuru girebilirsiniz (otomatik kotasyon yakında).
