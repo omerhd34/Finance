@@ -7,10 +7,7 @@ function escapeHtml(text: string): string {
 }
 
 function appBaseUrl(): string {
-  const u =
-    process.env.NEXTAUTH_URL?.trim() ||
-    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    "http://localhost:3000";
+  const u = process.env.NEXTAUTH_URL?.trim() || "http://localhost:3000";
   return u.replace(/\/$/, "");
 }
 
