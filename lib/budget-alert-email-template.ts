@@ -61,7 +61,7 @@ export function buildBudgetAlertEmailHtml(opts: {
         <table role="presentation" width="100%" style="max-width:560px;border-collapse:collapse;">
           <tr>
             <td style="padding:0 0 20px 0;text-align:center;">
-              <span style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#0f172a;">FinansIQ</span>
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#0f172a;">IQfinansAI</span>
             </td>
           </tr>
           <tr>
@@ -127,7 +127,7 @@ export function buildBudgetAlertEmailHtml(opts: {
           <tr>
             <td style="padding:24px 8px 0 8px;text-align:center;">
               <p style="margin:0;font-size:11px;color:#a1a1aa;line-height:1.5;">
-                © ${new Date().getFullYear()} FinansIQ · Kategori bütçesi bildirimi<br />
+                © ${new Date().getFullYear()} IQfinansAI · Kategori bütçesi bildirimi<br />
                 <a href="${base}" style="color:#71717a;text-decoration:underline;">Uygulamaya git</a>
               </p>
             </td>

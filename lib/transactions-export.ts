@@ -37,7 +37,7 @@ export function downloadTransactionsCsv(
     `Tutar (${currencySymbolLabel(currency)})`,
     "Tür",
   ];
-  const brandRow = ["FinansIQ", "", "", "", ""].join(sep);
+  const brandRow = ["IQfinansAI", "", "", "", ""].join(sep);
   const lines = [
     brandRow,
     header.join(sep),

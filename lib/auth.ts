@@ -25,7 +25,7 @@ function resolveAuthSecret(): string | undefined {
   const fromEnv = process.env.AUTH_SECRET;
   if (fromEnv) return fromEnv;
   if (process.env.NODE_ENV === "development") {
-    return "finansiq-local-dev-secret-set-env-in-production";
+    return "iqfinansai-local-dev-secret-set-env-in-production";
   }
   return undefined;
 }

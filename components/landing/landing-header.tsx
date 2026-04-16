@@ -33,7 +33,7 @@ export function LandingHeader() {
           <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition group-hover:ring-emerald-500/40">
             <Image
               src="/FinansIQ-192.png"
-              alt="FinansIQ logosu"
+              alt="IQfinansAI logosu"
               width={44}
               height={44}
               className="h-11 w-11 object-cover"
@@ -41,7 +41,7 @@ export function LandingHeader() {
             />
           </span>
           <span className="text-foreground transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
-            FinansIQ
+            IQfinansAI
           </span>
         </Link>
         <nav

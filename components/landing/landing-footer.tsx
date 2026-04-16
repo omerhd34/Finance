@@ -28,7 +28,7 @@ export function LandingFooter() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 sm:flex-row sm:px-6">
         <p className="text-sm text-muted-foreground/90">
           © {year}{" "}
-          <span className="font-semibold text-foreground">FinansIQ</span>. Tüm
+          <span className="font-semibold text-foreground">IQfinansAI</span>. Tüm
           hakları saklıdır.
         </p>
         <nav

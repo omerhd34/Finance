@@ -15,7 +15,7 @@ export default function LoginPage() {
       >
         <Image
           src="/FinansIQ-192.png"
-          alt="FinansIQ logosu"
+          alt="IQfinansAI logosu"
           width={164}
           height={44}
           className="h-11 w-auto"

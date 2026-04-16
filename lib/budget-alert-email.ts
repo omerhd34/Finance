@@ -14,7 +14,7 @@ export async function sendBudgetAlertEmail(params: {
   }
 
   const from =
-    process.env.RESEND_FROM?.trim() ?? "FinansIQ <onboarding@resend.dev>";
+    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",

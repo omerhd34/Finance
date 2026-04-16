@@ -51,7 +51,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
     <Card className="mx-auto w-full max-w-md border-border bg-card">
       <CardHeader>
         <CardTitle>Giriş yap</CardTitle>
-        <CardDescription>FinansIQ hesabınıza erişin.</CardDescription>
+        <CardDescription>IQfinansAI hesabınıza erişin.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {googleEnabled && (

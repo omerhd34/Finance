@@ -35,7 +35,7 @@ export async function downloadTransactionsPdf(
     pageOrientation: "landscape",
     pageMargins: [40, 50, 40, 50],
     content: [
-      { text: "FinansIQ", style: "brand" },
+      { text: "IQfinansAI", style: "brand" },
       { text: "İşlemler", style: "header", margin: [0, 6, 0, 0] },
       {
         text: "Oluşturulma: " + new Date().toLocaleString("tr-TR"),

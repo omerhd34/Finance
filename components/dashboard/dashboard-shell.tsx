@@ -51,7 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const SIDEBAR_COLLAPSED_KEY = "finansiq-sidebar-collapsed";
+const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -86,7 +86,7 @@ function titleForPath(path: string): string {
     .filter((k) => k !== "/dashboard")
     .sort((a, b) => b.length - a.length)
     .find((k) => path.startsWith(k));
-  return prefix ? (titles[prefix] ?? "FinansIQ") : "FinansIQ";
+  return prefix ? (titles[prefix] ?? "IQfinansAI") : "IQfinansAI";
 }
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -198,7 +198,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition">
               <Image
                 src="/FinansIQ-192.png"
-                alt="FinansIQ logosu"
+                alt="IQfinansAI logosu"
                 width={36}
                 height={36}
                 className="h-9 w-9 object-cover"
@@ -221,7 +221,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition group-hover:ring-emerald-500/40">
               <Image
                 src="/FinansIQ-192.png"
-                alt="FinansIQ logosu"
+                alt="IQfinansAI logosu"
                 width={44}
                 height={44}
                 className="h-11 w-11 shrink-0 object-cover"
@@ -229,7 +229,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               />
             </span>
             <span className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight text-sidebar-foreground">
-              FinansIQ
+              IQfinansAI
             </span>
             <Button
               type="button"

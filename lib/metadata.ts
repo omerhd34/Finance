@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 
-const siteUrl = process.env.NEXTAUTH_URL || "https://finansiq.com";
+const siteUrl = process.env.NEXTAUTH_URL || "https://iqfinansai.com";
 
 export const siteMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "FinansIQ | Yapay Zeka Destekli Finans Yönetimi",
-    template: "%s | FinansIQ",
+    default: "IQfinansAI | Yapay Zeka Destekli Finans Yönetimi",
+    template: "%s | IQfinansAI",
   },
   description:
     "Gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri ve içgörüler alın — finansınızı netleştirin.",
 
-  applicationName: "FinansIQ",
+  applicationName: "IQfinansAI",
   authors: [
     {
       name: "Ömer Halis Demir",
@@ -30,7 +30,7 @@ export const siteMetadata: Metadata = {
     "harcama analizi",
     "yatırım yönetimi",
     "yapay zeka finans",
-    "FinansIQ",
+    "IQfinansAI",
     "para yönetimi",
     "borç yönetimi",
     "masraf takibi",
@@ -58,11 +58,11 @@ export const siteMetadata: Metadata = {
   },
 
   openGraph: {
-    title: "FinansIQ | Yapay Zeka Destekli Finans Yönetimi",
+    title: "IQfinansAI | Yapay Zeka Destekli Finans Yönetimi",
     description:
       "Gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri alın.",
     url: siteUrl,
-    siteName: "FinansIQ",
+    siteName: "IQfinansAI",
     locale: "tr_TR",
     type: "website",
     images: [
@@ -70,14 +70,14 @@ export const siteMetadata: Metadata = {
         url: "/FinansIQ-1200.png",
         width: 1200,
         height: 630,
-        alt: "FinansIQ Açılış Görseli",
+        alt: "IQfinansAI Açılış Görseli",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "FinansIQ | Finansınızı Netleştirin",
+    title: "IQfinansAI | Finansınızı Netleştirin",
     description:
       "Gelir ve giderlerinizi tek panelden yönetin; yapay zeka ile harcama içgörüleri alın.",
     images: ["/FinansIQ-1200.png"],

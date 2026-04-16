@@ -83,7 +83,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
     <Card className="mx-auto w-full max-w-md border-border bg-card">
       <CardHeader>
         <CardTitle>Hesap oluştur</CardTitle>
-        <CardDescription>FinansIQ ile ücretsiz başlayın.</CardDescription>
+        <CardDescription>IQfinansAI ile ücretsiz başlayın.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {googleEnabled && (
