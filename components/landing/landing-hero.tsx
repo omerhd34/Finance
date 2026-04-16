@@ -13,7 +13,7 @@ const trustItems = [
 const landingEyebrow =
   "inline-flex items-center rounded-full border border-emerald-500/35 bg-white/80 px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-700 shadow-sm ring-1 ring-emerald-500/20 backdrop-blur-sm dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30";
 const landingCtaPrimary =
-  "bg-emerald-500 text-black shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 dark:text-white";
+  "bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50";
 
 export function LandingHero() {
   return (
@@ -31,10 +31,10 @@ export function LandingHero() {
           fill
           priority
           quality={100}
-          className="object-cover object-center opacity-45 saturate-75 dark:opacity-100 dark:saturate-100"
+          className="object-cover object-center opacity-100 saturate-100"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-white/72 dark:bg-black/55" />
+        <div className="absolute inset-0 bg-black/55" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
