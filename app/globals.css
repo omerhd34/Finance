@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "react-day-picker/style.css";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: dark;
   --radius: 0.5rem;
-  --app-bg: #0a0a0a;
+  --app-bg: #131313;
   --app-fg: #ffffff;
   --app-card: #111111;
   --app-card-fg: #ffffff;
@@ -30,7 +32,7 @@
 
 .light {
   color-scheme: light;
-  --app-bg: #f8fafc;
+  --app-bg: #f4f4f4;
   --app-fg: #0f172a;
   --app-card: #ffffff;
   --app-card-fg: #0f172a;
@@ -53,10 +55,6 @@
   --app-sidebar: #f1f5f9;
   --app-income: #15803d;
   --app-expense: #dc2626;
-}
-
-.dark {
-  color-scheme: dark;
 }
 
 @theme inline {
