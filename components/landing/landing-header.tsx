@@ -3,10 +3,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
+import { BrandLockup } from "@/components/branding/brand-lockup";
 
 export function LandingHeader() {
   const { setTheme, resolvedTheme } = useTheme();
@@ -30,19 +30,7 @@ export function LandingHeader() {
           href="/"
           className="group flex items-center gap-2.5 text-xl font-semibold tracking-tight text-foreground"
         >
-          <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition group-hover:ring-emerald-500/40">
-            <Image
-              src="/FinansIQ-192.png"
-              alt="IQfinansAI logosu"
-              width={44}
-              height={44}
-              className="h-11 w-11 object-cover"
-              priority
-            />
-          </span>
-          <span className="text-foreground transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
-            IQfinansAI
-          </span>
+          <BrandLockup variant="landing" />
         </Link>
         <nav
           className="flex items-center gap-2 sm:gap-3"

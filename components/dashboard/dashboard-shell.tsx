@@ -30,6 +30,7 @@ import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { NotificationsPopover } from "@/components/notifications/notifications-popover";
+import { BrandLockup } from "@/components/branding/brand-lockup";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -218,19 +219,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-3">
-            <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition group-hover:ring-emerald-500/40">
-              <Image
-                src="/FinansIQ-192.png"
-                alt="IQfinansAI logosu"
-                width={44}
-                height={44}
-                className="h-11 w-11 shrink-0 object-cover"
-                priority
-              />
-            </span>
-            <span className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight text-sidebar-foreground">
-              IQfinansAI
-            </span>
+            <BrandLockup variant="sidebar" className="flex-1" />
             <Button
               type="button"
               variant="ghost"
