@@ -30,9 +30,9 @@ export function LandingHero() {
           alt="Finance"
           fill
           priority
-          quality={100}
+          quality={75}
           className="object-cover object-center opacity-100 saturate-100"
-          sizes="100vw"
+          sizes="75vw"
         />
         <div className="absolute inset-0 bg-black/55" />
       </div>
