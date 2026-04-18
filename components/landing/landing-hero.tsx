@@ -10,15 +10,10 @@ const trustItems = [
   "Borç/alacak yönetimi",
 ];
 
-const landingEyebrow =
-  "inline-flex items-center rounded-full border border-emerald-500/35 bg-white/80 px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-700 shadow-sm ring-1 ring-emerald-500/20 backdrop-blur-sm dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30";
-const landingCtaPrimary =
-  "bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50";
-
 export function LandingHero() {
   return (
     <section
-      className="relative flex min-h-[calc(100dvh-4rem)] items-center border-b border-border/60 px-4 pb-24 pt-16 md:pb-32 md:pt-20"
+      className="relative flex min-h-[calc(100dvh)] items-center border-b border-border/60 px-4 pb-12 pt-20 md:pb-32 md:pt-20"
       aria-labelledby="landing-hero-heading"
     >
       <div
@@ -32,17 +27,19 @@ export function LandingHero() {
           priority
           quality={75}
           className="object-cover object-center opacity-100 saturate-100"
-          sizes="75vw"
+          sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-black/60 md:bg-black/55" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <p className={landingEyebrow}>Kişisel finans asistanınız</p>
+        <p className="inline-flex items-center rounded-full border border-emerald-500/35 bg-white/80 px-3.5 py-1 text-[10px] md:text-xs font-semibold tracking-wide text-emerald-700 shadow-sm ring-1 ring-emerald-500/20 backdrop-blur-sm dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30">
+          Kişisel finans asistanınız
+        </p>
 
         <h1
           id="landing-hero-heading"
-          className="mt-6 text-balance text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.1]"
+          className="mt-6 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.1]"
         >
           Paranı{" "}
           <span className="bg-linear-to-r from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
@@ -51,16 +48,16 @@ export function LandingHero() {
           yönet
         </h1>
 
-        <p className="mx-auto mt-6 max-w-xl text-pretty text-lg leading-relaxed text-white/85 md:text-xl">
+        <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg md:text-xl">
           Gelir ve giderlerinizi tek yerden izleyin, hedefler koyun ve yapay
           zekâ destekli önerilerle tasarruf fırsatlarını kaçırmayın.
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
           <Button
             size="lg"
             asChild
-            className={`${landingCtaPrimary} group h-12 rounded-full px-8 text-base font-semibold`}
+            className="bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 group h-12 w-full rounded-full px-8 text-base font-semibold sm:w-auto"
           >
             <Link href="/register">
               Ücretsiz başla
@@ -74,26 +71,25 @@ export function LandingHero() {
             variant="outline"
             size="lg"
             asChild
-            className="border-border bg-background text-foreground shadow-sm transition hover:bg-accent hover:text-accent-foreground h-12 rounded-full border px-8 text-base cursor-pointer"
+            className="border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 h-12 w-full rounded-full border px-8 text-base cursor-pointer sm:w-auto"
           >
             <Link href="/login">Hesabım var</Link>
           </Button>
         </div>
-
         <ul
-          className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/80"
+          className="mt-10 grid grid-cols-2 justify-center gap-2 text-xs sm:mt-14 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:text-sm"
           aria-label="Öne çıkanlar"
         >
           {trustItems.map((label) => (
             <li
               key={label}
-              className="flex items-center gap-2 rounded-full bg-black/25 px-2.5 py-1 backdrop-blur-[1px]"
+              className="flex items-center justify-center gap-2 rounded-full bg-black/30 px-3 py-1.5 backdrop-blur-sm sm:bg-black/25 sm:px-2.5 sm:py-1"
             >
               <ShieldCheck
-                className="h-4 w-4 shrink-0 text-emerald-400"
+                className="h-3.5 w-3.5 shrink-0 text-emerald-400"
                 aria-hidden
               />
-              <span className="text-white/80">{label}</span>
+              <span className="text-white/90 whitespace-nowrap">{label}</span>
             </li>
           ))}
         </ul>
