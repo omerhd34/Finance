@@ -55,7 +55,7 @@ import {
 const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Ana Panel", icon: LayoutDashboard },
   { href: "/transactions", label: "İşlemler", icon: Wallet },
   { href: "/recurring", label: "Tekrarlayan", icon: CalendarClock },
   { href: "/goals", label: "Hedefler", icon: PiggyBank },
@@ -191,7 +191,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function renderSidebar(collapsed: boolean) {
+  function renderSidebar(collapsed: boolean, isMobile: boolean = false) {
     return (
       <>
         {collapsed ? (
@@ -218,18 +218,30 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
         ) : (
-          <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-3">
+          <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
             <BrandLockup variant="sidebar" className="flex-1" />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="hidden shrink-0 cursor-pointer lg:inline-flex"
-              onClick={toggleSidebarCollapsed}
-              aria-label="Kenar çubuğunu daralt"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
+            {isMobile ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 cursor-pointer"
+                onClick={() => setOpen(false)}
+                aria-label="Kapat"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="hidden shrink-0 cursor-pointer lg:inline-flex"
+                onClick={toggleSidebarCollapsed}
+                aria-label="Kenar çubuğunu daralt"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            )}
           </div>
         )}
         <nav
@@ -399,17 +411,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             onClick={() => setOpen(false)}
           />
           <div className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border bg-sidebar shadow-xl">
-            <div className="flex h-14 items-center justify-end border-b border-border px-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setOpen(false)}
-                aria-label="Kapat"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            {renderSidebar(false)}
+            {renderSidebar(false, true)}
           </div>
         </div>
       )}
