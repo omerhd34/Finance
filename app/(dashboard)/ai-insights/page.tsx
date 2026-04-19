@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { apiClient } from "@/lib/api-client";
 import { sectionsFromMarkdown } from "@/lib/ai-insights-parse";
@@ -40,20 +41,48 @@ export default function AiInsightsPage() {
     [markdown],
   );
 
+  if (!planPremium) {
+    const premiumAiPerks = [
+      "Son 30 günlük işlemlerinizin kategori ve tutar bazında yapay zekâ ile yorumlanması",
+      "Kayıtlı borç ve alacaklarınızın aynı raporda özetlenmesi ve ödeme / tahsilat önceliği önerileri",
+      "Somut tasarruf maddeleri ve bir sonraki ay için bütçe çerçevesi metni",
+      "Tek tıkla yeni analiz; sonuçlar başlıklar ve paragraflar halinde Markdown olarak sunulur.",
+    ];
+
+    return (
+      <div className="mx-auto w-full max-w-6xl space-y-6">
+        <AiInsightsHero />
+        <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
+          <p className="text-sm font-semibold text-foreground">
+            Premium ile neler kazanırsınız?
+          </p>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+            {premiumAiPerks.map((line) => (
+              <li key={line} className="flex gap-3">
+                <Check
+                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                  aria-hidden
+                />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <PremiumPlanNotice title="AI Analiz Premium plandadır." />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-6xl space-y-8">
       <AiInsightsHero />
-
-      {!planPremium ? (
-        <PremiumPlanNotice title="AI Analiz Premium plandadır." />
-      ) : null}
 
       <AiInsightsRunControls
         hasResult={markdown != null}
         loading={loading}
         error={error}
         onRun={run}
-        planLocked={!planPremium}
+        planLocked={false}
       />
 
       {loading ? <AiInsightsLoadingSkeleton /> : null}

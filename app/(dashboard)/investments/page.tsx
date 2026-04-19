@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
 import { displayAmountToTry } from "@/lib/currency";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
 import { parseOptionalUnitPrice } from "@/lib/investment-unit-price";
@@ -123,15 +124,33 @@ export default function InvestmentsPage() {
   }
 
   if (!planPremium) {
+    const premiumInvestmentPerks = [
+      "Hisse senedi ve altın (gram, çeyrek vb.) pozisyonlarını ekleyip düzenlemek veya silmek",
+      "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
+      "Pozisyon bazında not tutmak ve fiyatları güncel tutmak",
+      "Ana panelde yatırım Kar/Zarar kartı ile hisse ve altın özetlerini birlikte görmek",
+    ];
+
     return (
       <div className="mx-auto w-full max-w-6xl space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Yatırım
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Hisse ve altın pozisyonlarınızı takip edin.
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Yatırım
+        </h1>
+        <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
+          <p className="text-sm font-semibold text-foreground">
+            Premium ile neler kazanırsınız?
           </p>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+            {premiumInvestmentPerks.map((line) => (
+              <li key={line} className="flex gap-3">
+                <Check
+                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                  aria-hidden
+                />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
         </div>
         <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
       </div>
