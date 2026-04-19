@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, type RegisterInput } from "@/lib/validations";
+import {
+  resetPasswordSchema,
+  type ResetPasswordInput,
+} from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,142 +20,91 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import axios from "axios";
 import { apiClient } from "@/lib/api-client";
 
-export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
+export function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tokenFromUrl = searchParams.get("token") ?? "";
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<ResetPasswordInput>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      token: tokenFromUrl,
       password: "",
       confirmPassword: "",
     },
   });
 
-  async function onSubmit(data: RegisterInput) {
+  useEffect(() => {
+    setValue("token", tokenFromUrl);
+  }, [tokenFromUrl, setValue]);
+
+  async function onSubmit(data: ResetPasswordInput) {
     try {
-      await apiClient.post("/api/auth/register", {
-        name: data.name,
-        email: data.email,
+      await apiClient.post("/api/auth/reset-password", {
+        token: data.token,
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
     } catch (e: unknown) {
-      if (axios.isAxiosError(e) && e.response?.data) {
-        const data = e.response.data as { error?: unknown };
-        if (typeof data.error === "string") {
-          setError("root", { message: data.error });
-          return;
-        }
-        if (
-          data.error &&
-          typeof data.error === "object" &&
-          !Array.isArray(data.error)
-        ) {
-          const fe = data.error as Record<string, string[] | undefined>;
-          const keys = [
-            "name",
-            "email",
-            "password",
-            "confirmPassword",
-          ] as const;
-          let anyField = false;
-          for (const key of keys) {
-            const first = fe[key]?.[0];
-            if (typeof first === "string" && first.length > 0) {
-              setError(key, { message: first });
-              anyField = true;
-            }
-          }
-          if (!anyField) {
-            setError("root", {
-              message: "Kayıt oluşturulamadı. Bilgileri kontrol edin.",
-            });
-          }
-          return;
-        }
-      }
-      setError("root", {
-        message: "Kayıt oluşturulamadı. Tekrar deneyin.",
-      });
+      const ax =
+        e && typeof e === "object" && "response" in e
+          ? (e as { response?: { data?: { error?: unknown } } }).response?.data
+              ?.error
+          : undefined;
+      const msg =
+        typeof ax === "string"
+          ? ax
+          : "Şifre güncellenemedi. Bağlantıyı kontrol edin veya yeni istek oluşturun.";
+      setError("root", { message: msg });
       return;
     }
-    const sign = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
-    if (sign?.error) {
-      setError("root", {
-        message: "Kayıt tamam; giriş için lütfen manuel olarak deneyin.",
-      });
-      router.push("/login");
-      return;
-    }
-    router.push("/dashboard");
+    router.push("/login?reset=ok");
     router.refresh();
+  }
+
+  if (!tokenFromUrl) {
+    return (
+      <Card className="mx-auto w-full max-w-md border-border bg-card">
+        <CardHeader>
+          <CardTitle>Geçersiz bağlantı</CardTitle>
+          <CardDescription>
+            Şifre sıfırlama bağlantısı eksik veya hatalı. Lütfen e-postadaki
+            bağlantıyı kullanın veya yeni bir sıfırlama isteği oluşturun.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild className="w-full cursor-pointer">
+            <Link href="/forgot-password">Yeni sıfırlama bağlantısı iste</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
     <Card className="mx-auto w-full max-w-md border-border bg-card">
       <CardHeader>
-        <CardTitle>Hesap oluştur</CardTitle>
-        <CardDescription>IQfinansAI ile ücretsiz başlayın.</CardDescription>
+        <CardTitle>Yeni şifre belirle</CardTitle>
+        <CardDescription>
+          Hesabın için yeni bir şifre gir. En az 8 karakter olsun.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {googleEnabled && (
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full cursor-pointer"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          >
-            <FcGoogle className="h-5 w-5" />
-            Google ile kayıt
-          </Button>
-        )}
-        {googleEnabled && (
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">veya</span>
-            </div>
-          </div>
-        )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <input type="hidden" {...register("token")} />
           <div className="space-y-2">
-            <Label htmlFor="name">Ad ve Soyad</Label>
-            <Input id="name" autoComplete="name" {...register("name")} />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">E-posta</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Şifre</Label>
+            <Label htmlFor="password">Yeni şifre</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -184,7 +134,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Şifre tekrar</Label>
+            <Label htmlFor="confirmPassword">Yeni şifre tekrar</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
@@ -229,13 +179,12 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             className="w-full cursor-pointer"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Kaydediliyor..." : "Kayıt ol"}
+            {isSubmitting ? "Kaydediliyor..." : "Şifreyi güncelle"}
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground">
-          Zaten hesabın var mı?{" "}
           <Link href="/login" className="text-primary hover:underline">
-            Giriş yap
+            Giriş sayfasına dön
           </Link>
         </p>
       </CardContent>

@@ -18,6 +18,25 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "E-posta zorunludur")
+    .email("Geçerli bir e-posta girin")
+    .transform((s) => s.trim().toLowerCase()),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "Geçersiz bağlantı"),
+    password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Şifreler eşleşmiyor",
+    path: ["confirmPassword"],
+  });
+
 export const transactionCreateSchema = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.number().positive("Tutar pozitif olmalı"),
@@ -135,11 +154,24 @@ export const debtUpdateSchema = z
   })
   .partial();
 
+const profileAvatarDataUrlSchema = z
+  .string()
+  .min(1)
+  .max(120_000, "Profil fotoğrafı çok büyük")
+  .refine(
+    (s) =>
+      s.startsWith("data:image/jpeg;base64,") ||
+      s.startsWith("data:image/png;base64,") ||
+      s.startsWith("data:image/webp;base64,"),
+    { message: "Geçersiz profil görseli" },
+  );
+
 export const profileUpdateSchema = z.object({
   name: z.string().min(1, "Ad ve soyad gerekli").optional(),
   phone: z.string().max(48, "En fazla 48 karakter").optional(),
   currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
   notificationsEnabled: z.boolean().optional(),
+  image: z.union([profileAvatarDataUrlSchema, z.null()]).optional(),
 });
 
 export const passwordChangeSchema = z
@@ -211,6 +243,8 @@ export const investmentUpdateSchema = z
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>;
 export type RecurringCreateInput = z.infer<typeof recurringCreateSchema>;
 export type GoalCreateInput = z.infer<typeof goalCreateSchema>;

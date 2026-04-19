@@ -84,6 +84,31 @@ export const budgetAlertLog: BudgetAlertLogDelegate = (
   prisma as unknown as { budgetAlertLog: BudgetAlertLogDelegate }
 ).budgetAlertLog;
 
+type PasswordResetTokenRow = {
+  id: string;
+  email: string;
+  tokenHash: string;
+  expiresAt: Date;
+  createdAt: Date;
+};
+
+type PasswordResetTokenDelegate = {
+  deleteMany(args: { where: { email?: string } }): Promise<{ count: number }>;
+  create(args: {
+    data: { email: string; tokenHash: string; expiresAt: Date };
+  }): Promise<PasswordResetTokenRow>;
+  findUnique(args: {
+    where: { tokenHash: string };
+  }): Promise<PasswordResetTokenRow | null>;
+  delete(args: {
+    where: { tokenHash: string };
+  }): Promise<PasswordResetTokenRow>;
+};
+
+export const passwordResetToken: PasswordResetTokenDelegate = (
+  prisma as unknown as { passwordResetToken: PasswordResetTokenDelegate }
+).passwordResetToken;
+
 type CategoryBudgetRow = {
   id: string;
   userId: string;

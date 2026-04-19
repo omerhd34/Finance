@@ -12,6 +12,7 @@ type JwtProfileRow = {
   phone: string | null;
   password: string | null;
   notificationsEnabled: boolean;
+  image: string | null;
 };
 
 const jwtProfileSelect = {
@@ -19,6 +20,7 @@ const jwtProfileSelect = {
   phone: true,
   password: true,
   notificationsEnabled: true,
+  image: true,
 } as const satisfies Record<keyof JwtProfileRow, true>;
 
 function resolveAuthSecret(): string | undefined {
@@ -92,6 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.phone = dbUser.phone ?? null;
           token.hasPassword = Boolean(dbUser.password);
           token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
+          token.picture = dbUser.image ?? null;
         }
       }
       if (trigger === "update" && session && typeof session === "object") {
@@ -101,6 +104,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name?: unknown;
           email?: unknown;
           notificationsEnabled?: unknown;
+          image?: unknown;
         };
         if (typeof s.currency === "string") {
           token.currency = normalizeUserCurrency(s.currency);
@@ -118,6 +122,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (typeof s.notificationsEnabled === "boolean") {
           token.notificationsEnabled = s.notificationsEnabled;
         }
+        if ("image" in s) {
+          if (typeof s.image === "string") {
+            token.picture = s.image;
+          } else if (s.image === null) {
+            token.picture = null;
+          }
+        }
       }
       return token;
     },
@@ -129,6 +140,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.hasPassword = Boolean(token.hasPassword);
         session.user.notificationsEnabled =
           (token.notificationsEnabled as boolean | undefined) !== false;
+        const pic = (token as { picture?: string | null }).picture;
+        if (pic !== undefined) {
+          session.user.image = pic;
+        }
       }
       return session;
     },

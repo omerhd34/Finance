@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -22,6 +22,8 @@ import {
 
 export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const passwordJustReset = searchParams.get("reset") === "ok";
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -54,6 +56,11 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         <CardDescription>IQfinansAI hesabınıza erişin.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {passwordJustReset && (
+          <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-foreground">
+            Şifren güncellendi. Yeni şifrenle giriş yapabilirsin.
+          </p>
+        )}
         {googleEnabled && (
           <Button
             type="button"
@@ -89,7 +96,15 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Şifre</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Şifre</Label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-muted-foreground hover:text-primary hover:underline"
+              >
+                Şifreni mi unuttun?
+              </Link>
+            </div>
             <div className="relative">
               <Input
                 id="password"
