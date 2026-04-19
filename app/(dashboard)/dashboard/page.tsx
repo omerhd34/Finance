@@ -3,7 +3,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { QuickTransactionDialog } from "@/components/dashboard/quick-transaction-dialog";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
 import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
@@ -167,10 +166,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
-        <QuickTransactionDialog onSaved={load} />
-      </div>
-
       {!planPremium ? <DashboardPremiumPromo /> : null}
 
       <DashboardKpiSection
