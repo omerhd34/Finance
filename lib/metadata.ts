@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site-url";
 
-const siteUrl = process.env.NEXTAUTH_URL || "https://iqfinansai.com";
+const siteUrl = getSiteUrl();
+
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
 export const siteMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -10,7 +13,7 @@ export const siteMetadata: Metadata = {
     template: "%s | IQfinansAI",
   },
   description:
-    "Gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri ve içgörüler alın — finansınızı netleştirin.",
+    "IQfinansAI: gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri ve içgörüler alın — finansınızı netleştirin.",
 
   applicationName: "IQfinansAI",
   authors: [
@@ -31,6 +34,9 @@ export const siteMetadata: Metadata = {
     "yatırım yönetimi",
     "yapay zeka finans",
     "IQfinansAI",
+    "iqfinansai",
+    "iq finans ai",
+    "iqfinansai.com",
     "para yönetimi",
     "borç yönetimi",
     "masraf takibi",
@@ -60,7 +66,7 @@ export const siteMetadata: Metadata = {
   openGraph: {
     title: "IQfinansAI | Yapay Zeka Destekli Finans Yönetimi",
     description:
-      "Gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri alın.",
+      "IQfinansAI ile gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri alın.",
     url: siteUrl,
     siteName: "IQfinansAI",
     locale: "tr_TR",
@@ -118,4 +124,12 @@ export const siteMetadata: Metadata = {
       "max-snippet": -1,
     },
   },
+
+  ...(googleVerification
+    ? {
+        verification: {
+          google: googleVerification,
+        },
+      }
+    : {}),
 };

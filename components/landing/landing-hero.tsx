@@ -34,6 +34,10 @@ export function LandingHero() {
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <p className="inline-flex items-center rounded-full border border-emerald-500/35 bg-white/80 px-3.5 py-1 text-[10px] md:text-xs font-semibold tracking-wide text-emerald-700 shadow-sm ring-1 ring-emerald-500/20 backdrop-blur-sm dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30">
+          <span className="font-extrabold tracking-tight">IQfinansAI</span>
+          <span className="mx-1.5 text-emerald-600/70 dark:text-emerald-300/60">
+            ·
+          </span>
           Kişisel finans asistanınız
         </p>
 
@@ -49,7 +53,8 @@ export function LandingHero() {
         </h1>
 
         <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg md:text-xl">
-          Gelir ve giderlerinizi tek yerden izleyin, hedefler koyun ve yapay
+          <strong className="font-semibold text-white">IQfinansAI</strong> ile
+          gelir ve giderlerinizi tek yerden izleyin, hedefler koyun ve yapay
           zekâ destekli önerilerle tasarruf fırsatlarını kaçırmayın.
         </p>
 
