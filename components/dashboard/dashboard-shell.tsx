@@ -333,7 +333,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               className="flex justify-center rounded-lg bg-muted/30 p-1.5"
               title="Ayarlar"
             >
-              <Avatar className="h-9 w-9">
+              <Avatar className="h-7 w-7">
                 <AvatarImage src={session?.user?.image ?? undefined} alt="" />
                 <AvatarFallback className="bg-primary/20 text-primary">
                   {(session?.user?.name ?? session?.user?.email ?? "?")
@@ -344,14 +344,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Link>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="h-9 w-9 cursor-pointer rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"
               title="Çıkış yap"
               aria-label="Çıkış yap"
               onClick={() => void signOut({ callbackUrl: "/" })}
+              className="h-9 w-9 cursor-pointer rounded-lg border-destructive/25 bg-destructive/6 text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4 -scale-x-100" aria-hidden />
             </Button>
           </div>
         ) : (
@@ -400,7 +400,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
               >
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-7 w-7">
                   <AvatarImage src={session?.user?.image ?? undefined} alt="" />
                   <AvatarFallback className="bg-primary/20 text-primary">
                     {(session?.user?.name ?? session?.user?.email ?? "?")
@@ -419,11 +419,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </Link>
               <Button
                 type="button"
-                variant="ghost"
-                className="mt-2 w-full cursor-pointer justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
+                variant="outline"
+                className="mt-2 w-full cursor-pointer justify-start gap-3 rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
                 onClick={() => void signOut({ callbackUrl: "/" })}
               >
-                <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                <LogOut className="h-4 w-4 shrink-0 -scale-x-100" aria-hidden />
                 Çıkış yap
               </Button>
             </div>
