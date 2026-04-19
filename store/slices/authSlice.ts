@@ -8,6 +8,7 @@ export type AuthUser = {
   currency: string;
   phone: string | null;
   notificationsEnabled?: boolean;
+  planTier?: "free" | "premium";
 };
 
 export type AuthState = {

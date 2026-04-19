@@ -59,7 +59,7 @@ export type LandingPlan = {
   id: string;
   title: string;
   subtitle: string;
-  priceMain: string;
+  priceAmountTry: number;
   priceSuffix?: string;
   priceNote?: string;
   perks: string[];
@@ -74,12 +74,12 @@ export const LANDING_PLANS: LandingPlan[] = [
     id: "free",
     title: "Ücretsiz",
     subtitle: "Panelden bütçeye kadar geniş özellik seti",
-    priceMain: "₺0",
+    priceAmountTry: 0,
     priceSuffix: "/ay",
     perks: [
       "Ana panel, işlemler ve tekrarlayan ödemeler",
       "Hedefler, bütçeler ve kategori grafikleri",
-      "Borç ve alacak ile yatırım takibi",
+      "Borç ve alacak takibi",
       "Çoklu para birimi",
     ],
     ctaLabel: "Başla",
@@ -90,7 +90,7 @@ export const LANDING_PLANS: LandingPlan[] = [
     id: "premium",
     title: "Premium",
     subtitle: "Premium'a geçince yapay zekâ destekli derin analiz",
-    priceMain: "₺120",
+    priceAmountTry: 125,
     priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
@@ -106,3 +106,8 @@ export const LANDING_PLANS: LandingPlan[] = [
     ctaVariant: "primary",
   },
 ];
+
+export function getLandingPremiumPriceTry(): number {
+  const p = LANDING_PLANS.find((x) => x.id === "premium");
+  return p?.priceAmountTry ?? 120;
+}

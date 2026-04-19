@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { normalizePlanTier } from "@/lib/plan-tier";
 import { clearUser, setUser, type AuthUser } from "@/store/slices/authSlice";
 import type { AppDispatch } from "@/store";
 
@@ -21,6 +22,7 @@ export function SessionUserSync() {
         currency: session.user.currency ?? "TL",
         phone: session.user.phone ?? null,
         notificationsEnabled: session.user.notificationsEnabled !== false,
+        planTier: normalizePlanTier(session.user.planTier),
       };
       dispatch(setUser(u));
     } else {

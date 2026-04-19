@@ -8,7 +8,7 @@ type Props = {
   totalExpense: number;
   net: number;
   thisMonthExpense: number;
-  investmentPnl: number;
+  investmentPnl?: number;
 };
 
 export function DashboardKpiSection({
@@ -19,8 +19,15 @@ export function DashboardKpiSection({
   thisMonthExpense,
   investmentPnl,
 }: Props) {
+  const showInvestmentKpi = investmentPnl !== undefined;
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+    <div
+      className={
+        showInvestmentKpi
+          ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
+          : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+      }
+    >
       <DashboardKpiCard
         icon={Wallet}
         iconClassName="bg-emerald-500/15 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400"
@@ -45,25 +52,27 @@ export function DashboardKpiSection({
         value={formatMoneyAmount(net, currency)}
         valueClassName="text-foreground"
       />
-      <DashboardKpiCard
-        icon={LineChart}
-        iconClassName="bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300"
-        glowClassName="bg-violet-500/20"
-        label={`Yatırım K/Z (${currencySymbolLabel(currency)})`}
-        value={
-          <>
-            {investmentPnl > 0 ? "+" : ""}
-            {formatMoneyAmount(investmentPnl, currency)}
-          </>
-        }
-        valueClassName={
-          investmentPnl > 0
-            ? "text-emerald-600 dark:text-emerald-400"
-            : investmentPnl < 0
-              ? "text-rose-600 dark:text-rose-400"
-              : "text-foreground"
-        }
-      />
+      {showInvestmentKpi ? (
+        <DashboardKpiCard
+          icon={LineChart}
+          iconClassName="bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300"
+          glowClassName="bg-violet-500/20"
+          label={`Yatırım K/Z (${currencySymbolLabel(currency)})`}
+          value={
+            <>
+              {investmentPnl > 0 ? "+" : ""}
+              {formatMoneyAmount(investmentPnl, currency)}
+            </>
+          }
+          valueClassName={
+            investmentPnl > 0
+              ? "text-emerald-600 dark:text-emerald-400"
+              : investmentPnl < 0
+                ? "text-rose-600 dark:text-rose-400"
+                : "text-foreground"
+          }
+        />
+      ) : null}
       <DashboardKpiCard
         icon={CalendarDays}
         iconClassName="bg-amber-500/15 text-amber-800 ring-amber-500/25 dark:text-amber-300"

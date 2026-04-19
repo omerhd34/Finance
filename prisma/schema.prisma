@@ -17,7 +17,9 @@ model User {
   phone                 String?
   currency              String        @default("TL")
   notificationsEnabled  Boolean       @default(true)
+  planTier                String        @default("free")
   createdAt             DateTime      @default(now())
+  paytrOrders       PaytrOrder[]
   transactions    Transaction[]
   goals           Goal[]
   debts           Debt[]
@@ -189,4 +191,19 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   @@index([email])
+}
+
+model PaytrOrder {
+  id           String    @id @default(cuid())
+  merchantOid  String    @unique
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountKurus  Int
+  currency     String    @default("TL")
+  status       String    @default("PENDING")
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
 }

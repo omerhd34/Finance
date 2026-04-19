@@ -15,16 +15,22 @@ import {
 import { currencySymbolLabel } from "@/lib/utils";
 
 type Props = {
+  planPremium: boolean;
   currency: string;
   stockSummary: InvestmentAggregate;
   goldSummary: InvestmentAggregate;
 };
 
 export function DashboardInvestmentSection({
+  planPremium,
   currency,
   stockSummary,
   goldSummary,
 }: Props) {
+  if (!planPremium) {
+    return null;
+  }
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">

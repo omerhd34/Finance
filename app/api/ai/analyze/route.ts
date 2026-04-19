@@ -129,6 +129,20 @@ export async function POST() {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { planTier: true },
+    });
+    if (!dbUser || dbUser.planTier !== "premium") {
+      return NextResponse.json(
+        {
+          error:
+            "AI Analiz yalnızca Premium plandadır. Ayarlar sayfasından planınızı Premium olarak seçin.",
+        },
+        { status: 403 },
+      );
+    }
+
     const geminiKey = process.env.GEMINI_API_KEY;
     if (!geminiKey) {
       return NextResponse.json(

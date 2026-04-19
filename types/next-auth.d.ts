@@ -8,6 +8,7 @@ declare module "next-auth" {
       phone?: string | null;
       hasPassword?: boolean;
       notificationsEnabled?: boolean;
+      planTier?: "free" | "premium";
     } & DefaultSession["user"];
   }
 }
@@ -19,5 +20,6 @@ declare module "next-auth/jwt" {
     phone?: string | null;
     hasPassword?: boolean;
     notificationsEnabled?: boolean;
+    planTier?: "free" | "premium";
   }
 }

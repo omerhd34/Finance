@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { GOLD_SUBTYPE_VALUES, goldSubtypeLabel } from "@/lib/gold-subtypes";
+import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
 import { investmentPosition } from "@/lib/prisma";
 import { investmentUpdateSchema } from "@/lib/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+const PREMIUM_ONLY_MSG =
+  "Yatırım takibi yalnızca Premium plandadır. Ayarlar sayfasından planınızı Premium yapın.";
 
 export async function PUT(req: Request, context: RouteContext) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    if (!(await isUserPremiumInDb(session.user.id))) {
+      return NextResponse.json({ error: PREMIUM_ONLY_MSG }, { status: 403 });
     }
     const { id } = await context.params;
     const body: unknown = await req.json();
@@ -96,6 +103,9 @@ export async function DELETE(_req: Request, context: RouteContext) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    if (!(await isUserPremiumInDb(session.user.id))) {
+      return NextResponse.json({ error: PREMIUM_ONLY_MSG }, { status: 403 });
     }
     const { id } = await context.params;
     const existing = await investmentPosition.findFirst({

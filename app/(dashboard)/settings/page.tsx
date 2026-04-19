@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   profileUpdateSchema,
@@ -25,6 +26,7 @@ import axios from "axios";
 import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,13 +45,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { z } from "zod";
-import { CheckCircle2, Eye, EyeOff, UserRound, X } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  CreditCard,
+  Eye,
+  EyeOff,
+  Shield,
+  Sparkles,
+  UserRound,
+  X,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fileToAvatarDataUrl, validateAvatarFile } from "@/lib/avatar-resize";
+import { normalizePlanTier } from "@/lib/plan-tier";
+import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
+import { PaytrPremiumDialog } from "@/components/paytr/paytr-premium-dialog";
+import { LANDING_PLANS } from "@/components/landing/landing-content";
+
+const PREMIUM_LANDING_PERKS =
+  LANDING_PLANS.find((p) => p.id === "premium")?.perks ?? [];
 
 type ProfileForm = z.infer<typeof profileUpdateSchema>;
 type PasswordForm = z.infer<typeof passwordChangeSchema>;
 type DeleteFormValues = z.input<typeof accountDeleteSchema>;
+
+type ProfilePatchResponse = {
+  name: string | null;
+  email: string;
+  phone: string | null;
+  currency: string;
+  image: string | null;
+  notificationsEnabled: boolean;
+  planTier: string;
+};
 
 function profileInitials(
   name: string | null | undefined,
@@ -83,6 +112,13 @@ export default function SettingsPage() {
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
+  const [planSaving, setPlanSaving] = useState(false);
+  const [paytrOpen, setPaytrOpen] = useState(false);
+  const [paytrToken, setPaytrToken] = useState<string | null>(null);
+  const [paytrInitError, setPaytrInitError] = useState<string | null>(null);
+  const [paytrBusy, setPaytrBusy] = useState(false);
+  const [paytrSuccessBanner, setPaytrSuccessBanner] = useState(false);
+  const paytrReturnHandled = useRef<string | null>(null);
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileUpdateSchema),
@@ -122,6 +158,28 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [passwordSuccessVisible]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search);
+    const p = q.get("paytr");
+    if (!p || (p !== "ok" && p !== "fail")) return;
+    if (paytrReturnHandled.current === p) return;
+    paytrReturnHandled.current = p;
+
+    if (p === "ok") {
+      void (async () => {
+        await updateSession({ reloadUser: true } as Record<string, unknown>);
+        router.replace("/settings");
+        router.refresh();
+        setPaytrSuccessBanner(true);
+      })();
+      return;
+    }
+
+    setPaytrInitError("Ödeme tamamlanamadı veya iptal edildi.");
+    void router.replace("/settings");
+  }, [router, updateSession]);
+
   function handleProfileSubmit(values: ProfileForm) {
     setPhoneFieldError(null);
     const phone = combineInternationalPhone(phoneDial, phoneLocal);
@@ -135,14 +193,10 @@ export default function SettingsPage() {
   }
 
   async function onProfile(values: ProfileForm) {
-    const { data } = await apiClient.patch<{
-      name: string | null;
-      email: string;
-      phone: string | null;
-      currency: string;
-      image: string | null;
-      notificationsEnabled: boolean;
-    }>("/api/user/profile", values);
+    const { data } = await apiClient.patch<ProfilePatchResponse>(
+      "/api/user/profile",
+      values,
+    );
     dispatch(
       setUser({
         id: session!.user!.id,
@@ -152,6 +206,7 @@ export default function SettingsPage() {
         currency: data.currency,
         phone: data.phone ?? null,
         notificationsEnabled: data.notificationsEnabled !== false,
+        planTier: normalizePlanTier(data.planTier),
       }),
     );
     await updateSession({
@@ -161,7 +216,8 @@ export default function SettingsPage() {
       email: data.email,
       image: data.image ?? null,
       notificationsEnabled: data.notificationsEnabled !== false,
-    });
+      reloadUser: true,
+    } as Record<string, unknown>);
     router.refresh();
   }
 
@@ -169,14 +225,10 @@ export default function SettingsPage() {
     setAvatarError(null);
     setAvatarBusy(true);
     try {
-      const { data } = await apiClient.patch<{
-        name: string | null;
-        email: string;
-        phone: string | null;
-        currency: string;
-        image: string | null;
-        notificationsEnabled: boolean;
-      }>("/api/user/profile", { image });
+      const { data } = await apiClient.patch<ProfilePatchResponse>(
+        "/api/user/profile",
+        { image },
+      );
       dispatch(
         setUser({
           id: session!.user!.id,
@@ -186,11 +238,13 @@ export default function SettingsPage() {
           currency: data.currency,
           phone: data.phone ?? null,
           notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
         }),
       );
       await updateSession({
         image: data.image ?? null,
-      });
+        reloadUser: true,
+      } as Record<string, unknown>);
       router.refresh();
     } catch {
       setAvatarError("Fotoğraf kaydedilemedi. Tekrar deneyin.");
@@ -217,14 +271,10 @@ export default function SettingsPage() {
   async function onNotificationsEnabledChange(checked: boolean) {
     setNotifSaving(true);
     try {
-      const { data } = await apiClient.patch<{
-        notificationsEnabled: boolean;
-        name: string | null;
-        email: string;
-        phone: string | null;
-        currency: string;
-        image: string | null;
-      }>("/api/user/profile", { notificationsEnabled: checked });
+      const { data } = await apiClient.patch<ProfilePatchResponse>(
+        "/api/user/profile",
+        { notificationsEnabled: checked },
+      );
       setNotificationsEnabled(data.notificationsEnabled !== false);
       dispatch(
         setUser({
@@ -235,11 +285,13 @@ export default function SettingsPage() {
           currency: data.currency,
           phone: data.phone ?? null,
           notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
         }),
       );
       await updateSession({
         notificationsEnabled: data.notificationsEnabled !== false,
-      });
+        reloadUser: true,
+      } as Record<string, unknown>);
       router.refresh();
     } catch {
       setNotificationsEnabled(!checked);
@@ -247,6 +299,62 @@ export default function SettingsPage() {
       setNotifSaving(false);
     }
   }
+
+  async function onSelectFreePlan() {
+    const current = normalizePlanTier(session?.user?.planTier);
+    if (current === "free" || !session?.user?.id) return;
+    setPlanSaving(true);
+    try {
+      const { data } = await apiClient.patch<ProfilePatchResponse>(
+        "/api/user/profile",
+        { planTier: "free" },
+      );
+      dispatch(
+        setUser({
+          id: session.user.id,
+          name: data.name,
+          email: data.email,
+          image: data.image ?? null,
+          currency: data.currency,
+          phone: data.phone ?? null,
+          notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
+        }),
+      );
+      await updateSession({
+        reloadUser: true,
+      } as Record<string, unknown>);
+      router.refresh();
+    } finally {
+      setPlanSaving(false);
+    }
+  }
+
+  async function openPremiumCheckout() {
+    if (normalizePlanTier(session?.user?.planTier) === "premium") return;
+    setPaytrInitError(null);
+    setPaytrToken(null);
+    setPaytrBusy(true);
+    try {
+      const { data } = await apiClient.post<{ token: string }>(
+        "/api/paytr/init",
+        {},
+      );
+      setPaytrToken(data.token);
+      setPaytrOpen(true);
+    } catch (e: unknown) {
+      let msg = "Ödeme başlatılamadı.";
+      if (axios.isAxiosError(e)) {
+        const err = e.response?.data as { error?: unknown };
+        if (typeof err?.error === "string") msg = err.error;
+      }
+      setPaytrInitError(msg);
+    } finally {
+      setPaytrBusy(false);
+    }
+  }
+
+  const currentPlan = normalizePlanTier(session?.user?.planTier);
 
   async function onPassword(values: PasswordForm) {
     setPasswordSuccessVisible(false);
@@ -302,6 +410,13 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
+      {paytrSuccessBanner ? (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-50">
+          Ödeme alındı. Premium plan birkaç saniye içinde etkinleşir; gerekirse
+          sayfayı yenileyin.
+        </div>
+      ) : null}
+
       <Card>
         <CardHeader>
           <CardTitle>Profil</CardTitle>
@@ -587,6 +702,210 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card className="overflow-hidden border-border/70 shadow-md shadow-black/5">
+        <CardHeader className="relative space-y-3 border-b border-border/50 bg-linear-to-br from-muted/40 via-card to-card pb-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <CardTitle className="text-2xl tracking-tight">Plan</CardTitle>
+            <Badge
+              variant="outline"
+              className="rounded-full border-emerald-500/35 bg-emerald-500/10 px-3 py-0.5 font-medium text-emerald-700 dark:text-emerald-300"
+            >
+              {currentPlan === "premium" ? "Premium" : "Ücretsiz"}
+            </Badge>
+          </div>
+          <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            <Link
+              href="/ai-insights"
+              className="font-medium text-emerald-600 underline decoration-emerald-500/40 underline-offset-4 transition hover:text-emerald-500 dark:text-emerald-400"
+            >
+              AI Analiz
+            </Link>{" "}
+            yalnızca Premium ile açılır.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          <fieldset
+            className={cn(
+              "min-w-0 border-0 p-0",
+              (planSaving || paytrBusy || !session?.user) &&
+                "pointer-events-none opacity-60",
+            )}
+          >
+            <legend className="sr-only">Üyelik planı seçimi</legend>
+            <div className="grid gap-4 md:grid-cols-2 md:items-stretch">
+              {/* Ücretsiz */}
+              <div
+                className={cn(
+                  "flex min-h-[300px] flex-col rounded-2xl border p-5 transition-all duration-200 sm:p-6",
+                  currentPlan === "free"
+                    ? "border-emerald-500/45 bg-linear-to-b from-emerald-500/12 to-card shadow-lg shadow-emerald-950/20 ring-1 ring-emerald-500/25"
+                    : "border-border/80 bg-card/80 hover:border-emerald-500/20 hover:shadow-md",
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted ring-1 ring-border/60">
+                      <Shield
+                        className="h-5 w-5 text-muted-foreground"
+                        aria-hidden
+                      />
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                        Ücretsiz
+                      </h3>
+                    </div>
+                  </div>
+                  {currentPlan === "free" ? (
+                    <Badge
+                      variant="income"
+                      className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] uppercase tracking-wide"
+                    >
+                      Aktif
+                    </Badge>
+                  ) : null}
+                </div>
+                <ul className="mt-5 flex flex-1 flex-col gap-2.5 text-sm text-muted-foreground">
+                  {[
+                    "İşlemler, hedefler, bütçeler ve raporlar",
+                    "Borç / alacak takibi",
+                    "AI Analiz bu planda kapalıdır",
+                  ].map((line) => (
+                    <li key={line} className="flex gap-2.5">
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                        aria-hidden
+                      />
+                      <span className="leading-snug">{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 border-t border-border/50 pt-5">
+                  <Button
+                    type="button"
+                    variant={currentPlan === "free" ? "secondary" : "outline"}
+                    className="w-full cursor-pointer rounded-full font-semibold"
+                    disabled={
+                      currentPlan === "free" || planSaving || !session?.user
+                    }
+                    onClick={() => void onSelectFreePlan()}
+                  >
+                    {currentPlan === "free"
+                      ? "Mevcut planınız"
+                      : "Ücretsize geç"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Premium */}
+              <div
+                className={cn(
+                  "relative flex min-h-[300px] flex-col overflow-hidden rounded-2xl border p-5 transition-all duration-200 sm:p-6",
+                  currentPlan === "premium"
+                    ? "border-emerald-500/45 bg-linear-to-b from-emerald-500/12 to-card shadow-lg shadow-emerald-950/20 ring-1 ring-emerald-500/25"
+                    : "border-border/80 bg-card/80 hover:border-emerald-500/25 hover:shadow-md",
+                )}
+              >
+                {currentPlan !== "premium" ? (
+                  <span className="absolute right-4 top-4 inline-flex rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                    Önerilen
+                  </span>
+                ) : null}
+                <div
+                  className={cn(
+                    "flex items-start justify-between gap-3",
+                    currentPlan !== "premium" && "pr-20 sm:pr-24",
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 ring-1 ring-emerald-500/25">
+                      <Sparkles
+                        className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
+                        aria-hidden
+                      />
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                        Premium
+                      </h3>
+                      <p className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
+                        ₺{PREMIUM_PRICE_TRY}
+                        <span className="text-base font-medium text-muted-foreground">
+                          {" "}
+                          / ay
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  {currentPlan === "premium" ? (
+                    <Badge
+                      variant="income"
+                      className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] uppercase tracking-wide"
+                    >
+                      Aktif
+                    </Badge>
+                  ) : null}
+                </div>
+                <ul className="mt-5 flex flex-1 flex-col gap-2.5 text-sm text-muted-foreground">
+                  {PREMIUM_LANDING_PERKS.map((line, idx) => (
+                    <li key={`${idx}-${line}`} className="flex gap-2.5">
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                        aria-hidden
+                      />
+                      <span className="leading-snug">{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 border-t border-border/50 pt-5">
+                  <Button
+                    type="button"
+                    disabled={
+                      currentPlan === "premium" ||
+                      planSaving ||
+                      paytrBusy ||
+                      !session?.user
+                    }
+                    onClick={() => void openPremiumCheckout()}
+                    className="w-full cursor-pointer rounded-full bg-emerald-500 font-semibold text-black shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 dark:text-white"
+                  >
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <CreditCard className="h-4 w-4" aria-hidden />
+                      {currentPlan === "premium"
+                        ? "Premium aktif"
+                        : "PayTR ile öde"}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          {planSaving || paytrBusy ? (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              {paytrBusy ? "Ödeme formu hazırlanıyor…" : "Plan güncelleniyor…"}
+            </p>
+          ) : null}
+          {paytrInitError && !paytrOpen ? (
+            <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive">
+              {paytrInitError}
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <PaytrPremiumDialog
+        open={paytrOpen}
+        onOpenChange={(open) => {
+          setPaytrOpen(open);
+          if (!open) {
+            setPaytrToken(null);
+            setPaytrInitError(null);
+          }
+        }}
+        iframeToken={paytrToken}
+        initError={paytrOpen ? paytrInitError : null}
+      />
 
       {session?.user?.hasPassword ? (
         <Card>

@@ -19,9 +19,13 @@ import { EditPositionDialog } from "@/components/investments/edit-position-dialo
 import { InvestmentsPageHeader } from "@/components/investments/investments-page-header";
 import { InvestmentsPositionsTabs } from "@/components/investments/investments-positions-tabs";
 import { InvestmentsSummaryCards } from "@/components/investments/investments-summary-cards";
+import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
+import { normalizePlanTier } from "@/lib/plan-tier";
 
 export default function InvestmentsPage() {
   const dispatch = useAppDispatch();
+  const authPlanTier = useAppSelector((s) => s.auth.user?.planTier);
+  const planPremium = normalizePlanTier(authPlanTier) === "premium";
   const { items, loading, error } = useAppSelector((s) => s.investments);
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [tab, setTab] = useState<"GOLD" | "STOCK">("GOLD");
@@ -30,8 +34,9 @@ export default function InvestmentsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!planPremium) return;
     void dispatch(fetchInvestments());
-  }, [dispatch]);
+  }, [dispatch, planPremium]);
 
   const filtered = useMemo(
     () => items.filter((p) => p.assetType === tab),
@@ -115,6 +120,22 @@ export default function InvestmentsPage() {
     await dispatch(deleteInvestment(deletingId));
     setDeletingId(null);
     void dispatch(fetchInvestments());
+  }
+
+  if (!planPremium) {
+    return (
+      <div className="mx-auto w-full max-w-6xl space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Yatırım
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Hisse ve altın pozisyonlarınızı takip edin.
+          </p>
+        </div>
+        <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
+      </div>
+    );
   }
 
   return (

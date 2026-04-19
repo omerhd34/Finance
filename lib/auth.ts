@@ -13,6 +13,7 @@ type JwtProfileRow = {
   password: string | null;
   notificationsEnabled: boolean;
   image: string | null;
+  planTier: string;
 };
 
 const jwtProfileSelect = {
@@ -21,6 +22,7 @@ const jwtProfileSelect = {
   password: true,
   notificationsEnabled: true,
   image: true,
+  planTier: true,
 } as const satisfies Record<keyof JwtProfileRow, true>;
 
 function resolveAuthSecret(): string | undefined {
@@ -95,10 +97,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.hasPassword = Boolean(dbUser.password);
           token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
           token.picture = dbUser.image ?? null;
+          token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
         }
       }
       if (trigger === "update" && session && typeof session === "object") {
         const s = session as {
+          reloadUser?: unknown;
           currency?: unknown;
           phone?: unknown;
           name?: unknown;
@@ -106,6 +110,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           notificationsEnabled?: unknown;
           image?: unknown;
         };
+        if (s.reloadUser === true && token.id) {
+          const dbUser = (await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: jwtProfileSelect as unknown as Prisma.UserSelect,
+          })) as JwtProfileRow | null;
+          if (dbUser) {
+            token.currency = dbUser.currency ?? "TL";
+            token.phone = dbUser.phone ?? null;
+            token.hasPassword = Boolean(dbUser.password);
+            token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
+            token.picture = dbUser.image ?? null;
+            token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
+          }
+        }
         if (typeof s.currency === "string") {
           token.currency = normalizeUserCurrency(s.currency);
         }
@@ -144,6 +162,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (pic !== undefined) {
           session.user.image = pic;
         }
+        session.user.planTier =
+          (token as { planTier?: string }).planTier === "premium"
+            ? "premium"
+            : "free";
       }
       return session;
     },

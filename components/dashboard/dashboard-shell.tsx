@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { normalizeUserCurrency } from "@/lib/currency";
+import { normalizePlanTier } from "@/lib/plan-tier";
 import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
@@ -166,6 +167,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         phone: string | null;
         currency: string;
         notificationsEnabled: boolean;
+        planTier: string;
+        image: string | null;
       }>("/api/user/profile", { currency });
       dispatch(
         setUser({
@@ -176,6 +179,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           currency: data.currency,
           phone: data.phone ?? null,
           notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
         }),
       );
       await updateSession({
@@ -184,7 +188,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         name: data.name ?? "",
         email: data.email,
         notificationsEnabled: data.notificationsEnabled !== false,
-      });
+        reloadUser: true,
+      } as Record<string, unknown>);
       router.refresh();
     } finally {
       setCurrencySaving(false);

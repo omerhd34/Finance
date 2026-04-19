@@ -9,6 +9,7 @@ import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
 import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurring-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
+import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
 import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-page-skeleton";
 import { apiClient } from "@/lib/api-client";
@@ -30,10 +31,14 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { endOfMonth, startOfMonth } from "date-fns";
+import { normalizePlanTier } from "@/lib/plan-tier";
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const planPremium =
+    normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
+    "premium";
   const [items, setItems] = useState<Transaction[]>([]);
   const [investmentPositions, setInvestmentPositions] = useState<
     InvestmentPosition[]
@@ -53,14 +58,20 @@ export default function DashboardPage() {
       try {
         await dispatch(processDueRecurring()).unwrap();
       } catch {}
-      const [txRes, debtRes, invRes, recRes] = await Promise.all([
+      const [txRes, debtRes, recRes] = await Promise.all([
         apiClient.get<{ items: Transaction[] }>("/api/transactions?limit=2000"),
         apiClient.get<{ items: Debt[] }>("/api/debts"),
-        apiClient.get<{ items: InvestmentPosition[] }>("/api/investments"),
         apiClient.get<{ items: RecurringRule[] }>("/api/recurring"),
       ]);
       setItems(txRes.data.items);
-      setInvestmentPositions(invRes.data.items);
+      if (planPremium) {
+        const invRes = await apiClient.get<{ items: InvestmentPosition[] }>(
+          "/api/investments",
+        );
+        setInvestmentPositions(invRes.data.items);
+      } else {
+        setInvestmentPositions([]);
+      }
       setRecurringRules(recRes.data.items);
       let receivable = 0;
       let payable = 0;
@@ -78,7 +89,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [dispatch]);
+  }, [dispatch, planPremium]);
 
   useEffect(() => {
     load();
@@ -160,13 +171,15 @@ export default function DashboardPage() {
         <QuickTransactionDialog onSaved={load} />
       </div>
 
+      {!planPremium ? <DashboardPremiumPromo /> : null}
+
       <DashboardKpiSection
         currency={currency}
         totalIncome={stats.totalIncome}
         totalExpense={stats.totalExpense}
         net={stats.net}
         thisMonthExpense={stats.thisMonthExpense}
-        investmentPnl={investmentPnl}
+        investmentPnl={planPremium ? investmentPnl : undefined}
       />
 
       {debtTotals !== null && (
@@ -186,6 +199,7 @@ export default function DashboardPage() {
       />
 
       <DashboardInvestmentSection
+        planPremium={planPremium}
         currency={currency}
         stockSummary={stockSummary}
         goldSummary={goldSummary}

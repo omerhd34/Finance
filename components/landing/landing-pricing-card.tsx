@@ -55,7 +55,7 @@ export function LandingPricingCard({ plan }: Props) {
       </CardHeader>
       <CardContent className="flex flex-1 flex-col px-8 pb-8">
         <p className={cn("text-3xl font-bold tracking-tight", priceClass)}>
-          {plan.priceMain}
+          ₺{plan.priceAmountTry}
           {plan.priceSuffix && (
             <span className={cn("text-lg font-normal", helperTextClass)}>
               {plan.priceSuffix}
