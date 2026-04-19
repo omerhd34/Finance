@@ -13,6 +13,7 @@ import {
   ChevronRight,
   HandCoins,
   LayoutDashboard,
+  LogOut,
   Menu,
   Moon,
   PieChart,
@@ -39,11 +40,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -319,7 +317,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               href="/settings"
               onClick={() => setOpen(false)}
               className="flex justify-center rounded-lg bg-muted/30 p-1.5"
-              title="Profil"
+              title="Ayarlar"
             >
               <Avatar className="h-9 w-9">
                 <AvatarImage src={session?.user?.image ?? undefined} alt="" />
@@ -330,6 +328,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 </AvatarFallback>
               </Avatar>
             </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 cursor-pointer rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"
+              title="Çıkış yap"
+              aria-label="Çıkış yap"
+              onClick={() => void signOut({ callbackUrl: "/" })}
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         ) : (
           <>
@@ -372,7 +381,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="border-t border-border p-3">
-              <div className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2">
+              <Link
+                href="/settings"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
+              >
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={session?.user?.image ?? undefined} alt="" />
                   <AvatarFallback className="bg-primary/20 text-primary">
@@ -389,7 +402,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     {session?.user?.email}
                   </p>
                 </div>
-              </div>
+              </Link>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-2 w-full cursor-pointer justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => void signOut({ callbackUrl: "/" })}
+              >
+                <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                Çıkış yap
+              </Button>
             </div>
           </>
         )}
@@ -468,40 +490,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <Moon className="h-5 w-5 text-muted-foreground opacity-60" />
               )}
             </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-9 w-9 rounded-full p-0 cursor-pointer"
-                >
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage
-                      src={session?.user?.image ?? undefined}
-                      alt=""
-                    />
-                    <AvatarFallback>
-                      {(session?.user?.name ?? "?").slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="cursor-pointer">
-                    Ayarlar
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="text-destructive cursor-pointer"
-                >
-                  Çıkış yap
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </header>
         <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background p-4 md:p-6">
