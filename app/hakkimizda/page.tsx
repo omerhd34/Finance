@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
   HeartHandshake,
   LineChart,
   Lock,
@@ -44,6 +45,9 @@ export const metadata: Metadata = {
 const eyebrow =
   "inline-flex items-center rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-700 ring-1 ring-emerald-500/20 dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30";
 
+const aboutSectionBase =
+  "border-b border-slate-200/45 bg-slate-50 dark:border-zinc-800/45 dark:bg-zinc-950";
+
 const values = [
   {
     icon: Target,
@@ -74,6 +78,12 @@ const values = [
     title: "Sürekli gelişim",
     description:
       "Bütçe, borç, yatırım ve hedef modüllerini birlikte güçlendiriyor; finansal resminizi zamanla daha da netleştiriyoruz.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Şeffaflık",
+    description:
+      "Ürün sınırları, veri kullanımı ve gizlilik tercihleri net anlatılır; sürpriz süreçler yerine anlaşılır, izlenebilir bir deneyim hedefleriz.",
   },
 ] as const;
 
@@ -107,7 +117,7 @@ export default function HakkimizdaPage() {
       <LandingHeader />
       <main className="flex-1">
         <section
-          className="border-b border-border/60 px-4 pb-16 pt-24 md:pb-20 md:pt-28"
+          className={`${aboutSectionBase} px-4 pb-16 pt-24 md:pb-20 md:pt-28`}
           aria-labelledby="about-hero-heading"
         >
           <div className="mx-auto max-w-3xl text-center">
@@ -131,7 +141,7 @@ export default function HakkimizdaPage() {
         </section>
 
         <section
-          className="px-4 py-16 md:py-24"
+          className={`${aboutSectionBase} px-4 py-16 md:py-24`}
           aria-labelledby="about-mission-heading"
         >
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
@@ -192,7 +202,7 @@ export default function HakkimizdaPage() {
         </section>
 
         <section
-          className="border-y border-border/50 bg-muted/30 px-4 py-16 md:py-24"
+          className={`${aboutSectionBase} px-4 py-16 md:py-24`}
           aria-labelledby="about-values-heading"
         >
           <div className="mx-auto max-w-7xl">
@@ -231,34 +241,7 @@ export default function HakkimizdaPage() {
         </section>
 
         <section
-          className="px-4 py-16 md:py-24"
-          aria-labelledby="about-team-heading"
-        >
-          <div className="mx-auto max-w-3xl text-center">
-            <h2
-              id="about-team-heading"
-              className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
-            >
-              Arkasında kim var?
-            </h2>
-            <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
-              IQfinansAI,{" "}
-              <a
-                href="http://omerhalisdemir.com.tr/"
-                className="font-semibold text-emerald-600 underline-offset-4 transition hover:underline dark:text-emerald-400"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Ömer Halis Demir
-              </a>{" "}
-              tarafından geliştirilmektedir. Ürün kararlarında şeffaflık,
-              erişilebilirlik ve uzun vadeli sürdürülebilirlik önceliklidir.
-            </p>
-          </div>
-        </section>
-
-        <section
-          className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent px-4 py-16 md:py-20"
+          className={`${aboutSectionBase} px-4 py-16 md:py-20`}
           aria-labelledby="about-cta-heading"
         >
           <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-12 md:py-12">
@@ -292,6 +275,33 @@ export default function HakkimizdaPage() {
                 <Link href="/">Ana sayfaya dön</Link>
               </Button>
             </div>
+          </div>
+        </section>
+
+        <section
+          className={`${aboutSectionBase} border-b-slate-300/55 px-4 py-16 dark:border-b-white/10 md:py-24 md:pb-20`}
+          aria-labelledby="about-team-heading"
+        >
+          <div className="mx-auto max-w-3xl text-center">
+            <h2
+              id="about-team-heading"
+              className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
+            >
+              Arkasında kim var?
+            </h2>
+            <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
+              IQfinansAI,{" "}
+              <a
+                href="http://omerhalisdemir.com.tr/"
+                className="font-semibold text-emerald-600 underline-offset-4 transition hover:underline dark:text-emerald-400"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Ömer Halis Demir
+              </a>{" "}
+              tarafından geliştirilmektedir. Ürün kararlarında şeffaflık,
+              erişilebilirlik ve uzun vadeli sürdürülebilirlik önceliklidir.
+            </p>
           </div>
         </section>
       </main>
