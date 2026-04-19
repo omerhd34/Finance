@@ -3,6 +3,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { PieLabelRenderProps } from "recharts";
@@ -79,9 +80,15 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
 
   if (data.length === 0)
     return (
-      <p className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">
-        Kayıt yok.
-      </p>
+      <div className="flex h-[300px] flex-col items-center justify-center gap-2 px-4 text-center text-sm text-muted-foreground">
+        <p>Kayıt yok.</p>
+        <Link
+          href="/transactions"
+          className="font-medium text-primary underline-offset-4 transition hover:text-primary/90 hover:underline"
+        >
+          İşlemlere git
+        </Link>
+      </div>
     );
   if (!mounted)
     return <div className="h-[400px] w-full bg-muted/20 rounded-lg" />;
