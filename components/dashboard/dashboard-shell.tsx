@@ -199,7 +199,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <>
         {collapsed ? (
           <div className="flex shrink-0 flex-col items-center gap-2 border-b border-border py-3">
-            <span className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition">
+            <Link
+              href="/dashboard"
+              onClick={() => setOpen(false)}
+              className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Ana panele git"
+              title="Ana panel"
+            >
               <Image
                 src="/FinansIQ-192.png"
                 alt="IQfinansAI logosu"
@@ -208,7 +214,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className="h-9 w-9 object-cover"
                 priority
               />
-            </span>
+            </Link>
             <Button
               type="button"
               variant="ghost"
@@ -222,7 +228,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
-            <BrandLockup variant="sidebar" className="flex-1" />
+            <Link
+              href="/dashboard"
+              onClick={() => setOpen(false)}
+              className="flex min-w-0 flex-1 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Ana panele git"
+              title="Ana panel"
+            >
+              <BrandLockup variant="sidebar" className="min-w-0 w-full" />
+            </Link>
             {isMobile ? (
               <Button
                 variant="ghost"
