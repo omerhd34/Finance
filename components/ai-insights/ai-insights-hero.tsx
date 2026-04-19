@@ -15,9 +15,12 @@ export function AiInsightsHero() {
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
             AI finans analizi
           </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Son 30 günlük giderleriniz ve kayıtlı borç/alacaklarınız yapay zekâ
-            ile yorumlanır; aşağıda bölümler halinde özet ve öneriler bulunur.
+          <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+            Son 30 günlük gider işlemleriniz ile defterinizdeki borç ve alacak
+            kayıtları birlikte değerlendirilir. Analiz tamamlandığında yapay
+            zekâ; genel değerlendirme, kategori yorumları, tasarruf önerileri,
+            gelecek ay için bütçe çerçevesi ve borç/alacak özeti içeren tek bir
+            Türkçe Markdown rapor üretir.
           </p>
         </div>
       </div>
