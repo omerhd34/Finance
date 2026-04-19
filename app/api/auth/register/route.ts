@@ -30,7 +30,8 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json({ ok: true }, { status: 201 });
-  } catch {
+  } catch (e) {
+    console.error("[register]", e);
     return NextResponse.json({ error: "Kayıt başarısız" }, { status: 500 });
   }
 }
