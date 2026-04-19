@@ -43,7 +43,7 @@ function FooterColumn({
 }) {
   return (
     <div className="flex min-h-0 flex-col lg:pt-0.5">
-      <h3 className="text-xs font-bold uppercase leading-none tracking-[0.18em] text-zinc-200">
+      <h3 className="text-xs font-bold uppercase leading-none tracking-[0.18em] text-foreground">
         {title}
       </h3>
       <ul className="mt-5 space-y-3">{children}</ul>
@@ -56,7 +56,7 @@ function FooterLink({ href, children }: { href: string; children: ReactNode }) {
     <li>
       <Link
         href={href}
-        className="inline-flex text-sm leading-snug text-zinc-400 transition hover:text-emerald-400"
+        className="inline-flex text-sm leading-snug text-muted-foreground transition hover:text-emerald-600 dark:hover:text-emerald-400"
       >
         {children}
       </Link>
@@ -79,7 +79,7 @@ export function LandingFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-white/5 bg-[#0a0f1a] text-zinc-400">
+    <footer className="relative border-t border-border/60 bg-slate-100/95 text-muted-foreground backdrop-blur-xl dark:bg-[#050507]/95">
       <div className="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 md:pt-16">
         <div className="grid w-full grid-cols-1 gap-12 sm:gap-x-10 lg:grid-cols-3 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div className="min-w-0 lg:pt-0.5">
@@ -87,15 +87,15 @@ export function LandingFooter() {
               href="/"
               className="inline-flex items-baseline text-xl font-bold leading-none tracking-tight"
             >
-              <span className="bg-linear-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-teal-300">
                 IQ
               </span>
-              <span className="text-zinc-100">finans</span>
-              <span className="ml-1.5 rounded-md border border-emerald-500/35 bg-emerald-500/10 px-1.5 py-0.5 text-[0.55em] font-extrabold uppercase tracking-[0.2em] text-emerald-300">
+              <span className="text-foreground">finans</span>
+              <span className="ml-1.5 rounded-md border border-emerald-500/35 bg-emerald-500/10 px-1.5 py-0.5 text-[0.55em] font-extrabold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
                 AI
               </span>
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-zinc-500 lg:max-w-none">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground lg:max-w-none">
               Gelir ve giderlerinizi tek yerden yönetin; bütçe, borç ve
               hedeflerinizi izleyin. Yapay zekâ destekli özetlerle finansal
               resminizi netleştirin.
@@ -124,13 +124,13 @@ export function LandingFooter() {
           </FooterColumn>
         </div>
 
-        <Separator className="my-10 bg-white/10" />
+        <Separator className="my-10 bg-border/60" />
 
         <div className="flex w-full flex-row flex-wrap items-center justify-between gap-4">
-          <p className="min-w-0 text-left text-xs text-zinc-500 sm:text-sm">
+          <p className="min-w-0 text-left text-xs text-muted-foreground sm:text-sm">
             © {year}{" "}
-            <span className="font-semibold text-zinc-300">IQfinansAI</span>. Tüm
-            hakları saklıdır.
+            <span className="font-semibold text-foreground">IQfinansAI</span>.
+            Tüm hakları saklıdır.
           </p>
           <div className="flex shrink-0 items-center gap-2">
             <Button
@@ -140,7 +140,7 @@ export function LandingFooter() {
               disabled={!mounted}
               onClick={toggleTheme}
               className={cn(
-                "h-9 w-9 rounded-full border border-white/10 bg-white/5 text-zinc-400 transition hover:bg-white/10 hover:text-zinc-100",
+                "h-9 w-9 rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground",
               )}
               aria-label="Tema değiştir"
               title="Tema değiştir"
@@ -152,7 +152,7 @@ export function LandingFooter() {
                   <Moon className="h-4 w-4" />
                 )
               ) : (
-                <div className="h-4 w-4 rounded-full bg-zinc-600 animate-pulse" />
+                <div className="h-4 w-4 rounded-full bg-muted-foreground/30 animate-pulse" />
               )}
             </Button>
           </div>

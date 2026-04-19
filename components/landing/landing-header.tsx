@@ -30,7 +30,7 @@ export function LandingHeader() {
     : "Tema";
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-border/60 bg-slate-100/95 backdrop-blur-xl dark:bg-[#050507]/95">
       <div className="mx-auto flex flex-col sm:flex-row max-w-7xl items-center justify-between">
         <div className="flex w-full items-center justify-between h-14 sm:h-16 px-3 sm:px-6">
           <Link
