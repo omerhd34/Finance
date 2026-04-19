@@ -73,12 +73,13 @@ export const LANDING_PLANS: LandingPlan[] = [
   {
     id: "free",
     title: "Ücretsiz",
-    subtitle: "Temel takip ve raporlama",
+    subtitle: "Panelden bütçeye kadar geniş özellik seti",
     priceMain: "₺0",
     priceSuffix: "/ay",
     perks: [
-      "Sınırsız işlem kaydı",
-      "Grafikler ve hedefler",
+      "Ana panel, işlemler ve tekrarlayan ödemeler",
+      "Hedefler, bütçeler ve kategori grafikleri",
+      "Borç ve alacak ile yatırım takibi",
       "Çoklu para birimi",
     ],
     ctaLabel: "Başla",
@@ -86,11 +87,11 @@ export const LANDING_PLANS: LandingPlan[] = [
     ctaVariant: "muted",
   },
   {
-    id: "pro",
-    title: "Pro",
-    subtitle: "AI destekli derin analiz",
-    priceMain: "Yakında",
-    priceNote: "özel fiyat",
+    id: "premium",
+    title: "Premium",
+    subtitle: "Premium'a geçince yapay zekâ destekli derin analiz",
+    priceMain: "₺120",
+    priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
       "Yapay zekâ ile kişiselleştirilmiş harcama ve gelir analizi",

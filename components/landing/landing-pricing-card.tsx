@@ -37,14 +37,16 @@ export function LandingPricingCard({ plan }: Props) {
   return (
     <Card className={cardClass}>
       <CardHeader className="space-y-1 pb-2 pt-8 sm:px-8">
-        {isHighlight && (
-          <span className="mb-2 inline-block w-fit rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-600">
-            Önerilen
-          </span>
-        )}
-        <CardTitle className={cn("text-2xl", titleClass)}>
-          {plan.title}
-        </CardTitle>
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <CardTitle className={cn("text-2xl", titleClass)}>
+            {plan.title}
+          </CardTitle>
+          {isHighlight ? (
+            <span className="inline-block w-fit shrink-0 rounded-full bg-emerald-500/15 ml-2 px-2.5 py-0.5 text-xs font-medium text-emerald-600">
+              Önerilen
+            </span>
+          ) : null}
+        </div>
         <CardDescription
           className={cn("min-h-12 text-base leading-relaxed", subtitleClass)}
         >
