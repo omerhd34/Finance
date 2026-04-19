@@ -16,7 +16,6 @@ export function pnlTry(p: InvestmentPosition): number {
   return valueTry(p) - costBasisTry(p);
 }
 
-/** Tüm pozisyonların toplam tahmini K/Z (TRY bazlı alanlar). */
 export function totalInvestmentPnlTry(positions: InvestmentPosition[]): number {
   let total = 0;
   for (const p of positions) {
@@ -25,7 +24,6 @@ export function totalInvestmentPnlTry(positions: InvestmentPosition[]): number {
   return total;
 }
 
-/** Altın veya hisse için toplam maliyet, güncel değer ve K/Z. */
 export function aggregatePositionsTry(
   positions: InvestmentPosition[],
   assetType: InvestmentAssetType,

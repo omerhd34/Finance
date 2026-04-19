@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { setLiveExchangeRates } from "@/lib/currency";
 
-/** Uygulama açılışında güncel kurları çeker (TCMB veya yedek API). */
 export function ExchangeRatesSync() {
   useEffect(() => {
     let cancelled = false;

@@ -32,7 +32,6 @@ export type DatePickerFieldProps = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
-  /** Boş tarihe izin verir; alt kısımda «Temizle» gösterir. */
   allowClear?: boolean;
 };
 
