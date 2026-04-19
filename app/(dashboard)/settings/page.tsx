@@ -445,10 +445,7 @@ export default function SettingsPage() {
                   Profil fotoğrafı
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Google ile giriş yaptıysanız fotoğrafınız hesaptan gelir;
-                  isterseniz buradan değiştirebilir veya kaldırabilirsiniz.
-                  Diğer hesaplar için kendi fotoğrafınızı yükleyin (JPEG, PNG
-                  veya WebP, en fazla 5 MB).
+                  JPEG, JPG, PNG veya WebP, en fazla 5 MB.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
