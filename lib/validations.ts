@@ -26,6 +26,27 @@ export const forgotPasswordSchema = z.object({
     .transform((s) => s.trim().toLowerCase()),
 });
 
+export const supportContactFormSchema = z.object({
+  name: z.string().min(2, "Ad en az 2 karakter olmalı").max(120, "Ad çok uzun"),
+  email: z
+    .string()
+    .min(1, "E-posta zorunludur")
+    .email("Geçerli bir e-posta girin")
+    .transform((s) => s.trim().toLowerCase()),
+  subject: z
+    .string()
+    .min(4, "Konu en az 4 karakter olmalı")
+    .max(200, "Konu çok uzun"),
+  message: z
+    .string()
+    .min(20, "Mesaj en az 20 karakter olmalı")
+    .max(8000, "Mesaj çok uzun"),
+});
+
+export const supportContactClientSchema = supportContactFormSchema.extend({
+  _contact_hp: z.string().max(500).optional(),
+});
+
 export const resetPasswordSchema = z
   .object({
     token: z.string().min(1, "Geçersiz bağlantı"),
@@ -245,6 +266,10 @@ export const investmentUpdateSchema = z
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type SupportContactFormInput = z.infer<typeof supportContactFormSchema>;
+export type SupportContactClientInput = z.infer<
+  typeof supportContactClientSchema
+>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>;
 export type RecurringCreateInput = z.infer<typeof recurringCreateSchema>;
