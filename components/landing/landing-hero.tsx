@@ -45,11 +45,11 @@ export function LandingHero() {
           id="landing-hero-heading"
           className="mt-6 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.1]"
         >
-          Paranı{" "}
+          Paranızı{" "}
           <span className="bg-linear-to-r from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
             akıllıca
           </span>{" "}
-          yönet
+          yönetin
         </h1>
 
         <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg md:text-xl">
