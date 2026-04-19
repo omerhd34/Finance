@@ -67,8 +67,8 @@ export const siteMetadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/FinansIQ-1200.png",
-        width: 1200,
+        url: "/FinansIQ-1024.png",
+        width: 1024,
         height: 630,
         alt: "IQfinansAI Açılış Görseli",
       },
@@ -80,7 +80,7 @@ export const siteMetadata: Metadata = {
     title: "IQfinansAI | Finansınızı Netleştirin",
     description:
       "Gelir ve giderlerinizi tek panelden yönetin; yapay zeka ile harcama içgörüleri alın.",
-    images: ["/FinansIQ-1200.png"],
+    images: ["/FinansIQ-1024.png"],
   },
 
   icons: {
