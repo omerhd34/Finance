@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { Suspense } from "react";
 import { ResetPasswordForm } from "@/components/forms/reset-password-form";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 function ResetPasswordFallback() {
   return (
-    <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-      Yükleniyor...
+    <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-8">
+      <LoadingMessage variant="section" />
     </div>
   );
 }

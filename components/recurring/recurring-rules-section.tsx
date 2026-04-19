@@ -2,6 +2,7 @@
 
 import type { RecurringRule } from "@/types/recurring";
 import { Card, CardContent } from "@/components/ui/card";
+import { LoadingMessage } from "@/components/ui/loading-message";
 import { RecurringRuleCard } from "./recurring-rule-card";
 
 type Props = {
@@ -20,7 +21,7 @@ export function RecurringRulesSection({
   onDelete,
 }: Props) {
   if (loading && items.length === 0) {
-    return <p className="text-sm text-muted-foreground">Yükleniyor…</p>;
+    return <LoadingMessage variant="page" />;
   }
 
   if (items.length === 0) {

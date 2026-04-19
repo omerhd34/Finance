@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { LoadingMessage } from "@/components/ui/loading-message";
 import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
@@ -87,8 +88,8 @@ export function TransactionsTableCard({
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    Yükleniyor...
+                  <TableCell colSpan={6} className="p-0">
+                    <LoadingMessage variant="table" />
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (

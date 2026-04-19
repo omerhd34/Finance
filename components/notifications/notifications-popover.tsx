@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 type NotificationItem = {
   id: string;
@@ -142,74 +143,75 @@ export function NotificationsPopover() {
           )}
         </div>
         <div className="max-h-80 overflow-y-auto">
-          {loading && (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-              Yükleniyor...
-            </p>
-          )}
-          {!loading && items.length === 0 && (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
-              Bildirim yok
-            </p>
-          )}
-          <ul className="divide-y divide-border">
-            {items.map((n) => (
-              <li key={n.id} className="relative">
-                <div
-                  className={cn(
-                    "flex gap-1 px-2 py-2 text-sm transition-colors hover:bg-muted/60",
-                    !n.readAt && "bg-primary/5",
-                  )}
-                >
-                  <button
-                    type="button"
-                    className="min-w-0 flex-1 px-1 py-0.5 text-left"
-                    onClick={() => {
-                      if (!n.readAt) void markRead(n.id);
-                    }}
-                  >
-                    <p className="font-medium leading-snug">{n.title}</p>
-                    <p className="mt-1 line-clamp-3 text-xs text-muted-foreground">
-                      {n.body}
-                    </p>
-                    {(n.type === "budget_threshold" ||
-                      n.type === "budget_exceeded") && (
-                      <Link
-                        href="/budgets"
-                        className="mt-2 inline-block text-xs font-medium text-primary"
-                        onClick={(e) => e.stopPropagation()}
+          {loading ? (
+            <LoadingMessage variant="panel" className="px-3" />
+          ) : (
+            <>
+              {items.length === 0 && (
+                <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+                  Bildirim yok
+                </p>
+              )}
+              <ul className="divide-y divide-border">
+                {items.map((n) => (
+                  <li key={n.id} className="relative">
+                    <div
+                      className={cn(
+                        "flex gap-1 px-2 py-2 text-sm transition-colors hover:bg-muted/60",
+                        !n.readAt && "bg-primary/5",
+                      )}
+                    >
+                      <button
+                        type="button"
+                        className="min-w-0 flex-1 px-1 py-0.5 text-left"
+                        onClick={() => {
+                          if (!n.readAt) void markRead(n.id);
+                        }}
                       >
-                        Bütçelere git
-                      </Link>
-                    )}
-                  </button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 shrink-0 cursor-pointer text-muted-foreground hover:text-destructive"
-                    aria-label="Sil"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void remove(n.id);
-                    }}
+                        <p className="font-medium leading-snug">{n.title}</p>
+                        <p className="mt-1 line-clamp-3 text-xs text-muted-foreground">
+                          {n.body}
+                        </p>
+                        {(n.type === "budget_threshold" ||
+                          n.type === "budget_exceeded") && (
+                          <Link
+                            href="/budgets"
+                            className="mt-2 inline-block text-xs font-medium text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Bütçelere git
+                          </Link>
+                        )}
+                      </button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0 cursor-pointer text-muted-foreground hover:text-destructive"
+                        aria-label="Sil"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void remove(n.id);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {items.length > 0 && (
+                <div className="border-t border-border px-3 py-2 text-center">
+                  <Link
+                    href="/notifications"
+                    className="text-xs font-medium text-primary hover:underline"
+                    onClick={() => setOpen(false)}
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    Tüm bildirimleri gör
+                  </Link>
                 </div>
-              </li>
-            ))}
-          </ul>
-          {items.length > 0 && (
-            <div className="border-t border-border px-3 py-2 text-center">
-              <Link
-                href="/notifications"
-                className="text-xs font-medium text-primary hover:underline"
-                onClick={() => setOpen(false)}
-              >
-                Tüm bildirimleri gör
-              </Link>
-            </div>
+              )}
+            </>
           )}
         </div>
       </PopoverContent>

@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   tab: "GOLD" | "STOCK";
@@ -59,8 +59,18 @@ export function InvestmentsPositionsTabs({
             <CardTitle className="text-base">
               {tab === "GOLD" ? "Altın pozisyonları" : "Hisse pozisyonları"}
             </CardTitle>
-            <CardDescription>
-              {loading ? "Yükleniyor…" : `${items.length} kayıt`}
+            <CardDescription className="inline-flex min-h-5 items-center gap-2">
+              {loading ? (
+                <>
+                  <Loader2
+                    className="h-3.5 w-3.5 shrink-0 animate-spin text-primary"
+                    aria-hidden
+                  />
+                  <span className="sr-only">Yükleniyor</span>
+                </>
+              ) : (
+                `${items.length} kayıt`
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="overflow-x-auto">

@@ -14,6 +14,7 @@ import { GoalsPageHeader } from "@/components/goals/goals-page-header";
 import { GoalsList } from "@/components/goals/goals-list";
 import { UpdateGoalAmountDialog } from "@/components/goals/update-goal-amount-dialog";
 import { DeleteGoalDialog } from "@/components/goals/delete-goal-dialog";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 export default function GoalsPage() {
   const dispatch = useAppDispatch();
@@ -72,15 +73,17 @@ export default function GoalsPage() {
       />
 
       {error && <p className="text-destructive">{error}</p>}
-      {loading && <p className="text-muted-foreground">Yükleniyor...</p>}
-
-      <GoalsList
-        items={items}
-        loading={loading}
-        currency={currency}
-        onUpdate={setUpdatingId}
-        onDelete={setDeletingId}
-      />
+      {loading ? (
+        <LoadingMessage variant="page" />
+      ) : (
+        <GoalsList
+          items={items}
+          loading={loading}
+          currency={currency}
+          onUpdate={setUpdatingId}
+          onDelete={setDeletingId}
+        />
+      )}
 
       <UpdateGoalAmountDialog
         goal={updatingGoal}

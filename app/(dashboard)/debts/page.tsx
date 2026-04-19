@@ -17,6 +17,7 @@ import { DebtsList } from "@/components/debts/debts-list";
 import { EditDebtDialog } from "@/components/debts/edit-debt-dialog";
 import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
 import { DeleteDebtDialog } from "@/components/debts/delete-debt-dialog";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 export default function DebtsPage() {
   const dispatch = useAppDispatch();
@@ -124,18 +125,20 @@ export default function DebtsPage() {
       />
 
       {error && <p className="text-destructive">{error}</p>}
-      {loading && <p className="text-muted-foreground">Yükleniyor...</p>}
-
-      <DebtsList
-        tab={tab}
-        onTabChange={setTab}
-        items={filtered}
-        loading={loading}
-        currency={currency}
-        onPay={setPayingId}
-        onEdit={setEditingId}
-        onDelete={setDeletingId}
-      />
+      {loading ? (
+        <LoadingMessage variant="page" />
+      ) : (
+        <DebtsList
+          tab={tab}
+          onTabChange={setTab}
+          items={filtered}
+          loading={loading}
+          currency={currency}
+          onPay={setPayingId}
+          onEdit={setEditingId}
+          onDelete={setDeletingId}
+        />
+      )}
 
       <PayDebtDialog
         open={!!payingId}

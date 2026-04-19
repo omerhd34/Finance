@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn, currencySymbolLabel } from "@/lib/utils";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 export type CategoryBudgetRow = {
   id: string;
@@ -208,108 +209,112 @@ export function BudgetsClient({ currency }: Props) {
           {listError}
         </p>
       )}
-      {loading && (
-        <p className="text-sm text-muted-foreground">Yükleniyor...</p>
-      )}
+      {loading ? (
+        <LoadingMessage variant="page" />
+      ) : (
+        <>
+          {items.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              Henüz bütçe yok. Örneğin Market harcamaları için aylık bir limit
+              ekleyebilirsiniz.
+            </p>
+          )}
 
-      {!loading && items.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          Henüz bütçe yok. Örneğin Market harcamaları için aylık bir limit
-          ekleyebilirsiniz.
-        </p>
-      )}
-
-      <ul className="grid gap-4 md:grid-cols-2">
-        {items.map((b) => {
-          const pct = Math.min(
-            100,
-            b.monthlyLimit > 0 ? (b.spentThisMonth / b.monthlyLimit) * 100 : 0,
-          );
-          const warnAt = b.alertThresholdPercent;
-          const overLimit = b.spentThisMonth >= b.monthlyLimit;
-          const near =
-            !overLimit && pct >= warnAt - 0.0001 && b.monthlyLimit > 0;
-          return (
-            <li
-              key={b.id}
-              className="rounded-xl border border-border bg-card p-4 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-medium">{b.category}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {b.monthKey} dönemi
-                  </p>
-                </div>
-                <div className="flex shrink-0 gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-pointer"
-                    title="Düzenle"
-                    onClick={() => openEdit(b)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-pointer text-destructive"
-                    title="Sil"
-                    onClick={() => setDeletingId(b.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              <div className="mt-3 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Harcama</span>
-                  <span>
-                    {formatMoney(b.spentThisMonth, currency)} /{" "}
-                    {formatMoney(b.monthlyLimit, currency)}
-                  </span>
-                </div>
-                <Progress
-                  value={pct}
-                  indicatorClassName={cn(
-                    overLimit
-                      ? "bg-destructive"
-                      : near
-                        ? "bg-amber-500"
-                        : undefined,
-                  )}
-                />
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-                  <span>
-                    Uyarı eşiği: %{Math.round(b.alertThresholdPercent)}
-                  </span>
-                  <span
-                    title={
-                      b.emailAlertsEnabled && !globalEmailNotificationsOn
-                        ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
-                        : undefined
-                    }
-                  >
-                    E-posta:{" "}
-                    {globalEmailNotificationsOn && b.emailAlertsEnabled
-                      ? "Açık"
-                      : "Kapalı"}
-                  </span>
-                </div>
-                <Link
-                  href={`/transactions?category=${encodeURIComponent(b.category)}&type=expense`}
-                  className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
+          <ul className="grid gap-4 md:grid-cols-2">
+            {items.map((b) => {
+              const pct = Math.min(
+                100,
+                b.monthlyLimit > 0
+                  ? (b.spentThisMonth / b.monthlyLimit) * 100
+                  : 0,
+              );
+              const warnAt = b.alertThresholdPercent;
+              const overLimit = b.spentThisMonth >= b.monthlyLimit;
+              const near =
+                !overLimit && pct >= warnAt - 0.0001 && b.monthlyLimit > 0;
+              return (
+                <li
+                  key={b.id}
+                  className="rounded-xl border border-border bg-card p-4 shadow-sm"
                 >
-                  Bu kategorideki işlemler
-                </Link>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium">{b.category}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {b.monthKey} dönemi
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer"
+                        title="Düzenle"
+                        onClick={() => openEdit(b)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer text-destructive"
+                        title="Sil"
+                        onClick={() => setDeletingId(b.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Harcama</span>
+                      <span>
+                        {formatMoney(b.spentThisMonth, currency)} /{" "}
+                        {formatMoney(b.monthlyLimit, currency)}
+                      </span>
+                    </div>
+                    <Progress
+                      value={pct}
+                      indicatorClassName={cn(
+                        overLimit
+                          ? "bg-destructive"
+                          : near
+                            ? "bg-amber-500"
+                            : undefined,
+                      )}
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                      <span>
+                        Uyarı eşiği: %{Math.round(b.alertThresholdPercent)}
+                      </span>
+                      <span
+                        title={
+                          b.emailAlertsEnabled && !globalEmailNotificationsOn
+                            ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
+                            : undefined
+                        }
+                      >
+                        E-posta:{" "}
+                        {globalEmailNotificationsOn && b.emailAlertsEnabled
+                          ? "Açık"
+                          : "Kapalı"}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/transactions?category=${encodeURIComponent(b.category)}&type=expense`}
+                      className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      Bu kategorideki işlemler
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
 
       <Dialog
         open={formOpen}

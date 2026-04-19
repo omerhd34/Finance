@@ -26,6 +26,7 @@ import { EditTransactionDialog } from "@/components/transactions/edit-transactio
 import { TransactionsFiltersCard } from "@/components/transactions/transactions-filters-card";
 import { TransactionsPageHeader } from "@/components/transactions/transactions-page-header";
 import { TransactionsTableCard } from "@/components/transactions/transactions-table-card";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 function TransactionsPageContent() {
   const dispatch = useAppDispatch();
@@ -214,7 +215,7 @@ export default function TransactionsPage() {
     <Suspense
       fallback={
         <div className="space-y-6">
-          <p className="text-sm text-muted-foreground">Yükleniyor...</p>
+          <LoadingMessage variant="page" />
         </div>
       }
     >
