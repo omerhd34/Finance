@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
+  async rewrites() {
+    return [{ source: "/favicon.ico", destination: "/FinansIQ-192.png" }];
+  },
   images: {
     remotePatterns: [
       {
