@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Moon, Sun } from "lucide-react";
+import { LogIn, Moon, Sun } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/branding/brand-lockup";
@@ -61,41 +61,31 @@ export function LandingHeader() {
               )}
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               asChild
-              className="px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:bg-accent hover:text-foreground shrink-0"
+              size="sm"
+              className="h-8 shrink-0 gap-1.5 rounded-full border-slate-300/90 bg-white/50 px-3 text-xs font-semibold shadow-sm transition-all duration-200 hover:border-emerald-500/65 hover:bg-emerald-500/15 hover:text-emerald-900 hover:shadow-md hover:shadow-emerald-500/15 active:scale-[0.98] sm:h-9 sm:px-4 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/50 dark:bg-white/95 dark:text-zinc-900 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-50 dark:hover:text-emerald-950 dark:hover:shadow-lg dark:hover:shadow-emerald-950/25 active:dark:scale-[0.98] dark:focus-visible:ring-emerald-400/50 dark:focus-visible:ring-offset-[#050507]"
             >
-              <Link href="/login">Giriş</Link>
+              <Link
+                href="/login"
+                className="group inline-flex items-center gap-1.5"
+              >
+                <LogIn
+                  className="h-3.5 w-3.5 opacity-80 transition-colors group-hover:text-emerald-800 group-hover:opacity-100 sm:h-4 sm:w-4 dark:group-hover:text-emerald-900"
+                  aria-hidden
+                />
+                Giriş
+              </Link>
             </Button>
 
             <Button
               asChild
               size="sm"
-              className="h-8 sm:h-9 px-3 sm:px-5 text-xs sm:text-sm bg-emerald-500 shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 rounded-full font-semibold shrink-0"
+              className="h-8 shrink-0 rounded-full bg-emerald-500 px-3 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-500 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-400 dark:hover:text-white"
             >
               <Link href="/register">Ücretsiz Başla</Link>
             </Button>
           </nav>
-        </div>
-
-        <div className="sm:hidden flex w-full justify-end px-3 pb-1.5">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={toggleTheme}
-            disabled={!themeReady}
-            className="flex items-center justify-center h-8 w-8 rounded-full 
-             bg-emerald-500/10 border border-emerald-500/20 
-             hover:bg-emerald-500/20 hover:border-emerald-500/40 
-             transition-all duration-300 shadow-sm shadow-emerald-500/5 
-             p-0 aspect-square"
-          >
-            {themeResolved && resolvedTheme === "dark" ? (
-              <Moon className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <Sun className="h-4 w-4 text-emerald-600" />
-            )}
-          </Button>
         </div>
       </div>
     </header>
