@@ -26,7 +26,7 @@ const jwtProfileSelect = {
 } as const satisfies Record<keyof JwtProfileRow, true>;
 
 function resolveAuthSecret(): string | undefined {
-  const fromEnv = process.env.AUTH_SECRET;
+  const fromEnv = process.env.AUTH_SECRET?.trim();
   if (fromEnv) return fromEnv;
   if (process.env.NODE_ENV === "development") {
     return "iqfinansai-local-dev-secret-set-env-in-production";
@@ -40,6 +40,7 @@ const googleConfigured =
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: resolveAuthSecret(),
+  debug: process.env.AUTH_DEBUG === "1",
   adapter: PrismaAdapter(prisma),
   trustHost: true,
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
