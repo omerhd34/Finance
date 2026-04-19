@@ -22,8 +22,8 @@ export function InvestmentsPageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="text-sm text-muted-foreground">
-          BIST hisseleri ve gram altın pozisyonlarınızı takip edin. Güncel fiyat
-          alanına bugünkü kuru girebilirsiniz (otomatik kotasyon yakında).
+          Hisse senetleri ve altın pozisyonlarınızı takip edin. Güncel fiyat
+          alanına bugünkü kuru girebilirsiniz.
         </p>
       </div>
       <NewPositionDialog
