@@ -60,6 +60,12 @@ export function LandingFooter() {
           <div className="mx-1 h-4 w-px bg-border/50" aria-hidden="true" />
 
           <Link
+            href="/hakkimizda"
+            className="font-medium text-muted-foreground transition hover:text-foreground"
+          >
+            Hakkımızda
+          </Link>
+          <Link
             href="/login"
             className="font-medium text-muted-foreground transition hover:text-foreground"
           >

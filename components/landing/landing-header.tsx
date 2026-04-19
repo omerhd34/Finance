@@ -64,6 +64,14 @@ export function LandingHeader() {
             <Button
               variant="ghost"
               asChild
+              className="hidden md:inline-flex px-2 sm:px-3 text-xs sm:text-sm text-muted-foreground hover:bg-accent hover:text-foreground shrink-0"
+            >
+              <Link href="/hakkimizda">Hakkımızda</Link>
+            </Button>
+
+            <Button
+              variant="ghost"
+              asChild
               className="px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hover:bg-accent hover:text-foreground shrink-0"
             >
               <Link href="/login">Giriş</Link>
