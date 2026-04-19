@@ -7,7 +7,7 @@ function escapeHtml(text: string): string {
 }
 
 function appBaseUrl(): string {
-  const u = process.env.NEXTAUTH_URL?.trim() || "http://localhost:3000";
+  const u = process.env.NEXTAUTH_URL?.trim() || "https://iqfinansai.com";
   return u.replace(/\/$/, "");
 }
 
