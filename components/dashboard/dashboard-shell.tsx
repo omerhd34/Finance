@@ -29,7 +29,7 @@ import { useTheme } from "@wrksz/themes/client";
 import { normalizeUserCurrency } from "@/lib/currency";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { apiClient } from "@/lib/api-client";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { NotificationsPopover } from "@/components/notifications/notifications-popover";
 import { BrandLockup } from "@/components/branding/brand-lockup";
@@ -94,7 +94,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const reduxUserImage = useAppSelector((s) => s.auth.user?.image);
   const { data: session, update: updateSession } = useSession();
+  const sidebarAvatarSrc = reduxUserImage ?? session?.user?.image ?? undefined;
   const { setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -181,7 +183,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           id: session.user.id,
           name: data.name,
           email: data.email,
-          image: session.user.image ?? null,
+          image: data.image ?? null,
           currency: data.currency,
           phone: data.phone ?? null,
           profession: data.profession ?? null,
@@ -350,7 +352,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               title="Profil"
             >
               <Avatar className="h-7 w-7">
-                <AvatarImage src={session?.user?.image ?? undefined} alt="" />
+                <AvatarImage src={sidebarAvatarSrc} alt="" />
                 <AvatarFallback className="bg-primary/20 text-primary">
                   {(session?.user?.name ?? session?.user?.email ?? "?")
                     .slice(0, 2)
@@ -417,7 +419,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
               >
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src={session?.user?.image ?? undefined} alt="" />
+                  <AvatarImage src={sidebarAvatarSrc} alt="" />
                   <AvatarFallback className="bg-primary/20 text-primary">
                     {(session?.user?.name ?? session?.user?.email ?? "?")
                       .slice(0, 2)

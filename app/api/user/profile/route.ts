@@ -19,6 +19,25 @@ const profileSelectFields = {
   planTier: true,
 } as const;
 
+export async function GET() {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: profileSelectFields as unknown as Prisma.UserSelect,
+    });
+    if (!user) {
+      return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
+    }
+    return NextResponse.json(user);
+  } catch {
+    return NextResponse.json({ error: "Okunamadı" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
