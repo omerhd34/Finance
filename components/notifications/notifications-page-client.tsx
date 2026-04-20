@@ -108,7 +108,7 @@ export function NotificationsPageClient() {
   const unreadCount = items.filter((n) => !n.readAt).length;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {unreadCount > 0 && (
           <Button
