@@ -24,9 +24,9 @@ import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
-  "Hisse senedi ve altın (gram, çeyrek vb.) pozisyonlarını ekleyip düzenlemek veya silmek",
+  "Hisse senedi ve altın (gram, çeyrek vb.) kayıtlarını ekleyip düzenlemek veya silmek",
   "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
-  "Pozisyon bazında not tutmak ve fiyatları güncel tutmak",
+  "Kayıt bazında not tutmak ve fiyatları güncel tutmak",
   "Ana panelde yatırım Kar/Zarar kartı ile hisse ve altın özetlerini birlikte görmek",
 ] as const;
 

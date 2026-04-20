@@ -22,7 +22,7 @@ export function InvestmentsPageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="text-sm text-muted-foreground">
-          Hisse senetleri ve altın pozisyonlarınızı takip edin. Güncel fiyat
+          Hisse senetleri ve altın kayıtlarınızı takip edin. Güncel fiyat
           alanına bugünkü kuru girebilirsiniz.
         </p>
       </div>

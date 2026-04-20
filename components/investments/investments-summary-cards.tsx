@@ -38,7 +38,7 @@ export function InvestmentsSummaryCards({
       </Card>
       <Card>
         <CardHeader className="pb-2">
-          <CardDescription>Güncel değer (tahmini)</CardDescription>
+          <CardDescription>Güncel değer</CardDescription>
           <CardTitle className="text-xl tabular-nums">
             {formatMoney(totalValue, currency)}
           </CardTitle>

@@ -45,7 +45,7 @@ export function DashboardInvestmentSection({
               </span>
             </CardTitle>
             <CardDescription className="text-pretty">
-              Kayıtlı hisse pozisyonlarınızın toplam maliyet, güncel değer ve
+              Hisse senedi kayıtlarınızın toplam maliyet, güncel değer ve
               tahmini kar/zarar özeti
             </CardDescription>
           </div>
@@ -60,12 +60,12 @@ export function DashboardInvestmentSection({
           {stockSummary.count === 0 ? (
             <div className="rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Henüz hisse pozisyonu yok.{" "}
+                Henüz hisse kaydı yok.{" "}
                 <Link
                   href="/yatirimlar"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
-                  Pozisyon ekleyin
+                  Kayıt ekleyin
                 </Link>
               </p>
             </div>
@@ -90,7 +90,7 @@ export function DashboardInvestmentSection({
               </span>
             </CardTitle>
             <CardDescription className="text-pretty">
-              Kayıtlı altın pozisyonlarınızın toplam maliyet, güncel değer ve
+              Altın kayıtlarınızın toplam maliyet, güncel değer ve
               tahmini kar/zarar özeti
             </CardDescription>
           </div>
@@ -105,12 +105,12 @@ export function DashboardInvestmentSection({
           {goldSummary.count === 0 ? (
             <div className="rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Henüz altın pozisyonu yok.{" "}
+                Henüz altın kaydı yok.{" "}
                 <Link
                   href="/yatirimlar"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
-                  Pozisyon ekleyin
+                  Kayıt ekleyin
                 </Link>
               </p>
             </div>

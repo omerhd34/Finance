@@ -82,12 +82,12 @@ export function NewPositionDialog({
       <DialogTrigger asChild>
         <Button type="button" className="cursor-pointer">
           <Plus className="h-4 w-4" />
-          Pozisyon ekle
+          Kayıt ekle
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Yeni pozisyon</DialogTitle>
+          <DialogTitle>Yeni kayıt</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">

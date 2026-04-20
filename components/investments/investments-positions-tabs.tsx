@@ -57,7 +57,7 @@ export function InvestmentsPositionsTabs({
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {tab === "GOLD" ? "Altın pozisyonları" : "Hisse pozisyonları"}
+              {tab === "GOLD" ? "Altın kayıtları" : "Hisse kayıtları"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -103,7 +103,7 @@ export function InvestmentsPositionsTabs({
                       colSpan={tab === "GOLD" ? 7 : 8}
                       className="text-center text-muted-foreground"
                     >
-                      Henüz kayıt yok. &quot;Pozisyon ekle&quot; ile başlayın.
+                      Henüz kayıt yok. &quot;Kayıt ekle&quot; ile başlayın.
                     </TableCell>
                   </TableRow>
                 )}

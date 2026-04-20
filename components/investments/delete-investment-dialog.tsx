@@ -24,7 +24,7 @@ export function DeleteInvestmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Pozisyonu sil?</DialogTitle>
+          <DialogTitle>Kaydı sil?</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">Bu işlem geri alınamaz.</p>
         <DialogFooter>
