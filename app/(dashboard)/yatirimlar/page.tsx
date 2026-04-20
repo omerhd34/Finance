@@ -23,6 +23,13 @@ import { InvestmentsSummaryCards } from "@/components/investments/investments-su
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
+const PREMIUM_INVESTMENT_PERKS = [
+  "Hisse senedi ve altın (gram, çeyrek vb.) pozisyonlarını ekleyip düzenlemek veya silmek",
+  "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
+  "Pozisyon bazında not tutmak ve fiyatları güncel tutmak",
+  "Ana panelde yatırım Kar/Zarar kartı ile hisse ve altın özetlerini birlikte görmek",
+] as const;
+
 export default function InvestmentsPage() {
   const dispatch = useAppDispatch();
   const authPlanTier = useAppSelector((s) => s.auth.user?.planTier);
@@ -123,45 +130,40 @@ export default function InvestmentsPage() {
     void dispatch(fetchInvestments());
   }
 
-  if (!planPremium) {
-    const premiumInvestmentPerks = [
-      "Hisse senedi ve altın (gram, çeyrek vb.) pozisyonlarını ekleyip düzenlemek veya silmek",
-      "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
-      "Pozisyon bazında not tutmak ve fiyatları güncel tutmak",
-      "Ana panelde yatırım Kar/Zarar kartı ile hisse ve altın özetlerini birlikte görmek",
-    ];
-
-    return (
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
-          <p className="text-sm font-semibold text-foreground">
-            Premium ile neler kazanırsınız?
-          </p>
-          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-            {premiumInvestmentPerks.map((line) => (
-              <li key={line} className="flex gap-3">
-                <Check
-                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
-                  aria-hidden
-                />
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
+      {!planPremium ? (
+        <>
+          <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
+            <p className="text-sm font-semibold text-foreground">
+              Premium ile neler kazanırsınız?
+            </p>
+            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+              {PREMIUM_INVESTMENT_PERKS.map((line) => (
+                <li key={line} className="flex gap-3">
+                  <Check
+                    className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                    aria-hidden
+                  />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
+        </>
+      ) : null}
+
       <InvestmentsPageHeader
-        newOpen={newOpen}
-        onNewOpenChange={setNewOpen}
+        newOpen={planPremium && newOpen}
+        onNewOpenChange={(open) => {
+          if (open && !planPremium) return;
+          setNewOpen(open);
+        }}
         listTab={tab}
         currency={currency}
         onCreate={onCreate}
+        addDisabled={!planPremium}
       />
 
       {error && (
@@ -185,6 +187,7 @@ export default function InvestmentsPage() {
         currency={currency}
         onEdit={setEditing}
         onDelete={setDeletingId}
+        actionsDisabled={!planPremium}
       />
 
       <EditPositionDialog

@@ -32,6 +32,7 @@ type Props = {
   currency: string;
   onEdit: (position: InvestmentPosition) => void;
   onDelete: (id: string) => void;
+  actionsDisabled?: boolean;
 };
 
 export function InvestmentsPositionsTabs({
@@ -42,6 +43,7 @@ export function InvestmentsPositionsTabs({
   currency,
   onEdit,
   onDelete,
+  actionsDisabled = false,
 }: Props) {
   return (
     <Tabs value={tab} onValueChange={(v) => onTabChange(v as "GOLD" | "STOCK")}>
@@ -187,8 +189,13 @@ export function InvestmentsPositionsTabs({
                             variant="ghost"
                             size="icon"
                             aria-label="Düzenle"
+                            disabled={actionsDisabled}
                             onClick={() => onEdit(p)}
-                            className="cursor-pointer"
+                            className={
+                              actionsDisabled
+                                ? "cursor-not-allowed"
+                                : "cursor-pointer"
+                            }
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -196,7 +203,12 @@ export function InvestmentsPositionsTabs({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive cursor-pointer"
+                            disabled={actionsDisabled}
+                            className={
+                              actionsDisabled
+                                ? "cursor-not-allowed text-muted-foreground"
+                                : "text-destructive hover:text-destructive cursor-pointer"
+                            }
                             aria-label="Sil"
                             onClick={() => onDelete(p.id)}
                           >

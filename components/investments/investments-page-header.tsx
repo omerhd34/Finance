@@ -9,6 +9,7 @@ type Props = {
   listTab: "GOLD" | "STOCK";
   currency: string;
   onCreate: (values: PositionFormValues) => Promise<void>;
+  addDisabled?: boolean;
 };
 
 export function InvestmentsPageHeader({
@@ -17,6 +18,7 @@ export function InvestmentsPageHeader({
   listTab,
   currency,
   onCreate,
+  addDisabled = false,
 }: Props) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -32,6 +34,7 @@ export function InvestmentsPageHeader({
         listTab={listTab}
         currency={currency}
         onSubmit={onCreate}
+        disabled={addDisabled}
       />
     </div>
   );

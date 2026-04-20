@@ -37,6 +37,7 @@ type Props = {
   listTab: "GOLD" | "STOCK";
   currency: string;
   onSubmit: (values: PositionFormValues) => Promise<void>;
+  disabled?: boolean;
 };
 
 export function NewPositionDialog({
@@ -45,6 +46,7 @@ export function NewPositionDialog({
   listTab,
   currency,
   onSubmit,
+  disabled = false,
 }: Props) {
   const form = useForm<PositionFormValues>({
     resolver: zodResolver(positionFormSchema),
@@ -78,9 +80,24 @@ export function NewPositionDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (disabled && next) return;
+        onOpenChange(next);
+      }}
+    >
       <DialogTrigger asChild>
-        <Button className="cursor-pointer">
+        <Button
+          type="button"
+          disabled={disabled}
+          className={disabled ? "cursor-not-allowed" : "cursor-pointer"}
+          title={
+            disabled
+              ? "Pozisyon eklemek için Premium plan gerekir"
+              : undefined
+          }
+        >
           <Plus className="h-4 w-4" />
           Pozisyon ekle
         </Button>
