@@ -1,9 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
+  BellRing,
   Bot,
   Globe,
   HandCoins,
+  ReceiptText,
   PieChart,
   Shield,
   Target,
@@ -17,41 +19,57 @@ export type LandingFeatureItem = {
 
 export const LANDING_FEATURES: LandingFeatureItem[] = [
   {
-    title: "Gelir ve Gider Takibi",
-    description: "Tüm hareketlerinizi tek yerden kaydedin ve raporlayın.",
+    title: "Gelir-Gider Yönetimi",
+    description:
+      "Tüm finans hareketlerinizi tek panelden kaydedin ve düzenleyin.",
     icon: BarChart3,
   },
   {
-    title: "AI analiz",
-    description: "Yapay zekâ ile son 30 gününüzü yorumlayın ve öneriler alın.",
+    title: "Akıllı Finans Asistanı",
+    description:
+      "Harcamalarınızı yorumlayın, kişisel önerilerle daha iyi kararlar alın.",
     icon: Bot,
   },
   {
-    title: "Hedef belirleme",
-    description: "Tasarruf hedeflerinizi takip edin, ilerlemenizi görün.",
+    title: "Tasarruf Hedefleri",
+    description: "Kendinize hedef koyun, ilerlemenizi adım adım takip edin.",
     icon: Target,
   },
   {
-    title: "Borç ve Alacak",
+    title: "Borç ve Alacak Takibi",
     description:
-      "Size borçlu olanları ve sizin borçlarınızı kaydedin, ödemeleri takip edin.",
+      "Alacak ve borç kayıtlarınızı yönetin, ödeme süreçlerini aksatmadan izleyin.",
     icon: HandCoins,
   },
   {
-    title: "Grafikler",
+    title: "Görsel Finans Raporları",
     description:
-      "Aylık trend ve kategori dağılımını Recharts ile görselleştirin.",
+      "Aylık trendleri ve kategori dağılımını anlaşılır grafiklerle inceleyin.",
     icon: PieChart,
   },
   {
-    title: "Çoklu kategori",
-    description: "Harcama ve gelir için hazır kategori setleri.",
+    title: "Hazır Kategori Yapısı",
+    description:
+      "Gelir ve giderlerinizi pratik kategori yapısıyla kolayca sınıflandırın.",
     icon: Shield,
   },
   {
-    title: "Çoklu para birimi",
-    description: "TL, USD, EUR ve GBP desteği; ayarlardan seçin.",
+    title: "Çoklu Para Birimi Desteği",
+    description:
+      "TL, USD, EUR ve GBP ile işlem yapın, tercihinizi ayarlardan belirleyin.",
     icon: Globe,
+  },
+  {
+    title: "Akıllı Ödeme Hatırlatmaları",
+    description:
+      "Yaklaşan ödemeleri kaçırmayın; zamanında aksiyon almak için bildirim alın.",
+    icon: BellRing,
+  },
+  {
+    title: "Detaylı İşlem Geçmişi",
+    description:
+      "Tüm finans kayıtlarını tek ekranda filtreleyin ve geçmiş işlemleri hızlıca bulun.",
+    icon: ReceiptText,
   },
 ];
 
