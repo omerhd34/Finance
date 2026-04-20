@@ -132,7 +132,7 @@ export default function InvestmentsPage() {
     ];
 
     return (
-      <div className="mx-auto w-full max-w-7xl space-y-6">
+      <div className="space-y-6">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Yatırım
         </h1>
