@@ -61,6 +61,25 @@ export function expenseByCategoryForMonth(
   return [...map.entries()].map(([name, value]) => ({ name, value }));
 }
 
+export function expenseByCategoryForLastNMonths(
+  transactions: Transaction[],
+  n: number,
+  now: Date = new Date(),
+): CategorySlice[] {
+  const start = startOfMonth(subMonths(now, n - 1));
+  const end = endOfMonth(now);
+  const s = start.getTime();
+  const e = end.getTime();
+  const map = new Map<string, number>();
+  for (const t of transactions) {
+    if (t.type !== "expense") continue;
+    const d = new Date(t.date).getTime();
+    if (d < s || d > e) continue;
+    map.set(t.category, (map.get(t.category) ?? 0) + t.amount);
+  }
+  return [...map.entries()].map(([name, value]) => ({ name, value }));
+}
+
 export function sumByType(
   transactions: Transaction[],
   type: "income" | "expense",

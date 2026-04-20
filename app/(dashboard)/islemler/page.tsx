@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Transaction } from "@/types/transaction";
 import type { TransactionEditFormValues } from "@/lib/validations";
@@ -20,9 +20,15 @@ import {
   type TransactionFilters,
 } from "@/store/slices/transactionSlice";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
+import { apiClient } from "@/lib/api-client";
+import {
+  expenseByCategoryForLastNMonths,
+  lastNMonthsBars,
+} from "@/lib/dashboard-stats";
 import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
 import { DeleteTransactionDialog } from "@/components/transactions/delete-transaction-dialog";
 import { EditTransactionDialog } from "@/components/transactions/edit-transaction-dialog";
+import { TransactionsChartsSection } from "@/components/transactions/transactions-charts-section";
 import { TransactionsFiltersCard } from "@/components/transactions/transactions-filters-card";
 import { TransactionsPageHeader } from "@/components/transactions/transactions-page-header";
 import { TransactionsTableCard } from "@/components/transactions/transactions-table-card";
@@ -43,6 +49,36 @@ function TransactionsPageContent() {
   );
   const [amountSortOrder, setAmountSortOrder] = useState<"desc" | "asc" | null>(
     null,
+  );
+  const [chartItems, setChartItems] = useState<Transaction[]>([]);
+  const [chartLoading, setChartLoading] = useState(true);
+
+  const loadChartTransactions = useCallback(async () => {
+    setChartLoading(true);
+    try {
+      const { data } = await apiClient.get<{ items: Transaction[] }>(
+        "/api/transactions?limit=2000",
+      );
+      setChartItems(data.items);
+    } catch {
+      setChartItems([]);
+    } finally {
+      setChartLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadChartTransactions();
+  }, [loadChartTransactions]);
+
+  const chartNow = useMemo(() => new Date(), []);
+  const transactionsChartBars = useMemo(
+    () => lastNMonthsBars(chartItems, 3, chartNow),
+    [chartItems, chartNow],
+  );
+  const transactionsChartPie = useMemo(
+    () => expenseByCategoryForLastNMonths(chartItems, 3, chartNow),
+    [chartItems, chartNow],
   );
 
   useEffect(() => {
@@ -135,6 +171,7 @@ function TransactionsPageContent() {
     );
     setEditing(null);
     void dispatch(fetchTransactions({ filters, page, pageSize }));
+    void loadChartTransactions();
   }
 
   async function confirmDelete() {
@@ -142,6 +179,7 @@ function TransactionsPageContent() {
     await dispatch(deleteTransaction(deleting.id));
     setDeleting(null);
     void dispatch(fetchTransactions({ filters, page, pageSize }));
+    void loadChartTransactions();
   }
 
   return (
@@ -191,6 +229,12 @@ function TransactionsPageContent() {
         onNextPage={() => dispatch(setPage(page + 1))}
         onEdit={setEditing}
         onDelete={setDeleting}
+      />
+
+      <TransactionsChartsSection
+        bars={transactionsChartBars}
+        pie={transactionsChartPie}
+        loading={chartLoading}
       />
 
       <EditTransactionDialog
