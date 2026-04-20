@@ -154,55 +154,54 @@ export default function InvestmentsPage() {
         </>
       ) : null}
 
-      <InvestmentsPageHeader
-        newOpen={planPremium && newOpen}
-        onNewOpenChange={(open) => {
-          if (open && !planPremium) return;
-          setNewOpen(open);
-        }}
-        listTab={tab}
-        currency={currency}
-        onCreate={onCreate}
-        addDisabled={!planPremium}
-      />
+      {planPremium ? (
+        <>
+          <InvestmentsPageHeader
+            newOpen={newOpen}
+            onNewOpenChange={setNewOpen}
+            listTab={tab}
+            currency={currency}
+            onCreate={onCreate}
+          />
 
-      {error && (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
+          {error && (
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
 
-      <InvestmentsSummaryCards
-        totalCost={totals.cost}
-        totalValue={totals.val}
-        pnl={totals.pnl}
-        currency={currency}
-      />
+          <InvestmentsSummaryCards
+            totalCost={totals.cost}
+            totalValue={totals.val}
+            pnl={totals.pnl}
+            currency={currency}
+          />
 
-      <InvestmentsPositionsTabs
-        tab={tab}
-        onTabChange={setTab}
-        items={filtered}
-        loading={loading}
-        currency={currency}
-        onEdit={setEditing}
-        onDelete={setDeletingId}
-        actionsDisabled={!planPremium}
-      />
+          <InvestmentsPositionsTabs
+            tab={tab}
+            onTabChange={setTab}
+            items={filtered}
+            loading={loading}
+            currency={currency}
+            onEdit={setEditing}
+            onDelete={setDeletingId}
+          />
 
-      <EditPositionDialog
-        position={editingResolved}
-        open={!!editing}
-        onOpenChange={(o) => !o && setEditing(null)}
-        currency={currency}
-        onSave={onEditSave}
-      />
+          <EditPositionDialog
+            position={editingResolved}
+            open={!!editing}
+            onOpenChange={(o) => !o && setEditing(null)}
+            currency={currency}
+            onSave={onEditSave}
+          />
 
-      <DeleteInvestmentDialog
-        open={!!deletingId}
-        onOpenChange={(o) => !o && setDeletingId(null)}
-        onConfirm={() => void onConfirmDelete()}
-      />
+          <DeleteInvestmentDialog
+            open={!!deletingId}
+            onOpenChange={(o) => !o && setDeletingId(null)}
+            onConfirm={() => void onConfirmDelete()}
+          />
+        </>
+      ) : null}
     </div>
   );
 }
