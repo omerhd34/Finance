@@ -15,7 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = siteMetadata;
+export const metadata = {
+  ...siteMetadata,
+  other: {
+    "google-adsense-account": "ca-pub-5307815863038450",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -34,7 +39,7 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5307815863038450"
           crossOrigin="anonymous"
           strategy="afterInteractive"
-        ></Script>
+        />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider
