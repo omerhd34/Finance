@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
@@ -92,7 +93,10 @@ export default function NewTransactionPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
         <Button variant="ghost" asChild className="mb-2 -ml-2">
-          <Link href="/islemler">← İşlemlere dön</Link>
+          <Link href="/islemler">
+            <ArrowLeft />
+            İşlemlere dön
+          </Link>
         </Button>
         <h2 className="text-xl font-semibold">Yeni işlem</h2>
         <p className="text-sm text-muted-foreground">
