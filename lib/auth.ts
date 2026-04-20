@@ -29,6 +29,7 @@ type JwtProfileRow = {
   notificationsEnabled: boolean;
   image: string | null;
   planTier: string;
+  emailVerified: Date | null;
 };
 
 const jwtProfileSelect = {
@@ -42,6 +43,7 @@ const jwtProfileSelect = {
   notificationsEnabled: true,
   image: true,
   planTier: true,
+  emailVerified: true,
 } as const satisfies Record<keyof JwtProfileRow, true>;
 
 function resolveAuthSecret(): string | undefined {
@@ -122,6 +124,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
           token.picture = pictureForJwt(dbUser.image);
           token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
+          token.isEmailVerified = Boolean(dbUser.emailVerified);
+        }
+      }
+      if (token.id && token.isEmailVerified !== true) {
+        const ev = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { emailVerified: true },
+        });
+        if (ev?.emailVerified) {
+          token.isEmailVerified = true;
         }
       }
       if (trigger === "update" && session && typeof session === "object") {
@@ -154,6 +166,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
             token.picture = pictureForJwt(dbUser.image);
             token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
+            token.isEmailVerified = Boolean(dbUser.emailVerified);
           }
         }
         if (typeof s.currency === "string") {
@@ -246,6 +259,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           (token as { planTier?: string }).planTier === "premium"
             ? "premium"
             : "free";
+        session.user.isEmailVerified = Boolean(
+          (token as { isEmailVerified?: boolean }).isEmailVerified,
+        );
       }
       return session;
     },

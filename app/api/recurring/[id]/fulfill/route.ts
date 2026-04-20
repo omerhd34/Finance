@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { fulfillRecurringReminder } from "@/lib/recurring-service";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -10,6 +11,8 @@ export async function POST(_req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const { id } = await context.params;
     const result = await fulfillRecurringReminder(session.user.id, id);
     if (!result.ok) {

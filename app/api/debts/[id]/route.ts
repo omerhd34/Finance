@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt } from "@/lib/prisma";
 import { debtUpdateSchema } from "@/lib/validations";
 
@@ -11,6 +12,8 @@ export async function PUT(req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const { id } = await context.params;
     const body: unknown = await req.json();
     const parsed = debtUpdateSchema.safeParse(body);
@@ -64,6 +67,8 @@ export async function DELETE(_req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const { id } = await context.params;
     const existing = await debt.findFirst({
       where: { id, userId: session.user.id },

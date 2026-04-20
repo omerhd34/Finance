@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { EXPENSE_CATEGORIES } from "@/lib/categories";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -72,20 +72,8 @@ export function BudgetsClient({ currency }: Props) {
         "/api/category-budgets",
       );
       setItems(data.items);
-    } catch (e) {
-      if (axios.isAxiosError(e)) {
-        const msg = e.response?.data;
-        const text =
-          msg &&
-          typeof msg === "object" &&
-          "error" in msg &&
-          typeof (msg as { error?: unknown }).error === "string"
-            ? (msg as { error: string }).error
-            : null;
-        setListError(text ?? "Bütçeler yüklenemedi");
-      } else {
-        setListError("Bütçeler yüklenemedi");
-      }
+    } catch (e: unknown) {
+      setListError(parseApiErrorForUser(e, "Bütçeler yüklenemedi"));
     } finally {
       setLoading(false);
     }
@@ -156,19 +144,7 @@ export function BudgetsClient({ currency }: Props) {
       clearFormErrors();
       await load();
     } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        const err = e.response?.data;
-        const msg =
-          err &&
-          typeof err === "object" &&
-          "error" in err &&
-          typeof (err as { error?: unknown }).error === "string"
-            ? (err as { error: string }).error
-            : null;
-        setSaveError(msg ?? "Kaydedilemedi");
-      } else {
-        setSaveError("Kaydedilemedi");
-      }
+      setSaveError(parseApiErrorForUser(e, "Kaydedilemedi"));
     } finally {
       setSaving(false);
     }
@@ -180,8 +156,8 @@ export function BudgetsClient({ currency }: Props) {
       await apiClient.delete(`/api/category-budgets/${deletingId}`);
       setDeletingId(null);
       await load();
-    } catch {
-      setListError("Silinemedi");
+    } catch (e: unknown) {
+      setListError(parseApiErrorForUser(e, "Silinemedi"));
     }
   }
 

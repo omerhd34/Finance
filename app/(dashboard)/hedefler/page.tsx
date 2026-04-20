@@ -37,7 +37,7 @@ export default function GoalsPage() {
           ? new Date(values.deadline + "T12:00:00")
           : null,
       }),
-    );
+    ).unwrap();
     void dispatch(fetchGoals());
   }
 

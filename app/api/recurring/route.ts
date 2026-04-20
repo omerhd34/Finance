@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { recurringRule } from "@/lib/prisma";
 import { normalizeDueDate } from "@/lib/recurring-schedule";
 import { recurringCreateSchema } from "@/lib/validations";
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const body: unknown = await req.json();
     const parsed = recurringCreateSchema.safeParse(body);
     if (!parsed.success) {

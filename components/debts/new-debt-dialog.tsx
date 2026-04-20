@@ -1,9 +1,12 @@
 /* eslint-disable react-hooks/incompatible-library */
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { newDebtSchema, type NewDebtFormValues } from "@/lib/debts-schema";
 import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,6 +43,8 @@ export function NewDebtDialog({
   currency,
   onSubmit,
 }: Props) {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const form = useForm<NewDebtFormValues>({
     resolver: zodResolver(newDebtSchema),
     defaultValues: {
@@ -53,20 +58,33 @@ export function NewDebtDialog({
   });
 
   async function handleSubmit(values: NewDebtFormValues) {
-    await onSubmit(values);
-    form.reset({
-      direction: "RECEIVABLE",
-      counterparty: "",
-      totalAmount: 0,
-      paidAmount: 0,
-      dueDate: "",
-      note: "",
-    });
-    onOpenChange(false);
+    setSubmitError(null);
+    try {
+      await onSubmit(values);
+      form.reset({
+        direction: "RECEIVABLE",
+        counterparty: "",
+        totalAmount: 0,
+        paidAmount: 0,
+        dueDate: "",
+        note: "",
+      });
+      onOpenChange(false);
+    } catch (e: unknown) {
+      setSubmitError(
+        parseApiErrorForUser(e, "Kayıt oluşturulamadı. Tekrar deneyin."),
+      );
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (o) setSubmitError(null);
+        onOpenChange(o);
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4" />
@@ -78,6 +96,19 @@ export function NewDebtDialog({
           <DialogTitle>Yeni borç / alacak</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          {submitError ? (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-foreground">
+              <p>{submitError}</p>
+              <p className="mt-2">
+                <Link
+                  href="/profil"
+                  className="font-medium text-primary underline underline-offset-2"
+                >
+                  Profil sayfasına git
+                </Link>
+              </p>
+            </div>
+          ) : null}
           <p className="text-xs text-muted-foreground">
             Tutarlar {currencySymbolLabel(currency)} cinsinden; kayıt TL olarak
             saklanır.
@@ -152,8 +183,12 @@ export function NewDebtDialog({
             <Textarea rows={3} {...form.register("note")} />
           </div>
           <DialogFooter>
-            <Button type="submit" className="cursor-pointer">
-              Kaydet
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="cursor-pointer"
+            >
+              {form.formState.isSubmitting ? "Kaydediliyor…" : "Kaydet"}
             </Button>
           </DialogFooter>
         </form>

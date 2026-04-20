@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { dedupeTransactionRows } from "@/lib/dedupe-transactions-display";
 import { prisma } from "@/lib/prisma";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
@@ -102,6 +103,8 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const body: unknown = await req.json();
     const parsed = transactionCreateSchema.safeParse(body);
     if (!parsed.success) {

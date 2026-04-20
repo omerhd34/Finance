@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import type { InvestmentPosition } from "@/types/investment";
 
 export type InvestmentsState = {
@@ -22,8 +23,8 @@ export const fetchInvestments = createAsyncThunk(
         "/api/investments",
       );
       return data.items;
-    } catch {
-      return rejectWithValue("Portföy yüklenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Portföy yüklenemedi"));
     }
   },
 );
@@ -49,8 +50,8 @@ export const addInvestment = createAsyncThunk(
         payload,
       );
       return data;
-    } catch {
-      return rejectWithValue("Kayıt oluşturulamadı");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Kayıt oluşturulamadı"));
     }
   },
 );
@@ -67,8 +68,8 @@ export const updateInvestment = createAsyncThunk(
         arg.body,
       );
       return data;
-    } catch {
-      return rejectWithValue("Güncellenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Güncellenemedi"));
     }
   },
 );
@@ -79,8 +80,8 @@ export const deleteInvestment = createAsyncThunk(
     try {
       await apiClient.delete(`/api/investments/${id}`);
       return id;
-    } catch {
-      return rejectWithValue("Silinemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Silinemedi"));
     }
   },
 );

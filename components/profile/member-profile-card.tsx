@@ -58,6 +58,7 @@ export type MemberProfileInitial = {
   currency: string;
   planTier: "free" | "premium";
   createdAtIso: string;
+  emailVerified: boolean;
 };
 
 type MemberProfileCardProps = {
@@ -97,6 +98,8 @@ export function MemberProfileCard({
   const [success, setSuccess] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [verifySending, setVerifySending] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: initial.name ?? "",
@@ -177,6 +180,32 @@ export function MemberProfileCard({
       setAvatarError("Fotoğraf kaydedilemedi. Tekrar deneyin.");
     } finally {
       setAvatarBusy(false);
+    }
+  }
+
+  async function sendVerificationEmail() {
+    if (!session?.user?.id || session.user.id !== initial.id) return;
+    setVerifySending(true);
+    setVerifyMessage(null);
+    try {
+      const { data } = await apiClient.post<{
+        ok?: boolean;
+        message?: string;
+        sent?: boolean;
+      }>("/api/auth/verify-email/send");
+      if (data?.message) setVerifyMessage(data.message);
+      if (data?.sent) {
+        await updateSession({ reloadUser: true } as Record<string, unknown>);
+        router.refresh();
+      }
+    } catch (e: unknown) {
+      const ax = e as { response?: { data?: { error?: string } } };
+      setVerifyMessage(
+        ax.response?.data?.error ??
+          "E-posta gönderilemedi. Bir süre sonra tekrar deneyin.",
+      );
+    } finally {
+      setVerifySending(false);
     }
   }
 
@@ -526,7 +555,7 @@ export function MemberProfileCard({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <Label
                 htmlFor="member-month-start"
                 className="block leading-snug"
@@ -546,7 +575,7 @@ export function MemberProfileCard({
                 className="h-11 rounded-xl border-border/70 bg-muted/25"
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <Label
                 htmlFor="member-membership-date"
                 className="block leading-snug"
@@ -562,6 +591,38 @@ export function MemberProfileCard({
               />
             </div>
           </div>
+
+          {ownProfile && !initial.emailVerified ? (
+            <div className="rounded-xl border border-border/70 bg-muted/15 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 space-y-1">
+                  <p className="text-sm font-medium text-foreground">
+                    E-posta doğrulaması
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Hesap güvenliği ve bildirimler için adresinizi onaylayın.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full cursor-pointer sm:w-auto"
+                  disabled={verifySending}
+                  onClick={() => void sendVerificationEmail()}
+                >
+                  {verifySending
+                    ? "Gönderiliyor…"
+                    : "Doğrulama e-postası gönder"}
+                </Button>
+              </div>
+              {verifyMessage ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {verifyMessage}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
           {success ? (

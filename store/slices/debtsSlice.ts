@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import type { Debt } from "@/types/debt";
 
 export type DebtsState = {
@@ -20,8 +21,8 @@ export const fetchDebts = createAsyncThunk(
     try {
       const { data } = await apiClient.get<{ items: Debt[] }>("/api/debts");
       return data.items;
-    } catch {
-      return rejectWithValue("Kayıtlar yüklenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Kayıtlar yüklenemedi"));
     }
   },
 );
@@ -49,8 +50,8 @@ export const addDebt = createAsyncThunk(
         note: payload.note ?? null,
       });
       return data;
-    } catch {
-      return rejectWithValue("Kayıt oluşturulamadı");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Kayıt oluşturulamadı"));
     }
   },
 );
@@ -67,8 +68,8 @@ export const updateDebt = createAsyncThunk(
         arg.body,
       );
       return data;
-    } catch {
-      return rejectWithValue("Güncellenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Güncellenemedi"));
     }
   },
 );
@@ -79,8 +80,8 @@ export const deleteDebt = createAsyncThunk(
     try {
       await apiClient.delete(`/api/debts/${id}`);
       return id;
-    } catch {
-      return rejectWithValue("Silinemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Silinemedi"));
     }
   },
 );

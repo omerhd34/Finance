@@ -109,6 +109,32 @@ export const passwordResetToken: PasswordResetTokenDelegate = (
   prisma as unknown as { passwordResetToken: PasswordResetTokenDelegate }
 ).passwordResetToken;
 
+type EmailVerificationTokenRow = {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  createdAt: Date;
+};
+
+type EmailVerificationTokenDelegate = {
+  deleteMany(args: {
+    where: { userId?: string; tokenHash?: string };
+  }): Promise<{ count: number }>;
+  create(args: {
+    data: { userId: string; tokenHash: string; expiresAt: Date };
+  }): Promise<EmailVerificationTokenRow>;
+  findUnique(args: {
+    where: { tokenHash: string };
+    select?: { userId?: boolean; expiresAt?: boolean };
+  }): Promise<Pick<EmailVerificationTokenRow, "userId" | "expiresAt"> | null>;
+  delete(args: { where: { tokenHash: string } }): Promise<EmailVerificationTokenRow>;
+};
+
+export const emailVerificationToken: EmailVerificationTokenDelegate = (
+  prisma as unknown as { emailVerificationToken: EmailVerificationTokenDelegate }
+).emailVerificationToken;
+
 type CategoryBudgetRow = {
   id: string;
   userId: string;

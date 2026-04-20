@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { prisma } from "@/lib/prisma";
 import {
   buildIframePaytrToken,
@@ -28,6 +29,8 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
 
     const user = (await prisma.user.findUnique({
       where: { id: session.user.id },

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { recurringRule } from "@/lib/prisma";
 import {
   alignNextDueToFuture,
@@ -35,6 +36,8 @@ export async function PUT(req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const { id } = await context.params;
     const existing = await recurringRule.findFirst({
       where: { id, userId: session.user.id },
@@ -115,6 +118,8 @@ export async function DELETE(_req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const { id } = await context.params;
     const existing = await recurringRule.findFirst({
       where: { id, userId: session.user.id },

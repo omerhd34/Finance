@@ -22,6 +22,7 @@ type ProfileRow = {
   currency: string;
   planTier: string;
   createdAt: Date;
+  emailVerified: Date | null;
 };
 
 export default async function MemberProfilePage({ params }: ProfilePageProps) {
@@ -45,6 +46,7 @@ export default async function MemberProfilePage({ params }: ProfilePageProps) {
       currency: true,
       planTier: true,
       createdAt: true,
+      emailVerified: true,
     } as unknown as Prisma.UserSelect,
   })) as ProfileRow | null;
 
@@ -92,6 +94,7 @@ export default async function MemberProfilePage({ params }: ProfilePageProps) {
           currency: normalizeUserCurrency(profile.currency),
           planTier,
           createdAtIso: profile.createdAt.toISOString(),
+          emailVerified: Boolean(profile.emailVerified),
         }}
       />
     </div>

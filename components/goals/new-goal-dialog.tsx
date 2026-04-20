@@ -1,9 +1,12 @@
 /* eslint-disable react-hooks/incompatible-library */
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { newGoalSchema, type NewGoalFormValues } from "@/lib/goals-schema";
 import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +35,8 @@ export function NewGoalDialog({
   currency,
   onSubmit,
 }: Props) {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const form = useForm<NewGoalFormValues>({
     resolver: zodResolver(newGoalSchema),
     defaultValues: {
@@ -42,17 +47,30 @@ export function NewGoalDialog({
   });
 
   async function handleSubmit(values: NewGoalFormValues) {
-    await onSubmit(values);
-    form.reset({
-      title: "",
-      targetAmount: 0,
-      deadline: "",
-    });
-    onOpenChange(false);
+    setSubmitError(null);
+    try {
+      await onSubmit(values);
+      form.reset({
+        title: "",
+        targetAmount: 0,
+        deadline: "",
+      });
+      onOpenChange(false);
+    } catch (e: unknown) {
+      setSubmitError(
+        parseApiErrorForUser(e, "Hedef oluşturulamadı. Tekrar deneyin."),
+      );
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (o) setSubmitError(null);
+        onOpenChange(o);
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="cursor-pointer">
           <Plus className="h-4 w-4" />
@@ -64,6 +82,19 @@ export function NewGoalDialog({
           <DialogTitle>Yeni hedef</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          {submitError ? (
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-foreground">
+              <p>{submitError}</p>
+              <p className="mt-2">
+                <Link
+                  href="/profil"
+                  className="font-medium text-primary underline underline-offset-2"
+                >
+                  Profil sayfasına git
+                </Link>
+              </p>
+            </div>
+          ) : null}
           <p className="text-xs text-muted-foreground">
             Tutarlar {currencySymbolLabel(currency)} cinsinden girilir; kayıt TL
             olarak saklanır.
@@ -96,8 +127,12 @@ export function NewGoalDialog({
             />
           </div>
           <DialogFooter>
-            <Button type="submit" className="cursor-pointer">
-              Oluştur
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="cursor-pointer"
+            >
+              {form.formState.isSubmitting ? "Kaydediliyor…" : "Oluştur"}
             </Button>
           </DialogFooter>
         </form>

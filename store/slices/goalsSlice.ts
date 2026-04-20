@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import type { Goal } from "@/types/goal";
 
 export type GoalsState = {
@@ -20,8 +21,8 @@ export const fetchGoals = createAsyncThunk(
     try {
       const { data } = await apiClient.get<{ items: Goal[] }>("/api/goals");
       return data.items;
-    } catch {
-      return rejectWithValue("Hedefler yüklenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Hedefler yüklenemedi"));
     }
   },
 );
@@ -43,8 +44,10 @@ export const addGoal = createAsyncThunk(
         deadline: payload.deadline ?? null,
       });
       return data;
-    } catch {
-      return rejectWithValue("Hedef oluşturulamadı");
+    } catch (e: unknown) {
+      return rejectWithValue(
+        parseApiErrorForUser(e, "Hedef oluşturulamadı"),
+      );
     }
   },
 );
@@ -61,8 +64,8 @@ export const updateGoal = createAsyncThunk(
         arg.body,
       );
       return data;
-    } catch {
-      return rejectWithValue("Güncellenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Güncellenemedi"));
     }
   },
 );
@@ -73,8 +76,8 @@ export const deleteGoal = createAsyncThunk(
     try {
       await apiClient.delete(`/api/goals/${id}`);
       return id;
-    } catch {
-      return rejectWithValue("Silinemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Silinemedi"));
     }
   },
 );

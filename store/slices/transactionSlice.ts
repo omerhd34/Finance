@@ -4,6 +4,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import type { Transaction } from "@/types/transaction";
 
 export type TransactionFilters = {
@@ -78,14 +79,7 @@ export const fetchTransactions = createAsyncThunk(
       );
       return data;
     } catch (e: unknown) {
-      const msg =
-        e && typeof e === "object" && "response" in e
-          ? String(
-              (e as { response?: { data?: { error?: string } } }).response?.data
-                ?.error ?? "Yükleme başarısız",
-            )
-          : "Yükleme başarısız";
-      return rejectWithValue(msg);
+      return rejectWithValue(parseApiErrorForUser(e, "Yükleme başarısız"));
     }
   },
 );
@@ -108,8 +102,8 @@ export const addTransaction = createAsyncThunk(
         date: payload.date.toISOString(),
       });
       return data;
-    } catch {
-      return rejectWithValue("Kayıt başarısız");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Kayıt başarısız"));
     }
   },
 );
@@ -126,8 +120,8 @@ export const updateTransaction = createAsyncThunk(
         arg.body,
       );
       return data;
-    } catch {
-      return rejectWithValue("Güncelleme başarısız");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Güncelleme başarısız"));
     }
   },
 );
@@ -138,8 +132,8 @@ export const deleteTransaction = createAsyncThunk(
     try {
       await apiClient.delete(`/api/transactions/${id}`);
       return id;
-    } catch {
-      return rejectWithValue("Silinemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Silinemedi"));
     }
   },
 );

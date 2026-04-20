@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api-client";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import type { RecurringRule } from "@/types/recurring";
 import {
   fetchTransactions,
@@ -26,8 +27,8 @@ export const fetchRecurringRules = createAsyncThunk(
         "/api/recurring",
       );
       return data.items;
-    } catch {
-      return rejectWithValue("Kayıtlar yüklenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Kayıtlar yüklenemedi"));
     }
   },
 );
@@ -41,8 +42,8 @@ export const addRecurringRule = createAsyncThunk(
         payload,
       );
       return data;
-    } catch {
-      return rejectWithValue("Oluşturulamadı");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Oluşturulamadı"));
     }
   },
 );
@@ -59,8 +60,8 @@ export const updateRecurringRule = createAsyncThunk(
         arg.body,
       );
       return data;
-    } catch {
-      return rejectWithValue("Güncellenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Güncellenemedi"));
     }
   },
 );
@@ -71,8 +72,8 @@ export const deleteRecurringRule = createAsyncThunk(
     try {
       await apiClient.delete(`/api/recurring/${id}`);
       return id;
-    } catch {
-      return rejectWithValue("Silinemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Silinemedi"));
     }
   },
 );
@@ -101,8 +102,8 @@ export const processDueRecurring = createAsyncThunk(
         );
       }
       return data.created;
-    } catch {
-      return rejectWithValue("İşlenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "İşlenemedi"));
     }
   },
 );
@@ -128,8 +129,8 @@ export const fulfillRecurringReminderThunk = createAsyncThunk(
         }),
       );
       return id;
-    } catch {
-      return rejectWithValue("İşlem oluşturulamadı");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "İşlem oluşturulamadı"));
     }
   },
 );
@@ -141,8 +142,8 @@ export const skipRecurringReminderThunk = createAsyncThunk(
       await apiClient.post(`/api/recurring/${id}/skip`);
       await dispatch(fetchRecurringRules());
       return id;
-    } catch {
-      return rejectWithValue("Ertelenemedi");
+    } catch (e: unknown) {
+      return rejectWithValue(parseApiErrorForUser(e, "Ertelenemedi"));
     }
   },
 );

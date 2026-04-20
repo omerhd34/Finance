@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -44,6 +45,7 @@ export default function NewTransactionPage() {
   const router = useRouter();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [typeTab, setTypeTab] = useState<"income" | "expense">("expense");
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -65,16 +67,25 @@ export default function NewTransactionPage() {
     typeTab === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
 
   async function onSubmit(values: FormValues) {
+    setSubmitError(null);
     const d = new Date(values.date + "T12:00:00");
-    await apiClient.post("/api/transactions", {
-      type: typeTab,
-      amount: displayAmountToTry(values.amount, currency),
-      category: values.category,
-      description: values.description || undefined,
-      date: d.toISOString(),
-    });
-    router.push("/islemler");
-    router.refresh();
+    try {
+      await apiClient.post("/api/transactions", {
+        type: typeTab,
+        amount: displayAmountToTry(values.amount, currency),
+        category: values.category,
+        description: values.description || undefined,
+        date: d.toISOString(),
+      });
+      router.push("/islemler");
+      router.refresh();
+    } catch (e: unknown) {
+      if (e instanceof EmailVerificationRequiredError) {
+        setSubmitError(e.message);
+        return;
+      }
+      setSubmitError("İşlem kaydedilemedi. Lütfen tekrar deneyin.");
+    }
   }
 
   return (
@@ -98,6 +109,19 @@ export default function NewTransactionPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {submitError ? (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-foreground">
+                <p>{submitError}</p>
+                <p className="mt-2">
+                  <Link
+                    href="/profil"
+                    className="font-medium text-primary underline underline-offset-2"
+                  >
+                    Profil sayfasına git
+                  </Link>
+                </p>
+              </div>
+            ) : null}
             <Tabs
               value={typeTab}
               onValueChange={(v) => {

@@ -59,7 +59,7 @@ export default function DebtsPage() {
         dueDate: values.dueDate ? new Date(values.dueDate + "T12:00:00") : null,
         note: values.note?.trim() ? values.note.trim() : null,
       }),
-    );
+    ).unwrap();
     void dispatch(fetchDebts());
   }
 

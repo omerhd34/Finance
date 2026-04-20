@@ -71,7 +71,7 @@ export default function RecurringPage() {
   }
 
   async function onCreate(values: RecurringFormValues) {
-    await dispatch(addRecurringRule(buildPayload(values)));
+    await dispatch(addRecurringRule(buildPayload(values))).unwrap();
     void dispatch(fetchRecurringRules());
   }
 

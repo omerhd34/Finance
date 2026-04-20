@@ -13,6 +13,7 @@ declare module "next-auth" {
       hasPassword?: boolean;
       notificationsEnabled?: boolean;
       planTier?: "free" | "premium";
+      isEmailVerified?: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -29,5 +30,6 @@ declare module "next-auth/jwt" {
     hasPassword?: boolean;
     notificationsEnabled?: boolean;
     planTier?: "free" | "premium";
+    isEmailVerified?: boolean;
   }
 }

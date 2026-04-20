@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { GOLD_SUBTYPE_VALUES, goldSubtypeLabel } from "@/lib/gold-subtypes";
 import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
 import { investmentPosition } from "@/lib/prisma";
@@ -16,6 +17,8 @@ export async function PUT(req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     if (!(await isUserPremiumInDb(session.user.id))) {
       return NextResponse.json({ error: PREMIUM_ONLY_MSG }, { status: 403 });
     }
@@ -104,6 +107,8 @@ export async function DELETE(_req: Request, context: RouteContext) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     if (!(await isUserPremiumInDb(session.user.id))) {
       return NextResponse.json({ error: PREMIUM_ONLY_MSG }, { status: 403 });
     }

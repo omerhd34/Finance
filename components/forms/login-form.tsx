@@ -24,6 +24,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const passwordJustReset = searchParams.get("reset") === "ok";
+  const emailVerifiedOk = searchParams.get("email_verified") === "1";
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -59,6 +60,11 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         {passwordJustReset && (
           <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-foreground">
             Şifren güncellendi. Yeni şifrenle giriş yapabilirsin.
+          </p>
+        )}
+        {emailVerifiedOk && (
+          <p className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-foreground">
+            E-posta adresin doğrulandı. Giriş yaparak devam edebilirsin.
           </p>
         )}
         {googleEnabled && (

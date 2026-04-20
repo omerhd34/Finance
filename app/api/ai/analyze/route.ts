@@ -4,6 +4,7 @@ import {
   GoogleGenerativeAIFetchError,
 } from "@google/generative-ai";
 import { auth } from "@/lib/auth";
+import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt, prisma } from "@/lib/prisma";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
@@ -129,6 +130,8 @@ export async function POST() {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { planTier: true },
