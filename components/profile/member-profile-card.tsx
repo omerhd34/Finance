@@ -464,7 +464,10 @@ export function MemberProfileCard({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="member-email" className="block leading-snug">
+              <Label
+                htmlFor="member-email"
+                className="block leading-snug text-muted-foreground"
+              >
                 E-posta
               </Label>
               <Input
@@ -473,7 +476,7 @@ export function MemberProfileCard({
                 readOnly
                 value={session?.user?.email ?? initial.email}
                 aria-readonly="true"
-                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
+                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40 text-muted-foreground"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -578,7 +581,7 @@ export function MemberProfileCard({
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="member-membership-date"
-                className="block leading-snug"
+                className="block leading-snug text-muted-foreground"
               >
                 Üyelik tarihi
               </Label>
@@ -587,7 +590,7 @@ export function MemberProfileCard({
                 readOnly
                 value={formatMembershipDate(initial.createdAtIso)}
                 aria-readonly="true"
-                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
+                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40 text-muted-foreground"
               />
             </div>
           </div>
