@@ -59,7 +59,7 @@ export function DueRemindersCard({
             <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
-                className="bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90"
+                className="bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90 cursor-pointer"
                 disabled={actionId === r.id}
                 onClick={() => void onFulfill(r.id)}
               >
@@ -68,6 +68,7 @@ export function DueRemindersCard({
               <Button
                 size="sm"
                 variant="outline"
+                className="cursor-pointer"
                 disabled={actionId === r.id}
                 onClick={() => void onSkip(r.id)}
               >
