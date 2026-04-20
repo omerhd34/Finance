@@ -124,6 +124,51 @@ async function analyzeWithGemini(
   throw lastError ?? new Error("Gemini yanıt veremedi.");
 }
 
+export async function GET() {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    const emailBlock = blockIfEmailNotVerified(session);
+    if (emailBlock) return emailBlock;
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { planTier: true },
+    });
+    if (!dbUser || dbUser.planTier !== "premium") {
+      return NextResponse.json(
+        {
+          error:
+            "AI Analiz yalnızca Premium plandadır. Ayarlar sayfasından planınızı Premium olarak seçin.",
+        },
+        { status: 403 },
+      );
+    }
+
+    const analyses = await prisma.aiFinanceAnalysis.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: { id: true, markdown: true, createdAt: true },
+    });
+
+    return NextResponse.json({
+      analyses: analyses.map((a) => ({
+        id: a.id,
+        markdown: a.markdown,
+        createdAt: a.createdAt.toISOString(),
+      })),
+    });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "Geçmiş analizler yüklenirken bir hata oluştu" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST() {
   try {
     const session = await auth();
@@ -216,6 +261,21 @@ export async function POST() {
     };
 
     const markdown = await analyzeWithGemini(geminiKey, payload);
+
+    await prisma.aiFinanceAnalysis.create({
+      data: { userId: session.user.id, markdown },
+    });
+    const idsNewestFirst = await prisma.aiFinanceAnalysis.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+    const staleIds = idsNewestFirst.slice(5).map((r) => r.id);
+    if (staleIds.length > 0) {
+      await prisma.aiFinanceAnalysis.deleteMany({
+        where: { id: { in: staleIds } },
+      });
+    }
 
     return NextResponse.json({ markdown });
   } catch (e) {

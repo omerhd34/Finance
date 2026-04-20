@@ -7,6 +7,7 @@ import { apiClient } from "@/lib/api-client";
 import { sectionsFromMarkdown } from "@/lib/ai-insights-parse";
 import { messageFromAiAnalyzeError } from "@/lib/ai-insights-errors";
 import { AiInsightsHero } from "@/components/ai-insights/ai-insights-hero";
+import { AiInsightsHistoryDialog } from "@/components/ai-insights/ai-insights-history-dialog";
 import { AiInsightsRunControls } from "@/components/ai-insights/ai-insights-run-controls";
 import { AiInsightsLoadingSkeleton } from "@/components/ai-insights/ai-insights-loading-skeleton";
 import { AiInsightsSections } from "@/components/ai-insights/ai-insights-sections";
@@ -83,6 +84,15 @@ export default function AiInsightsPage() {
         error={error}
         onRun={run}
         planLocked={false}
+        secondaryAction={
+          <AiInsightsHistoryDialog
+            disabled={loading}
+            onSelect={(md) => {
+              setMarkdown(md);
+              setError(null);
+            }}
+          />
+        }
       />
 
       {loading ? <AiInsightsLoadingSkeleton /> : null}

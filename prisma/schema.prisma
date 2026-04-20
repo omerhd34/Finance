@@ -34,6 +34,17 @@ model User {
   categoryBudgets  CategoryBudget[]
   notifications    Notification[]
   emailVerificationTokens EmailVerificationToken[]
+  aiFinanceAnalyses      AiFinanceAnalysis[]
+}
+
+model AiFinanceAnalysis {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  markdown  String   @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model EmailVerificationToken {

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
   error: string | null;
   onRun: () => void;
   planLocked?: boolean;
+  secondaryAction?: ReactNode;
 };
 
 export function AiInsightsRunControls({
@@ -14,6 +16,7 @@ export function AiInsightsRunControls({
   error,
   onRun,
   planLocked = false,
+  secondaryAction,
 }: Props) {
   const disabled = loading || planLocked;
   return (
@@ -37,6 +40,7 @@ export function AiInsightsRunControls({
             {loading ? "Analiz ediliyor..." : "Yeniden Analiz Et"}
           </Button>
         )}
+        {secondaryAction}
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </>
