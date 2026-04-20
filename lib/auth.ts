@@ -7,9 +7,24 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { normalizeUserCurrency } from "@/lib/currency";
 
+const MAX_JWT_PICTURE_CHARS = 2048;
+
+function pictureForJwt(image: string | null | undefined): string | null {
+  if (image == null || typeof image !== "string") return null;
+  const t = image.trim();
+  if (!t) return null;
+  if (t.startsWith("data:")) return null;
+  if (t.length > MAX_JWT_PICTURE_CHARS) return null;
+  return t;
+}
+
 type JwtProfileRow = {
   currency: string;
   phone: string | null;
+  profession: string | null;
+  city: string | null;
+  country: string | null;
+  monthStartDay: number;
   password: string | null;
   notificationsEnabled: boolean;
   image: string | null;
@@ -19,6 +34,10 @@ type JwtProfileRow = {
 const jwtProfileSelect = {
   currency: true,
   phone: true,
+  profession: true,
+  city: true,
+  country: true,
+  monthStartDay: true,
   password: true,
   notificationsEnabled: true,
   image: true,
@@ -75,7 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           name: user.name,
           email: user.email,
-          image: user.image,
+          image: pictureForJwt(user.image),
         };
       },
     }),
@@ -95,9 +114,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (dbUser) {
           token.currency = dbUser.currency ?? "TL";
           token.phone = dbUser.phone ?? null;
+          token.profession = dbUser.profession ?? null;
+          token.city = dbUser.city ?? null;
+          token.country = dbUser.country ?? null;
+          token.monthStartDay = dbUser.monthStartDay ?? 1;
           token.hasPassword = Boolean(dbUser.password);
           token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
-          token.picture = dbUser.image ?? null;
+          token.picture = pictureForJwt(dbUser.image);
           token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
         }
       }
@@ -106,6 +129,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           reloadUser?: unknown;
           currency?: unknown;
           phone?: unknown;
+          profession?: unknown;
+          city?: unknown;
+          country?: unknown;
+          monthStartDay?: unknown;
           name?: unknown;
           email?: unknown;
           notificationsEnabled?: unknown;
@@ -119,9 +146,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (dbUser) {
             token.currency = dbUser.currency ?? "TL";
             token.phone = dbUser.phone ?? null;
+            token.profession = dbUser.profession ?? null;
+            token.city = dbUser.city ?? null;
+            token.country = dbUser.country ?? null;
+            token.monthStartDay = dbUser.monthStartDay ?? 1;
             token.hasPassword = Boolean(dbUser.password);
             token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
-            token.picture = dbUser.image ?? null;
+            token.picture = pictureForJwt(dbUser.image);
             token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
           }
         }
@@ -136,6 +167,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 : s.phone.trim()
               : null;
         }
+        if ("profession" in s) {
+          token.profession =
+            typeof s.profession === "string"
+              ? s.profession.trim() === ""
+                ? null
+                : s.profession.trim()
+              : null;
+        }
+        if ("city" in s) {
+          token.city =
+            typeof s.city === "string"
+              ? s.city.trim() === ""
+                ? null
+                : s.city.trim()
+              : null;
+        }
+        if ("country" in s) {
+          token.country =
+            typeof s.country === "string"
+              ? s.country.trim() === ""
+                ? null
+                : s.country.trim()
+              : null;
+        }
+        if (
+          typeof s.monthStartDay === "number" &&
+          Number.isInteger(s.monthStartDay)
+        ) {
+          token.monthStartDay = Math.min(28, Math.max(1, s.monthStartDay));
+        }
         if (typeof s.name === "string") token.name = s.name;
         if (typeof s.email === "string") token.email = s.email;
         if (typeof s.notificationsEnabled === "boolean") {
@@ -143,11 +204,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         if ("image" in s) {
           if (typeof s.image === "string") {
-            token.picture = s.image;
+            token.picture = pictureForJwt(s.image);
           } else if (s.image === null) {
             token.picture = null;
           }
         }
+      }
+      {
+        const t = token as { picture?: unknown; image?: unknown };
+        const raw =
+          typeof t.picture === "string"
+            ? t.picture
+            : typeof t.image === "string"
+              ? t.image
+              : null;
+        t.picture = pictureForJwt(raw);
+        delete t.image;
       }
       return token;
     },
@@ -156,6 +228,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
         session.user.currency = (token.currency as string | undefined) ?? "TL";
         session.user.phone = (token.phone as string | null | undefined) ?? null;
+        session.user.profession =
+          (token.profession as string | null | undefined) ?? null;
+        session.user.city = (token.city as string | null | undefined) ?? null;
+        session.user.country =
+          (token.country as string | null | undefined) ?? null;
+        session.user.monthStartDay =
+          (token.monthStartDay as number | undefined) ?? 1;
         session.user.hasPassword = Boolean(token.hasPassword);
         session.user.notificationsEnabled =
           (token.notificationsEnabled as boolean | undefined) !== false;

@@ -4,23 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  profileUpdateSchema,
-  passwordChangeSchema,
-  accountDeleteSchema,
-} from "@/lib/validations";
-import { normalizeUserCurrency } from "@/lib/currency";
-import {
-  PHONE_COUNTRY_CODES_SORTED,
-  DEFAULT_PHONE_DIAL,
-  combineInternationalPhone,
-  flagEmoji,
-  formatLocalDigitsForDial,
-  getPhoneCountryByDial,
-  parseInternationalPhone,
-} from "@/lib/phone-country-codes";
+import { accountDeleteSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { apiClient } from "@/lib/api-client";
@@ -29,7 +14,6 @@ import { setUser } from "@/store/slices/authSlice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -37,27 +21,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { z } from "zod";
-import {
-  Check,
-  CheckCircle2,
-  CreditCard,
-  Eye,
-  EyeOff,
-  Shield,
-  Sparkles,
-  UserRound,
-  X,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { fileToAvatarDataUrl, validateAvatarFile } from "@/lib/avatar-resize";
+import { Check, CreditCard, Shield, Sparkles } from "lucide-react";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
 import { PaytrPremiumDialog } from "@/components/paytr/paytr-premium-dialog";
@@ -66,12 +31,14 @@ import { LANDING_PLANS } from "@/components/landing/landing-content";
 const PREMIUM_LANDING_PERKS =
   LANDING_PLANS.find((p) => p.id === "premium")?.perks ?? [];
 
-type ProfileForm = z.infer<typeof profileUpdateSchema>;
-type PasswordForm = z.infer<typeof passwordChangeSchema>;
 type DeleteFormValues = z.input<typeof accountDeleteSchema>;
 
 type ProfilePatchResponse = {
   name: string | null;
+  profession: string | null;
+  city: string | null;
+  country: string | null;
+  monthStartDay: number;
   email: string;
   phone: string | null;
   currency: string;
@@ -80,38 +47,12 @@ type ProfilePatchResponse = {
   planTier: string;
 };
 
-function profileInitials(
-  name: string | null | undefined,
-  email: string | undefined,
-): string {
-  const n = name?.trim();
-  if (n) {
-    const parts = n.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
-    }
-    return n.slice(0, 2).toUpperCase();
-  }
-  const e = email?.trim() ?? "?";
-  return e.slice(0, 2).toUpperCase();
-}
-
 export default function SettingsPage() {
   const { data: session, update: updateSession } = useSession();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [phoneDial, setPhoneDial] = useState(DEFAULT_PHONE_DIAL);
-  const [phoneLocal, setPhoneLocal] = useState("");
-  const [phoneFieldError, setPhoneFieldError] = useState<string | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notifSaving, setNotifSaving] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordSuccessVisible, setPasswordSuccessVisible] = useState(false);
-  const [avatarError, setAvatarError] = useState<string | null>(null);
-  const [avatarBusy, setAvatarBusy] = useState(false);
-  const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const [planSaving, setPlanSaving] = useState(false);
   const [paytrOpen, setPaytrOpen] = useState(false);
   const [paytrToken, setPaytrToken] = useState<string | null>(null);
@@ -120,43 +61,14 @@ export default function SettingsPage() {
   const [paytrSuccessBanner, setPaytrSuccessBanner] = useState(false);
   const paytrReturnHandled = useRef<string | null>(null);
 
-  const profileForm = useForm<ProfileForm>({
-    resolver: zodResolver(profileUpdateSchema),
-    defaultValues: {
-      name: session?.user?.name ?? "",
-    },
-  });
-
-  const passwordForm = useForm<PasswordForm>({
-    resolver: zodResolver(passwordChangeSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
-
   const deleteForm = useForm<DeleteFormValues>({
     resolver: zodResolver(accountDeleteSchema),
     defaultValues: { confirm: "" },
   });
 
   useEffect(() => {
-    profileForm.reset({
-      name: session?.user?.name ?? "",
-    });
-    const parsed = parseInternationalPhone(session?.user?.phone);
-    setPhoneDial(parsed.dial);
-    setPhoneLocal(parsed.local);
-    setPhoneFieldError(null);
     setNotificationsEnabled(session?.user?.notificationsEnabled !== false);
-  }, [session, profileForm]);
-
-  useEffect(() => {
-    if (!passwordSuccessVisible) return;
-    const t = window.setTimeout(() => setPasswordSuccessVisible(false), 8000);
-    return () => clearTimeout(t);
-  }, [passwordSuccessVisible]);
+  }, [session]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -180,94 +92,6 @@ export default function SettingsPage() {
     void router.replace("/ayarlar");
   }, [router, updateSession]);
 
-  function handleProfileSubmit(values: ProfileForm) {
-    setPhoneFieldError(null);
-    const phone = combineInternationalPhone(phoneDial, phoneLocal);
-    const parsed = profileUpdateSchema.safeParse({ ...values, phone });
-    if (!parsed.success) {
-      const msg = parsed.error.flatten().fieldErrors.phone?.[0];
-      if (msg) setPhoneFieldError(msg);
-      return;
-    }
-    void onProfile(parsed.data);
-  }
-
-  async function onProfile(values: ProfileForm) {
-    const { data } = await apiClient.patch<ProfilePatchResponse>(
-      "/api/user/profile",
-      values,
-    );
-    dispatch(
-      setUser({
-        id: session!.user!.id,
-        name: data.name,
-        email: data.email,
-        image: data.image ?? null,
-        currency: data.currency,
-        phone: data.phone ?? null,
-        notificationsEnabled: data.notificationsEnabled !== false,
-        planTier: normalizePlanTier(data.planTier),
-      }),
-    );
-    await updateSession({
-      currency: normalizeUserCurrency(data.currency),
-      phone: data.phone ?? null,
-      name: data.name ?? "",
-      email: data.email,
-      image: data.image ?? null,
-      notificationsEnabled: data.notificationsEnabled !== false,
-      reloadUser: true,
-    } as Record<string, unknown>);
-    router.refresh();
-  }
-
-  async function patchProfileImage(image: string | null) {
-    setAvatarError(null);
-    setAvatarBusy(true);
-    try {
-      const { data } = await apiClient.patch<ProfilePatchResponse>(
-        "/api/user/profile",
-        { image },
-      );
-      dispatch(
-        setUser({
-          id: session!.user!.id,
-          name: data.name,
-          email: data.email,
-          image: data.image ?? null,
-          currency: data.currency,
-          phone: data.phone ?? null,
-          notificationsEnabled: data.notificationsEnabled !== false,
-          planTier: normalizePlanTier(data.planTier),
-        }),
-      );
-      await updateSession({
-        image: data.image ?? null,
-        reloadUser: true,
-      } as Record<string, unknown>);
-      router.refresh();
-    } catch {
-      setAvatarError("Fotoğraf kaydedilemedi. Tekrar deneyin.");
-    } finally {
-      setAvatarBusy(false);
-    }
-  }
-
-  async function onAvatarFileSelected(file: File | null) {
-    if (!file) return;
-    const msg = validateAvatarFile(file);
-    if (msg) {
-      setAvatarError(msg);
-      return;
-    }
-    try {
-      const dataUrl = await fileToAvatarDataUrl(file);
-      await patchProfileImage(dataUrl);
-    } catch (e) {
-      setAvatarError(e instanceof Error ? e.message : "Fotoğraf işlenemedi.");
-    }
-  }
-
   async function onNotificationsEnabledChange(checked: boolean) {
     setNotifSaving(true);
     try {
@@ -284,6 +108,10 @@ export default function SettingsPage() {
           image: data.image ?? null,
           currency: data.currency,
           phone: data.phone ?? null,
+          profession: data.profession ?? null,
+          city: data.city ?? null,
+          country: data.country ?? null,
+          monthStartDay: data.monthStartDay ?? 1,
           notificationsEnabled: data.notificationsEnabled !== false,
           planTier: normalizePlanTier(data.planTier),
         }),
@@ -317,6 +145,10 @@ export default function SettingsPage() {
           image: data.image ?? null,
           currency: data.currency,
           phone: data.phone ?? null,
+          profession: data.profession ?? null,
+          city: data.city ?? null,
+          country: data.country ?? null,
+          monthStartDay: data.monthStartDay ?? 1,
           notificationsEnabled: data.notificationsEnabled !== false,
           planTier: normalizePlanTier(data.planTier),
         }),
@@ -356,53 +188,6 @@ export default function SettingsPage() {
 
   const currentPlan = normalizePlanTier(session?.user?.planTier);
 
-  async function onPassword(values: PasswordForm) {
-    setPasswordSuccessVisible(false);
-    passwordForm.clearErrors("root");
-    try {
-      await apiClient.patch("/api/user/password", values);
-      passwordForm.reset();
-      setPasswordSuccessVisible(true);
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e) && e.response?.data) {
-        const data = e.response.data as { error?: unknown };
-        if (typeof data.error === "string") {
-          passwordForm.setError("root", { message: data.error });
-          return;
-        }
-        if (
-          data.error &&
-          typeof data.error === "object" &&
-          !Array.isArray(data.error)
-        ) {
-          const fe = data.error as Record<string, string[] | undefined>;
-          const keys = [
-            "currentPassword",
-            "newPassword",
-            "confirmPassword",
-          ] as const;
-          let anyField = false;
-          for (const key of keys) {
-            const first = fe[key]?.[0];
-            if (typeof first === "string" && first.length > 0) {
-              passwordForm.setError(key, { message: first });
-              anyField = true;
-            }
-          }
-          if (!anyField) {
-            passwordForm.setError("root", {
-              message: "Bilgileri kontrol edip tekrar deneyin.",
-            });
-          }
-          return;
-        }
-      }
-      passwordForm.setError("root", {
-        message: "Şifre güncellenemedi. Tekrar deneyin.",
-      });
-    }
-  }
-
   async function onDelete(values: DeleteFormValues) {
     await apiClient.delete("/api/user", { data: values });
     await signOut({ callbackUrl: "/" });
@@ -416,232 +201,6 @@ export default function SettingsPage() {
           sayfayı yenileyin.
         </div>
       ) : null}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Profil</CardTitle>
-          <CardDescription>
-            Ad, soyad, e-posta ve telefon bilgileriniz.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="flex flex-col gap-4 rounded-xl border border-border/70 bg-muted/15 p-4 sm:flex-row sm:items-center sm:gap-6">
-            <Avatar className="h-20 w-20 shrink-0 ring-2 ring-border/60">
-              <AvatarImage
-                src={session?.user?.image ?? undefined}
-                alt=""
-                className="object-cover"
-              />
-              <AvatarFallback className="text-lg font-semibold">
-                {profileInitials(
-                  session?.user?.name,
-                  session?.user?.email ?? undefined,
-                )}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1 space-y-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  Profil fotoğrafı
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  JPEG, JPG, PNG veya WebP, en fazla 5 MB.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  ref={avatarFileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="sr-only"
-                  aria-label="Profil fotoğrafı yükle"
-                  title="Profil fotoğrafı yükle"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0] ?? null;
-                    e.target.value = "";
-                    void onAvatarFileSelected(f);
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={avatarBusy || !session?.user}
-                  className="cursor-pointer"
-                  onClick={() => avatarFileInputRef.current?.click()}
-                >
-                  <UserRound className="mr-2 h-4 w-4" aria-hidden />
-                  {avatarBusy ? "Kaydediliyor..." : "Fotoğraf seç"}
-                </Button>
-                {session?.user?.image ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={avatarBusy || !session?.user}
-                    className="cursor-pointer text-muted-foreground hover:text-destructive"
-                    onClick={() => void patchProfileImage(null)}
-                  >
-                    Fotoğrafı kaldır
-                  </Button>
-                ) : null}
-              </div>
-              {avatarError ? (
-                <p className="text-sm text-destructive">{avatarError}</p>
-              ) : null}
-            </div>
-          </div>
-          <form
-            onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
-            className="space-y-6"
-          >
-            <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="name" className="block">
-                  Ad ve Soyad
-                </Label>
-                <Input
-                  id="name"
-                  className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25"
-                  {...profileForm.register("name")}
-                />
-              </div>
-              <div className="flex flex-col gap-4">
-                <Label htmlFor="email" className="block">
-                  E-posta
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={session?.user?.email ?? ""}
-                  readOnly
-                  className="h-12 min-h-12 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
-                  aria-readonly="true"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <Label htmlFor="phone-local" className="block">
-                Telefon numarası
-              </Label>
-              <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:items-stretch">
-                <Select
-                  value={phoneDial}
-                  onValueChange={(v) => {
-                    setPhoneDial(v);
-                    setPhoneLocal((prev) => {
-                      const digits = prev.replace(/\D/g, "");
-                      if (!digits) return "";
-                      return formatLocalDigitsForDial(v, digits);
-                    });
-                    setPhoneFieldError(null);
-                  }}
-                >
-                  <SelectTrigger
-                    id="phone-country"
-                    className={cn(
-                      "h-12 min-h-12 w-full min-w-0 rounded-xl border-border/70 bg-muted/25 px-3 py-0 shadow-none transition-colors",
-                      "hover:bg-muted/45 focus:ring-primary/30 data-[state=open]:bg-muted/40",
-                    )}
-                  >
-                    <SelectValue placeholder="Ülke kodu seçin">
-                      {(() => {
-                        const c = getPhoneCountryByDial(phoneDial);
-                        if (!c) return null;
-                        return (
-                          <span className="flex min-w-0 items-center gap-3">
-                            <span
-                              className="shrink-0 text-lg leading-none"
-                              aria-hidden
-                            >
-                              {flagEmoji(c.iso2)}
-                            </span>
-                            <span className="ml-0.5 flex min-w-0 flex-col items-start gap-0 border-l border-border/40 pl-3 text-left leading-tight">
-                              <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                                +{c.dial}
-                              </span>
-                              <span className="max-w-38 truncate text-sm font-medium">
-                                {c.name}
-                              </span>
-                            </span>
-                          </span>
-                        );
-                      })()}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent
-                    position="popper"
-                    sideOffset={6}
-                    className={cn(
-                      "w-(--radix-select-trigger-width) min-w-(--radix-select-trigger-width) max-w-(--radix-select-trigger-width)",
-                      "max-h-[calc(2rem*5+2.5rem)] overflow-hidden rounded-xl border-border/80 bg-popover p-1.5 shadow-xl",
-                    )}
-                  >
-                    {PHONE_COUNTRY_CODES_SORTED.map((c) => (
-                      <SelectItem
-                        key={c.dial}
-                        value={c.dial}
-                        className={cn(
-                          "cursor-pointer rounded-lg py-2.5 pl-2 pr-8",
-                          "focus:bg-primary/10 focus:text-foreground",
-                          "data-highlighted:bg-primary/10 data-highlighted:text-foreground",
-                        )}
-                      >
-                        <span className="flex items-center gap-3">
-                          <span
-                            className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md bg-muted/60 text-lg shadow-inner"
-                            aria-hidden
-                          >
-                            {flagEmoji(c.iso2)}
-                          </span>
-                          <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
-                            <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                              +{c.dial}
-                            </span>
-                            <span className="truncate text-sm leading-snug">
-                              {c.name}
-                            </span>
-                          </span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  id="phone-local"
-                  type="tel"
-                  autoComplete="tel-national"
-                  inputMode="numeric"
-                  className={cn(
-                    "h-12 min-h-12 min-w-0 flex-1 rounded-xl border-border/70 bg-muted/25 shadow-none",
-                    "transition-colors placeholder:text-muted-foreground/70",
-                    "focus-visible:border-primary/50 focus-visible:ring-primary/20",
-                  )}
-                  placeholder="Numara (başında 0 olmadan)"
-                  value={phoneLocal}
-                  onChange={(e) => {
-                    const raw = e.target.value.replace(/\D/g, "");
-                    setPhoneLocal(formatLocalDigitsForDial(phoneDial, raw));
-                    setPhoneFieldError(null);
-                  }}
-                />
-              </div>
-              {phoneFieldError && (
-                <p className="text-sm text-destructive">{phoneFieldError}</p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              disabled={profileForm.formState.isSubmitting}
-              className="cursor-pointer"
-            >
-              {profileForm.formState.isSubmitting
-                ? "Kaydediliyor..."
-                : "Kaydet"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>
@@ -700,7 +259,10 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden border-border/70 shadow-md shadow-black/5">
+      <Card
+        id="plan"
+        className="scroll-mt-20 overflow-hidden border-border/70 shadow-md shadow-black/5"
+      >
         <CardHeader className="relative space-y-3 border-b border-border/50 bg-linear-to-br from-muted/40 via-card to-card pb-6">
           <div className="flex flex-wrap items-center gap-3">
             <CardTitle className="text-2xl tracking-tight">Plan</CardTitle>
@@ -711,15 +273,6 @@ export default function SettingsPage() {
               {currentPlan === "premium" ? "Premium" : "Ücretsiz"}
             </Badge>
           </div>
-          <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            <Link
-              href="/yapay-zeka-analizi"
-              className="font-medium text-emerald-600 underline decoration-emerald-500/40 underline-offset-4 transition hover:text-emerald-500 dark:text-emerald-400"
-            >
-              AI Analiz
-            </Link>{" "}
-            yalnızca Premium ile açılır.
-          </CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           <fieldset
@@ -903,176 +456,6 @@ export default function SettingsPage() {
         iframeToken={paytrToken}
         initError={paytrOpen ? paytrInitError : null}
       />
-
-      {session?.user?.hasPassword ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Şifre</CardTitle>
-            <CardDescription>
-              E-posta ve şifre ile kayıtlı hesabınızın şifresini güncelleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {passwordSuccessVisible ? (
-              <div
-                aria-live="polite"
-                className="flex gap-3 rounded-xl border border-primary/35 bg-primary/10 px-4 py-3.5 text-left shadow-sm"
-              >
-                <CheckCircle2
-                  className="mt-0.5 h-5 w-5 shrink-0 text-primary"
-                  aria-hidden
-                />
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <p className="text-sm font-semibold text-foreground">
-                    Şifreniz güncellendi
-                  </p>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Bir sonraki girişinizde yeni şifrenizi kullanabilirsiniz.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPasswordSuccessVisible(false)}
-                  className="-m-1 shrink-0 rounded-lg p-1.5 text-muted-foreground transition hover:bg-primary/15 hover:text-foreground cursor-pointer"
-                  aria-label="Bildirimi kapat"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            ) : null}
-            <form
-              onSubmit={passwordForm.handleSubmit(onPassword)}
-              className="space-y-6"
-            >
-              <div className="flex flex-col gap-4">
-                <Label className="block">Mevcut şifre</Label>
-                <div className="relative">
-                  <Input
-                    type={showCurrentPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25 pr-10"
-                    {...passwordForm.register("currentPassword")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword((p) => !p)}
-                    className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
-                    aria-label={
-                      showCurrentPassword
-                        ? "Mevcut şifreyi gizle"
-                        : "Mevcut şifreyi göster"
-                    }
-                    title={
-                      showCurrentPassword
-                        ? "Mevcut şifreyi gizle"
-                        : "Mevcut şifreyi göster"
-                    }
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {passwordForm.formState.errors.currentPassword && (
-                  <p className="text-sm text-destructive">
-                    {passwordForm.formState.errors.currentPassword.message}
-                  </p>
-                )}
-              </div>
-              <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-                <div className="flex flex-col gap-4">
-                  <Label className="block">Yeni şifre</Label>
-                  <div className="relative">
-                    <Input
-                      type={showNewPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25 pr-10"
-                      {...passwordForm.register("newPassword")}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPassword((p) => !p)}
-                      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
-                      aria-label={
-                        showNewPassword
-                          ? "Yeni şifreyi gizle"
-                          : "Yeni şifreyi göster"
-                      }
-                      title={
-                        showNewPassword
-                          ? "Yeni şifreyi gizle"
-                          : "Yeni şifreyi göster"
-                      }
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                  {passwordForm.formState.errors.newPassword && (
-                    <p className="text-sm text-destructive">
-                      {passwordForm.formState.errors.newPassword.message}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-4">
-                  <Label className="block">Yeni şifre tekrar</Label>
-                  <div className="relative">
-                    <Input
-                      type={showConfirmPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      className="h-12 min-h-12 rounded-xl border-border/70 bg-muted/25 pr-10"
-                      {...passwordForm.register("confirmPassword")}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword((p) => !p)}
-                      className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
-                      aria-label={
-                        showConfirmPassword
-                          ? "Şifre tekrarını gizle"
-                          : "Şifre tekrarını göster"
-                      }
-                      title={
-                        showConfirmPassword
-                          ? "Şifre tekrarını gizle"
-                          : "Şifre tekrarını göster"
-                      }
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                  {passwordForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-destructive">
-                      {passwordForm.formState.errors.confirmPassword.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              {passwordForm.formState.errors.root && (
-                <p className="text-sm text-destructive">
-                  {passwordForm.formState.errors.root.message}
-                </p>
-              )}
-              <Button
-                type="submit"
-                disabled={passwordForm.formState.isSubmitting}
-                className="cursor-pointer"
-              >
-                Şifreyi güncelle
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      ) : null}
 
       <Card className="border-destructive/50">
         <CardHeader>

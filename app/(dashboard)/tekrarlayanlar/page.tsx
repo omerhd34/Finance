@@ -112,7 +112,7 @@ export default function RecurringPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="space-y-8">
       <RecurringPageIntro />
 
       <DueRemindersCard

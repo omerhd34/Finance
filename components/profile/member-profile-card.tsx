@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { normalizeUserCurrency } from "@/lib/currency";
@@ -28,6 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { fileToAvatarDataUrl, validateAvatarFile } from "@/lib/avatar-resize";
+import { UserRound } from "lucide-react";
 
 type ProfilePatchResponse = {
   name: string | null;
@@ -92,6 +95,9 @@ export function MemberProfileCard({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [avatarBusy, setAvatarBusy] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: initial.name ?? "",
     profession: initial.profession ?? "",
@@ -119,6 +125,75 @@ export function MemberProfileCard({
   }, [form.monthStartDay]);
 
   const planLabel = initial.planTier === "premium" ? "Premium" : "Free";
+  const planSettingsLink = initial.planTier !== "premium";
+
+  const planBadgeEl = (
+    <Badge
+      variant={initial.planTier === "premium" ? "default" : "secondary"}
+      className={cn(
+        "shrink-0",
+        planSettingsLink &&
+          "cursor-pointer transition-opacity hover:opacity-90",
+      )}
+    >
+      {planLabel}
+    </Badge>
+  );
+
+  const profileImageSrc = session?.user?.image ?? initial.image ?? undefined;
+  const hasProfileImage = Boolean(profileImageSrc);
+
+  async function patchProfileImage(image: string | null) {
+    if (!session?.user?.id || session.user.id !== initial.id) return;
+    setAvatarError(null);
+    setAvatarBusy(true);
+    try {
+      const { data } = await apiClient.patch<ProfilePatchResponse>(
+        "/api/user/profile",
+        { image },
+      );
+      dispatch(
+        setUser({
+          id: session.user.id,
+          name: data.name,
+          email: data.email,
+          image: data.image ?? null,
+          currency: data.currency,
+          phone: data.phone ?? null,
+          profession: data.profession ?? null,
+          city: data.city ?? null,
+          country: data.country ?? null,
+          monthStartDay: data.monthStartDay ?? 1,
+          notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
+        }),
+      );
+      await updateSession({
+        image: data.image ?? null,
+        reloadUser: true,
+      } as Record<string, unknown>);
+      router.refresh();
+    } catch {
+      setAvatarError("Fotoğraf kaydedilemedi. Tekrar deneyin.");
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+
+  async function onAvatarFileSelected(file: File | null) {
+    if (!file) return;
+    const msg = validateAvatarFile(file);
+    if (msg) {
+      setAvatarError(msg);
+      return;
+    }
+    try {
+      const dataUrl = await fileToAvatarDataUrl(file);
+      await patchProfileImage(dataUrl);
+    } catch (e) {
+      setAvatarError(e instanceof Error ? e.message : "Fotoğraf işlenemedi.");
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -185,11 +260,24 @@ export function MemberProfileCard({
     const currency = normalizeUserCurrency(initial.currency);
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Üye Profili</CardTitle>
-          <CardDescription>
-            Seçili üyeye ait temel profil bilgileri.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+          <div className="min-w-0 space-y-1.5">
+            <CardTitle>Üye Profili</CardTitle>
+            <CardDescription>
+              Seçili üyeye ait temel profil bilgileri.
+            </CardDescription>
+          </div>
+          {planSettingsLink ? (
+            <Link
+              href="/ayarlar#plan"
+              className="inline-flex shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+              aria-label="Plan ve üyelik ayarlarına git"
+            >
+              {planBadgeEl}
+            </Link>
+          ) : (
+            planBadgeEl
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center gap-4">
@@ -207,11 +295,6 @@ export function MemberProfileCard({
                 {initial.email}
               </p>
             </div>
-            <Badge
-              variant={initial.planTier === "premium" ? "default" : "secondary"}
-            >
-              {planLabel}
-            </Badge>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-border/80 p-3">
@@ -228,7 +311,7 @@ export function MemberProfileCard({
                   .join(" / ") || "Belirtilmemiş"}
               </p>
             </div>
-            <div className="rounded-lg border border-border/80 p-3">
+            <div className="rounded-lg border border-border/80 p-3 sm:col-span-2">
               <p className="text-xs text-muted-foreground">Para Birimi</p>
               <p className="mt-1 text-sm font-medium">{currency}</p>
             </div>
@@ -238,7 +321,7 @@ export function MemberProfileCard({
                 {initial.monthStartDay}
               </p>
             </div>
-            <div className="rounded-lg border border-border/80 p-3 sm:col-span-2">
+            <div className="rounded-lg border border-border/80 p-3">
               <p className="text-xs text-muted-foreground">Üyelik Tarihi</p>
               <p className="mt-1 text-sm font-medium">
                 {formatMembershipDate(initial.createdAtIso)}
@@ -252,55 +335,122 @@ export function MemberProfileCard({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Üye Profili</CardTitle>
-        <CardDescription>
-          Kendi profil bilgilerinizi buradan görüntüleyip düzenleyebilirsiniz.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+        <div className="min-w-0 space-y-1.5">
+          <CardTitle>Üye Profili</CardTitle>
+          <CardDescription>
+            Kendi profil bilgilerinizi buradan görüntüleyip düzenleyebilirsiniz.
+          </CardDescription>
+        </div>
+        {planSettingsLink ? (
+          <Link
+            href="/ayarlar#plan"
+            className="inline-flex shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+            aria-label="Plan ve üyelik ayarlarına git"
+          >
+            {planBadgeEl}
+          </Link>
+        ) : (
+          planBadgeEl
+        )}
       </CardHeader>
       <CardContent>
         <form className="space-y-6" onSubmit={(e) => void onSubmit(e)}>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-4">
-            <Avatar className="h-16 w-16 shrink-0 border border-border">
-              <AvatarImage
-                src={session?.user?.image ?? initial.image ?? undefined}
-                alt=""
-              />
-              <AvatarFallback className="text-base">
-                {profileInitials(
-                  form.name || initial.name,
-                  session?.user?.email ?? initial.email,
-                )}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1 space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="member-name">Ad ve Soyad</Label>
-                <Input
-                  id="member-name"
-                  value={form.name}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, name: e.target.value }))
-                  }
-                  className="h-11 rounded-xl border-border/70 bg-muted/25"
+          <div className="rounded-xl border border-border/70 bg-muted/15 p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+              <Avatar className="h-20 w-20 shrink-0 ring-2 ring-border/60">
+                <AvatarImage src={profileImageSrc} alt="" />
+                <AvatarFallback className="text-lg font-semibold">
+                  {profileInitials(
+                    form.name || initial.name,
+                    session?.user?.email ?? initial.email,
+                  )}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1 space-y-2">
+                <p className="text-sm font-medium text-foreground">
+                  Profil fotoğrafı
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  JPEG, PNG veya WebP, en fazla 5 MB.
+                </p>
+                <input
+                  ref={avatarFileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  aria-label="Profil fotoğrafı yükle"
+                  title="Profil fotoğrafı yükle"
+                  disabled={avatarBusy || saving}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    e.target.value = "";
+                    void onAvatarFileSelected(f);
+                  }}
                 />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-muted-foreground">E-posta</Label>
-                <p className="text-sm text-foreground">{initial.email}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={avatarBusy || saving || !session?.user}
+                    className="cursor-pointer"
+                    onClick={() => avatarFileInputRef.current?.click()}
+                  >
+                    <UserRound className="mr-2 h-4 w-4" aria-hidden />
+                    {avatarBusy ? "Kaydediliyor..." : "Fotoğraf seç"}
+                  </Button>
+                  {hasProfileImage ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={avatarBusy || saving || !session?.user}
+                      className="cursor-pointer text-muted-foreground hover:text-destructive"
+                      onClick={() => void patchProfileImage(null)}
+                    >
+                      Fotoğrafı kaldır
+                    </Button>
+                  ) : null}
+                </div>
+                {avatarError ? (
+                  <p className="text-sm text-destructive">{avatarError}</p>
+                ) : null}
               </div>
             </div>
-            <Badge
-              variant={initial.planTier === "premium" ? "default" : "secondary"}
-              className="shrink-0 self-start"
-            >
-              {planLabel}
-            </Badge>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="member-profession">Meslek</Label>
+          <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-name" className="block leading-snug">
+                Ad ve Soyad
+              </Label>
+              <Input
+                id="member-name"
+                value={form.name}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, name: e.target.value }))
+                }
+                className="h-11 rounded-xl border-border/70 bg-muted/25"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-email" className="block leading-snug">
+                E-posta
+              </Label>
+              <Input
+                id="member-email"
+                type="email"
+                readOnly
+                value={session?.user?.email ?? initial.email}
+                aria-readonly="true"
+                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-profession" className="block leading-snug">
+                Meslek
+              </Label>
               <Input
                 id="member-profession"
                 value={form.profession}
@@ -311,8 +461,10 @@ export function MemberProfileCard({
                 className="h-11 rounded-xl border-border/70 bg-muted/25"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="member-city">Şehir</Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-city" className="block leading-snug">
+                Şehir
+              </Label>
               <Input
                 id="member-city"
                 value={form.city}
@@ -323,8 +475,10 @@ export function MemberProfileCard({
                 className="h-11 rounded-xl border-border/70 bg-muted/25"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="member-country">Ülke</Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-country" className="block leading-snug">
+                Ülke
+              </Label>
               <Input
                 id="member-country"
                 value={form.country}
@@ -335,8 +489,10 @@ export function MemberProfileCard({
                 className="h-11 rounded-xl border-border/70 bg-muted/25"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="member-currency">Para birimi</Label>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="member-currency" className="block leading-snug">
+                Para birimi
+              </Label>
               <Select
                 value={form.currency}
                 onValueChange={(v) =>
@@ -370,28 +526,40 @@ export function MemberProfileCard({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="member-month-start">Ay başlangıç günü</Label>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="member-month-start"
+                className="block leading-snug"
+              >
+                Ay başlangıç günü
+              </Label>
               <Input
                 id="member-month-start"
                 type="number"
                 min={1}
                 max={28}
+                placeholder="1–28 arası"
                 value={form.monthStartDay}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, monthStartDay: e.target.value }))
                 }
                 className="h-11 rounded-xl border-border/70 bg-muted/25"
               />
-              <p className="text-xs text-muted-foreground">
-                Güvenli aralık: 1–28.
-              </p>
             </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Üyelik tarihi</Label>
-              <div className="rounded-xl border border-border/80 bg-muted/15 px-3 py-2.5 text-sm text-foreground">
-                {formatMembershipDate(initial.createdAtIso)}
-              </div>
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="member-membership-date"
+                className="block leading-snug"
+              >
+                Üyelik tarihi
+              </Label>
+              <Input
+                id="member-membership-date"
+                readOnly
+                value={formatMembershipDate(initial.createdAtIso)}
+                aria-readonly="true"
+                className="h-11 cursor-not-allowed rounded-xl border-border/70 bg-muted/40"
+              />
             </div>
           </div>
 

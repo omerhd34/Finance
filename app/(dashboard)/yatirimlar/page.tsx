@@ -133,9 +133,6 @@ export default function InvestmentsPage() {
 
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Yatırım
-        </h1>
         <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
           <p className="text-sm font-semibold text-foreground">
             Premium ile neler kazanırsınız?

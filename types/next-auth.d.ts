@@ -6,6 +6,10 @@ declare module "next-auth" {
       id: string;
       currency?: string;
       phone?: string | null;
+      profession?: string | null;
+      city?: string | null;
+      country?: string | null;
+      monthStartDay?: number;
       hasPassword?: boolean;
       notificationsEnabled?: boolean;
       planTier?: "free" | "premium";
@@ -18,6 +22,10 @@ declare module "next-auth/jwt" {
     id?: string;
     currency?: string;
     phone?: string | null;
+    profession?: string | null;
+    city?: string | null;
+    country?: string | null;
+    monthStartDay?: number;
     hasPassword?: boolean;
     notificationsEnabled?: boolean;
     planTier?: "free" | "premium";

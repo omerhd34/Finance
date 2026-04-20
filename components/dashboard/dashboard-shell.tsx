@@ -78,6 +78,7 @@ const titles: Record<string, string> = {
   "/yapay-zeka-analizi": "AI Analiz",
   "/bildirimler": "Bildirimler",
   "/ayarlar": "Ayarlar",
+  "/profil": "Profil",
 };
 
 function titleForPath(path: string): string {
@@ -112,6 +113,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const sidebarCurrency = normalizeUserCurrency(
     (session?.user as { currency?: string })?.currency,
   );
+  const profileHref = session?.user?.id
+    ? `/profil/${session.user.id}`
+    : "/profil";
 
   useEffect(() => {
     setThemeReady(true);
@@ -163,6 +167,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         name: string | null;
         email: string;
         phone: string | null;
+        profession: string | null;
+        city: string | null;
+        country: string | null;
+        monthStartDay: number;
         currency: string;
         notificationsEnabled: boolean;
         planTier: string;
@@ -176,6 +184,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           image: session.user.image ?? null,
           currency: data.currency,
           phone: data.phone ?? null,
+          profession: data.profession ?? null,
+          city: data.city ?? null,
+          country: data.country ?? null,
+          monthStartDay: data.monthStartDay ?? 1,
           notificationsEnabled: data.notificationsEnabled !== false,
           planTier: normalizePlanTier(data.planTier),
         }),
@@ -183,6 +195,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       await updateSession({
         currency: normalizeUserCurrency(data.currency),
         phone: data.phone ?? null,
+        profession: data.profession ?? null,
+        city: data.city ?? null,
+        country: data.country ?? null,
+        monthStartDay: data.monthStartDay ?? 1,
         name: data.name ?? "",
         email: data.email,
         notificationsEnabled: data.notificationsEnabled !== false,
@@ -328,10 +344,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link
-              href="/ayarlar"
+              href={profileHref}
               onClick={() => setOpen(false)}
               className="flex justify-center rounded-lg bg-muted/30 p-1.5"
-              title="Ayarlar"
+              title="Profil"
             >
               <Avatar className="h-7 w-7">
                 <AvatarImage src={session?.user?.image ?? undefined} alt="" />
@@ -396,7 +412,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="border-t border-border p-3">
               <Link
-                href="/ayarlar"
+                href={profileHref}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
               >

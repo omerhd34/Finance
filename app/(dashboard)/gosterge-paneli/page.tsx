@@ -64,10 +64,14 @@ export default function DashboardPage() {
       ]);
       setItems(txRes.data.items);
       if (planPremium) {
-        const invRes = await apiClient.get<{ items: InvestmentPosition[] }>(
-          "/api/investments",
-        );
-        setInvestmentPositions(invRes.data.items);
+        try {
+          const invRes = await apiClient.get<{ items: InvestmentPosition[] }>(
+            "/api/investments",
+          );
+          setInvestmentPositions(invRes.data.items);
+        } catch {
+          setInvestmentPositions([]);
+        }
       } else {
         setInvestmentPositions([]);
       }

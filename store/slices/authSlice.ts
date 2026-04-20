@@ -7,6 +7,10 @@ export type AuthUser = {
   image: string | null;
   currency: string;
   phone: string | null;
+  profession?: string | null;
+  city?: string | null;
+  country?: string | null;
+  monthStartDay?: number;
   notificationsEnabled?: boolean;
   planTier?: "free" | "premium";
 };

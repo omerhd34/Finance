@@ -7,6 +7,10 @@ import { profileUpdateSchema } from "@/lib/validations";
 const profileSelectFields = {
   id: true,
   name: true,
+  profession: true,
+  city: true,
+  country: true,
+  monthStartDay: true,
   email: true,
   phone: true,
   currency: true,
@@ -29,10 +33,31 @@ export async function PATCH(req: Request) {
         { status: 400 },
       );
     }
-    const { name, phone, currency, notificationsEnabled, image, planTier } =
+    const {
+      name,
+      profession,
+      city,
+      country,
+      monthStartDay,
+      phone,
+      currency,
+      notificationsEnabled,
+      image,
+      planTier,
+    } =
       parsed.data;
     const data: Record<string, unknown> = {
       ...(name !== undefined && { name }),
+      ...(profession !== undefined && {
+        profession: profession.trim() === "" ? null : profession.trim(),
+      }),
+      ...(city !== undefined && {
+        city: city.trim() === "" ? null : city.trim(),
+      }),
+      ...(country !== undefined && {
+        country: country.trim() === "" ? null : country.trim(),
+      }),
+      ...(monthStartDay !== undefined && { monthStartDay }),
       ...(phone !== undefined && {
         phone: phone.trim() === "" ? null : phone.trim(),
       }),

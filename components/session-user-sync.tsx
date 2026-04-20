@@ -21,6 +21,10 @@ export function SessionUserSync() {
         image: session.user.image ?? null,
         currency: session.user.currency ?? "TL",
         phone: session.user.phone ?? null,
+        profession: session.user.profession ?? null,
+        city: session.user.city ?? null,
+        country: session.user.country ?? null,
+        monthStartDay: session.user.monthStartDay ?? 1,
         notificationsEnabled: session.user.notificationsEnabled !== false,
         planTier: normalizePlanTier(session.user.planTier),
       };

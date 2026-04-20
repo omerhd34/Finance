@@ -189,6 +189,15 @@ const profileAvatarDataUrlSchema = z
 
 export const profileUpdateSchema = z.object({
   name: z.string().min(1, "Ad ve soyad gerekli").optional(),
+  profession: z.string().max(80, "Meslek en fazla 80 karakter").optional(),
+  city: z.string().max(80, "Şehir en fazla 80 karakter").optional(),
+  country: z.string().max(80, "Ülke en fazla 80 karakter").optional(),
+  monthStartDay: z
+    .number()
+    .int("Ay başlangıç günü tam sayı olmalı")
+    .min(1, "Ay başlangıç günü en az 1 olmalı")
+    .max(28, "Ay başlangıç günü en fazla 28 olmalı")
+    .optional(),
   phone: z.string().max(48, "En fazla 48 karakter").optional(),
   currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
   notificationsEnabled: z.boolean().optional(),
