@@ -1,6 +1,6 @@
 "use client";
 
-import { formatMoney } from "@/lib/utils";
+import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
 import {
   Card,
   CardDescription,
@@ -22,18 +22,22 @@ export function DebtsSummaryCards({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Card>
-        <CardHeader className="pb-4">
-          <CardDescription>Toplam alacak (kalan)</CardDescription>
-          <CardTitle className="text-2xl text-emerald-500">
-            {formatMoney(totalReceivable, currency)}
+        <CardHeader className="gap-3 p-6 space-y-0">
+          <CardDescription>
+            Kalan toplam alacak ({currencySymbolLabel(currency)})
+          </CardDescription>
+          <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-emerald-500 tabular-nums">
+            {formatMoneyAmount(totalReceivable, currency)}
           </CardTitle>
         </CardHeader>
       </Card>
       <Card>
-        <CardHeader className="pb-4">
-          <CardDescription>Toplam borç (kalan)</CardDescription>
-          <CardTitle className="text-2xl text-amber-500">
-            {formatMoney(totalPayable, currency)}
+        <CardHeader className="gap-3 p-6 space-y-0">
+          <CardDescription>
+            Kalan toplam borç ({currencySymbolLabel(currency)})
+          </CardDescription>
+          <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-amber-500 tabular-nums">
+            {formatMoneyAmount(totalPayable, currency)}
           </CardTitle>
         </CardHeader>
       </Card>

@@ -108,9 +108,9 @@ export function NotificationsPageClient() {
   const unreadCount = items.filter((n) => !n.readAt).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {unreadCount > 0 && (
+    <div className="space-y-4">
+      {unreadCount > 0 ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Button
             type="button"
             variant="outline"
@@ -120,8 +120,8 @@ export function NotificationsPageClient() {
           >
             Tümünü okundu işaretle
           </Button>
-        )}
-      </div>
+        </div>
+      ) : null}
 
       {error && (
         <p className="text-sm text-destructive" role="alert">
@@ -133,68 +133,70 @@ export function NotificationsPageClient() {
         <LoadingMessage variant="page" />
       ) : (
         <>
-          {!error && items.length === 0 && (
+          {!error && items.length === 0 ? (
             <p className="rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
               Henüz bildirim yok.
             </p>
-          )}
+          ) : null}
 
-          <ul className="space-y-3">
-            {items.map((n) => (
-              <li key={n.id}>
-                <article
-                  className={cn(
-                    "relative rounded-xl border border-border bg-card p-4 shadow-sm transition-colors",
-                    !n.readAt && "border-primary/25 bg-primary/4",
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <button
-                      type="button"
-                      className="min-w-0 flex-1 text-left"
-                      onClick={() => {
-                        if (!n.readAt) void markRead(n.id);
-                      }}
-                    >
-                      <h3 className="pr-2 font-medium leading-snug">
-                        {n.title}
-                      </h3>
-                    </button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="relative -right-1 -top-1 h-8 w-8 shrink-0 cursor-pointer text-muted-foreground hover:text-destructive"
-                      aria-label="Bildirimi sil"
-                      disabled={deletingId === n.id}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        void remove(n.id);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {n.body}
-                  </p>
-                  <p className="mt-2 text-xs text-muted-foreground/80">
-                    {formatDateTimeTr(n.createdAt)}
-                  </p>
-                  {(n.type === "budget_threshold" ||
-                    n.type === "budget_exceeded") && (
-                    <Link
-                      href="/butceler"
-                      className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
-                    >
-                      Bütçelere git
-                    </Link>
-                  )}
-                </article>
-              </li>
-            ))}
-          </ul>
+          {items.length > 0 ? (
+            <ul className="space-y-3">
+              {items.map((n) => (
+                <li key={n.id}>
+                  <article
+                    className={cn(
+                      "relative rounded-xl border border-border bg-card p-4 shadow-sm transition-colors",
+                      !n.readAt && "border-primary/25 bg-primary/4",
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <button
+                        type="button"
+                        className="min-w-0 flex-1 text-left"
+                        onClick={() => {
+                          if (!n.readAt) void markRead(n.id);
+                        }}
+                      >
+                        <h3 className="pr-2 font-medium leading-snug">
+                          {n.title}
+                        </h3>
+                      </button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="relative -right-1 -top-1 h-8 w-8 shrink-0 cursor-pointer text-muted-foreground hover:text-destructive"
+                        aria-label="Bildirimi sil"
+                        disabled={deletingId === n.id}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          void remove(n.id);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {n.body}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground/80">
+                      {formatDateTimeTr(n.createdAt)}
+                    </p>
+                    {(n.type === "budget_threshold" ||
+                      n.type === "budget_exceeded") && (
+                      <Link
+                        href="/butceler"
+                        className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
+                      >
+                        Bütçelere git
+                      </Link>
+                    )}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </>
       )}
     </div>

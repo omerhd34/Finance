@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Transaction } from "@/types/transaction";
 import {
+  cn,
   currencySymbolLabel,
   formatMoneyAmount,
   formatDateShort,
@@ -55,8 +56,13 @@ export function TransactionsTableCard({
   return (
     <Card>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="overflow-x-auto px-4 pt-4 sm:px-6 sm:pt-6">
+          <Table
+            className={cn(
+              "[&_th]:px-3 [&_th]:py-3.5 [&_td]:px-3 [&_td]:py-3.5 sm:[&_th]:px-4 sm:[&_td]:px-4",
+              "[&_th]:font-semibold [&_th]:text-muted-foreground",
+            )}
+          >
             <TableHeader>
               <TableRow>
                 <TableHead>
@@ -71,11 +77,11 @@ export function TransactionsTableCard({
                 </TableHead>
                 <TableHead>Kategori</TableHead>
                 <TableHead>Açıklama</TableHead>
-                <TableHead>
+                <TableHead className="text-right">
                   <button
                     type="button"
                     onClick={onAmountSortToggle}
-                    className="inline-flex items-center gap-1 text-left transition-colors hover:text-foreground cursor-pointer"
+                    className="inline-flex w-full items-center justify-end gap-1 text-right transition-colors hover:text-foreground cursor-pointer"
                     aria-label="Tutara göre sırala"
                   >
                     Tutar ({currencySymbolLabel(currency)})
@@ -96,7 +102,7 @@ export function TransactionsTableCard({
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="text-center text-muted-foreground"
+                    className="px-4 py-12 text-center text-muted-foreground sm:px-6"
                   >
                     Kayıt bulunamadı.
                   </TableCell>
@@ -116,7 +122,7 @@ export function TransactionsTableCard({
                     <TableCell className="max-w-[200px] truncate">
                       {t.description ?? "—"}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-right font-medium tabular-nums">
                       {formatMoneyAmount(t.amount, currency)}
                     </TableCell>
                     <TableCell>
@@ -152,7 +158,7 @@ export function TransactionsTableCard({
             </TableBody>
           </Table>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-border p-4 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border px-4 py-4 sm:flex-row sm:px-6">
           <p className="text-sm text-muted-foreground">
             Toplam {total} kayıt — sayfa {page} / {totalPages}
           </p>

@@ -94,7 +94,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
   if (!mounted) {
     return (
       <div
-        className="h-[300px] w-full min-w-0 rounded-md bg-muted/20"
+        className="h-[400px] w-full min-w-0 rounded-md bg-muted/20"
         aria-hidden
       />
     );
@@ -103,13 +103,13 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
   return (
     <div
       ref={blockInteractionRef}
-      className="h-[300px] w-full min-w-0 cursor-default select-none mt-5 overflow-x-visible"
+      className="h-[400px] w-full min-w-0 cursor-default select-none mt-5 overflow-x-visible"
     >
       <ResponsiveContainer
         width="100%"
         height="100%"
         minWidth={0}
-        minHeight={280}
+        minHeight={360}
       >
         <LineChart
           data={data}

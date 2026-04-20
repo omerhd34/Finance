@@ -28,7 +28,7 @@ export function DashboardChartsSection({ bars, pie }: Props) {
             Gelir ve Gider
           </CardTitle>
           <CardDescription>
-            Son 6 ayın aylık gelir ve gider trendi (çizgi grafik)
+            Son 6 ayın aylık gelir ve gider trendi
           </CardDescription>
         </CardHeader>
         <CardContent>

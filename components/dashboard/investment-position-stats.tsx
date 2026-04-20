@@ -1,4 +1,4 @@
-import { cn, formatMoneyAmount } from "@/lib/utils";
+import { cn, currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
 
 export type InvestmentAggregate = {
   count: number;
@@ -18,35 +18,36 @@ export function InvestmentPositionStats({
   const pnlUp = pnlTry > 0;
   const pnlDown = pnlTry < 0;
 
+  const valueClass =
+    "mt-2.5 w-full min-w-0 max-w-full text-right text-xl font-semibold tabular-nums leading-snug tracking-tight wrap-break-word [overflow-wrap:anywhere]";
+
   return (
-    <div className="grid min-w-0 grid-cols-2 gap-2.5 lg:gap-3 2xl:grid-cols-4">
-      <div className="min-w-0 rounded-xl border border-border/50 bg-muted/20 p-3 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-3.5">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Kayıt sayısı
+    <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3.5 lg:gap-4">
+      <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
+        <p className="text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          Kayıt sayısı (Adet)
         </p>
-        <p className="mt-2 min-w-0 text-xl font-semibold tabular-nums leading-snug tracking-tight 2xl:text-sm 2xl:leading-tight">
-          {count}
-        </p>
+        <p className={cn(valueClass, "text-foreground")}>{count}</p>
       </div>
-      <div className="min-w-0 rounded-xl border border-border/50 bg-muted/20 p-3 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-3.5">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Toplam maliyet
+      <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
+        <p className="text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          Toplam maliyet ({currencySymbolLabel(currency)})
         </p>
-        <p className="mt-2 min-w-0 wrap-break-word text-xl font-semibold tabular-nums leading-snug tracking-tight 2xl:text-sm 2xl:leading-tight">
+        <p className={cn(valueClass, "text-foreground")}>
           {formatMoneyAmount(costTry, currency)}
         </p>
       </div>
-      <div className="min-w-0 rounded-xl border border-border/50 bg-muted/20 p-3 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-3.5">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Güncel değer
+      <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
+        <p className="text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          Güncel değer ({currencySymbolLabel(currency)})
         </p>
-        <p className="mt-2 min-w-0 wrap-break-word text-xl font-semibold tabular-nums leading-snug tracking-tight 2xl:text-sm 2xl:leading-tight">
+        <p className={cn(valueClass, "text-foreground")}>
           {formatMoneyAmount(valueTry, currency)}
         </p>
       </div>
       <div
         className={cn(
-          "min-w-0 rounded-xl border p-3 shadow-sm ring-1 sm:p-3.5",
+          "flex min-w-0 flex-col overflow-hidden rounded-xl border p-4 shadow-sm ring-1 sm:p-4",
           pnlUp &&
             "border-emerald-500/30 bg-emerald-500/[0.07] ring-emerald-500/15 dark:bg-emerald-500/10",
           pnlDown &&
@@ -56,14 +57,15 @@ export function InvestmentPositionStats({
             "border-border/50 bg-muted/20 ring-black/4 dark:ring-white/6",
         )}
       >
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Kar / Zarar
+        <p className="text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          Kar / Zarar ({currencySymbolLabel(currency)})
         </p>
         <p
           className={cn(
-            "mt-2 min-w-0 wrap-break-word text-xl font-semibold tabular-nums leading-snug tracking-tight 2xl:text-sm 2xl:leading-tight",
+            valueClass,
             pnlUp && "text-emerald-600 dark:text-emerald-400",
             pnlDown && "text-rose-600 dark:text-rose-400",
+            !pnlUp && !pnlDown && "text-foreground",
           )}
         >
           {pnlUp ? "+" : ""}

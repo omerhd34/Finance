@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  currencySymbolLabel,
-  formatMoney,
-  formatMoneyAmount,
-} from "@/lib/utils";
+import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -29,29 +24,32 @@ export function InvestmentsSummaryCards({
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Toplam maliyet</CardDescription>
-          <CardTitle className="text-xl tabular-nums">
-            {formatMoney(totalCost, currency)}
+        <CardHeader className="gap-3 p-6 space-y-0">
+          <CardDescription>
+            Toplam maliyet ({currencySymbolLabel(currency)})
+          </CardDescription>
+          <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-amber-600 tabular-nums dark:text-amber-400">
+            {formatMoneyAmount(totalCost, currency)}
           </CardTitle>
         </CardHeader>
       </Card>
       <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Güncel değer</CardDescription>
-          <CardTitle className="text-xl tabular-nums">
-            {formatMoney(totalValue, currency)}
+        <CardHeader className="gap-3 p-6 space-y-0">
+          <CardDescription>
+            Güncel değer ({currencySymbolLabel(currency)})
+          </CardDescription>
+          <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-sky-600 tabular-nums dark:text-sky-400">
+            {formatMoneyAmount(totalValue, currency)}
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0 text-xs text-muted-foreground">
-          Güncel fiyat girilmeyen satırlarda alış fiyatı kullanılır.
-        </CardContent>
       </Card>
       <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Kar / zarar</CardDescription>
+        <CardHeader className="gap-3 p-6 space-y-0">
+          <CardDescription>
+            Kar / zarar ({currencySymbolLabel(currency)})
+          </CardDescription>
           <CardTitle
-            className={`text-xl tabular-nums ${
+            className={`text-2xl font-semibold leading-none tracking-tight tabular-nums ${
               pnl > 0
                 ? "text-emerald-600 dark:text-emerald-400"
                 : pnl < 0
@@ -60,7 +58,7 @@ export function InvestmentsSummaryCards({
             }`}
           >
             {pnl >= 0 ? "+" : ""}
-            {formatMoneyAmount(pnl, currency)} {currencySymbolLabel(currency)}
+            {formatMoneyAmount(pnl, currency)}
           </CardTitle>
         </CardHeader>
       </Card>
