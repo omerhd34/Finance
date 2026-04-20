@@ -1,6 +1,6 @@
-import { BarChart3, PieChart } from "lucide-react";
-import { CategoryPieChart } from "@/components/charts/category-pie-chart";
+import { LineChart, PieChart } from "lucide-react";
 import { MonthlyBarChart } from "@/components/charts/monthly-bar-chart";
+import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import {
   Card,
   CardContent,
@@ -21,14 +21,14 @@ export function DashboardChartsSection({ bars, pie }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3
+            <LineChart
               className="h-5 w-5 shrink-0 text-muted-foreground"
               aria-hidden
             />
             Gelir ve Gider
           </CardTitle>
           <CardDescription>
-            Son 6 aylık toplam gelir ve gider grafiği
+            Son 6 ayın aylık gelir ve gider trendi (çizgi grafik)
           </CardDescription>
         </CardHeader>
         <CardContent>

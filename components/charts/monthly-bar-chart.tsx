@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -34,7 +34,7 @@ function MonthlyBarLegend({ payload }: { payload?: readonly LegendPayload[] }) {
       {payload.map((entry, i) => (
         <li key={i} className="flex items-center gap-3">
           <span
-            className="h-2.5 w-6 shrink-0 rounded-[3px] shadow-sm ring-1 ring-white/15"
+            className="h-0.5 w-7 shrink-0 rounded-full shadow-sm ring-1 ring-white/15"
             style={{ backgroundColor: entry.color }}
             aria-hidden
           />
@@ -111,7 +111,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
         minWidth={0}
         minHeight={280}
       >
-        <BarChart
+        <LineChart
           data={data}
           margin={{ top: 28, right: 12, left: -20, bottom: 0 }}
         >
@@ -144,21 +144,25 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
             align="center"
             content={MonthlyBarLegendContent}
           />
-          <Bar
+          <Line
+            type="monotone"
             dataKey="gelir"
             name="Gelir"
-            fill="#22c55e"
-            radius={[4, 4, 0, 0]}
-            activeBar={false}
+            stroke="#22c55e"
+            strokeWidth={2}
+            dot={{ r: 3, fill: "#22c55e", strokeWidth: 0 }}
+            activeDot={{ r: 5 }}
           />
-          <Bar
+          <Line
+            type="monotone"
             dataKey="gider"
             name="Gider"
-            fill="#ef4444"
-            radius={[4, 4, 0, 0]}
-            activeBar={false}
+            stroke="#ef4444"
+            strokeWidth={2}
+            dot={{ r: 3, fill: "#ef4444", strokeWidth: 0 }}
+            activeDot={{ r: 5 }}
           />
-        </BarChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );
