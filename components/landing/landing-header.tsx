@@ -39,7 +39,6 @@ export function LandingHeader() {
           >
             <BrandLockup variant="landing" />
           </Link>
-
           <nav
             className="flex items-center gap-1.5 sm:gap-3"
             aria-label="Giriş navigasyonu"
@@ -49,15 +48,15 @@ export function LandingHeader() {
               variant="ghost"
               size="icon"
               disabled={!themeReady}
-              className="hidden sm:flex h-9 w-9 cursor-pointer rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground shrink-0"
+              className="h-8 w-8 cursor-pointer rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground shrink-0 sm:h-9 sm:w-9"
               aria-label={themeLabel}
               title={themeLabel}
               onClick={toggleTheme}
             >
               {themeResolved && resolvedTheme === "dark" ? (
-                <Moon className="h-4.5 w-4.5" />
+                <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               ) : (
-                <Sun className="h-4.5 w-4.5" />
+                <Sun className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               )}
             </Button>
             <Button
