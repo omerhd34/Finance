@@ -22,7 +22,7 @@ export function DebtsSummaryCards({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-4">
           <CardDescription>Toplam alacak (kalan)</CardDescription>
           <CardTitle className="text-2xl text-emerald-500">
             {formatMoney(totalReceivable, currency)}
@@ -30,7 +30,7 @@ export function DebtsSummaryCards({
         </CardHeader>
       </Card>
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-4">
           <CardDescription>Toplam borç (kalan)</CardDescription>
           <CardTitle className="text-2xl text-amber-500">
             {formatMoney(totalPayable, currency)}
