@@ -24,41 +24,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.72,
     },
-    {
-      url: `${base}/gizlilik-politikasi`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.45,
-    },
-    {
-      url: `${base}/kullanim-kosullari`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.45,
-    },
-    {
-      url: `${base}/mesafeli-satis-sozlesmesi`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.42,
-    },
-    {
-      url: `${base}/cerez-politikasi`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.42,
-    },
-    {
-      url: `${base}/register`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.65,
-    },
-    {
-      url: `${base}/login`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.55,
-    },
   ];
 }
