@@ -50,7 +50,7 @@ export default function AiInsightsPage() {
     ];
 
     return (
-      <div className="mx-auto w-full max-w-6xl space-y-6">
+      <div className="mx-auto w-full max-w-7xl space-y-6">
         <AiInsightsHero />
         <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
           <p className="text-sm font-semibold text-foreground">
@@ -74,7 +74,7 @@ export default function AiInsightsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8">
+    <div className="mx-auto w-full max-w-7xl space-y-8">
       <AiInsightsHero />
 
       <AiInsightsRunControls

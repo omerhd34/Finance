@@ -14,7 +14,7 @@ export function LegalPageLayout({ title, description, children }: Props) {
     <LandingPageShell>
       <LandingHeader />
       <main className="flex-1 border-b border-slate-300/90 px-4 pb-20 pt-24 dark:border-white/10 md:pt-28">
-        <article className="mx-auto max-w-6xl">
+        <article className="mx-auto max-w-7xl">
           <header className="mb-10 border-b border-slate-300 pb-8 dark:border-white/15">
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {title}
