@@ -152,6 +152,11 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             Kayıt ol
           </Link>
         </p>
+        <p className="text-center text-sm text-muted-foreground">
+          <Link href="/" className="text-primary hover:underline">
+            Anasayfaya dön
+          </Link>
+        </p>
       </CardContent>
     </Card>
   );
