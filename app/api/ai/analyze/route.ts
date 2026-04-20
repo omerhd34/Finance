@@ -11,17 +11,21 @@ import type { Debt } from "@/types/debt";
 
 const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın. Yanıtın Türkçe olacak; dil profesyonel, net ve ölçülü olsun. Aşırı samimiyet, klişe AI ifadeleri ve gereksiz ünlem kullanma (ör. "Hadi birlikte", "size tam destek", "Başarılar dilerim!" gibi boş kapanışlar yerine kısa ve somut bir cümle tercih et).
 
-Veri: Son 30 gün giderleri JSON'da; borç/alacak RECEIVABLE=alacak, PAYABLE=borç; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan.
+Veri: Son 30 gün giderleri JSON'da; borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
 
-Yapı (her biri için ayrı ## başlık):
+Yapı: Aşağıdaki başlıkların tamamını bu sırayla üret; veri yetmeyen yerde tek cümlelik “bu bölüm için veri yetersiz” benzeri kısa bir not yeterli. Her ana bölüm için ayrı ## başlık kullan.
 1) ## Karşılama — En fazla 1-2 cümle: verileri incelediğini profesyonelce belirt; gereksiz uzatma.
-2) ## Genel değerlendirme — Net pozisyon, harcama dağılımı ve dikkat çeken bir nokta (3-5 cümle).
+2) ## Genel değerlendirme — Net pozisyon, harcama dağılımı ve dikkat çeken bir nokta (3-6 cümle); toplam gider özeti ve varsa en büyük 1-2 kalem vurgusu.
 3) ## En yüksek 3 harcama kategorisi ve yorumu — Önce tek cümlelik özet; ardından her kategori için **Kategori adı (tutar TL):** ile başlayan kısa paragraflar; veriye dayalı, yargıdan çok gözlem ve yorum.
-4) ## Somut tasarruf önerileri — Tam 3 madde; her biri başlık + 2-4 cümle, uygulanabilir ve ölçülebilir.
-5) ## Gelecek ay için bütçe çerçevesi — Sabit/değişken/tasarruf gibi başlıkları net ayır; gerektiğinde alt satırlarda **kalın** etiketler kullan.
-6) ## Borç ve alacaklar — Toplamlar, öne çıkan kalemler (tutar, vade varsa), tahsilat veya ödeme önceliği önerisi. Borç/alacak yoksa veya veri yetersizse kısaca belirt.
+4) ## Harcama kalıpları ve işlem notları — Tarih sıklığına göre (hafta içi/sonu, yoğun günler), tek seferlik yüksek tutarlar ve açıklama alanından çıkarılabilecek tekrar veya anomali; spekülasyon yapma, rakam ve metne dayan.
+5) ## Somut tasarruf önerileri — Tam 3-5 numaralı madde; her maddede başlık (ör. **Eğitim harcamalarını bütçeleme**) Markdown kalın ile yazılsın, açıklama metni ayrı paragraf veya yeni satırda; başlık + 2-4 cümle, uygulanabilir ve ölçülebilir.
+6) ## Gelecek ay için bütçe çerçevesi — Sabit/değişken/tasarruf gibi başlıkları net ayır; gerektiğinde alt satırlarda **kalın** etiketler kullan; mümkünse son 30 güne oransal dayan.
+7) ## Borç ve alacaklar — Toplamlar, öne çıkan kalemler (tutar, vade varsa), tahsilat veya ödeme önceliği önerisi. Borç/alacak yoksa veya veri yetersizse kısaca belirt.
+8) ## Riskler ve dikkat edilmesi gerekenler — Likidite veya vadeler, kategori yoğunlaşması, borç stresi belirtileri; abartısız, veriye bağlı; gerektiğinde madde işaretli kısa liste.
+9) ## Öncelikli aksiyonlar — 4-7 numaralı madde; her satır tek net eylem (kısa ve uygulanabilir), gereksiz tekrar etme.
+10) ## Kısa özet ve bir sonraki adım — 2-4 cümle: en kritik çıkarım + kullanıcıya yönelik bir sonraki somut kontrol veya davranış (genel vaat değil).
 
-Biçim: Yalnızca Markdown; her ana bölüm ## ile başlasın; paragraflar arasında boş satır; listeler için - veya numaralı madde kullan. Abartılı emoji kullanma.`;
+Biçim: Yalnızca Markdown; her ana bölüm ## ile başlasın; paragraflar arasında boş satır; listeler için - veya numaralı madde kullan. Abartılı emoji kullanma. Parantez içinde İngilizce terim veya veri şeması kodu (RECEIVABLE, PAYABLE vb.) yazma.`;
 
 type TxPayload = {
   tarih: string;
@@ -31,7 +35,8 @@ type TxPayload = {
 }[];
 
 type DebtLine = {
-  yon: "RECEIVABLE" | "PAYABLE";
+  /** Model çıktısında İngilizce kod tekrar etmesin diye JSON'da Türkçe. */
+  yon: "alacak" | "borç";
   karsiTaraf: string;
   toplamTutar: number;
   odenen: number;
@@ -235,7 +240,7 @@ export async function POST() {
       else toplamBorcKalan += kalan;
       const vadeRaw = d.dueDate;
       return {
-        yon: d.direction,
+        yon: d.direction === "RECEIVABLE" ? "alacak" : "borç",
         karsiTaraf: d.counterparty,
         toplamTutar: d.totalAmount,
         odenen: d.paidAmount,
