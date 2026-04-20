@@ -20,7 +20,7 @@ export function AiInsightsHero() {
             kayıtları birlikte değerlendirilir. Analiz tamamlandığında yapay
             zekâ; genel değerlendirme, kategori yorumları, tasarruf önerileri,
             gelecek ay için bütçe çerçevesi ve borç/alacak özeti içeren tek bir
-            Türkçe Markdown rapor üretir.
+            Türkçe rapor üretir.
           </p>
         </div>
       </div>
