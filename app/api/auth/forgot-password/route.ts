@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
 
     const base = appBaseUrl();
-    const resetUrl = `${base}/reset-password?token=${encodeURIComponent(rawToken)}`;
+    const resetUrl = `${base}/sifre-sifirla?token=${encodeURIComponent(rawToken)}`;
     const sent = await sendPasswordResetEmail({ to: email, resetUrl });
 
     if (process.env.NODE_ENV === "development" && !sent) {

@@ -83,7 +83,7 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
       <div className="flex h-[300px] flex-col items-center justify-center gap-2 px-4 text-center text-sm text-muted-foreground">
         <p>Kayıt yok.</p>
         <Link
-          href="/transactions"
+          href="/islemler"
           className="font-medium text-primary underline-offset-4 transition hover:text-primary/90 hover:underline"
         >
           İşlemlere git
@@ -114,7 +114,7 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
               onClick={(sector) => {
                 const name = sector.name || sector.payload?.name;
                 if (name)
-                  router.push(`/transactions?category=${name}&type=expense`);
+                  router.push(`/islemler?category=${name}&type=expense`);
               }}
             >
               {chartData.map((_, i) => (

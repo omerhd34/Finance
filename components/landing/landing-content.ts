@@ -83,7 +83,7 @@ export const LANDING_PLANS: LandingPlan[] = [
       "Çoklu para birimi",
     ],
     ctaLabel: "Başla",
-    ctaHref: "/register",
+    ctaHref: "/kayit",
     ctaVariant: "muted",
   },
   {
@@ -101,7 +101,7 @@ export const LANDING_PLANS: LandingPlan[] = [
       "Öncelikli yeni özellikler",
     ],
     ctaLabel: "Listeye katıl",
-    ctaHref: "/register",
+    ctaHref: "/kayit",
     highlighted: true,
     ctaVariant: "primary",
   },

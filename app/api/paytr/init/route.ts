@@ -64,8 +64,8 @@ export async function POST(req: Request) {
 
     const baseUrl =
       process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
-    const merchantOkUrl = `${baseUrl}/settings?paytr=ok`;
-    const merchantFailUrl = `${baseUrl}/settings?paytr=fail`;
+    const merchantOkUrl = `${baseUrl}/ayarlar?paytr=ok`;
+    const merchantFailUrl = `${baseUrl}/ayarlar?paytr=fail`;
 
     const userIp = clientIp(req);
     const userBasket = buildPremiumUserBasketBase64();

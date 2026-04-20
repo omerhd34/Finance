@@ -22,7 +22,7 @@ export function PremiumPlanNotice({ title, className }: Props) {
         Ücretsiz planda bu özellik kapalıdır. Kullanmak için{" "}
         <strong>Premium</strong> satın alın. Ödeme ve plan yükseltmesi için{" "}
         <Link
-          href="/settings"
+          href="/ayarlar"
           className="font-semibold underline underline-offset-2 hover:opacity-100"
         >
           Ayarlar

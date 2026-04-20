@@ -169,7 +169,7 @@ export default function SettingsPage() {
     if (p === "ok") {
       void (async () => {
         await updateSession({ reloadUser: true } as Record<string, unknown>);
-        router.replace("/settings");
+        router.replace("/ayarlar");
         router.refresh();
         setPaytrSuccessBanner(true);
       })();
@@ -177,7 +177,7 @@ export default function SettingsPage() {
     }
 
     setPaytrInitError("Ödeme tamamlanamadı veya iptal edildi.");
-    void router.replace("/settings");
+    void router.replace("/ayarlar");
   }, [router, updateSession]);
 
   function handleProfileSubmit(values: ProfileForm) {
@@ -713,7 +713,7 @@ export default function SettingsPage() {
           </div>
           <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground">
             <Link
-              href="/ai-insights"
+              href="/yapay-zeka-analizi"
               className="font-medium text-emerald-600 underline decoration-emerald-500/40 underline-offset-4 transition hover:text-emerald-500 dark:text-emerald-400"
             >
               AI Analiz

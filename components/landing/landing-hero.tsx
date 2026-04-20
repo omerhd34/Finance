@@ -64,7 +64,7 @@ export function LandingHero() {
             asChild
             className="bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 group h-12 w-full rounded-full px-8 text-base font-semibold sm:w-auto"
           >
-            <Link href="/register">
+            <Link href="/kayit">
               Ücretsiz başla
               <ArrowRight
                 className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5"
@@ -78,7 +78,7 @@ export function LandingHero() {
             asChild
             className="border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 h-12 w-full rounded-full border px-8 text-base cursor-pointer sm:w-auto"
           >
-            <Link href="/login">Hesabım var</Link>
+            <Link href="/giris">Hesabım var</Link>
           </Button>
         </div>
         <ul

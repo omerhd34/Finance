@@ -39,13 +39,13 @@ const eyebrow =
 
 const quickLinks = [
   {
-    href: "/forgot-password",
+    href: "/sifremi-unuttum",
     icon: KeyRound,
     title: "Şifremi unuttum",
     description: "E-posta ile güvenli sıfırlama bağlantısı alın.",
   },
   {
-    href: "/login",
+    href: "/giris",
     icon: LifeBuoy,
     title: "Giriş yapamıyorum",
     description:
@@ -273,7 +273,7 @@ export default function DestekPage() {
               asChild
               className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
             >
-              <Link href="/register">
+              <Link href="/kayit">
                 Ücretsiz başla
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>

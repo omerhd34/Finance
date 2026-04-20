@@ -73,7 +73,7 @@ export default function NewTransactionPage() {
       description: values.description || undefined,
       date: d.toISOString(),
     });
-    router.push("/transactions");
+    router.push("/islemler");
     router.refresh();
   }
 
@@ -81,7 +81,7 @@ export default function NewTransactionPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
         <Button variant="ghost" asChild className="mb-2 -ml-2">
-          <Link href="/transactions">← İşlemlere dön</Link>
+          <Link href="/islemler">← İşlemlere dön</Link>
         </Button>
         <h2 className="text-xl font-semibold">Yeni işlem</h2>
         <p className="text-sm text-muted-foreground">
@@ -197,7 +197,7 @@ export default function NewTransactionPage() {
                 asChild
                 className="cursor-pointer"
               >
-                <Link href="/transactions">İptal</Link>
+                <Link href="/islemler">İptal</Link>
               </Button>
             </div>
           </form>

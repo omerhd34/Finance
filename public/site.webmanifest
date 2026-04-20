@@ -54,7 +54,7 @@
     {
       "name": "Gelir / Gider Ekle",
       "short_name": "Ekle",
-      "url": "/dashboard/add",
+      "url": "/gosterge-paneli/add",
       "icons": [
         {
           "src": "/icons/add.png",
@@ -65,7 +65,7 @@
     {
       "name": "Raporlar",
       "short_name": "Rapor",
-      "url": "/dashboard/reports",
+      "url": "/gosterge-paneli/reports",
       "icons": [
         {
           "src": "/icons/report.png",

@@ -8,7 +8,7 @@ export default async function AuthGroupLayout({
 }) {
   const session = await auth();
   if (session?.user) {
-    redirect("/dashboard");
+    redirect("/gosterge-paneli");
   }
   return <>{children}</>;
 }

@@ -69,7 +69,7 @@ export function ResetPasswordForm() {
       setError("root", { message: msg });
       return;
     }
-    router.push("/login?reset=ok");
+    router.push("/giris?reset=ok");
     router.refresh();
   }
 
@@ -85,7 +85,7 @@ export function ResetPasswordForm() {
         </CardHeader>
         <CardContent>
           <Button asChild className="w-full cursor-pointer">
-            <Link href="/forgot-password">Yeni sıfırlama bağlantısı iste</Link>
+            <Link href="/sifremi-unuttum">Yeni sıfırlama bağlantısı iste</Link>
           </Button>
         </CardContent>
       </Card>
@@ -183,7 +183,7 @@ export function ResetPasswordForm() {
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground">
-          <Link href="/login" className="text-primary hover:underline">
+          <Link href="/giris" className="text-primary hover:underline">
             Giriş sayfasına dön
           </Link>
         </p>

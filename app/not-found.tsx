@@ -23,7 +23,7 @@ export default function NotFound() {
             <Link href="/">Ana sayfaya git.</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard">Panele git.</Link>
+            <Link href="/gosterge-paneli">Panele git.</Link>
           </Button>
         </div>
       </section>

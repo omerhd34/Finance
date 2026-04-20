@@ -55,7 +55,7 @@ export function DashboardPremiumPromo() {
         asChild
         className="h-11 w-full shrink-0 rounded-full bg-emerald-500 px-6 text-base font-semibold text-black shadow-md shadow-emerald-900/35 transition hover:bg-emerald-400 hover:shadow-lg dark:text-white sm:w-auto sm:self-center"
       >
-        <Link href="/settings">Premium satın al</Link>
+        <Link href="/ayarlar">Premium satın al</Link>
       </Button>
     </section>
   );

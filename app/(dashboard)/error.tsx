@@ -28,7 +28,7 @@ export default function DashboardError({ error, reset }: Props) {
         </Button>
         <Button
           variant="outline"
-          onClick={() => window.location.assign("/dashboard")}
+          onClick={() => window.location.assign("/gosterge-paneli")}
           className="cursor-pointer"
         >
           Dashboard ana sayfasına git.

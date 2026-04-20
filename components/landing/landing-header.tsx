@@ -67,7 +67,7 @@ export function LandingHeader() {
               className="h-8 shrink-0 gap-1.5 rounded-full border-slate-300/90 bg-white/50 px-3 text-xs font-semibold shadow-sm transition-all duration-200 hover:border-emerald-500/65 hover:bg-emerald-500/15 hover:text-emerald-900 hover:shadow-md hover:shadow-emerald-500/15 active:scale-[0.98] sm:h-9 sm:px-4 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/50 dark:bg-white/95 dark:text-zinc-900 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-50 dark:hover:text-emerald-950 dark:hover:shadow-lg dark:hover:shadow-emerald-950/25 active:dark:scale-[0.98] dark:focus-visible:ring-emerald-400/50 dark:focus-visible:ring-offset-[#050507]"
             >
               <Link
-                href="/login"
+                href="/giris"
                 className="group inline-flex items-center gap-1.5"
               >
                 <LogIn
@@ -83,7 +83,7 @@ export function LandingHeader() {
               size="sm"
               className="h-8 shrink-0 rounded-full bg-emerald-500 px-3 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-500 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-400 dark:hover:text-white"
             >
-              <Link href="/register">Ücretsiz Başla</Link>
+              <Link href="/kayit">Ücretsiz Başla</Link>
             </Button>
           </nav>
         </div>

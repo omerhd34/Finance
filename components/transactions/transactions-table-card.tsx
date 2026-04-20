@@ -107,7 +107,7 @@ export function TransactionsTableCard({
                     <TableCell>{formatDateShort(t.date)}</TableCell>
                     <TableCell>
                       <Link
-                        href={`/transactions?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
+                        href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
                         className="text-primary underline-offset-4 hover:underline"
                       >
                         {t.category}

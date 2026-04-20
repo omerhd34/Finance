@@ -50,7 +50,7 @@ export function DashboardInvestmentSection({
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" className="shrink-0" asChild>
-            <Link href="/investments" className="gap-1.5">
+            <Link href="/yatirimlar" className="gap-1.5">
               Yatırımlar
               <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
             </Link>
@@ -62,7 +62,7 @@ export function DashboardInvestmentSection({
               <p className="text-sm text-muted-foreground">
                 Henüz hisse pozisyonu yok.{" "}
                 <Link
-                  href="/investments"
+                  href="/yatirimlar"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Pozisyon ekleyin
@@ -95,7 +95,7 @@ export function DashboardInvestmentSection({
             </CardDescription>
           </div>
           <Button variant="outline" size="sm" className="shrink-0" asChild>
-            <Link href="/investments" className="gap-1.5">
+            <Link href="/yatirimlar" className="gap-1.5">
               Yatırımlar
               <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
             </Link>
@@ -107,7 +107,7 @@ export function DashboardInvestmentSection({
               <p className="text-sm text-muted-foreground">
                 Henüz altın pozisyonu yok.{" "}
                 <Link
-                  href="/investments"
+                  href="/yatirimlar"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
                   Pozisyon ekleyin

@@ -124,7 +124,7 @@ export function NotificationsPopover() {
       <PopoverContent align="end" className="w-[min(100vw-2rem,22rem)] p-0">
         <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
           <Link
-            href="/notifications"
+            href="/bildirimler"
             className="text-sm font-medium hover:text-primary"
             onClick={() => setOpen(false)}
           >
@@ -175,7 +175,7 @@ export function NotificationsPopover() {
                         {(n.type === "budget_threshold" ||
                           n.type === "budget_exceeded") && (
                           <Link
-                            href="/budgets"
+                            href="/butceler"
                             className="mt-2 inline-block text-xs font-medium text-primary"
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -203,7 +203,7 @@ export function NotificationsPopover() {
               {items.length > 0 && (
                 <div className="border-t border-border px-3 py-2 text-center">
                   <Link
-                    href="/notifications"
+                    href="/bildirimler"
                     className="text-xs font-medium text-primary hover:underline"
                     onClick={() => setOpen(false)}
                   >

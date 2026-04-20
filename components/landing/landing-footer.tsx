@@ -117,8 +117,8 @@ export function LandingFooter() {
           </FooterColumn>
 
           <FooterColumn title="Hesabım ve Destek">
-            <FooterLink href="/login">Giriş Yap</FooterLink>
-            <FooterLink href="/register">Kayıt Ol</FooterLink>
+            <FooterLink href="/giris">Giriş Yap</FooterLink>
+            <FooterLink href="/kayit">Kayıt Ol</FooterLink>
             <FooterLink href="/destek">Destek</FooterLink>
             <FooterLink href="/destek#sss">Sık Sorulan Sorular</FooterLink>
           </FooterColumn>

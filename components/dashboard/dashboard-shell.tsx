@@ -54,36 +54,36 @@ import {
 const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
 
 const nav = [
-  { href: "/dashboard", label: "Ana Panel", icon: LayoutDashboard },
-  { href: "/transactions", label: "İşlemler", icon: Wallet },
-  { href: "/recurring", label: "Tekrarlayan", icon: CalendarClock },
-  { href: "/goals", label: "Hedefler", icon: PiggyBank },
-  { href: "/budgets", label: "Bütçeler", icon: PieChart },
-  { href: "/debts", label: "Borç ve Alacak", icon: HandCoins },
-  { href: "/investments", label: "Yatırım", icon: TrendingUp },
-  { href: "/ai-insights", label: "AI Analiz", icon: Sparkles },
-  { href: "/notifications", label: "Bildirimler", icon: Bell },
-  { href: "/settings", label: "Ayarlar", icon: Settings },
+  { href: "/gosterge-paneli", label: "Ana Panel", icon: LayoutDashboard },
+  { href: "/islemler", label: "İşlemler", icon: Wallet },
+  { href: "/tekrarlayanlar", label: "Tekrarlayan", icon: CalendarClock },
+  { href: "/hedefler", label: "Hedefler", icon: PiggyBank },
+  { href: "/butceler", label: "Bütçeler", icon: PieChart },
+  { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
+  { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
+  { href: "/yapay-zeka-analizi", label: "AI Analiz", icon: Sparkles },
+  { href: "/bildirimler", label: "Bildirimler", icon: Bell },
+  { href: "/ayarlar", label: "Ayarlar", icon: Settings },
 ];
 
 const titles: Record<string, string> = {
-  "/dashboard": "Ana Panel",
-  "/transactions": "İşlemler",
-  "/transactions/new": "Yeni İşlem",
-  "/recurring": "Tekrarlayan işlemler",
-  "/goals": "Hedefler",
-  "/budgets": "Kategori bütçeleri",
-  "/debts": "Borç ve Alacak",
-  "/investments": "Yatırım",
-  "/ai-insights": "AI Analiz",
-  "/notifications": "Bildirimler",
-  "/settings": "Ayarlar",
+  "/gosterge-paneli": "Ana Panel",
+  "/islemler": "İşlemler",
+  "/islemler/yeni-islem": "Yeni İşlem",
+  "/tekrarlayanlar": "Tekrarlayan işlemler",
+  "/hedefler": "Hedefler",
+  "/butceler": "Kategori bütçeleri",
+  "/borc-ve-alacak": "Borç ve Alacak",
+  "/yatirimlar": "Yatırım",
+  "/yapay-zeka-analizi": "AI Analiz",
+  "/bildirimler": "Bildirimler",
+  "/ayarlar": "Ayarlar",
 };
 
 function titleForPath(path: string): string {
   if (titles[path]) return titles[path];
   const prefix = Object.keys(titles)
-    .filter((k) => k !== "/dashboard")
+    .filter((k) => k !== "/gosterge-paneli")
     .sort((a, b) => b.length - a.length)
     .find((k) => path.startsWith(k));
   return prefix ? (titles[prefix] ?? "IQfinansAI") : "IQfinansAI";
@@ -200,7 +200,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         {collapsed ? (
           <div className="flex shrink-0 flex-col items-center gap-2 border-b border-border py-3">
             <Link
-              href="/dashboard"
+              href="/gosterge-paneli"
               onClick={() => setOpen(false)}
               className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Ana panele git"
@@ -229,7 +229,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
             <Link
-              href="/dashboard"
+              href="/gosterge-paneli"
               onClick={() => setOpen(false)}
               className="flex min-w-0 flex-1 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Ana panele git"
@@ -328,7 +328,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link
-              href="/settings"
+              href="/ayarlar"
               onClick={() => setOpen(false)}
               className="flex justify-center rounded-lg bg-muted/30 p-1.5"
               title="Ayarlar"
@@ -396,7 +396,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="border-t border-border p-3">
               <Link
-                href="/settings"
+                href="/ayarlar"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
               >

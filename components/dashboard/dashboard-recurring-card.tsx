@@ -45,7 +45,7 @@ export function DashboardRecurringCard({
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/recurring">Tümünü gör</Link>
+          <Link href="/tekrarlayanlar">Tümünü gör</Link>
         </Button>
       </CardHeader>
       <CardContent>
@@ -53,7 +53,7 @@ export function DashboardRecurringCard({
           <p className="text-sm text-muted-foreground">
             Henüz tekrarlayan kural yok veya tüm kurallar pasif.{" "}
             <Link
-              href="/recurring"
+              href="/tekrarlayanlar"
               className="text-primary underline-offset-4 hover:underline"
             >
               Kural ekleyin

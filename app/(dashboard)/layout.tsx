@@ -9,7 +9,7 @@ export default async function DashboardGroupLayout({
 }) {
   const session = await auth();
   if (!session?.user) {
-    redirect("/login");
+    redirect("/giris");
   }
   return <DashboardShell>{children}</DashboardShell>;
 }

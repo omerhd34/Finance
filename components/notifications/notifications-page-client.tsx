@@ -185,7 +185,7 @@ export function NotificationsPageClient() {
                   {(n.type === "budget_threshold" ||
                     n.type === "budget_exceeded") && (
                     <Link
-                      href="/budgets"
+                      href="/butceler"
                       className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
                     >
                       Bütçelere git

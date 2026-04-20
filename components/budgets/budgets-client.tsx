@@ -303,7 +303,7 @@ export function BudgetsClient({ currency }: Props) {
                       </span>
                     </div>
                     <Link
-                      href={`/transactions?category=${encodeURIComponent(b.category)}&type=expense`}
+                      href={`/islemler?category=${encodeURIComponent(b.category)}&type=expense`}
                       className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
                     >
                       Bu kategorideki işlemler

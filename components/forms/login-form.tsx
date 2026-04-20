@@ -45,7 +45,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
       setFormError("root", { message: "E-posta veya şifre hatalı" });
       return;
     }
-    router.push("/dashboard");
+    router.push("/gosterge-paneli");
     router.refresh();
   }
 
@@ -66,7 +66,9 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             type="button"
             variant="outline"
             className="w-full cursor-pointer"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() =>
+              signIn("google", { callbackUrl: "/gosterge-paneli" })
+            }
           >
             <FcGoogle className="h-5 w-5" />
             Google ile giriş
@@ -99,7 +101,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Şifre</Label>
               <Link
-                href="/forgot-password"
+                href="/sifremi-unuttum"
                 className="text-xs text-muted-foreground hover:text-primary hover:underline"
               >
                 Şifreni mi unuttun?
@@ -146,7 +148,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
         </form>
         <p className="text-center text-sm text-muted-foreground">
           Hesabın yok mu?{" "}
-          <Link href="/register" className="text-primary hover:underline">
+          <Link href="/kayit" className="text-primary hover:underline">
             Kayıt ol
           </Link>
         </p>

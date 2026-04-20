@@ -35,7 +35,7 @@ export function buildBudgetAlertEmailHtml(opts: {
   const cat = escapeHtml(category);
   const month = escapeHtml(monthLabel);
   const base = appBaseUrl();
-  const budgetsUrl = `${base}/budgets`;
+  const budgetsUrl = `${base}/butceler`;
 
   const isExceeded = alertType === "exceeded";
   const accent = isExceeded ? "#dc2626" : "#16a34a";

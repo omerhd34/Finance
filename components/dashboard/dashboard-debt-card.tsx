@@ -33,7 +33,7 @@ export function DashboardDebtCard({ receivable, payable, currency }: Props) {
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/debts">Detaylar</Link>
+          <Link href="/borc-ve-alacak">Detaylar</Link>
         </Button>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2 select-none">

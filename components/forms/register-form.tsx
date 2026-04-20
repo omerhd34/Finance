@@ -98,10 +98,10 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
       setError("root", {
         message: "Kayıt tamam; giriş için lütfen manuel olarak deneyin.",
       });
-      router.push("/login");
+      router.push("/giris");
       return;
     }
-    router.push("/dashboard");
+    router.push("/gosterge-paneli");
     router.refresh();
   }
 
@@ -117,7 +117,9 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             type="button"
             variant="outline"
             className="w-full cursor-pointer"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() =>
+              signIn("google", { callbackUrl: "/gosterge-paneli" })
+            }
           >
             <FcGoogle className="h-5 w-5" />
             Google ile kayıt
@@ -234,7 +236,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
         </form>
         <p className="text-center text-sm text-muted-foreground">
           Zaten hesabın var mı?{" "}
-          <Link href="/login" className="text-primary hover:underline">
+          <Link href="/giris" className="text-primary hover:underline">
             Giriş yap
           </Link>
         </p>

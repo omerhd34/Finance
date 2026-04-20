@@ -29,7 +29,7 @@ export function TransactionsPageHeader({
           onExportPdf={onExportPdf}
         />
         <Button asChild className="cursor-pointer">
-          <Link href="/transactions/new">Yeni İşlem Ekle</Link>
+          <Link href="/islemler/yeni-islem">Yeni İşlem Ekle</Link>
         </Button>
       </div>
     </div>

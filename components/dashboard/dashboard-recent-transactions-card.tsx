@@ -47,7 +47,7 @@ export function DashboardRecentTransactionsCard({
           <CardDescription>En son 5 işlem</CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/transactions">Tümünü gör</Link>
+          <Link href="/islemler">Tümünü gör</Link>
         </Button>
       </CardHeader>
       <CardContent>
