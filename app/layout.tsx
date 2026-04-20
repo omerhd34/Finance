@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@wrksz/themes/next";
 import { Providers } from "@/components/providers";
 import { siteMetadata } from "@/lib/metadata";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5307815863038450"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        ></Script>
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider
           attribute="class"
