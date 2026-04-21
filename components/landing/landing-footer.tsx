@@ -3,6 +3,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ChevronUp, Moon, Sun } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
@@ -10,27 +11,47 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
+const BACK_TO_TOP_REVEAL_AFTER_PX = 72;
+
+function getDocumentScrollTop() {
+  if (typeof window === "undefined") return 0;
+  return (
+    window.scrollY ||
+    window.pageYOffset ||
+    document.documentElement.scrollTop ||
+    document.body.scrollTop ||
+    0
+  );
+}
+
 function FooterBackToTop() {
   const [show, setShow] = useState(false);
+  const [domReady, setDomReady] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 360);
+    setDomReady(true);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () =>
+      setShow(getDocumentScrollTop() > BACK_TO_TOP_REVEAL_AFTER_PX);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (!show) return null;
+  if (!show || !domReady) return null;
 
-  return (
+  return createPortal(
     <button
       type="button"
       aria-label="Yukarı çık"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-6 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-xl md:right-8"
+      className="fixed bottom-10 right-4 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-xl md:right-8"
     >
       <ChevronUp className="h-5 w-5" strokeWidth={2.5} />
-    </button>
+    </button>,
+    document.body,
   );
 }
 
@@ -132,7 +153,7 @@ export function LandingFooter() {
             <span className="font-semibold text-foreground">IQfinansAI</span>.
             Tüm hakları saklıdır.
           </p>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex h-11 shrink-0 items-center gap-2">
             <Button
               type="button"
               variant="ghost"
@@ -140,19 +161,19 @@ export function LandingFooter() {
               disabled={!mounted}
               onClick={toggleTheme}
               className={cn(
-                "h-9 w-9 rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground",
+                "h-11 w-11 rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground cursor-pointer",
               )}
               aria-label="Tema değiştir"
               title="Tema değiştir"
             >
               {mounted ? (
                 resolvedTheme === "dark" ? (
-                  <Sun className="h-4 w-4" />
+                  <Sun className="h-5 w-5" />
                 ) : (
-                  <Moon className="h-4 w-4" />
+                  <Moon className="h-5 w-5" />
                 )
               ) : (
-                <div className="h-4 w-4 rounded-full bg-muted-foreground/30 animate-pulse" />
+                <div className="h-5 w-5 rounded-full bg-muted-foreground/30 animate-pulse" />
               )}
             </Button>
           </div>
