@@ -2,6 +2,14 @@
 
 Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, hedefler, borç takibi, yatırım pozisyonları, döviz kurları ve yapay zekâ destekli özetler tek arayüzde bir araya gelir.
 
+## Önizleme
+
+<p align="center">
+  <img src="./public/website1.png" alt="Finance uygulamasından ekran görüntüsü 1" width="920" /><br /><br />
+  <img src="./public/website2.png" alt="Finance uygulamasından ekran görüntüsü 2" width="920" />
+</p>
+
+
 ## Özellikler
 
 - **Kimlik doğrulama**: E-posta/şifre ile kayıt ve giriş; isteğe bağlı Google ile oturum (NextAuth v5).
@@ -14,11 +22,11 @@ Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, hedefler
 - **AI öngörüleri**: Google Gemini ile harcama/özet analizi (`GEMINI_API_KEY` gerekir).
 - **Ayarlar**: Profil, para birimi, şifre güncelleme.
 
-Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux Toolkit** ile durum yönetimi kullanılır.
+Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux Toolkit** ile durum yönetimi kullanılır. Arayüz **React 19**, **Tailwind CSS 4** ve **Radix UI** bileşenleriyle kurulmuştur.
 
 ## Gereksinimler
 
-- Node.js 20+ (projede TypeScript 5 ve Next.js 16 kullanılıyor)
+- Node.js 20+ (TypeScript 5, Next.js 16 ve React 19)
 - MySQL 8 (veya Prisma’nın desteklediği uyumlu bir sürüm)
 
 ## Kurulum
@@ -60,7 +68,7 @@ Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux
 | Komut | Açıklama |
 |-------|----------|
 | `npm run dev` | Geliştirme sunucusu (hot reload) |
-| `npm run build` | Üretim derlemesi |
+| `npm run build` | `prisma migrate deploy` sonrası üretim derlemesi (`next build --webpack`) |
 | `npm start` | Derlenmiş uygulamayı çalıştırır (`build` sonrası) |
 | `npm run lint` | ESLint kontrolü |
 
@@ -68,11 +76,12 @@ Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux
 
 ## Proje yapısı (özet)
 
-- `app/` — App Router sayfaları: `(auth)` giriş/kayıt, `(dashboard)` pano, işlemler, hedefler, borçlar, yatırımlar, ayarlar, AI sayfası
+- `app/` — App Router: açılış sayfası, `hakkimizda`, yasal/destek sayfaları; `(auth)` giriş/kayıt/şifre akışları; `(dashboard)` gösterge paneli, işlemler, bütçeler, tekrarlayanlar, hedefler, borç ve alacak, yatırımlar, yapay zekâ analizi, ayarlar, profil, bildirimler
 - `app/api/` — REST benzeri API route’ları (işlemler, kullanıcı, borçlar, yatırımlar, döviz, AI vb.)
 - `components/` — UI bileşenleri, grafikler, formlar
 - `lib/` — Auth, doğrulama, para birimi, istatistik yardımcıları
 - `prisma/schema.prisma` — Veri modeli (User, Transaction, Goal, Debt, InvestmentPosition, NextAuth tabloları)
+- `public/` — Statik varlıklar (ör. `website1.png` / `website2.png` README önizleme görselleri)
 - `store/` — Redux slice’lar
 
 ## Notlar
