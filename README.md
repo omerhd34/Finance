@@ -6,7 +6,7 @@ Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, hedefler
 
 <p align="center">
   <img src="./public/website1.png" alt="Finance uygulamasından ekran görüntüsü 1" width="920" /><br /><br />
-  <img src="./public/website2.png" alt="Finance uygulamasından ekran görüntüsü 2" width="920" />
+  <img src="./public/website2.png" alt="Finance uygulamasından ekran görüntüsü 2" width="920" /><br /><br />
   <img src="./public/website3.png" alt="Finance uygulamasından ekran görüntüsü 3" width="920" />
 </p>
 
