@@ -198,6 +198,29 @@ export async function POST() {
       );
     }
 
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date(startOfToday);
+    endOfToday.setDate(endOfToday.getDate() + 1);
+    const todayAnalysisCount = await prisma.aiFinanceAnalysis.count({
+      where: {
+        userId: session.user.id,
+        createdAt: {
+          gte: startOfToday,
+          lt: endOfToday,
+        },
+      },
+    });
+    if (todayAnalysisCount >= 3) {
+      return NextResponse.json(
+        {
+          error:
+            "Günlük AI analiz limitine ulaştınız (3/3). Yeni analiz için yarını bekleyin.",
+        },
+        { status: 429 },
+      );
+    }
+
     const geminiKey = process.env.GEMINI_API_KEY;
     if (!geminiKey) {
       return NextResponse.json(
