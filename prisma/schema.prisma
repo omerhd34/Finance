@@ -48,6 +48,7 @@ model ShopierOrder {
   shopierPaymentId String?
   rawPayload      Json?
   paidAt          DateTime?
+  planGrantedAt   DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

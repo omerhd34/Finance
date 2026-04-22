@@ -159,6 +159,7 @@ async function handleNotification(req: Request) {
       data: {
         status: isPaid ? "PAID" : "FAILED",
         paidAt: isPaid ? new Date() : null,
+        planGrantedAt: isPaid ? new Date() : null,
         amountTry: amountTry ?? undefined,
         currency: currency || undefined,
         shopierPaymentId: paymentId || undefined,

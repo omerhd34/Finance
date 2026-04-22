@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
 
-    const order = await prisma.shopierOrder.findFirst({
+    let order = await prisma.shopierOrder.findFirst({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       select: {
@@ -20,8 +20,30 @@ export async function GET() {
         currency: true,
         createdAt: true,
         paidAt: true,
+        planGrantedAt: true,
       },
     });
+
+    if (order?.status === "PAID" && order.planGrantedAt == null) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { planTier: true },
+      });
+      if (user && user.planTier !== "premium") {
+        const now = new Date();
+        await prisma.$transaction([
+          prisma.user.update({
+            where: { id: session.user.id },
+            data: { planTier: "premium" },
+          }),
+          prisma.shopierOrder.update({
+            where: { id: order.id },
+            data: { planGrantedAt: now },
+          }),
+        ]);
+        order = { ...order, planGrantedAt: now };
+      }
+    }
 
     return NextResponse.json({ order });
   } catch {
