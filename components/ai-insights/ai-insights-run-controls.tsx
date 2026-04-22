@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -19,6 +20,7 @@ export function AiInsightsRunControls({
   secondaryAction,
 }: Props) {
   const disabled = loading || planLocked;
+  const isLimitError = (error ?? "").includes("3/3");
   return (
     <>
       <div className="flex flex-wrap gap-2">
@@ -42,7 +44,24 @@ export function AiInsightsRunControls({
         )}
         {secondaryAction}
       </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <div
+          className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 text-sm ${
+            isLimitError
+              ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-500/35 dark:bg-amber-500/10 dark:text-amber-200"
+              : "border-destructive/40 bg-destructive/10 text-destructive dark:border-destructive/35"
+          }`}
+          role="alert"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          <div className="space-y-0.5">
+            <p className="font-medium">
+              {isLimitError ? "Günlük analiz limiti doldu" : "Analiz başarısız"}
+            </p>
+            <p className="leading-relaxed">{error}</p>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
