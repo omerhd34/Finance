@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { recurringRule } from "@/lib/prisma";
+import { prisma, recurringRule } from "@/lib/prisma";
 import {
+  addRecurringInterval,
   alignNextDueToFuture,
   normalizeDueDate,
   type RecurringFrequency,
@@ -10,6 +11,14 @@ import {
 import { recurringUpdateSchema } from "@/lib/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+function isSameCalendarDate(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 export async function GET(_req: Request, context: RouteContext) {
   try {
@@ -71,8 +80,10 @@ export async function PUT(req: Request, context: RouteContext) {
     let nextDueDate: Date = new Date(existing.nextDueDate);
     const scheduleChanged =
       (data.startDate !== undefined &&
-        new Date(data.startDate).getTime() !==
-          new Date(existing.startDate).getTime()) ||
+        !isSameCalendarDate(
+          new Date(data.startDate),
+          new Date(existing.startDate),
+        )) ||
       (data.frequency !== undefined && data.frequency !== existing.frequency) ||
       (data.interval !== undefined && data.interval !== existing.interval);
     if (scheduleChanged) {
@@ -82,6 +93,25 @@ export async function PUT(req: Request, context: RouteContext) {
         interval,
         new Date(),
       );
+    } else if ((data.mode ?? existing.mode) === "AUTO") {
+      const lastGenerated = await prisma.transaction.findFirst({
+        where: {
+          userId: session.user.id,
+          recurringRuleId: id,
+        },
+        orderBy: { date: "desc" },
+        select: { date: true },
+      });
+      const expectedNext = lastGenerated
+        ? addRecurringInterval(
+            normalizeDueDate(new Date(lastGenerated.date)),
+            frequency as RecurringFrequency,
+            interval,
+          )
+        : normalizeDueDate(startDate);
+      if (normalizeDueDate(expectedNext) < normalizeDueDate(nextDueDate)) {
+        nextDueDate = expectedNext;
+      }
     }
 
     const row = await recurringRule.update({

@@ -75,7 +75,26 @@ async function runProcessAutoRecurringForUser(
   let created = 0;
 
   for (const rule of rules) {
-    let cursor = normalizeDueDate(new Date(rule.nextDueDate));
+    const fallbackCursor = normalizeDueDate(new Date(rule.nextDueDate));
+    const lastGenerated = await prisma.transaction.findFirst({
+      where: {
+        userId,
+        recurringRuleId: rule.id,
+      },
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+    const expectedCursor = lastGenerated
+      ? addRecurringInterval(
+          normalizeDueDate(new Date(lastGenerated.date)),
+          rule.frequency as RecurringFrequency,
+          rule.interval,
+        )
+      : normalizeDueDate(new Date(rule.startDate));
+    let cursor =
+      normalizeDueDate(expectedCursor) < normalizeDueDate(fallbackCursor)
+        ? expectedCursor
+        : fallbackCursor;
     let safety = 0;
     let any = false;
 

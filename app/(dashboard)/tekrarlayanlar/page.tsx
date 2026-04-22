@@ -81,7 +81,12 @@ export default function RecurringPage() {
         id: ruleId,
         body: buildPayload(values),
       }),
-    );
+    ).unwrap();
+    try {
+      await dispatch(processDueRecurring()).unwrap();
+    } catch {
+      /* process-due isteğe bağlı */
+    }
     setEditingId(null);
     void dispatch(fetchRecurringRules());
   }
