@@ -9,16 +9,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export function GET() {
-  return new Response(
-    "Shopier ödeme bildirimi bu adrese POST (form-data) ile gelir. Tarayıcıdan açmak doğrulama içindir.",
-    {
-      status: 200,
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    },
-  );
-}
-
 function rawStr(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v : "";
 }
@@ -27,26 +17,76 @@ function str(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
-export async function POST(req: Request) {
+type ShopierPayload = {
+  platformOrderId: string;
+  statusRaw: string;
+  paymentId: string;
+  randomNr: string;
+  totalOrderValue: string;
+  currency: string;
+  signature: string;
+};
+
+function parseFromSearchParams(url: URL): ShopierPayload {
+  return {
+    platformOrderId: url.searchParams.get("platform_order_id") ?? "",
+    statusRaw: url.searchParams.get("status") ?? "",
+    paymentId: (url.searchParams.get("payment_id") ?? "").trim(),
+    randomNr: url.searchParams.get("random_nr") ?? "",
+    totalOrderValue: url.searchParams.get("total_order_value") ?? "",
+    currency: url.searchParams.get("currency") ?? "",
+    signature: url.searchParams.get("signature") ?? "",
+  };
+}
+
+async function parsePayload(req: Request): Promise<ShopierPayload> {
+  if (req.method === "GET") {
+    return parseFromSearchParams(new URL(req.url));
+  }
+
+  try {
+    const form = await req.formData();
+    return {
+      platformOrderId: rawStr(form.get("platform_order_id")),
+      statusRaw: rawStr(form.get("status")),
+      paymentId: str(form.get("payment_id")),
+      randomNr: rawStr(form.get("random_nr")),
+      totalOrderValue: rawStr(form.get("total_order_value")),
+      currency: rawStr(form.get("currency")),
+      signature: rawStr(form.get("signature")),
+    };
+  } catch {
+    // Some providers send x-www-form-urlencoded but with inconsistent headers.
+    // Fallback to raw body parsing so callback still works.
+    const raw = await req.text();
+    const qs = new URLSearchParams(raw);
+    return {
+      platformOrderId: qs.get("platform_order_id") ?? "",
+      statusRaw: qs.get("status") ?? "",
+      paymentId: (qs.get("payment_id") ?? "").trim(),
+      randomNr: qs.get("random_nr") ?? "",
+      totalOrderValue: qs.get("total_order_value") ?? "",
+      currency: qs.get("currency") ?? "",
+      signature: qs.get("signature") ?? "",
+    };
+  }
+}
+
+async function handleNotification(req: Request) {
   const secret = getShopierApiSecret();
   if (!secret) {
     return new Response("NO_CONFIG", { status: 500 });
   }
 
-  let form: FormData;
-  try {
-    form = await req.formData();
-  } catch {
-    return new Response("BAD_REQUEST", { status: 400 });
-  }
-
-  const platformOrderId = rawStr(form.get("platform_order_id"));
-  const statusRaw = rawStr(form.get("status"));
-  const paymentId = str(form.get("payment_id"));
-  const randomNr = rawStr(form.get("random_nr"));
-  const totalOrderValue = rawStr(form.get("total_order_value"));
-  const currency = rawStr(form.get("currency"));
-  const signature = rawStr(form.get("signature"));
+  const {
+    platformOrderId,
+    statusRaw,
+    paymentId,
+    randomNr,
+    totalOrderValue,
+    currency,
+    signature,
+  } = await parsePayload(req);
 
   if (
     !platformOrderId.trim() ||
@@ -80,6 +120,12 @@ export async function POST(req: Request) {
     select: { id: true, userId: true, status: true },
   });
   if (!order) {
+    const key = platformOrderId.trim();
+    console.warn(
+      "[shopier] imza geçerli ama veritabanında sipariş yok (platform_order_id önek=%s… uzunluk=%s). Shopier’deki bildirim URL’si bu uygulamanın domain’i ile aynı mı, checkout’taki platform_order_id ile eşleşiyor mu kontrol edin.",
+      key.slice(0, 16),
+      key.length,
+    );
     return new Response("OK", { status: 200 });
   }
   if (order.status === "PAID") {
@@ -87,8 +133,25 @@ export async function POST(req: Request) {
   }
 
   const amountTry = parseTryAmount(totalOrderValue);
-  const rawPayload = Object.fromEntries(form.entries());
+  const rawPayload =
+    req.method === "GET"
+      ? Object.fromEntries(new URL(req.url).searchParams.entries())
+      : {
+          platform_order_id: platformOrderId,
+          status: statusRaw,
+          payment_id: paymentId,
+          random_nr: randomNr,
+          total_order_value: totalOrderValue,
+          currency,
+          signature,
+        };
   const isPaid = isPaidStatus(statusRaw);
+  if (!isPaid) {
+    console.warn(
+      "[shopier] bildirim alındı, imza geçerli; status başarılı sayılmadı (ham=%j)",
+      statusRaw.length > 80 ? `${statusRaw.slice(0, 80)}…` : statusRaw,
+    );
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.shopierOrder.update({
@@ -114,4 +177,23 @@ export async function POST(req: Request) {
     status: 200,
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
+}
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  // Keep browser-readable diagnostics when opened manually.
+  if (!url.searchParams.has("platform_order_id")) {
+    return new Response(
+      "Shopier ödeme bildirimi bu adrese gelir. Test için query parametreleriyle de kabul edilir.",
+      {
+        status: 200,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      },
+    );
+  }
+  return handleNotification(req);
+}
+
+export async function POST(req: Request) {
+  return handleNotification(req);
 }
