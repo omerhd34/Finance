@@ -9,6 +9,16 @@ import {
 
 export const dynamic = "force-dynamic";
 
+export function GET() {
+  return new Response(
+    "Shopier ödeme bildirimi bu adrese POST (form-data) ile gelir. Tarayıcıdan açmak doğrulama içindir.",
+    {
+      status: 200,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    },
+  );
+}
+
 function rawStr(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v : "";
 }
