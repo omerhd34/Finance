@@ -15,6 +15,16 @@ export function getShopierApiSecret(): string | null {
   return secret && secret.length > 0 ? secret : null;
 }
 
+export function getShopierOsbCredentials(): {
+  username: string;
+  password: string;
+} | null {
+  const username = process.env.SHOPIER_OSB_USERNAME?.trim();
+  const password = process.env.SHOPIER_OSB_PASSWORD?.trim();
+  if (!username || !password) return null;
+  return { username, password };
+}
+
 export function generateShopierOrderCode(userId: string): string {
   const suffix = crypto.randomBytes(5).toString("hex");
   return `SIQ${userId}${suffix}`.replace(/[^a-zA-Z0-9]/g, "").slice(0, 64);

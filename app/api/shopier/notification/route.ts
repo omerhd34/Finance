@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
@@ -5,18 +6,11 @@ import {
   parseTryAmount,
   verifyShopierSignature,
   getShopierApiSecret,
+  getShopierOsbCredentials,
 } from "@/lib/shopier";
 import { addPremiumPeriod } from "@/lib/premium-subscription-constants";
 
 export const dynamic = "force-dynamic";
-
-function rawStr(v: FormDataEntryValue | null): string {
-  return typeof v === "string" ? v : "";
-}
-
-function str(v: FormDataEntryValue | null): string {
-  return typeof v === "string" ? v.trim() : "";
-}
 
 type ShopierPayload = {
   platformOrderId: string;
@@ -40,40 +34,220 @@ function parseFromSearchParams(url: URL): ShopierPayload {
   };
 }
 
-async function parsePayload(req: Request): Promise<ShopierPayload> {
-  if (req.method === "GET") {
-    return parseFromSearchParams(new URL(req.url));
+function payloadFromFlat(flat: Record<string, string>): ShopierPayload {
+  return {
+    platformOrderId: flat.platform_order_id ?? "",
+    statusRaw: flat.status ?? "",
+    paymentId: (flat.payment_id ?? "").trim(),
+    randomNr: flat.random_nr ?? "",
+    totalOrderValue: flat.total_order_value ?? "",
+    currency: flat.currency ?? "",
+    signature: flat.signature ?? "",
+  };
+}
+
+async function readFlatPostFields(
+  req: Request,
+): Promise<Record<string, string>> {
+  const ct = req.headers.get("content-type") ?? "";
+  if (ct.includes("multipart/form-data")) {
+    const form = await req.formData();
+    const out: Record<string, string> = {};
+    for (const [k, v] of form.entries()) {
+      if (typeof v === "string") out[k] = v;
+    }
+    return out;
+  }
+  const raw = await req.text();
+  if (!raw.trim()) return {};
+  if (ct.includes("application/json")) {
+    try {
+      const j = JSON.parse(raw) as Record<string, unknown>;
+      const out: Record<string, string> = {};
+      for (const [k, v] of Object.entries(j)) {
+        if (typeof v === "string" || typeof v === "number") {
+          out[k] = String(v);
+        }
+      }
+      return out;
+    } catch {
+      return {};
+    }
+  }
+  const params = new URLSearchParams(raw);
+  const out: Record<string, string> = {};
+  for (const [k, v] of params) {
+    out[k] = v;
+  }
+  return out;
+}
+
+type OsbDecoded = {
+  email?: string;
+  orderid?: string | number;
+  currency?: string;
+  price?: string | number;
+  [key: string]: unknown;
+};
+
+/**
+ * Shopier “Otomatik Sipariş Bildirimi” (OSB): base64(JSON) + HMAC-hex(şifre, payload+username).
+ * Sipariş numarası Shopier iç `orderid`; bizim `platform_order_id` ile eşleşmez → e-posta + son PENDING sipariş.
+ */
+async function tryProcessOsb(
+  flat: Record<string, string>,
+): Promise<Response | null> {
+  const osb = getShopierOsbCredentials();
+  if (!osb) return null;
+
+  const b0 =
+    flat["0"] ?? flat["res"] ?? flat["RES"] ?? flat["data"] ?? flat["payload"];
+  const b1 = flat["1"] ?? flat["hash"] ?? flat["HASH"] ?? flat["sign"];
+  if (!b0?.trim() || !b1?.trim()) return null;
+
+  const expectedHex = crypto
+    .createHmac("sha256", osb.password)
+    .update(b0 + osb.username)
+    .digest("hex");
+  const gotHex = b1.trim().toLowerCase();
+  if (
+    expectedHex.length !== gotHex.length ||
+    !/^[0-9a-f]+$/i.test(gotHex) ||
+    !/^[0-9a-f]+$/i.test(expectedHex)
+  ) {
+    return null;
+  }
+  try {
+    const a = Buffer.from(expectedHex, "hex");
+    const b = Buffer.from(gotHex, "hex");
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  } catch {
+    return null;
   }
 
+  let decoded: OsbDecoded;
   try {
-    const form = await req.formData();
-    return {
-      platformOrderId: rawStr(form.get("platform_order_id")),
-      statusRaw: rawStr(form.get("status")),
-      paymentId: str(form.get("payment_id")),
-      randomNr: rawStr(form.get("random_nr")),
-      totalOrderValue: rawStr(form.get("total_order_value")),
-      currency: rawStr(form.get("currency")),
-      signature: rawStr(form.get("signature")),
-    };
+    decoded = JSON.parse(
+      Buffer.from(b0, "base64").toString("utf8"),
+    ) as OsbDecoded;
   } catch {
-    // Some providers send x-www-form-urlencoded but with inconsistent headers.
-    // Fallback to raw body parsing so callback still works.
-    const raw = await req.text();
-    const qs = new URLSearchParams(raw);
-    return {
-      platformOrderId: qs.get("platform_order_id") ?? "",
-      statusRaw: qs.get("status") ?? "",
-      paymentId: (qs.get("payment_id") ?? "").trim(),
-      randomNr: qs.get("random_nr") ?? "",
-      totalOrderValue: qs.get("total_order_value") ?? "",
-      currency: qs.get("currency") ?? "",
-      signature: qs.get("signature") ?? "",
-    };
+    return null;
   }
+
+  const emailRaw =
+    typeof decoded.email === "string" ? decoded.email.trim() : "";
+  if (!emailRaw) {
+    console.warn("[shopier] OSB: e-posta yok");
+    return new Response("success", {
+      status: 200,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  const email = emailRaw.toLowerCase();
+
+  const shopierOrderId =
+    decoded.orderid != null ? String(decoded.orderid).trim() : "";
+  const priceTry = parseTryAmount(String(decoded.price ?? ""));
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!user) {
+    console.warn("[shopier] OSB: kullanıcı bulunamadı email=%s", email);
+    return new Response("success", {
+      status: 200,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  const pending = await prisma.shopierOrder.findMany({
+    where: { userId: user.id, status: "PENDING" },
+    orderBy: { createdAt: "desc" },
+    take: 15,
+    select: {
+      id: true,
+      orderCode: true,
+      amountTry: true,
+      status: true,
+    },
+  });
+  const order =
+    pending.find(
+      (o) =>
+        priceTry == null ||
+        o.amountTry == null ||
+        Math.abs(o.amountTry - priceTry) <= 0.02,
+    ) ?? null;
+  if (!order) {
+    console.warn(
+      "[shopier] OSB: tutarla eşleşen bekleyen sipariş yok (userId=%s, osbFiyat=%s, bekleyen=%s)",
+      user.id,
+      priceTry,
+      pending.map((p) => p.amountTry).join(","),
+    );
+    return new Response("success", {
+      status: 200,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  if (order.status === "PAID") {
+    return new Response("success", {
+      status: 200,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  const paidAt = new Date();
+  const rawPayload = {
+    osb: true,
+    shopierOrderId: shopierOrderId || undefined,
+    decoded: structuredClone(decoded) as Prisma.InputJsonValue,
+    flatKeys: Object.keys(flat),
+  } as Prisma.InputJsonValue;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.shopierOrder.update({
+      where: { id: order.id },
+      data: {
+        status: "PAID",
+        paidAt,
+        planGrantedAt: paidAt,
+        shopierPaymentId: shopierOrderId || undefined,
+        amountTry: priceTry ?? undefined,
+        currency:
+          typeof decoded.currency === "string" ? decoded.currency : undefined,
+        rawPayload,
+      },
+    });
+    await tx.user.update({
+      where: { id: user.id },
+      data: {
+        planTier: "premium",
+        premiumUntil: addPremiumPeriod(paidAt),
+      },
+    });
+  });
+
+  return new Response("success", {
+    status: 200,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
 }
 
 async function handleNotification(req: Request) {
+  let payload: ShopierPayload;
+
+  if (req.method === "POST") {
+    const flat = await readFlatPostFields(req);
+    const osbResponse = await tryProcessOsb(flat);
+    if (osbResponse) return osbResponse;
+    payload = payloadFromFlat(flat);
+  } else {
+    payload = parseFromSearchParams(new URL(req.url));
+  }
+
   const secret = getShopierApiSecret();
   if (!secret) {
     return new Response("NO_CONFIG", { status: 500 });
@@ -87,7 +261,7 @@ async function handleNotification(req: Request) {
     totalOrderValue,
     currency,
     signature,
-  } = await parsePayload(req);
+  } = payload;
 
   if (
     !platformOrderId.trim() ||
@@ -188,7 +362,6 @@ async function handleNotification(req: Request) {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  // Keep browser-readable diagnostics when opened manually.
   if (!url.searchParams.has("platform_order_id")) {
     return new Response(
       "Shopier ödeme bildirimi bu adrese gelir. Test için query parametreleriyle de kabul edilir.",
