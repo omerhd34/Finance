@@ -274,8 +274,6 @@ async function handleNotification(req: Request) {
     apiSecret: secret,
     randomNr,
     platformOrderId,
-    totalOrderValue,
-    currency,
     signatureBase64: signature.trim(),
   });
   if (!valid) {

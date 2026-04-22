@@ -1,9 +1,14 @@
 import crypto from "crypto";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
 
-const DEFAULT_SHOPIER_PREMIUM_URL = "https://www.shopier.com/iqfinansai/46432141";
+const DEFAULT_SHOPIER_PREMIUM_URL =
+  "https://www.shopier.com/iqfinansai/46432141";
 
-export const SHOPIER_SUCCESS_STATUSES = new Set(["success", "completed", "paid"]);
+export const SHOPIER_SUCCESS_STATUSES = new Set([
+  "success",
+  "completed",
+  "paid",
+]);
 
 export function getShopierPremiumUrl(): string {
   const fromEnv = process.env.SHOPIER_PREMIUM_URL?.trim();
@@ -41,26 +46,20 @@ export function verifyShopierSignature(params: {
   apiSecret: string;
   randomNr: string;
   platformOrderId: string;
-  totalOrderValue: string;
-  currency: string;
   signatureBase64: string;
 }): boolean {
-  const {
-    apiSecret,
-    randomNr,
-    platformOrderId,
-    totalOrderValue,
-    currency,
-    signatureBase64,
-  } = params;
-  const payload = randomNr + platformOrderId + totalOrderValue + currency;
+  const { apiSecret, randomNr, platformOrderId, signatureBase64 } = params;
+  const payload = randomNr + platformOrderId;
   const expected = crypto
     .createHmac("sha256", apiSecret)
     .update(payload, "utf8")
     .digest();
   try {
     const incoming = Buffer.from(signatureBase64, "base64");
-    return incoming.length === expected.length && crypto.timingSafeEqual(incoming, expected);
+    return (
+      incoming.length === expected.length &&
+      crypto.timingSafeEqual(incoming, expected)
+    );
   } catch {
     return false;
   }
