@@ -6,6 +6,7 @@ import {
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt, prisma } from "@/lib/prisma";
+import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
 
@@ -35,7 +36,6 @@ type TxPayload = {
 }[];
 
 type DebtLine = {
-  /** Model çıktısında İngilizce kod tekrar etmesin diye JSON'da Türkçe. */
   yon: "alacak" | "borç";
   karsiTaraf: string;
   toplamTutar: number;
@@ -137,6 +137,7 @@ export async function GET() {
     }
     const emailBlock = blockIfEmailNotVerified(session);
     if (emailBlock) return emailBlock;
+    await ensurePremiumNotExpired(session.user.id);
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { planTier: true },
@@ -145,7 +146,7 @@ export async function GET() {
       return NextResponse.json(
         {
           error:
-            "AI Analiz yalnızca Premium plandadır. Ayarlar sayfasından planınızı Premium olarak seçin.",
+            "AI Analiz yalnızca aktif Premium abonelikte kullanılabilir. Süreniz dolduysa yeniden ödeme yapın.",
         },
         { status: 403 },
       );
@@ -182,6 +183,7 @@ export async function POST() {
     }
     const emailBlock = blockIfEmailNotVerified(session);
     if (emailBlock) return emailBlock;
+    await ensurePremiumNotExpired(session.user.id);
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { planTier: true },
@@ -190,7 +192,7 @@ export async function POST() {
       return NextResponse.json(
         {
           error:
-            "AI Analiz yalnızca Premium plandadır. Ayarlar sayfasından planınızı Premium olarak seçin.",
+            "AI Analiz yalnızca aktif Premium abonelikte kullanılabilir. Süreniz dolduysa yeniden ödeme yapın.",
         },
         { status: 403 },
       );

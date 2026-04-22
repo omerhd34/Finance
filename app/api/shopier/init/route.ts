@@ -7,6 +7,7 @@ import {
   generateShopierOrderCode,
   getPremiumPlanAmountTry,
 } from "@/lib/shopier";
+import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
 
 export async function POST() {
   try {
@@ -17,6 +18,7 @@ export async function POST() {
     const emailBlock = blockIfEmailNotVerified(session);
     if (emailBlock) return emailBlock;
 
+    await ensurePremiumNotExpired(session.user.id);
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { planTier: true },

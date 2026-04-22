@@ -24,6 +24,7 @@ import type { z } from "zod";
 import { Check, CreditCard, Shield, Sparkles } from "lucide-react";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
+import { PREMIUM_SUBSCRIPTION_DAYS } from "@/lib/premium-subscription-constants";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
 
 const PREMIUM_LANDING_PERKS =
@@ -61,7 +62,6 @@ export default function SettingsPage() {
   const dispatch = useAppDispatch();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notifSaving, setNotifSaving] = useState(false);
-  const [planSaving, setPlanSaving] = useState(false);
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [latestOrder, setLatestOrder] = useState<LatestShopierOrder | null>(
@@ -145,40 +145,6 @@ export default function SettingsPage() {
       setNotificationsEnabled(!checked);
     } finally {
       setNotifSaving(false);
-    }
-  }
-
-  async function onSelectFreePlan() {
-    const current = normalizePlanTier(session?.user?.planTier);
-    if (current === "free" || !session?.user?.id) return;
-    setPlanSaving(true);
-    try {
-      const { data } = await apiClient.patch<ProfilePatchResponse>(
-        "/api/user/profile",
-        { planTier: "free" },
-      );
-      dispatch(
-        setUser({
-          id: session.user.id,
-          name: data.name,
-          email: data.email,
-          image: data.image ?? null,
-          currency: data.currency,
-          phone: data.phone ?? null,
-          profession: data.profession ?? null,
-          city: data.city ?? null,
-          country: data.country ?? null,
-          monthStartDay: data.monthStartDay ?? 1,
-          notificationsEnabled: data.notificationsEnabled !== false,
-          planTier: normalizePlanTier(data.planTier),
-        }),
-      );
-      await updateSession({
-        reloadUser: true,
-      } as Record<string, unknown>);
-      router.refresh();
-    } finally {
-      setPlanSaving(false);
     }
   }
 
@@ -288,7 +254,7 @@ export default function SettingsPage() {
           <fieldset
             className={cn(
               "min-w-0 border-0 p-0",
-              (planSaving || checkoutBusy || !session?.user) &&
+              (checkoutBusy || !session?.user) &&
                 "pointer-events-none opacity-60",
             )}
           >
@@ -342,19 +308,23 @@ export default function SettingsPage() {
                   ))}
                 </ul>
                 <div className="mt-6 border-t border-border/50 pt-5">
-                  <Button
-                    type="button"
-                    variant={currentPlan === "free" ? "secondary" : "outline"}
-                    className="w-full cursor-pointer rounded-full font-semibold"
-                    disabled={
-                      currentPlan === "free" || planSaving || !session?.user
-                    }
-                    onClick={() => void onSelectFreePlan()}
-                  >
-                    {currentPlan === "free"
-                      ? "Mevcut planınız"
-                      : "Ücretsize geç"}
-                  </Button>
+                  {currentPlan === "premium" ? (
+                    <p className="text-center text-sm leading-relaxed text-muted-foreground">
+                      Premium süreniz dolduğunda hesabınız otomatik olarak
+                      ücretsiz plana döner.
+                      <br />
+                      Yenilediğinizde tekrar premium olursunuz.
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="w-full cursor-default rounded-full font-semibold"
+                      disabled
+                    >
+                      Mevcut planınız
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -396,6 +366,10 @@ export default function SettingsPage() {
                           / ay
                         </span>
                       </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Her başarılı ödeme, ödeme anından itibaren{" "}
+                        {PREMIUM_SUBSCRIPTION_DAYS} gün Premium erişimi verir.
+                      </p>
                     </div>
                   </div>
                   {currentPlan === "premium" ? (
@@ -423,7 +397,6 @@ export default function SettingsPage() {
                     type="button"
                     disabled={
                       currentPlan === "premium" ||
-                      planSaving ||
                       checkoutBusy ||
                       !session?.user
                     }
@@ -443,11 +416,6 @@ export default function SettingsPage() {
               </div>
             </div>
           </fieldset>
-          {planSaving ? (
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              Plan güncelleniyor…
-            </p>
-          ) : null}
           {checkoutBusy ? (
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Shopier ödeme sayfası hazırlanıyor…

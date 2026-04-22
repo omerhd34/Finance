@@ -202,7 +202,6 @@ export const profileUpdateSchema = z.object({
   currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
   notificationsEnabled: z.boolean().optional(),
   image: z.union([profileAvatarDataUrlSchema, z.null()]).optional(),
-  planTier: z.literal("free").optional(),
 });
 
 export const passwordChangeSchema = z

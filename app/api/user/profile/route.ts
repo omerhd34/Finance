@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { profileUpdateSchema } from "@/lib/validations";
+import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
 
 const profileSelectFields = {
   id: true,
@@ -25,6 +26,7 @@ export async function GET() {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    await ensurePremiumNotExpired(session.user.id);
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: profileSelectFields as unknown as Prisma.UserSelect,
@@ -44,6 +46,7 @@ export async function PATCH(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    await ensurePremiumNotExpired(session.user.id);
     const body: unknown = await req.json();
     const parsed = profileUpdateSchema.safeParse(body);
     if (!parsed.success) {
@@ -62,9 +65,7 @@ export async function PATCH(req: Request) {
       currency,
       notificationsEnabled,
       image,
-      planTier,
-    } =
-      parsed.data;
+    } = parsed.data;
     const data: Record<string, unknown> = {
       ...(name !== undefined && { name }),
       ...(profession !== undefined && {
@@ -83,7 +84,6 @@ export async function PATCH(req: Request) {
       ...(currency !== undefined && { currency }),
       ...(notificationsEnabled !== undefined && { notificationsEnabled }),
       ...(image !== undefined && { image }),
-      ...(planTier === "free" && { planTier: "free" }),
     };
 
     const user = await prisma.user.update({

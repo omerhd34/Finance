@@ -6,6 +6,7 @@ import {
   verifyShopierSignature,
   getShopierApiSecret,
 } from "@/lib/shopier";
+import { addPremiumPeriod } from "@/lib/premium-subscription-constants";
 
 export const dynamic = "force-dynamic";
 
@@ -153,23 +154,28 @@ async function handleNotification(req: Request) {
     );
   }
 
+  const paidAt = isPaid ? new Date() : null;
+
   await prisma.$transaction(async (tx) => {
     await tx.shopierOrder.update({
       where: { id: order.id },
       data: {
         status: isPaid ? "PAID" : "FAILED",
-        paidAt: isPaid ? new Date() : null,
-        planGrantedAt: isPaid ? new Date() : null,
+        paidAt,
+        planGrantedAt: paidAt,
         amountTry: amountTry ?? undefined,
         currency: currency || undefined,
         shopierPaymentId: paymentId || undefined,
         rawPayload: rawPayload as Prisma.InputJsonValue,
       },
     });
-    if (isPaid) {
+    if (isPaid && paidAt) {
       await tx.user.update({
         where: { id: order.userId },
-        data: { planTier: "premium" },
+        data: {
+          planTier: "premium",
+          premiumUntil: addPremiumPeriod(paidAt),
+        },
       });
     }
   });
