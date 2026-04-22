@@ -26,6 +26,7 @@ import { normalizePlanTier } from "@/lib/plan-tier";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
 import { PREMIUM_SUBSCRIPTION_DAYS } from "@/lib/premium-subscription-constants";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
+import { parseApiErrorForUser } from "@/lib/email-verification-client";
 
 const PREMIUM_LANDING_PERKS =
   LANDING_PLANS.find((p) => p.id === "premium")?.perks ?? [];
@@ -164,8 +165,10 @@ export default function SettingsPage() {
       } else {
         window.location.assign(checkoutUrl);
       }
-    } catch {
-      setCheckoutError("Ödeme başlatılamadı. Lütfen tekrar deneyin.");
+    } catch (e) {
+      setCheckoutError(
+        parseApiErrorForUser(e, "Ödeme başlatılamadı. Lütfen tekrar deneyin."),
+      );
     } finally {
       setCheckoutBusy(false);
     }
