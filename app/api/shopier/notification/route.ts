@@ -90,10 +90,6 @@ type OsbDecoded = {
   [key: string]: unknown;
 };
 
-/**
- * Shopier “Otomatik Sipariş Bildirimi” (OSB): base64(JSON) + HMAC-hex(şifre, payload+username).
- * Sipariş numarası Shopier iç `orderid`; bizim `platform_order_id` ile eşleşmez → e-posta + son PENDING sipariş.
- */
 async function tryProcessOsb(
   flat: Record<string, string>,
 ): Promise<Response | null> {
