@@ -8,6 +8,7 @@ export const EXPENSE_CATEGORIES = [
   "Eğlence",
   "Alışveriş",
   "Eğitim",
+  "İş",
   "Diğer",
 ] as const;
 
