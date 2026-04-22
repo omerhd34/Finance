@@ -4,8 +4,10 @@ import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { apiClient } from "@/lib/api-client";
+import { downloadAiInsightsPdf } from "@/lib/ai-insights-export";
 import { sectionsFromMarkdown } from "@/lib/ai-insights-parse";
 import { messageFromAiAnalyzeError } from "@/lib/ai-insights-errors";
+import { AiInsightsExportDropdown } from "@/components/ai-insights/ai-insights-export-dropdown";
 import { AiInsightsHero } from "@/components/ai-insights/ai-insights-hero";
 import { AiInsightsHistoryDialog } from "@/components/ai-insights/ai-insights-history-dialog";
 import { AiInsightsRunControls } from "@/components/ai-insights/ai-insights-run-controls";
@@ -20,6 +22,7 @@ export default function AiInsightsPage() {
 
   const [markdown, setMarkdown] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState<"pdf" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function run() {
@@ -41,6 +44,16 @@ export default function AiInsightsPage() {
     () => (markdown ? sectionsFromMarkdown(markdown) : []),
     [markdown],
   );
+
+  async function exportPdf() {
+    if (sections.length === 0) return;
+    setExporting("pdf");
+    try {
+      await downloadAiInsightsPdf(sections);
+    } finally {
+      setExporting(null);
+    }
+  }
 
   if (!planPremium) {
     const premiumAiPerks = [
@@ -85,13 +98,21 @@ export default function AiInsightsPage() {
         onRun={run}
         planLocked={false}
         secondaryAction={
-          <AiInsightsHistoryDialog
-            disabled={loading}
-            onSelect={(md) => {
-              setMarkdown(md);
-              setError(null);
-            }}
-          />
+          <>
+            {sections.length > 0 ? (
+              <AiInsightsExportDropdown
+                exporting={exporting}
+                onExportPdf={exportPdf}
+              />
+            ) : null}
+            <AiInsightsHistoryDialog
+              disabled={loading || exporting !== null}
+              onSelect={(md) => {
+                setMarkdown(md);
+                setError(null);
+              }}
+            />
+          </>
         }
       />
 
