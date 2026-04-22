@@ -23,7 +23,6 @@ model User {
   notificationsEnabled  Boolean       @default(true)
   planTier                String        @default("free")
   createdAt             DateTime      @default(now())
-  paytrOrders       PaytrOrder[]
   transactions    Transaction[]
   goals           Goal[]
   debts           Debt[]
@@ -35,6 +34,25 @@ model User {
   notifications    Notification[]
   emailVerificationTokens EmailVerificationToken[]
   aiFinanceAnalyses      AiFinanceAnalysis[]
+  shopierOrders          ShopierOrder[]
+}
+
+model ShopierOrder {
+  id              String   @id @default(cuid())
+  orderCode       String   @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          String   @default("PENDING")
+  amountTry       Float?
+  currency        String?  @default("TRY")
+  shopierPaymentId String?
+  rawPayload      Json?
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
 }
 
 model AiFinanceAnalysis {
@@ -220,17 +238,3 @@ model PasswordResetToken {
   @@index([email])
 }
 
-model PaytrOrder {
-  id           String    @id @default(cuid())
-  merchantOid  String    @unique
-  userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amountKurus  Int
-  currency     String    @default("TL")
-  status       String    @default("PENDING")
-  completedAt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@index([userId])
-}

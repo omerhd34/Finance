@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { accountDeleteSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
-import axios from "axios";
 import { apiClient } from "@/lib/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
@@ -25,7 +24,6 @@ import type { z } from "zod";
 import { Check, CreditCard, Shield, Sparkles } from "lucide-react";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
-import { PaytrPremiumDialog } from "@/components/paytr/paytr-premium-dialog";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
 
 const PREMIUM_LANDING_PERKS =
@@ -47,6 +45,16 @@ type ProfilePatchResponse = {
   planTier: string;
 };
 
+type LatestShopierOrder = {
+  id: string;
+  orderCode: string;
+  status: string;
+  amountTry: number | null;
+  currency: string | null;
+  createdAt: string;
+  paidAt: string | null;
+};
+
 export default function SettingsPage() {
   const { data: session, update: updateSession } = useSession();
   const router = useRouter();
@@ -54,12 +62,12 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notifSaving, setNotifSaving] = useState(false);
   const [planSaving, setPlanSaving] = useState(false);
-  const [paytrOpen, setPaytrOpen] = useState(false);
-  const [paytrToken, setPaytrToken] = useState<string | null>(null);
-  const [paytrInitError, setPaytrInitError] = useState<string | null>(null);
-  const [paytrBusy, setPaytrBusy] = useState(false);
-  const [paytrSuccessBanner, setPaytrSuccessBanner] = useState(false);
-  const paytrReturnHandled = useRef<string | null>(null);
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [latestOrder, setLatestOrder] = useState<LatestShopierOrder | null>(
+    null,
+  );
+  const currentPlan = normalizePlanTier(session?.user?.planTier);
 
   const deleteForm = useForm<DeleteFormValues>({
     resolver: zodResolver(accountDeleteSchema),
@@ -71,26 +79,38 @@ export default function SettingsPage() {
   }, [session]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const q = new URLSearchParams(window.location.search);
-    const p = q.get("paytr");
-    if (!p || (p !== "ok" && p !== "fail")) return;
-    if (paytrReturnHandled.current === p) return;
-    paytrReturnHandled.current = p;
-
-    if (p === "ok") {
-      void (async () => {
-        await updateSession({ reloadUser: true } as Record<string, unknown>);
-        router.replace("/ayarlar");
-        router.refresh();
-        setPaytrSuccessBanner(true);
-      })();
-      return;
+    let cancelled = false;
+    async function loadLatestOrder() {
+      if (!session?.user?.id) return;
+      try {
+        const { data } = await apiClient.get<{
+          order: LatestShopierOrder | null;
+        }>("/api/shopier/orders/latest");
+        if (!cancelled) setLatestOrder(data.order ?? null);
+      } catch {
+        if (!cancelled) setLatestOrder(null);
+      }
     }
+    void loadLatestOrder();
 
-    setPaytrInitError("Ödeme tamamlanamadı veya iptal edildi.");
-    void router.replace("/ayarlar");
-  }, [router, updateSession]);
+    const timer = window.setInterval(() => {
+      void loadLatestOrder();
+    }, 15000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (latestOrder?.status !== "PAID") return;
+    if (currentPlan === "premium") return;
+    void (async () => {
+      await updateSession({ reloadUser: true } as Record<string, unknown>);
+      router.refresh();
+    })();
+  }, [currentPlan, latestOrder?.status, router, updateSession]);
 
   async function onNotificationsEnabledChange(checked: boolean) {
     setNotifSaving(true);
@@ -164,29 +184,26 @@ export default function SettingsPage() {
 
   async function openPremiumCheckout() {
     if (normalizePlanTier(session?.user?.planTier) === "premium") return;
-    setPaytrInitError(null);
-    setPaytrToken(null);
-    setPaytrBusy(true);
+    setCheckoutError(null);
+    setCheckoutBusy(true);
     try {
-      const { data } = await apiClient.post<{ token: string }>(
-        "/api/paytr/init",
+      const { data } = await apiClient.post<{ checkoutUrl: string }>(
+        "/api/shopier/init",
         {},
       );
-      setPaytrToken(data.token);
-      setPaytrOpen(true);
-    } catch (e: unknown) {
-      let msg = "Ödeme başlatılamadı.";
-      if (axios.isAxiosError(e)) {
-        const err = e.response?.data as { error?: unknown };
-        if (typeof err?.error === "string") msg = err.error;
+      const checkoutUrl = data.checkoutUrl;
+      const opened = window.open(checkoutUrl, "_blank");
+      if (opened) {
+        opened.opener = null;
+      } else {
+        window.location.assign(checkoutUrl);
       }
-      setPaytrInitError(msg);
+    } catch {
+      setCheckoutError("Ödeme başlatılamadı. Lütfen tekrar deneyin.");
     } finally {
-      setPaytrBusy(false);
+      setCheckoutBusy(false);
     }
   }
-
-  const currentPlan = normalizePlanTier(session?.user?.planTier);
 
   async function onDelete(values: DeleteFormValues) {
     await apiClient.delete("/api/user", { data: values });
@@ -195,13 +212,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      {paytrSuccessBanner ? (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-50">
-          Ödeme alındı. Premium plan birkaç saniye içinde etkinleşir; gerekirse
-          sayfayı yenileyin.
-        </div>
-      ) : null}
-
       <Card>
         <CardHeader>
           <CardTitle>Bildirimler</CardTitle>
@@ -278,7 +288,7 @@ export default function SettingsPage() {
           <fieldset
             className={cn(
               "min-w-0 border-0 p-0",
-              (planSaving || paytrBusy || !session?.user) &&
+              (planSaving || checkoutBusy || !session?.user) &&
                 "pointer-events-none opacity-60",
             )}
           >
@@ -414,7 +424,7 @@ export default function SettingsPage() {
                     disabled={
                       currentPlan === "premium" ||
                       planSaving ||
-                      paytrBusy ||
+                      checkoutBusy ||
                       !session?.user
                     }
                     onClick={() => void openPremiumCheckout()}
@@ -424,38 +434,42 @@ export default function SettingsPage() {
                       <CreditCard className="h-4 w-4" aria-hidden />
                       {currentPlan === "premium"
                         ? "Premium aktif"
-                        : "PayTR ile öde"}
+                        : checkoutBusy
+                          ? "Ödeme sayfası hazırlanıyor…"
+                          : "Shopier ile öde"}
                     </span>
                   </Button>
                 </div>
               </div>
             </div>
           </fieldset>
-          {planSaving || paytrBusy ? (
+          {planSaving ? (
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              {paytrBusy ? "Ödeme formu hazırlanıyor…" : "Plan güncelleniyor…"}
+              Plan güncelleniyor…
             </p>
           ) : null}
-          {paytrInitError && !paytrOpen ? (
+          {checkoutBusy ? (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Shopier ödeme sayfası hazırlanıyor…
+            </p>
+          ) : null}
+          {latestOrder?.status === "PENDING" && currentPlan !== "premium" ? (
+            <p className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-center text-sm text-amber-700 dark:text-amber-300">
+              Ödeme tamamlandıysa bu ekran otomatik güncellenecektir.
+            </p>
+          ) : null}
+          {latestOrder?.status === "FAILED" && currentPlan !== "premium" ? (
             <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive">
-              {paytrInitError}
+              Son ödeme denemesi başarısız. Tekrar deneyebilirsiniz.
+            </p>
+          ) : null}
+          {checkoutError ? (
+            <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive">
+              {checkoutError}
             </p>
           ) : null}
         </CardContent>
       </Card>
-
-      <PaytrPremiumDialog
-        open={paytrOpen}
-        onOpenChange={(open) => {
-          setPaytrOpen(open);
-          if (!open) {
-            setPaytrToken(null);
-            setPaytrInitError(null);
-          }
-        }}
-        iframeToken={paytrToken}
-        initError={paytrOpen ? paytrInitError : null}
-      />
 
       <Card className="border-destructive/50">
         <CardHeader>
