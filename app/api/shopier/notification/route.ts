@@ -24,25 +24,47 @@ type ShopierPayload = {
 
 function parseFromSearchParams(url: URL): ShopierPayload {
   return {
-    platformOrderId: url.searchParams.get("platform_order_id") ?? "",
-    statusRaw: url.searchParams.get("status") ?? "",
-    paymentId: (url.searchParams.get("payment_id") ?? "").trim(),
-    randomNr: url.searchParams.get("random_nr") ?? "",
-    totalOrderValue: url.searchParams.get("total_order_value") ?? "",
-    currency: url.searchParams.get("currency") ?? "",
-    signature: url.searchParams.get("signature") ?? "",
+    platformOrderId:
+      url.searchParams.get("platform_order_id") ??
+      url.searchParams.get("order_id") ??
+      "",
+    statusRaw:
+      url.searchParams.get("status") ??
+      url.searchParams.get("payment_status") ??
+      "",
+    paymentId: (
+      url.searchParams.get("payment_id") ??
+      url.searchParams.get("order_id") ??
+      ""
+    ).trim(),
+    randomNr:
+      url.searchParams.get("random_nr") ??
+      url.searchParams.get("random_no") ??
+      url.searchParams.get("random") ??
+      "",
+    totalOrderValue:
+      url.searchParams.get("total_order_value") ??
+      url.searchParams.get("total_price") ??
+      "",
+    currency:
+      url.searchParams.get("currency") ?? url.searchParams.get("curr") ?? "",
+    signature:
+      url.searchParams.get("signature") ??
+      url.searchParams.get("sign") ??
+      url.searchParams.get("hash") ??
+      "",
   };
 }
 
 function payloadFromFlat(flat: Record<string, string>): ShopierPayload {
   return {
-    platformOrderId: flat.platform_order_id ?? "",
-    statusRaw: flat.status ?? "",
-    paymentId: (flat.payment_id ?? "").trim(),
-    randomNr: flat.random_nr ?? "",
-    totalOrderValue: flat.total_order_value ?? "",
-    currency: flat.currency ?? "",
-    signature: flat.signature ?? "",
+    platformOrderId: flat.platform_order_id ?? flat.order_id ?? "",
+    statusRaw: flat.status ?? flat.payment_status ?? "",
+    paymentId: (flat.payment_id ?? flat.order_id ?? "").trim(),
+    randomNr: flat.random_nr ?? flat.random_no ?? flat.random ?? "",
+    totalOrderValue: flat.total_order_value ?? flat.total_price ?? "",
+    currency: flat.currency ?? flat.curr ?? "",
+    signature: flat.signature ?? flat.sign ?? flat.hash ?? "",
   };
 }
 
@@ -101,23 +123,31 @@ async function tryProcessOsb(
   const b1 = flat["1"] ?? flat["hash"] ?? flat["HASH"] ?? flat["sign"];
   if (!b0?.trim() || !b1?.trim()) return null;
 
-  const expectedHex = crypto
+  const expectedDigest = crypto
     .createHmac("sha256", osb.password)
     .update(b0 + osb.username)
-    .digest("hex");
-  const gotHex = b1.trim().toLowerCase();
-  if (
-    expectedHex.length !== gotHex.length ||
-    !/^[0-9a-f]+$/i.test(gotHex) ||
-    !/^[0-9a-f]+$/i.test(expectedHex)
-  ) {
-    return null;
-  }
+    .digest();
+  const gotRaw = b1.trim();
+  let signatureValid = false;
+
   try {
-    const a = Buffer.from(expectedHex, "hex");
-    const b = Buffer.from(gotHex, "hex");
-    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+    if (/^[0-9a-f]{64}$/i.test(gotRaw)) {
+      const incomingHex = Buffer.from(gotRaw, "hex");
+      signatureValid =
+        incomingHex.length === expectedDigest.length &&
+        crypto.timingSafeEqual(incomingHex, expectedDigest);
+    } else {
+      const incomingBase64 = Buffer.from(gotRaw, "base64");
+      signatureValid =
+        incomingBase64.length === expectedDigest.length &&
+        crypto.timingSafeEqual(incomingBase64, expectedDigest);
+    }
   } catch {
+    signatureValid = false;
+  }
+
+  if (!signatureValid) {
+    console.warn("[shopier] OSB: imza doğrulaması başarısız");
     return null;
   }
 
@@ -274,6 +304,8 @@ async function handleNotification(req: Request) {
     apiSecret: secret,
     randomNr,
     platformOrderId,
+    totalOrderValue,
+    currency,
     signatureBase64: signature.trim(),
   });
   if (!valid) {

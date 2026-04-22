@@ -46,20 +46,35 @@ export function verifyShopierSignature(params: {
   apiSecret: string;
   randomNr: string;
   platformOrderId: string;
+  totalOrderValue?: string;
+  currency?: string;
   signatureBase64: string;
 }): boolean {
-  const { apiSecret, randomNr, platformOrderId, signatureBase64 } = params;
-  const payload = randomNr + platformOrderId;
-  const expected = crypto
-    .createHmac("sha256", apiSecret)
-    .update(payload, "utf8")
-    .digest();
+  const {
+    apiSecret,
+    randomNr,
+    platformOrderId,
+    totalOrderValue,
+    currency,
+    signatureBase64,
+  } = params;
+  const payloads = [randomNr + platformOrderId];
+  if (totalOrderValue?.trim() && currency?.trim()) {
+    payloads.unshift(randomNr + platformOrderId + totalOrderValue + currency);
+  }
+
   try {
     const incoming = Buffer.from(signatureBase64, "base64");
-    return (
-      incoming.length === expected.length &&
-      crypto.timingSafeEqual(incoming, expected)
-    );
+    return payloads.some((payload) => {
+      const expected = crypto
+        .createHmac("sha256", apiSecret)
+        .update(payload, "utf8")
+        .digest();
+      return (
+        incoming.length === expected.length &&
+        crypto.timingSafeEqual(incoming, expected)
+      );
+    });
   } catch {
     return false;
   }
