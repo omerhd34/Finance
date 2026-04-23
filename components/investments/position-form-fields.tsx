@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { tryAmountToDisplay } from "@/lib/currency";
-import { useBistLiveIndex } from "@/hooks/use-bist-live-index";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useCurrencySymbols } from "@/hooks/use-currency-symbols";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
@@ -47,31 +46,7 @@ export function PositionFormFields({
   const stockLive = useStockLiveQuotes(assetType === "STOCK");
   const fxLive = useFxLiveQuotes(assetType === "FX");
   const cryptoLive = useCryptoLiveQuotes(assetType === "CRYPTO");
-  const bistLive = useBistLiveIndex(assetType === "BIST");
   const currencySymbols = useCurrencySymbols(assetType === "FX");
-
-  useEffect(() => {
-    if (assetType !== "BIST") return;
-    if (bistLive.loading || bistLive.indices.length === 0) return;
-    const cur = form.getValues("ticker")?.trim().toUpperCase();
-    if (
-      cur &&
-      (typeof bistLive.byTicker[cur] === "number" ||
-        bistLive.indices.some((r) => r.ticker.toUpperCase() === cur))
-    ) {
-      return;
-    }
-    const first = bistLive.indices[0];
-    if (!first) return;
-    form.setValue("ticker", first.ticker, {
-      shouldValidate: true,
-      shouldDirty: false,
-    });
-    form.setValue("title", first.title, {
-      shouldValidate: true,
-      shouldDirty: false,
-    });
-  }, [assetType, bistLive.loading, bistLive.indices, bistLive.byTicker, form]);
 
   useEffect(() => {
     if (assetType !== "GOLD" || !goldSubtype) return;
@@ -144,32 +119,13 @@ export function PositionFormFields({
     }
   }, [assetType, ticker, cryptoLive.byTicker, currency, form]);
 
-  useEffect(() => {
-    if (assetType !== "BIST") return;
-    const code = ticker?.trim().toUpperCase();
-    if (!code) {
-      form.setValue("marketPricePerUnit", "", { shouldValidate: true });
-      return;
-    }
-    const ix = bistLive.byTicker[code];
-    if (typeof ix === "number" && ix > 0) {
-      const display = tryAmountToDisplay(ix, currency);
-      form.setValue("marketPricePerUnit", String(display), {
-        shouldValidate: true,
-        shouldDirty: false,
-      });
-    } else {
-      form.setValue("marketPricePerUnit", "", { shouldValidate: true });
-    }
-  }, [assetType, ticker, bistLive.byTicker, currency, form]);
-
   return (
     <>
       <div className="space-y-2">
         <Label>Tür</Label>
         <Select
           value={form.watch("assetType")}
-          onValueChange={(v: "GOLD" | "STOCK" | "FX" | "CRYPTO" | "BIST") => {
+          onValueChange={(v: "GOLD" | "STOCK" | "FX" | "CRYPTO") => {
             form.setValue("assetType", v);
             if (v === "GOLD") {
               form.setValue("ticker", "");
@@ -180,7 +136,7 @@ export function PositionFormFields({
             } else {
               form.setValue("goldSubtype", undefined);
               form.setValue("marketPricePerUnit", "");
-              if (v === "FX" || v === "CRYPTO" || v === "BIST") {
+              if (v === "FX" || v === "CRYPTO") {
                 form.setValue("title", "");
                 form.setValue("ticker", "");
               }
@@ -202,9 +158,6 @@ export function PositionFormFields({
             </SelectItem>
             <SelectItem value="CRYPTO" className="cursor-pointer">
               Kripto
-            </SelectItem>
-            <SelectItem value="BIST" className="cursor-pointer">
-              BIST (Borsa İstanbul)
             </SelectItem>
           </SelectContent>
         </Select>
@@ -316,60 +269,6 @@ export function PositionFormFields({
           ) : null}
         </div>
       )}
-      {assetType === "BIST" && (
-        <div className="space-y-2">
-          <Label>Endeks</Label>
-          <Select
-            value={ticker?.trim() ? ticker.trim().toUpperCase() : undefined}
-            onValueChange={(code) => {
-              const row = bistLive.indices.find(
-                (x) => x.ticker.toUpperCase() === code.toUpperCase(),
-              );
-              form.setValue("ticker", code, { shouldValidate: true });
-              form.setValue("title", row?.title ?? code, {
-                shouldValidate: true,
-              });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={
-                  bistLive.loading
-                    ? "Endeksler yükleniyor…"
-                    : bistLive.indices.length === 0
-                      ? "Liste boş"
-                      : "Endeks seçin"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent className="max-h-72">
-              {bistLive.indices.map((row) => (
-                <SelectItem
-                  key={row.ticker}
-                  value={row.ticker}
-                  className="cursor-pointer"
-                >
-                  {row.title} ({row.ticker})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {(form.formState.errors.ticker || form.formState.errors.title) && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.ticker?.message ??
-                form.formState.errors.title?.message}
-            </p>
-          )}
-          {bistLive.error ? (
-            <p className="text-sm text-muted-foreground">{bistLive.error}</p>
-          ) : null}
-          <p className="text-sm text-muted-foreground">
-            Canlı seviye CollectAPI{" "}
-            <code className="text-xs">borsaistanbul</code> yanıtındaki satırlara
-            göre dolar; miktar ve alış fiyatını kendi ölçümünüze göre girin.
-          </p>
-        </div>
-      )}
       {assetType === "CRYPTO" && (
         <div className="space-y-2">
           <Label>Kripto</Label>
@@ -417,9 +316,7 @@ export function PositionFormFields({
               ? "Miktar (satın aldığınız döviz tutarı)"
               : assetType === "CRYPTO"
                 ? "Miktar (coin)"
-                : assetType === "BIST"
-                  ? "Miktar (pozisyon birimi)"
-                  : "Adet (lot)"}
+                : "Adet (lot)"}
         </Label>
         <Input
           type="number"
@@ -489,22 +386,7 @@ export function PositionFormFields({
                                     ]
                                   ? "Bu kod listede yok"
                                   : ""
-                          : assetType === "BIST"
-                            ? bistLive.loading
-                              ? "BIST verisi yükleniyor…"
-                              : bistLive.error
-                                ? "Fiyat alınamadı"
-                                : !ticker?.trim()
-                                  ? "Endeks seçin"
-                                  : bistLive.byTicker[
-                                        ticker.trim().toUpperCase()
-                                      ] == null ||
-                                      bistLive.byTicker[
-                                        ticker.trim().toUpperCase()
-                                      ]! <= 0
-                                    ? "Bu endeks için değer yok"
-                                    : ""
-                            : ""
+                          : ""
                 }
               />
             )}

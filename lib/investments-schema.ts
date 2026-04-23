@@ -3,7 +3,7 @@ import { GOLD_SUBTYPE_VALUES } from "@/lib/gold-subtypes";
 
 export const positionFormSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO", "BIST"]),
+    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO"]),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional(),
@@ -74,24 +74,6 @@ export const positionFormSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Kripto seçin",
-          path: ["title"],
-        });
-      }
-    }
-    if (data.assetType === "BIST") {
-      const t = data.ticker?.trim().toUpperCase() ?? "";
-      if (t.length < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Endeks seçin",
-          path: ["ticker"],
-        });
-      }
-      const tit = data.title?.trim() ?? "";
-      if (tit.length < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Endeks seçin",
           path: ["title"],
         });
       }

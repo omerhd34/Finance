@@ -59,7 +59,7 @@ export function NewPositionDialog({
         form.setValue("goldSubtype", form.getValues("goldSubtype") ?? "GRAM");
       } else {
         form.setValue("goldSubtype", undefined);
-        if (listTab === "FX" || listTab === "CRYPTO" || listTab === "BIST") {
+        if (listTab === "FX" || listTab === "CRYPTO") {
           form.setValue("title", "");
           form.setValue("ticker", "");
         }

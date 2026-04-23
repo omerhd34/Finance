@@ -33,7 +33,7 @@ export const addInvestment = createAsyncThunk(
   "investments/add",
   async (
     payload: {
-      assetType: "GOLD" | "STOCK" | "FX" | "CRYPTO" | "BIST";
+      assetType: "GOLD" | "STOCK" | "FX" | "CRYPTO";
       goldSubtype?: string | null;
       title: string;
       ticker?: string | null;

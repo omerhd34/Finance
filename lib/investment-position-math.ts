@@ -16,7 +16,6 @@ export type LiveInvestmentQuotes = {
   stockByTicker?: LiveStockTryMap;
   fxByCode?: LiveFxTryMap;
   cryptoByTicker?: LiveCryptoTryMap;
-  bistByTicker?: Record<string, number>;
 };
 
 function stockTickerUpper(ticker: string | null | undefined): string | null {
@@ -57,11 +56,6 @@ export function effectiveMarketUnitTry(
       const cx = live.cryptoByTicker[k];
       if (typeof cx === "number" && cx > 0) return cx;
     }
-  }
-  if (p.assetType === "BIST" && live?.bistByTicker && p.ticker?.trim()) {
-    const k = p.ticker.trim().toUpperCase();
-    const ix = live.bistByTicker[k];
-    if (typeof ix === "number" && ix > 0) return ix;
   }
   if (p.marketPricePerUnitTry != null) return p.marketPricePerUnitTry;
   return p.avgCostPerUnitTry;
@@ -109,14 +103,6 @@ export function hasDisplayableMarketPrice(
     if (k && live?.cryptoByTicker) {
       const cx = live.cryptoByTicker[k];
       if (typeof cx === "number" && cx > 0) return true;
-    }
-  }
-  if (p.assetType === "BIST") {
-    const k = stockTickerUpper(p.ticker);
-    const m = live?.bistByTicker;
-    if (k && m) {
-      const ix = m[k];
-      if (typeof ix === "number" && ix > 0) return true;
     }
   }
   return false;

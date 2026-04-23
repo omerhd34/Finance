@@ -210,7 +210,7 @@ export const accountDeleteSchema = z.object({
 
 export const investmentCreateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO", "BIST"]),
+    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO"]),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()
@@ -264,23 +264,11 @@ export const investmentCreateSchema = z
       d.assetType !== "CRYPTO" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
     { message: "Kripto seçin", path: ["title"] },
-  )
-  .refine(
-    (d) =>
-      d.assetType !== "BIST" ||
-      (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
-    { message: "Endeks seçin", path: ["ticker"] },
-  )
-  .refine(
-    (d) =>
-      d.assetType !== "BIST" ||
-      (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Endeks seçin", path: ["title"] },
   );
 
 export const investmentUpdateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO", "BIST"]).optional(),
+    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO"]).optional(),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()

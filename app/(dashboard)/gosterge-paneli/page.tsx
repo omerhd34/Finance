@@ -15,7 +15,6 @@ import {
   aggregatePositionsTry,
   totalInvestmentPnlTry,
 } from "@/lib/investment-position-math";
-import { useBistLiveIndex } from "@/hooks/use-bist-live-index";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
@@ -56,26 +55,14 @@ export default function DashboardPage() {
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
-  const bistLive = useBistLiveIndex(planPremium);
-
   const liveQuotes = useMemo(
     () => ({
       gold: goldLive.prices,
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
-      bistByTicker:
-        bistLive.byTicker && Object.keys(bistLive.byTicker).length > 0
-          ? bistLive.byTicker
-          : undefined,
     }),
-    [
-      goldLive.prices,
-      stockLive.byTicker,
-      fxLive.byCode,
-      cryptoLive.byTicker,
-      bistLive.byTicker,
-    ],
+    [goldLive.prices, stockLive.byTicker, fxLive.byCode, cryptoLive.byTicker],
   );
 
   const load = useCallback(async () => {
@@ -179,11 +166,6 @@ export default function DashboardPage() {
     [investmentPositions, liveQuotes],
   );
 
-  const bistSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "BIST", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
   const upcomingRecurring = useMemo(() => {
     return [...recurringRules]
       .filter((r) => r.isActive)
@@ -244,7 +226,6 @@ export default function DashboardPage() {
           stockSummary={stockSummary}
           fxSummary={fxSummary}
           cryptoSummary={cryptoSummary}
-          bistSummary={bistSummary}
           goldSummary={goldSummary}
         />
       ) : null}

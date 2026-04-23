@@ -9,7 +9,10 @@ import {
   valueTry,
 } from "@/lib/investment-position-math";
 import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
-import type { InvestmentAssetType, InvestmentPosition } from "@/types/investment";
+import type {
+  InvestmentAssetType,
+  InvestmentPosition,
+} from "@/types/investment";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -57,10 +60,7 @@ export function InvestmentsPositionsTabs({
   const tabHasTitleAndCode = tab !== "GOLD";
 
   return (
-    <Tabs
-      value={tab}
-      onValueChange={(v) => onTabChange(v as TabValue)}
-    >
+    <Tabs value={tab} onValueChange={(v) => onTabChange(v as TabValue)}>
       <TabsList>
         <TabsTrigger value="GOLD" className="cursor-pointer">
           Altın
@@ -73,9 +73,6 @@ export function InvestmentsPositionsTabs({
         </TabsTrigger>
         <TabsTrigger value="CRYPTO" className="cursor-pointer">
           Kripto
-        </TabsTrigger>
-        <TabsTrigger value="BIST" className="cursor-pointer">
-          BIST
         </TabsTrigger>
       </TabsList>
       <TabsContent value={tab} className="mt-4">
@@ -90,9 +87,7 @@ export function InvestmentsPositionsTabs({
                     ? "Döviz kayıtları"
                     : tab === "CRYPTO"
                       ? "Kripto kayıtları"
-                      : tab === "BIST"
-                        ? "BIST kayıtları"
-                        : "Kayıtlar"}
+                      : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -153,7 +148,9 @@ export function InvestmentsPositionsTabs({
                       : undefined;
                   const liveTryStock =
                     p.assetType === "STOCK" && p.ticker?.trim()
-                      ? liveQuotes?.stockByTicker?.[p.ticker.trim().toUpperCase()]
+                      ? liveQuotes?.stockByTicker?.[
+                          p.ticker.trim().toUpperCase()
+                        ]
                       : undefined;
                   const liveTryFx =
                     p.assetType === "FX" && p.ticker?.trim()
@@ -162,12 +159,6 @@ export function InvestmentsPositionsTabs({
                   const liveTryCrypto =
                     p.assetType === "CRYPTO" && p.ticker?.trim()
                       ? liveQuotes?.cryptoByTicker?.[
-                          p.ticker.trim().toUpperCase()
-                        ]
-                      : undefined;
-                  const liveTryBist =
-                    p.assetType === "BIST" && p.ticker?.trim()
-                      ? liveQuotes?.bistByTicker?.[
                           p.ticker.trim().toUpperCase()
                         ]
                       : undefined;
@@ -181,9 +172,7 @@ export function InvestmentsPositionsTabs({
                           : typeof liveTryCrypto === "number" &&
                               liveTryCrypto > 0
                             ? liveTryCrypto
-                            : typeof liveTryBist === "number" && liveTryBist > 0
-                              ? liveTryBist
-                              : (p.marketPricePerUnitTry ?? undefined);
+                            : (p.marketPricePerUnitTry ?? undefined);
                   return (
                     <TableRow key={p.id}>
                       {tabHasTitleAndCode && (

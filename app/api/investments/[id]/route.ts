@@ -43,10 +43,7 @@ export async function PUT(req: Request, context: RouteContext) {
       data.ticker !== undefined
         ? data.ticker === null || data.ticker === ""
           ? null
-          : nextType === "STOCK" ||
-              nextType === "FX" ||
-              nextType === "CRYPTO" ||
-              nextType === "BIST"
+          : nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
             ? data.ticker.trim().toUpperCase()
             : data.ticker.trim()
         : existing.ticker;
@@ -69,17 +66,8 @@ export async function PUT(req: Request, context: RouteContext) {
         { status: 400 },
       );
     }
-    if (nextType === "BIST" && (!tickerToSave || tickerToSave.length === 0)) {
-      return NextResponse.json(
-        { error: { ticker: ["BIST endeksi seçin"] } },
-        { status: 400 },
-      );
-    }
     const nextGoldSubtype: string | null =
-      nextType === "STOCK" ||
-      nextType === "FX" ||
-      nextType === "CRYPTO" ||
-      nextType === "BIST"
+      nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
         ? null
         : ((data.goldSubtype !== undefined
             ? data.goldSubtype
@@ -97,10 +85,7 @@ export async function PUT(req: Request, context: RouteContext) {
       where: { id },
       data: {
         ...(data.assetType !== undefined && { assetType: data.assetType }),
-        ...(nextType === "STOCK" ||
-        nextType === "FX" ||
-        nextType === "CRYPTO" ||
-        nextType === "BIST"
+        ...(nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
           ? { goldSubtype: null }
           : { goldSubtype: nextGoldSubtype }),
         ...(nextType === "GOLD"

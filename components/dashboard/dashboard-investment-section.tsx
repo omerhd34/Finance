@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Bitcoin,
-  Coins,
-  Landmark,
-  LineChart,
-  Wallet,
-} from "lucide-react";
+import { ArrowUpRight, Bitcoin, Coins, LineChart, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,7 +19,6 @@ type Props = {
   stockSummary: InvestmentAggregate;
   fxSummary: InvestmentAggregate;
   cryptoSummary: InvestmentAggregate;
-  bistSummary: InvestmentAggregate;
   goldSummary: InvestmentAggregate;
 };
 
@@ -36,7 +28,6 @@ export function DashboardInvestmentSection({
   stockSummary,
   fxSummary,
   cryptoSummary,
-  bistSummary,
   goldSummary,
 }: Props) {
   if (!planPremium) {
@@ -46,7 +37,6 @@ export function DashboardInvestmentSection({
   const hasStockPositions = stockSummary.count > 0;
   const hasFxPositions = fxSummary.count > 0;
   const hasCryptoPositions = cryptoSummary.count > 0;
-  const hasBistPositions = bistSummary.count > 0;
 
   return (
     <div className="grid min-w-0 gap-6 sm:grid-cols-2 lg:gap-8">
@@ -140,39 +130,6 @@ export function DashboardInvestmentSection({
           <CardContent className="min-w-0 px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
             <InvestmentPositionStats
               summary={cryptoSummary}
-              currency={currency}
-            />
-          </CardContent>
-        </Card>
-      ) : null}
-
-      {hasBistPositions ? (
-        <Card className="min-w-0 border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
-          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">
-            <div className="min-w-0 space-y-2">
-              <CardTitle className="flex items-center gap-3 text-lg leading-tight">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-800 ring-1 ring-emerald-500/25 dark:text-emerald-300">
-                  <Landmark className="h-5 w-5" strokeWidth={2} aria-hidden />
-                </span>
-                <span className="min-w-0">BIST</span>
-              </CardTitle>
-              <div className="min-h-6">
-                <CardDescription>
-                  BIST 100 endeksine ilişkin pozisyonlarınızın maliyet, güncel
-                  değer ve tahmini kar/zarar özeti
-                </CardDescription>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="shrink-0" asChild>
-              <Link href="/yatirimlar" className="gap-1.5">
-                Yatırımlar
-                <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="min-w-0 px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
-            <InvestmentPositionStats
-              summary={bistSummary}
               currency={currency}
             />
           </CardContent>

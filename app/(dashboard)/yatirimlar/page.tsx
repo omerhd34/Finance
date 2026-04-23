@@ -6,7 +6,6 @@ import { displayAmountToTry } from "@/lib/currency";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
 import { parseOptionalUnitPrice } from "@/lib/investment-unit-price";
 import { costBasisTry, valueTry } from "@/lib/investment-position-math";
-import { useBistLiveIndex } from "@/hooks/use-bist-live-index";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
@@ -32,7 +31,7 @@ import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
-  "BIST endeksi, hisse, döviz, kripto ve altın kayıtlarını ekleyip düzenlemek veya silmek",
+  "Hisse, döviz, kripto ve altın kayıtlarını ekleyip düzenlemek veya silmek",
   "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
   "Kayıt bazında not tutmak ve fiyatları güncel tutmak",
   "Ana panelde yatırım Kar/Zarar kartı ile özetleri birlikte görmek",
@@ -53,7 +52,6 @@ export default function InvestmentsPage() {
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
-  const bistLive = useBistLiveIndex(planPremium);
 
   const liveQuotes = useMemo(
     () => ({
@@ -61,18 +59,8 @@ export default function InvestmentsPage() {
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
-      bistByTicker:
-        bistLive.byTicker && Object.keys(bistLive.byTicker).length > 0
-          ? bistLive.byTicker
-          : undefined,
     }),
-    [
-      goldLive.prices,
-      stockLive.byTicker,
-      fxLive.byCode,
-      cryptoLive.byTicker,
-      bistLive.byTicker,
-    ],
+    [goldLive.prices, stockLive.byTicker, fxLive.byCode, cryptoLive.byTicker],
   );
 
   useEffect(() => {
@@ -114,8 +102,7 @@ export default function InvestmentsPage() {
         ticker:
           values.assetType === "STOCK" ||
           values.assetType === "FX" ||
-          values.assetType === "CRYPTO" ||
-          values.assetType === "BIST"
+          values.assetType === "CRYPTO"
             ? values.ticker?.trim().toUpperCase()
             : null,
         quantity: values.quantity,
@@ -144,8 +131,7 @@ export default function InvestmentsPage() {
           ticker:
             values.assetType === "STOCK" ||
             values.assetType === "FX" ||
-            values.assetType === "CRYPTO" ||
-            values.assetType === "BIST"
+            values.assetType === "CRYPTO"
               ? values.ticker?.trim().toUpperCase()
               : null,
           quantity: values.quantity,
@@ -237,13 +223,6 @@ export default function InvestmentsPage() {
               Canlı kripto fiyatları yüklenemedi ({cryptoLive.error}). Güncel
               fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
               kullanılır.
-            </p>
-          )}
-
-          {bistLive.error && tab === "BIST" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              BIST endeks verisi yüklenemedi ({bistLive.error}). Güncel fiyat
-              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
             </p>
           )}
 

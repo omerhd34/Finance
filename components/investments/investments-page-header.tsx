@@ -23,10 +23,10 @@ export function InvestmentsPageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="max-w-5xl text-pretty text-sm text-muted-foreground">
-          Altın, BIST endeksleri, hisse, döviz ve kripto kayıtlarınızı takip
-          edin. Güncel birim fiyat CollectAPI ile otomatik gelir ve
-          değiştirilemez. Kripto fiyatları USD üzerinden USD/TRY ile TL
-          hesaplanır. Canlı veri yoksa tabloda alış fiyatı kullanılır.
+          Altın, hisse, döviz ve kripto kayıtlarınızı takip edin. Güncel birim
+          fiyat CollectAPI ile otomatik gelir ve değiştirilemez. Kripto
+          fiyatları USD üzerinden USD/TRY ile TL hesaplanır. Canlı veri yoksa
+          tabloda alış fiyatı kullanılır.
         </p>
       </div>
       <NewPositionDialog
