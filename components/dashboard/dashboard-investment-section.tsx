@@ -30,52 +30,45 @@ export function DashboardInvestmentSection({
     return null;
   }
 
+  const hasStockPositions = stockSummary.count > 0;
+
   return (
-    <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:gap-8">
-      <Card className="min-w-0 border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
-        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">
-          <div className="min-w-0 space-y-2">
-            <CardTitle className="flex items-center gap-3 text-lg leading-tight">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/12 text-violet-600 ring-1 ring-violet-500/25 dark:text-violet-300">
-                <LineChart className="h-5 w-5" strokeWidth={2} aria-hidden />
-              </span>
-              <span className="min-w-0">Hisse Senedi</span>
-            </CardTitle>
-            <div className="min-h-6">
-              <CardDescription>
-                Hisse kayıtlarınızın toplam maliyet, güncel değer ve tahmini
-                kar/zarar özeti
-              </CardDescription>
+    <div
+      className={
+        hasStockPositions
+          ? "grid min-w-0 gap-6 lg:grid-cols-2 lg:gap-8"
+          : "grid min-w-0 gap-6 lg:grid-cols-1 lg:gap-8"
+      }
+    >
+      {hasStockPositions ? (
+        <Card className="min-w-0 border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">
+            <div className="min-w-0 space-y-2">
+              <CardTitle className="flex items-center gap-3 text-lg leading-tight">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/12 text-violet-600 ring-1 ring-violet-500/25 dark:text-violet-300">
+                  <LineChart className="h-5 w-5" strokeWidth={2} aria-hidden />
+                </span>
+                <span className="min-w-0">Hisse Senedi</span>
+              </CardTitle>
+              <div className="min-h-6">
+                <CardDescription>
+                  Hisse kayıtlarınızın toplam maliyet, güncel değer ve tahmini
+                  kar/zarar özeti
+                </CardDescription>
+              </div>
             </div>
-          </div>
-          <Button variant="outline" size="sm" className="shrink-0" asChild>
-            <Link href="/yatirimlar" className="gap-1.5">
-              Yatırımlar
-              <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="min-w-0 px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
-          {stockSummary.count === 0 ? (
-            <div className="rounded-xl border border-dashed border-border/60 bg-muted/10 px-4 py-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Henüz hisse kaydı yok.{" "}
-                <Link
-                  href="/yatirimlar"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
-                >
-                  Kayıt ekleyin
-                </Link>
-              </p>
-            </div>
-          ) : (
-            <InvestmentPositionStats
-              summary={stockSummary}
-              currency={currency}
-            />
-          )}
-        </CardContent>
-      </Card>
+            <Button variant="outline" size="sm" className="shrink-0" asChild>
+              <Link href="/yatirimlar" className="gap-1.5">
+                Yatırımlar
+                <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="min-w-0 px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
+            <InvestmentPositionStats summary={stockSummary} currency={currency} />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="min-w-0 border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">

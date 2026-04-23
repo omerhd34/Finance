@@ -4,7 +4,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
-import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
 import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurring-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
@@ -24,8 +23,7 @@ import type { Transaction } from "@/types/transaction";
 import {
   expenseByCategoryForMonth,
   lastNMonthsBars,
-  sumByType,
-  sumExpenseInRange,
+  sumByTypeInRange,
 } from "@/lib/dashboard-stats";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
@@ -103,10 +101,14 @@ export default function DashboardPage() {
   const monthEnd = endOfMonth(now);
 
   const stats = useMemo(() => {
-    const totalIncome = sumByType(items, "income");
-    const totalExpense = sumByType(items, "expense");
+    const totalIncome = sumByTypeInRange(items, "income", monthStart, monthEnd);
+    const totalExpense = sumByTypeInRange(
+      items,
+      "expense",
+      monthStart,
+      monthEnd,
+    );
     const net = totalIncome - totalExpense;
-    const thisMonthExpense = sumExpenseInRange(items, monthStart, monthEnd);
     const bars = lastNMonthsBars(items, 6, now);
     const pie = expenseByCategoryForMonth(items, now);
     const recent = [...items]
@@ -116,7 +118,6 @@ export default function DashboardPage() {
       totalIncome,
       totalExpense,
       net,
-      thisMonthExpense,
       bars,
       pie,
       recent,
@@ -145,7 +146,7 @@ export default function DashboardPage() {
         (a, b) =>
           new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime(),
       )
-      .slice(0, 5);
+      .slice(0, 3);
   }, [recurringRules]);
 
   const activeRecurringCount = useMemo(
@@ -177,17 +178,11 @@ export default function DashboardPage() {
         totalIncome={stats.totalIncome}
         totalExpense={stats.totalExpense}
         net={stats.net}
-        thisMonthExpense={stats.thisMonthExpense}
+        debtNetBalance={
+          debtTotals ? debtTotals.receivable - debtTotals.payable : undefined
+        }
         investmentPnl={planPremium ? investmentPnl : undefined}
       />
-
-      {debtTotals !== null && (
-        <DashboardDebtCard
-          receivable={debtTotals.receivable}
-          payable={debtTotals.payable}
-          currency={currency}
-        />
-      )}
 
       <DashboardChartsSection bars={stats.bars} pie={stats.pie} />
 
@@ -197,12 +192,14 @@ export default function DashboardPage() {
         currency={currency}
       />
 
-      <DashboardInvestmentSection
-        planPremium={planPremium}
-        currency={currency}
-        stockSummary={stockSummary}
-        goldSummary={goldSummary}
-      />
+      {planPremium ? (
+        <DashboardInvestmentSection
+          planPremium={planPremium}
+          currency={currency}
+          stockSummary={stockSummary}
+          goldSummary={goldSummary}
+        />
+      ) : null}
 
       <DashboardRecentTransactionsCard
         transactions={stats.recent}

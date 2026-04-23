@@ -44,8 +44,12 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
         }}
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="expense">Gider</TabsTrigger>
-          <TabsTrigger value="income">Gelir</TabsTrigger>
+          <TabsTrigger value="expense" className="cursor-pointer">
+            Gider
+          </TabsTrigger>
+          <TabsTrigger value="income" className="cursor-pointer">
+            Gelir
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 

@@ -108,52 +108,70 @@ export function TransactionsTableCard({
                   </TableCell>
                 </TableRow>
               ) : (
-                items.map((t) => (
-                  <TableRow key={t.id}>
-                    <TableCell>{formatDateShort(t.date)}</TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
-                        className="text-primary underline-offset-4 hover:underline"
+                items.map((t) =>
+                  (() => {
+                    const isRecurringTransaction =
+                      Boolean(t.recurringRuleId) ||
+                      Boolean(t.recurringSlotKey) ||
+                      t.description?.startsWith("[Tekrarlayan]") === true;
+
+                    return (
+                      <TableRow
+                        key={t.id}
+                        className={
+                          isRecurringTransaction
+                            ? "[&>td]:bg-emerald-500/10 hover:[&>td]:bg-emerald-500/15"
+                            : undefined
+                        }
                       >
-                        {t.category}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="max-w-[200px] truncate">
-                      {t.description ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-right font-medium tabular-nums">
-                      {formatMoneyAmount(t.amount, currency)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={t.type === "income" ? "income" : "expense"}
-                      >
-                        {t.type === "income" ? "Gelir" : "Gider"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Düzenle"
-                        onClick={() => onEdit(t)}
-                        className="cursor-pointer"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive cursor-pointer"
-                        aria-label="Sil"
-                        onClick={() => onDelete(t)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                        <TableCell>{formatDateShort(t.date)}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
+                            className="text-primary underline-offset-4 hover:underline"
+                          >
+                            {t.category}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate">
+                          {t.description ?? "—"}
+                        </TableCell>
+                        <TableCell className="text-right font-medium tabular-nums">
+                          {formatMoneyAmount(t.amount, currency)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={t.type === "income" ? "income" : "expense"}
+                          >
+                            {t.type === "income" ? "Gelir" : "Gider"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {!isRecurringTransaction ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Düzenle"
+                              onClick={() => onEdit(t)}
+                              className="cursor-pointer"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          ) : null}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive cursor-pointer"
+                            aria-label="Sil"
+                            onClick={() => onDelete(t)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })(),
+                )
               )}
             </TableBody>
           </Table>

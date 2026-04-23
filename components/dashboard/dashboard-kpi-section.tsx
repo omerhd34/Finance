@@ -1,4 +1,4 @@
-import { CalendarDays, LineChart, Receipt, Scale, Wallet } from "lucide-react";
+import { HandCoins, LineChart, Receipt, Scale, Wallet } from "lucide-react";
 import { DashboardKpiCard } from "@/components/dashboard/dashboard-kpi-card";
 import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
 
@@ -7,7 +7,7 @@ type Props = {
   totalIncome: number;
   totalExpense: number;
   net: number;
-  thisMonthExpense: number;
+  debtNetBalance?: number;
   investmentPnl?: number;
 };
 
@@ -16,16 +16,17 @@ export function DashboardKpiSection({
   totalIncome,
   totalExpense,
   net,
-  thisMonthExpense,
+  debtNetBalance,
   investmentPnl,
 }: Props) {
   const showInvestmentKpi = investmentPnl !== undefined;
+  const showDebtNetKpi = debtNetBalance !== undefined;
   return (
     <div
       className={
-        showInvestmentKpi
+        showInvestmentKpi || showDebtNetKpi
           ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
-          : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+          : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
       }
     >
       <DashboardKpiCard
@@ -52,12 +53,33 @@ export function DashboardKpiSection({
         value={formatMoneyAmount(net, currency)}
         valueClassName="text-foreground"
       />
+      {showDebtNetKpi ? (
+        <DashboardKpiCard
+          icon={HandCoins}
+          iconClassName="bg-amber-500/15 text-amber-700 ring-amber-500/25 dark:text-amber-300"
+          glowClassName="bg-amber-500/20"
+          label={`Borç/Alacak Neti (${currencySymbolLabel(currency)})`}
+          value={
+            <>
+              {debtNetBalance > 0 ? "+" : ""}
+              {formatMoneyAmount(debtNetBalance, currency)}
+            </>
+          }
+          valueClassName={
+            debtNetBalance > 0
+              ? "text-emerald-600 dark:text-emerald-400"
+              : debtNetBalance < 0
+                ? "text-rose-600 dark:text-rose-400"
+                : "text-foreground"
+          }
+        />
+      ) : null}
       {showInvestmentKpi ? (
         <DashboardKpiCard
           icon={LineChart}
           iconClassName="bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300"
           glowClassName="bg-violet-500/20"
-          label={`Yatırım K/Z (${currencySymbolLabel(currency)})`}
+          label={`Yatırım Kar/Zarar (${currencySymbolLabel(currency)})`}
           value={
             <>
               {investmentPnl > 0 ? "+" : ""}
@@ -73,14 +95,6 @@ export function DashboardKpiSection({
           }
         />
       ) : null}
-      <DashboardKpiCard
-        icon={CalendarDays}
-        iconClassName="bg-amber-500/15 text-amber-800 ring-amber-500/25 dark:text-amber-300"
-        glowClassName="bg-amber-500/15"
-        label={`Bu Ay Harcama (${currencySymbolLabel(currency)})`}
-        value={formatMoneyAmount(thisMonthExpense, currency)}
-        valueClassName="text-foreground"
-      />
     </div>
   );
 }

@@ -51,6 +51,11 @@ export function EditTransactionDialog({
   currency,
   onSave,
 }: Props) {
+  const isRecurringTransaction =
+    Boolean(transaction?.recurringRuleId) ||
+    Boolean(transaction?.recurringSlotKey) ||
+    transaction?.description?.startsWith("[Tekrarlayan]") === true;
+
   const form = useForm<TransactionEditFormValues>({
     resolver: zodResolver(transactionEditFormSchema),
   });
@@ -58,6 +63,7 @@ export function EditTransactionDialog({
   useEffect(() => {
     if (!transaction) return;
     form.reset({
+      type: transaction.type === "income" ? "income" : "expense",
       amount: tryAmountToDisplay(transaction.amount, currency),
       category: transaction.category,
       description: transaction.description ?? "",
@@ -65,13 +71,15 @@ export function EditTransactionDialog({
     });
   }, [transaction, form, currency]);
 
+  const selectedType = form.watch("type");
   const categories = useMemo(() => {
-    const typ = transaction?.type ?? "expense";
+    const typ = selectedType ?? transaction?.type ?? "expense";
     return typ === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
-  }, [transaction?.type]);
+  }, [selectedType, transaction?.type]);
 
   async function handleSubmit(values: TransactionEditFormValues) {
     if (!transaction) return;
+    if (isRecurringTransaction) return;
     await onSave(transaction.id, values);
     onOpenChange(false);
   }
@@ -87,28 +95,50 @@ export function EditTransactionDialog({
             onSubmit={form.handleSubmit((v) => void handleSubmit(v))}
             className="space-y-4"
           >
-            <Tabs value={transaction.type}>
+            <Tabs
+              value={selectedType}
+              onValueChange={(value) => {
+                if (isRecurringTransaction) return;
+                if (value !== "income" && value !== "expense") return;
+                form.setValue("type", value, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+
+                const nextCategories: readonly string[] =
+                  value === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+                const currentCategory = form.getValues("category");
+                if (!nextCategories.includes(currentCategory)) {
+                  form.setValue("category", nextCategories[0], {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                }
+              }}
+            >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="expense" disabled>
+                <TabsTrigger
+                  value="expense"
+                  disabled={isRecurringTransaction}
+                  className="cursor-pointer"
+                >
                   Gider
                 </TabsTrigger>
-                <TabsTrigger value="income" disabled>
+                <TabsTrigger
+                  value="income"
+                  disabled={isRecurringTransaction}
+                  className="cursor-pointer"
+                >
                   Gelir
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <p className="text-xs text-muted-foreground">
-              Tür:{" "}
-              <strong>
-                {transaction.type === "income" ? "Gelir" : "Gider"}
-              </strong>{" "}
-              (değiştirilemez)
-            </p>
             <div className="space-y-2">
               <Label>Tutar ({currencySymbolLabel(currency)})</Label>
               <Input
                 type="number"
                 step="0.01"
+                disabled={isRecurringTransaction}
                 {...form.register("amount", { valueAsNumber: true })}
               />
               <p className="text-xs text-muted-foreground">
@@ -119,6 +149,7 @@ export function EditTransactionDialog({
               <Label>Kategori</Label>
               <Select
                 value={form.watch("category")}
+                disabled={isRecurringTransaction}
                 onValueChange={(v) => form.setValue("category", v)}
               >
                 <SelectTrigger>
@@ -135,12 +166,19 @@ export function EditTransactionDialog({
             </div>
             <div className="space-y-2">
               <Label>Açıklama</Label>
-              <Textarea {...form.register("description")} rows={2} />
+              <Textarea
+                {...form.register("description")}
+                rows={2}
+                disabled={isRecurringTransaction}
+              />
             </div>
             <div className="space-y-2">
               <Label>Tarih</Label>
               <DatePickerField
-                className="cursor-pointer"
+                className={
+                  isRecurringTransaction ? undefined : "cursor-pointer"
+                }
+                disabled={isRecurringTransaction}
                 value={form.watch("date")}
                 onChange={(v) =>
                   form.setValue("date", v, {
@@ -151,7 +189,11 @@ export function EditTransactionDialog({
               />
             </div>
             <DialogFooter>
-              <Button type="submit" className="cursor-pointer">
+              <Button
+                type="submit"
+                className="cursor-pointer"
+                disabled={isRecurringTransaction}
+              >
                 Kaydet
               </Button>
             </DialogFooter>

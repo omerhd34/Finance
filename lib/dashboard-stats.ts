@@ -89,6 +89,23 @@ export function sumByType(
     .reduce((a, t) => a + t.amount, 0);
 }
 
+export function sumByTypeInRange(
+  transactions: Transaction[],
+  type: "income" | "expense",
+  start: Date,
+  end: Date,
+): number {
+  const s = start.getTime();
+  const e = end.getTime();
+  let total = 0;
+  for (const t of transactions) {
+    if (t.type !== type) continue;
+    const d = new Date(t.date).getTime();
+    if (d >= s && d <= e) total += t.amount;
+  }
+  return total;
+}
+
 export function sumExpenseInRange(
   transactions: Transaction[],
   start: Date,

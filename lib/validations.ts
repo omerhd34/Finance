@@ -69,7 +69,7 @@ export const transactionCreateSchema = z.object({
 export const transactionUpdateSchema = transactionCreateSchema.partial();
 
 export const transactionEditFormSchema = transactionCreateSchema
-  .omit({ date: true, type: true })
+  .omit({ date: true })
   .extend({
     date: z.string().min(1),
   });

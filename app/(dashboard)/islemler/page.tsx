@@ -165,7 +165,7 @@ function TransactionsPageContent() {
           category: values.category,
           description: values.description || undefined,
           date: d.toISOString(),
-          type: t.type,
+          type: t.recurringRuleId || t.recurringSlotKey ? t.type : values.type,
         },
       }),
     );

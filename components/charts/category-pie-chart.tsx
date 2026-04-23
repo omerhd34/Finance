@@ -95,9 +95,15 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
 
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="relative h-[300px] md:h-[380px] w-full">
+      <div
+        className="relative h-[300px] md:h-[380px] w-full"
+        onMouseDownCapture={(e) => e.preventDefault()}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart
+            tabIndex={-1}
+            className="[&_.recharts-surface:focus]:outline-none [&_.recharts-sector:focus]:outline-none"
+          >
             <Pie
               data={chartData}
               dataKey="value"
@@ -111,16 +117,18 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
               strokeWidth={2}
               label={CategoryLabel}
               labelLine={false}
-              onClick={(sector) => {
-                const name = sector.name || sector.payload?.name;
-                if (name)
-                  router.push(`/islemler?category=${name}&type=expense`);
-              }}
+              rootTabIndex={-1}
             >
-              {chartData.map((_, i) => (
+              {chartData.map((item, i) => (
                 <Cell
                   key={`c-${i}`}
                   fill={SLICE_COLORS[i % SLICE_COLORS.length]}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    router.push(
+                      `/islemler?category=${encodeURIComponent(item.name)}&type=expense`,
+                    )
+                  }
                 />
               ))}
             </Pie>
