@@ -157,7 +157,13 @@ export async function DELETE(_req: Request, context: RouteContext) {
     if (!existing) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
-    await recurringRule.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      await tx.transaction.updateMany({
+        where: { userId: session.user.id, recurringRuleId: id },
+        data: { recurringRuleId: null },
+      });
+      await tx.recurringRule.delete({ where: { id } });
+    });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Silinemedi" }, { status: 500 });
