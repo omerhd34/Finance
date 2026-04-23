@@ -15,9 +15,9 @@ export function normalizeUserCurrency(
 
 export const FALLBACK_TL_PER_FOREIGN_UNIT: Record<string, number> = {
   TL: 1,
-  USD: 34.25,
-  EUR: 36.8,
-  GBP: 43.5,
+  USD: 44.92,
+  EUR: 52.6,
+  GBP: 60.61,
 };
 
 export const TL_PER_FOREIGN_UNIT = FALLBACK_TL_PER_FOREIGN_UNIT;
