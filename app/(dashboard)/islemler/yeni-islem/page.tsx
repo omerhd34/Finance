@@ -1,17 +1,17 @@
-/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ScanLine } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { transactionCreateSchema } from "@/lib/validations";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
-import { displayAmountToTry } from "@/lib/currency";
+import { displayAmountToTry, tryAmountToDisplay } from "@/lib/currency";
+import { normalizePlanTier } from "@/lib/plan-tier";
 import { currencySymbolLabel } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { useAppSelector } from "@/store/hooks";
@@ -45,8 +45,14 @@ type FormValues = z.infer<typeof schema>;
 export default function NewTransactionPage() {
   const router = useRouter();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const planPremium =
+    normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
+    "premium";
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [typeTab, setTypeTab] = useState<"income" | "expense">("expense");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrError, setOcrError] = useState<string | null>(null);
 
   const {
     register,
@@ -66,6 +72,64 @@ export default function NewTransactionPage() {
 
   const categories =
     typeTab === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+
+  async function handleReceiptFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setOcrError(null);
+    setOcrLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/transactions/ocr", {
+        method: "POST",
+        body: fd,
+        credentials: "include",
+      });
+      const data: unknown = await res.json().catch(() => ({}));
+      const errMsg =
+        typeof data === "object" &&
+        data !== null &&
+        "error" in data &&
+        typeof (data as { error: unknown }).error === "string"
+          ? (data as { error: string }).error
+          : "Fiş okunamadı.";
+      if (!res.ok) {
+        setOcrError(errMsg);
+        return;
+      }
+      if (
+        typeof data !== "object" ||
+        data === null ||
+        !("type" in data) ||
+        !("amountTry" in data) ||
+        !("category" in data) ||
+        !("date" in data)
+      ) {
+        setOcrError("Beklenmeyen yanıt alındı.");
+        return;
+      }
+      const row = data as {
+        type: "income" | "expense";
+        amountTry: number;
+        category: string;
+        description: string | null;
+        date: string;
+      };
+      setTypeTab(row.type);
+      setValue("category", row.category, { shouldValidate: true });
+      setValue("amount", tryAmountToDisplay(row.amountTry, currency), {
+        shouldValidate: true,
+      });
+      setValue("description", row.description ?? "", { shouldValidate: true });
+      setValue("date", row.date, { shouldValidate: true });
+    } catch {
+      setOcrError("Bağlantı hatası. Tekrar deneyin.");
+    } finally {
+      setOcrLoading(false);
+    }
+  }
 
   async function onSubmit(values: FormValues) {
     setSubmitError(null);
@@ -103,6 +167,40 @@ export default function NewTransactionPage() {
           Gelir veya gider kaydı oluşturun.
         </p>
       </div>
+
+      {planPremium ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Fiş veya fatura tarama</CardTitle>
+            <CardDescription>
+              Fotoğraf yükleyin; tutar, tarih ve kategoriyi formda önerir.
+              Kaydetmeden önce kontrol edin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={(ev) => void handleReceiptFileChange(ev)}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={ocrLoading}
+              className="cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ScanLine className="size-4" />
+              {ocrLoading ? "Okunuyor..." : "Görüntüden doldur"}
+            </Button>
+            {ocrError ? (
+              <p className="text-sm text-destructive">{ocrError}</p>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>

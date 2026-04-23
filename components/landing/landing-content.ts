@@ -112,6 +112,7 @@ export const LANDING_PLANS: LandingPlan[] = [
     priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
+      "Fiş ve fatura fotoğrafından tutar, tarih ve kategori çıkarma",
       "Yapay zekâ ile kişiselleştirilmiş harcama ve gelir analizi",
       "Aylık finans sağlığı skoru ve gelişim önerileri",
       "Kategori bazlı otomatik bütçe önerileri",
