@@ -1,6 +1,6 @@
 # Finance — Kişisel Finans Uygulaması
 
-Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, hedefler, borç takibi, yatırım pozisyonları, döviz kurları ve yapay zekâ destekli özetler tek arayüzde bir araya gelir.
+Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, borç takibi, yatırım pozisyonları, döviz kurları ve yapay zekâ destekli özetler tek arayüzde bir araya gelir.
 
 ## Önizleme
 
@@ -16,7 +16,6 @@ Next.js tabanlı bir kişisel finans paneli: gelir ve gider işlemleri, hedefler
 - **Kimlik doğrulama**: E-posta/şifre ile kayıt ve giriş; isteğe bağlı Google ile oturum (NextAuth v5).
 - **İşlemler**: Gelir/gider kayıtları, kategori ve tarih ile listeleme ve düzenleme.
 - **Pano**: Aylık özetler, kategori dağılımı (pasta grafik) ve aylık bar grafikleri (Recharts).
-- **Hedefler**: Birikim hedefleri, tutar ve tarih takibi.
 - **Borçlar**: Alacak/verecek yönü, karşı taraf, ödeme durumu.
 - **Yatırımlar**: Altın alt türleri, hisse vb. pozisyonlar; maliyet ve güncel fiyat alanları.
 - **Döviz kurları**: Uygulama içi kur senkronizasyonu (kullanıcı para birimi ayarıyla uyumlu).
@@ -77,11 +76,11 @@ Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux
 
 ## Proje yapısı (özet)
 
-- `app/` — App Router: açılış sayfası, `hakkimizda`, yasal/destek sayfaları; `(auth)` giriş/kayıt/şifre akışları; `(dashboard)` gösterge paneli, işlemler, bütçeler, tekrarlayanlar, hedefler, borç ve alacak, yatırımlar, yapay zekâ analizi, ayarlar, profil, bildirimler
+- `app/` — App Router: açılış sayfası, `hakkimizda`, yasal/destek sayfaları; `(auth)` giriş/kayıt/şifre akışları; `(dashboard)` gösterge paneli, işlemler, bütçeler, tekrarlayanlar, borç ve alacak, yatırımlar, yapay zekâ analizi, ayarlar, profil, bildirimler
 - `app/api/` — REST benzeri API route’ları (işlemler, kullanıcı, borçlar, yatırımlar, döviz, AI vb.)
 - `components/` — UI bileşenleri, grafikler, formlar
 - `lib/` — Auth, doğrulama, para birimi, istatistik yardımcıları
-- `prisma/schema.prisma` — Veri modeli (User, Transaction, Goal, Debt, InvestmentPosition, NextAuth tabloları)
+- `prisma/schema.prisma` — Veri modeli (User, Transaction, Debt, InvestmentPosition, NextAuth tabloları)
 - `public/` — Statik varlıklar (ör. `website1.png` / `website2.png` README önizleme görselleri)
 - `store/` — Redux slice’lar
 

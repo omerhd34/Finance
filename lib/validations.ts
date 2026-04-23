@@ -118,19 +118,6 @@ export const recurringUpdateSchema = recurringFieldsObject
     },
   );
 
-export const goalCreateSchema = z.object({
-  title: z.string().min(1, "Başlık gerekli"),
-  targetAmount: z.number().positive("Hedef tutar pozitif olmalı"),
-  deadline: z.coerce.date().optional().nullable(),
-});
-
-export const goalUpdateSchema = z.object({
-  title: z.string().min(1).optional(),
-  targetAmount: z.number().positive().optional(),
-  currentAmount: z.number().min(0).optional(),
-  deadline: z.coerce.date().optional().nullable(),
-});
-
 export const categoryBudgetCreateSchema = z.object({
   category: z.string().min(1, "Kategori seçin"),
   monthlyLimit: z.number().positive("Aylık limit pozitif olmalı"),
@@ -281,4 +268,3 @@ export type SupportContactClientInput = z.infer<
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>;
 export type RecurringCreateInput = z.infer<typeof recurringCreateSchema>;
-export type GoalCreateInput = z.infer<typeof goalCreateSchema>;

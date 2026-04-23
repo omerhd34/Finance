@@ -25,7 +25,6 @@ model User {
   premiumUntil            DateTime?
   createdAt             DateTime      @default(now())
   transactions    Transaction[]
-  goals           Goal[]
   debts           Debt[]
   investments     InvestmentPosition[]
   recurringRules   RecurringRule[]
@@ -115,17 +114,6 @@ model RecurringRule {
   updatedAt   DateTime  @updatedAt
 
   @@index([userId, isActive, nextDueDate])
-}
-
-model Goal {
-  id            String    @id @default(cuid())
-  title         String
-  targetAmount  Float
-  currentAmount Float     @default(0)
-  deadline      DateTime?
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt     DateTime  @default(now())
 }
 
 model CategoryBudget {
