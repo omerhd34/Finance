@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PositionFormFields } from "./position-form-fields";
+import type { InvestmentAssetType } from "@/types/investment";
 
 const emptyDefaults = (): PositionFormValues => ({
   assetType: "GOLD",
@@ -34,7 +35,7 @@ const emptyDefaults = (): PositionFormValues => ({
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  listTab: "GOLD" | "STOCK";
+  listTab: InvestmentAssetType;
   currency: string;
   onSubmit: (values: PositionFormValues) => Promise<void>;
 };
@@ -58,6 +59,10 @@ export function NewPositionDialog({
         form.setValue("goldSubtype", form.getValues("goldSubtype") ?? "GRAM");
       } else {
         form.setValue("goldSubtype", undefined);
+        if (listTab === "FX" || listTab === "CRYPTO" || listTab === "BIST") {
+          form.setValue("title", "");
+          form.setValue("ticker", "");
+        }
       }
     }
   }, [open, listTab, form]);

@@ -1,6 +1,6 @@
 import type { GoldSubtype } from "@/lib/gold-subtypes";
 
-export type InvestmentAssetType = "GOLD" | "STOCK";
+export type InvestmentAssetType = "GOLD" | "STOCK" | "FX" | "CRYPTO" | "BIST";
 
 export type InvestmentPosition = {
   id: string;

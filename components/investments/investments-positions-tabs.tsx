@@ -1,9 +1,15 @@
 "use client";
 
 import { formatGoldQuantityCell, goldSubtypeLabel } from "@/lib/gold-subtypes";
-import { costBasisTry, pnlTry, valueTry } from "@/lib/investment-position-math";
+import type { LiveInvestmentQuotes } from "@/lib/investment-position-math";
+import {
+  costBasisTry,
+  hasDisplayableMarketPrice,
+  pnlTry,
+  valueTry,
+} from "@/lib/investment-position-math";
 import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
-import type { InvestmentPosition } from "@/types/investment";
+import type { InvestmentAssetType, InvestmentPosition } from "@/types/investment";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,12 +30,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
 
+type TabValue = InvestmentAssetType;
+
 type Props = {
-  tab: "GOLD" | "STOCK";
-  onTabChange: (tab: "GOLD" | "STOCK") => void;
+  tab: TabValue;
+  onTabChange: (tab: TabValue) => void;
   items: InvestmentPosition[];
   loading: boolean;
   currency: string;
+  liveQuotes?: LiveInvestmentQuotes;
   onEdit: (position: InvestmentPosition) => void;
   onDelete: (id: string) => void;
 };
@@ -40,11 +49,18 @@ export function InvestmentsPositionsTabs({
   items,
   loading,
   currency,
+  liveQuotes,
   onEdit,
   onDelete,
 }: Props) {
+  const tableColSpan = tab === "GOLD" ? 7 : 8;
+  const tabHasTitleAndCode = tab !== "GOLD";
+
   return (
-    <Tabs value={tab} onValueChange={(v) => onTabChange(v as "GOLD" | "STOCK")}>
+    <Tabs
+      value={tab}
+      onValueChange={(v) => onTabChange(v as TabValue)}
+    >
       <TabsList>
         <TabsTrigger value="GOLD" className="cursor-pointer">
           Altın
@@ -52,12 +68,31 @@ export function InvestmentsPositionsTabs({
         <TabsTrigger value="STOCK" className="cursor-pointer">
           Hisse senedi
         </TabsTrigger>
+        <TabsTrigger value="FX" className="cursor-pointer">
+          Döviz
+        </TabsTrigger>
+        <TabsTrigger value="CRYPTO" className="cursor-pointer">
+          Kripto
+        </TabsTrigger>
+        <TabsTrigger value="BIST" className="cursor-pointer">
+          BIST
+        </TabsTrigger>
       </TabsList>
       <TabsContent value={tab} className="mt-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {tab === "GOLD" ? "Altın kayıtları" : "Hisse kayıtları"}
+              {tab === "GOLD"
+                ? "Altın kayıtları"
+                : tab === "STOCK"
+                  ? "Hisse kayıtları"
+                  : tab === "FX"
+                    ? "Döviz kayıtları"
+                    : tab === "CRYPTO"
+                      ? "Kripto kayıtları"
+                      : tab === "BIST"
+                        ? "BIST kayıtları"
+                        : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -77,9 +112,9 @@ export function InvestmentsPositionsTabs({
             <Table>
               <TableHeader>
                 <TableRow>
-                  {tab === "STOCK" && <TableHead>Başlık</TableHead>}
+                  {tabHasTitleAndCode && <TableHead>Başlık</TableHead>}
                   {tab === "GOLD" && <TableHead>Altın türü</TableHead>}
-                  {tab === "STOCK" && <TableHead>Kod</TableHead>}
+                  {tabHasTitleAndCode && <TableHead>Kod</TableHead>}
                   <TableHead className="text-right">Miktar</TableHead>
                   <TableHead className="text-right">
                     Alış fiyatı ({currencySymbolLabel(currency)})
@@ -100,7 +135,7 @@ export function InvestmentsPositionsTabs({
                 {items.length === 0 && !loading && (
                   <TableRow>
                     <TableCell
-                      colSpan={tab === "GOLD" ? 7 : 8}
+                      colSpan={tableColSpan}
                       className="text-center text-muted-foreground"
                     >
                       Henüz kayıt yok. &quot;Kayıt ekle&quot; ile başlayın.
@@ -109,12 +144,49 @@ export function InvestmentsPositionsTabs({
                 )}
                 {items.map((p) => {
                   const c = costBasisTry(p);
-                  const v = valueTry(p);
-                  const pl = pnlTry(p);
-                  const hasM = p.marketPricePerUnitTry != null;
+                  const v = valueTry(p, liveQuotes);
+                  const pl = pnlTry(p, liveQuotes);
+                  const hasM = hasDisplayableMarketPrice(p, liveQuotes);
+                  const liveTryGold =
+                    p.assetType === "GOLD" && p.goldSubtype
+                      ? liveQuotes?.gold?.[p.goldSubtype]
+                      : undefined;
+                  const liveTryStock =
+                    p.assetType === "STOCK" && p.ticker?.trim()
+                      ? liveQuotes?.stockByTicker?.[p.ticker.trim().toUpperCase()]
+                      : undefined;
+                  const liveTryFx =
+                    p.assetType === "FX" && p.ticker?.trim()
+                      ? liveQuotes?.fxByCode?.[p.ticker.trim().toUpperCase()]
+                      : undefined;
+                  const liveTryCrypto =
+                    p.assetType === "CRYPTO" && p.ticker?.trim()
+                      ? liveQuotes?.cryptoByTicker?.[
+                          p.ticker.trim().toUpperCase()
+                        ]
+                      : undefined;
+                  const liveTryBist =
+                    p.assetType === "BIST" && p.ticker?.trim()
+                      ? liveQuotes?.bistByTicker?.[
+                          p.ticker.trim().toUpperCase()
+                        ]
+                      : undefined;
+                  const unitTryDisplay =
+                    typeof liveTryGold === "number" && liveTryGold > 0
+                      ? liveTryGold
+                      : typeof liveTryStock === "number" && liveTryStock > 0
+                        ? liveTryStock
+                        : typeof liveTryFx === "number" && liveTryFx > 0
+                          ? liveTryFx
+                          : typeof liveTryCrypto === "number" &&
+                              liveTryCrypto > 0
+                            ? liveTryCrypto
+                            : typeof liveTryBist === "number" && liveTryBist > 0
+                              ? liveTryBist
+                              : (p.marketPricePerUnitTry ?? undefined);
                   return (
                     <TableRow key={p.id}>
-                      {tab === "STOCK" && (
+                      {tabHasTitleAndCode && (
                         <TableCell className="font-medium">{p.title}</TableCell>
                       )}
                       {tab === "GOLD" && (
@@ -124,7 +196,7 @@ export function InvestmentsPositionsTabs({
                           </Badge>
                         </TableCell>
                       )}
-                      {tab === "STOCK" && (
+                      {tabHasTitleAndCode && (
                         <TableCell>
                           {p.ticker ? (
                             <Badge variant="secondary">{p.ticker}</Badge>
@@ -152,11 +224,10 @@ export function InvestmentsPositionsTabs({
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        {hasM
-                          ? formatMoneyAmount(
-                              p.marketPricePerUnitTry!,
-                              currency,
-                            )
+                        {unitTryDisplay != null &&
+                        typeof unitTryDisplay === "number" &&
+                        unitTryDisplay > 0
+                          ? formatMoneyAmount(unitTryDisplay, currency)
                           : "—"}
                       </TableCell>
                       <TableCell className="text-right font-medium">

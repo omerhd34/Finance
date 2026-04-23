@@ -6,6 +6,11 @@ import { displayAmountToTry } from "@/lib/currency";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
 import { parseOptionalUnitPrice } from "@/lib/investment-unit-price";
 import { costBasisTry, valueTry } from "@/lib/investment-position-math";
+import { useBistLiveIndex } from "@/hooks/use-bist-live-index";
+import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
+import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
+import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
+import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
 import type { PositionFormValues } from "@/lib/investments-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -14,7 +19,10 @@ import {
   fetchInvestments,
   updateInvestment,
 } from "@/store/slices/investmentsSlice";
-import type { InvestmentPosition } from "@/types/investment";
+import type {
+  InvestmentAssetType,
+  InvestmentPosition,
+} from "@/types/investment";
 import { DeleteInvestmentDialog } from "@/components/investments/delete-investment-dialog";
 import { EditPositionDialog } from "@/components/investments/edit-position-dialog";
 import { InvestmentsPageHeader } from "@/components/investments/investments-page-header";
@@ -24,10 +32,10 @@ import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
-  "Hisse senedi ve altın (gram, çeyrek vb.) kayıtlarını ekleyip düzenlemek veya silmek",
+  "BIST endeksi, hisse, döviz, kripto ve altın kayıtlarını ekleyip düzenlemek veya silmek",
   "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
   "Kayıt bazında not tutmak ve fiyatları güncel tutmak",
-  "Ana panelde yatırım Kar/Zarar kartı ile hisse ve altın özetlerini birlikte görmek",
+  "Ana panelde yatırım Kar/Zarar kartı ile özetleri birlikte görmek",
 ] as const;
 
 export default function InvestmentsPage() {
@@ -36,10 +44,36 @@ export default function InvestmentsPage() {
   const planPremium = normalizePlanTier(authPlanTier) === "premium";
   const { items, loading, error } = useAppSelector((s) => s.investments);
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
-  const [tab, setTab] = useState<"GOLD" | "STOCK">("GOLD");
+  const [tab, setTab] = useState<InvestmentAssetType>("GOLD");
   const [newOpen, setNewOpen] = useState(false);
   const [editing, setEditing] = useState<InvestmentPosition | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const goldLive = useGoldLivePrices(planPremium);
+  const stockLive = useStockLiveQuotes(planPremium);
+  const fxLive = useFxLiveQuotes(planPremium);
+  const cryptoLive = useCryptoLiveQuotes(planPremium);
+  const bistLive = useBistLiveIndex(planPremium);
+
+  const liveQuotes = useMemo(
+    () => ({
+      gold: goldLive.prices,
+      stockByTicker: stockLive.byTicker,
+      fxByCode: fxLive.byCode,
+      cryptoByTicker: cryptoLive.byTicker,
+      bistByTicker:
+        bistLive.byTicker && Object.keys(bistLive.byTicker).length > 0
+          ? bistLive.byTicker
+          : undefined,
+    }),
+    [
+      goldLive.prices,
+      stockLive.byTicker,
+      fxLive.byCode,
+      cryptoLive.byTicker,
+      bistLive.byTicker,
+    ],
+  );
 
   useEffect(() => {
     if (!planPremium) return;
@@ -56,10 +90,10 @@ export default function InvestmentsPage() {
     let val = 0;
     for (const p of filtered) {
       cost += costBasisTry(p);
-      val += valueTry(p);
+      val += valueTry(p, liveQuotes);
     }
     return { cost, val, pnl: val - cost };
-  }, [filtered]);
+  }, [filtered, liveQuotes]);
 
   const editingResolved = useMemo(() => {
     if (!editing) return null;
@@ -78,7 +112,10 @@ export default function InvestmentsPage() {
             ? goldSubtypeLabel(values.goldSubtype)
             : (values.title ?? "").trim(),
         ticker:
-          values.assetType === "STOCK"
+          values.assetType === "STOCK" ||
+          values.assetType === "FX" ||
+          values.assetType === "CRYPTO" ||
+          values.assetType === "BIST"
             ? values.ticker?.trim().toUpperCase()
             : null,
         quantity: values.quantity,
@@ -105,7 +142,10 @@ export default function InvestmentsPage() {
               ? goldSubtypeLabel(values.goldSubtype)
               : (values.title ?? "").trim(),
           ticker:
-            values.assetType === "STOCK"
+            values.assetType === "STOCK" ||
+            values.assetType === "FX" ||
+            values.assetType === "CRYPTO" ||
+            values.assetType === "BIST"
               ? values.ticker?.trim().toUpperCase()
               : null,
           quantity: values.quantity,
@@ -170,6 +210,43 @@ export default function InvestmentsPage() {
             </p>
           )}
 
+          {goldLive.error && tab === "GOLD" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı altın fiyatı yüklenemedi ({goldLive.error}). Güncel fiyat
+              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+            </p>
+          )}
+
+          {stockLive.error && tab === "STOCK" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı hisse fiyatları yüklenemedi ({stockLive.error}). Güncel
+              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+              kullanılır.
+            </p>
+          )}
+
+          {fxLive.error && tab === "FX" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı döviz kurları yüklenemedi ({fxLive.error}). Güncel fiyat
+              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+            </p>
+          )}
+
+          {cryptoLive.error && tab === "CRYPTO" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı kripto fiyatları yüklenemedi ({cryptoLive.error}). Güncel
+              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+              kullanılır.
+            </p>
+          )}
+
+          {bistLive.error && tab === "BIST" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              BIST endeks verisi yüklenemedi ({bistLive.error}). Güncel fiyat
+              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+            </p>
+          )}
+
           <InvestmentsSummaryCards
             totalCost={totals.cost}
             totalValue={totals.val}
@@ -183,6 +260,7 @@ export default function InvestmentsPage() {
             items={filtered}
             loading={loading}
             currency={currency}
+            liveQuotes={liveQuotes}
             onEdit={setEditing}
             onDelete={setDeletingId}
           />

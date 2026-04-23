@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
+import { BIST_DEFAULT_TITLE } from "@/lib/collectapi-bist";
 import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
 import { investmentPosition } from "@/lib/prisma";
 import { investmentCreateSchema } from "@/lib/validations";
@@ -49,14 +50,23 @@ export async function POST(req: Request) {
     }
     const d = parsed.data;
     const ticker =
-      d.assetType === "STOCK" && d.ticker
+      d.assetType === "BIST" && d.ticker?.trim()
         ? d.ticker.trim().toUpperCase()
-        : d.ticker?.trim()
-          ? d.ticker.trim()
-          : null;
+        : (d.assetType === "STOCK" ||
+              d.assetType === "FX" ||
+              d.assetType === "CRYPTO") &&
+            d.ticker
+          ? d.ticker.trim().toUpperCase()
+          : d.ticker?.trim()
+            ? d.ticker.trim()
+            : null;
     const title =
       d.assetType === "GOLD"
         ? goldSubtypeLabel(d.goldSubtype!)
+        : d.assetType === "BIST"
+          ? (d.title ?? "").trim() ||
+            (d.ticker?.trim().toUpperCase() ?? "") ||
+            BIST_DEFAULT_TITLE
         : (d.title ?? "").trim();
     const row = await investmentPosition.create({
       data: {

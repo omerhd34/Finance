@@ -210,7 +210,7 @@ export const accountDeleteSchema = z.object({
 
 export const investmentCreateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK"]),
+    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO", "BIST"]),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()
@@ -240,11 +240,47 @@ export const investmentCreateSchema = z
       d.assetType !== "STOCK" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
     { message: "Başlık gerekli", path: ["title"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "FX" ||
+      (typeof d.ticker === "string" && d.ticker.trim().length >= 2),
+    { message: "Para birimi seçin", path: ["ticker"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "FX" ||
+      (typeof d.title === "string" && d.title.trim().length >= 1),
+    { message: "Para birimi seçin", path: ["title"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "CRYPTO" ||
+      (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
+    { message: "Kripto seçin", path: ["ticker"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "CRYPTO" ||
+      (typeof d.title === "string" && d.title.trim().length >= 1),
+    { message: "Kripto seçin", path: ["title"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "BIST" ||
+      (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
+    { message: "Endeks seçin", path: ["ticker"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "BIST" ||
+      (typeof d.title === "string" && d.title.trim().length >= 1),
+    { message: "Endeks seçin", path: ["title"] },
   );
 
 export const investmentUpdateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK"]).optional(),
+    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO", "BIST"]).optional(),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()
