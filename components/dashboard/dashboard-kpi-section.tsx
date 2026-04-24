@@ -21,14 +21,18 @@ export function DashboardKpiSection({
 }: Props) {
   const showInvestmentKpi = investmentPnl !== undefined;
   const showDebtNetKpi = debtNetBalance !== undefined;
+
+  const cardCount = 3 + (showDebtNetKpi ? 1 : 0) + (showInvestmentKpi ? 1 : 0);
+
+  const gridClassName =
+    cardCount === 5
+      ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
+      : cardCount === 4
+        ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3";
+
   return (
-    <div
-      className={
-        showInvestmentKpi || showDebtNetKpi
-          ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5"
-          : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      }
-    >
+    <div className={gridClassName}>
       <DashboardKpiCard
         icon={Wallet}
         iconClassName="bg-emerald-500/15 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400"
