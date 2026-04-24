@@ -8,6 +8,9 @@ import {
   Lock,
   Sparkles,
   Target,
+  Zap, // Yeni icon
+  Shapes, // Yeni icon
+  ShieldCheck, // Yeni icon
 } from "lucide-react";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
@@ -27,7 +30,7 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   title: "Hakkımızda",
   description:
-    "IQfinansAI’nin misyonu, değerleri ve kişisel finansınızı netleştirmek için benimsediğimiz yaklaşım.",
+    "IQfinansAI’nin misyonu, değerleri ve kişisel finansınızı netleştirmek için benimsediğimiz modern yaklaşım.",
   alternates: {
     canonical: "/hakkimizda",
     languages: { "tr-TR": "/hakkimizda" },
@@ -35,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Hakkımızda | IQfinansAI",
     description:
-      "Finansal netliği herkes için erişilebilir kılmak: ürün felsefemiz, değerlerimiz ve güven yaklaşımımız.",
+      "Finansal özgürlüğe giden yolu teknolojiyle sadeleştiriyoruz. Değerlerimiz ve vizyonumuz hakkında bilgi edinin.",
     url: `${siteUrl}/hakkimizda`,
     type: "website",
     locale: "tr_TR",
@@ -51,39 +54,57 @@ const aboutSectionBase =
 const values = [
   {
     icon: Target,
-    title: "Netlik önce",
+    title: "Finansal Berraklık",
     description:
-      "Karmaşık tablolar değil; günlük kararlarınızı kolaylaştıran sade akışlar ve anlaşılır özetler.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Kullanıcı odaklılık",
-    description:
-      "Ürünü gerçek hayat senaryolarına göre şekillendiriyor; geri bildirimleri yol haritamızın merkezine koyuyoruz.",
+      "Karmaşık tabloların gürültüsünü siliyor; sadece ihtiyaç duyduğunuz veriyi, en sade ve anlaşılır haliyle sunuyoruz.",
   },
   {
     icon: Lock,
-    title: "Veri güvenliği",
+    title: "Sarsılmaz Güvenlik",
     description:
-      "Finansal veriniz hassastır. Güvenli oturum, dikkatli erişim modelleri ve şeffaf gizlilik ilkeleriyle ilerliyoruz.",
+      "Verileriniz en değerli varlığınızdır. Banka düzeyinde koruma standartları ve şeffaf gizlilik politikalarıyla hareket ediyoruz.",
   },
   {
     icon: Sparkles,
-    title: "Yapay zekâ, yardımcı",
+    title: "Zekice İçgörüler",
     description:
-      "Otomasyon ve içgörüler; kontrol sizde kalsın diye öneri düzeyinde tasarlanır — yerine geçmez, yön gösterir.",
+      "Yapay zekayı sadece bir araç olarak değil; kararlarınızı güçlendiren, gizli kalmış detayları fark eden bir asistan olarak konumluyoruz.",
+  },
+  {
+    icon: Shapes, // Yeni
+    title: "Bütünsel Bakış",
+    description:
+      "Bütçe, borç ve yatırımı birbirinden ayırmıyoruz. Paranızın tüm parçalarını tek bir büyük resimde birleştiriyoruz.",
+  },
+  {
+    icon: Zap, // Yeni
+    title: "Zaman Verimliliği",
+    description:
+      "Finans yönetimi bir iş yükü olmamalı. Otomasyon yeteneklerimizle manuel veri girişini azaltıp size zaman kazandırıyoruz.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Topluluk Odaklılık",
+    description:
+      "Gelişimimizi doğrudan kullanıcı geri bildirimleriyle şekillendiriyor, gerçek ihtiyaçlara çözüm üreten bir yapı kuruyoruz.",
   },
   {
     icon: LineChart,
-    title: "Sürekli gelişim",
+    title: "Sürekli İnovasyon",
     description:
-      "Bütçe, borç, yatırım ve hedef modüllerini birlikte güçlendiriyor; finansal resminizi zamanla daha da netleştiriyoruz.",
+      "Finansal teknolojiler hızla değişiyor. Biz de her gün yeni algoritmalar ve özelliklerle bu değişimin öncüsü kalıyoruz.",
+  },
+  {
+    icon: ShieldCheck, // Yeni
+    title: "Sürdürülebilir Finans",
+    description:
+      "Anlık harcamalardan ziyade uzun vadeli finansal sağlığınızı korumayı ve disiplinli bir gelecek inşa etmenizi hedefliyoruz.",
   },
   {
     icon: BadgeCheck,
-    title: "Şeffaflık",
+    title: "Tam Şeffaflık",
     description:
-      "Ürün sınırları, veri kullanımı ve gizlilik tercihleri net anlatılır; sürpriz süreçler yerine anlaşılır, izlenebilir bir deneyim hedefleriz.",
+      "Ürün sınırlarından veri işleme süreçlerine kadar her noktada açık ve dürüstüz. Sürprizlere yer vermeyen bir deneyim sunuyoruz.",
   },
 ] as const;
 
@@ -116,30 +137,32 @@ export default function HakkimizdaPage() {
       />
       <LandingHeader />
       <main className="flex-1">
+        {/* Hero Section */}
         <section
           className={`${aboutSectionBase} px-4 pb-16 pt-24 md:pb-20 md:pt-28`}
           aria-labelledby="about-hero-heading"
         >
           <div className="mx-auto max-w-3xl text-center">
-            <p className={eyebrow}>IQfinansAI</p>
+            <p className={eyebrow}>Vizyonumuz</p>
             <h1
               id="about-hero-heading"
               className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-tight"
             >
-              Finansal netliği{" "}
+              Finansal geleceğinizi{" "}
               <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-emerald-400 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-emerald-500">
-                herkes için
+                teknolojiyle
               </span>{" "}
-              erişilebilir kılmak
+              şekillendirin
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Gelir–gider takibinden borç ve yatırım planına, hedeflerden yapay
-              zekâ destekli özetlere kadar; paranızı tek panelde toparlayıp
-              kararlarınızı güçlendirmenize odaklanıyoruz.
+              IQfinansAI, modern dünyada finansal yönetimin sadece rakamlardan
+              ibaret olmadığı inancıyla doğdu. Biz, parayı yönetmeyi bir stres
+              kaynağı olmaktan çıkarıp bir strateji haline getiriyoruz.
             </p>
           </div>
         </section>
 
+        {/* Mission & Product Section */}
         <section
           className={`${aboutSectionBase} px-4 py-16 md:py-24`}
           aria-labelledby="about-mission-heading"
@@ -150,57 +173,74 @@ export default function HakkimizdaPage() {
                 id="about-mission-heading"
                 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
               >
-                Neden varız?
+                Neden IQfinansAI?
               </h2>
               <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
-                Çoğu insan parayı “yönetmiyor”; parçalı uygulamalar, dağınık
-                ekranlar ve net olmayan özetler arasında kayboluyor. IQfinansAI,
-                bu dağınıklığı azaltmak ve finansal durumunuzu günü gününe
-                görünür kılmak için tasarlandı.
+                Geleneksel yöntemler artık günümüzün hızlı finansal dünyasına
+                yetişemiyor. Banka dökümleri, kripto varlıklar, borçlar ve
+                hedefler arasındaki bağ koptuğunda finansal stres başlar.
               </p>
               <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
-                Amacımız panik satışı veya agresif tavsiye değil;{" "}
+                IQfinansAI, bu parçalı yapıyı tek bir zekâ altında toplar.
+                Amacımız sadece veri saklamak değil, o veriyi sizin için{" "}
                 <strong className="font-semibold text-foreground">
-                  farkındalık ve disiplin
+                  anlamlı bir yol haritasına
                 </strong>{" "}
-                kazandıran, sade ve güven veren bir deneyim sunmak.
+                dönüştürmektir.
               </p>
             </div>
-            <Card className="border-border/80 bg-card/80 shadow-lg backdrop-blur-sm">
+            <Card className="border-border/80 bg-card/80 shadow-xl backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl">Ürün yaklaşımımız</CardTitle>
+                <CardTitle className="text-xl">
+                  Mühendislik Felsefemiz
+                </CardTitle>
                 <CardDescription>
-                  Tasarım ve mühendislikte öncelik sıramız
+                  Her satır kodda ve her tasarım kararında önceliğimiz
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-                <p>
-                  <span className="font-medium text-foreground">
-                    Tek merkez:
-                  </span>{" "}
-                  Harcamalar, tekrarlayan ödemeler, borçlar, bütçeler ve
-                  hedefler aynı bağlamda; kopuk tablolar yerine bütünsel bir
-                  resim.
-                </p>
-                <p>
-                  <span className="font-medium text-foreground">
-                    Anlaşılır metrikler:
-                  </span>{" "}
-                  “Ne oldu?” sorusuna hızlı cevap; gerektiğinde detaya inme
-                  özgürlüğü.
-                </p>
-                <p>
-                  <span className="font-medium text-foreground">
-                    Yapay zekâ ile ölçülü destek:
-                  </span>{" "}
-                  Harcama özetleri ve içgörüler; kararın sizde kaldığı, kontrol
-                  edilebilir öneriler.
-                </p>
+              <CardContent className="space-y-5 text-sm text-muted-foreground leading-relaxed">
+                <div className="flex gap-4">
+                  <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                  </div>
+                  <p>
+                    <span className="font-semibold text-foreground">
+                      Bütünleşik Ekosistem:
+                    </span>{" "}
+                    Harcamalarınız ile hedefleriniz arasındaki bağı kurarak
+                    finansal sağlığınızı bir bütün olarak izleriz.
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                  </div>
+                  <p>
+                    <span className="font-semibold text-foreground">
+                      Veri Minimalizmi:
+                    </span>{" "}
+                    Sizi gereksiz detaylarla boğmaz, en doğru kararı vermeniz
+                    için gereken kritik bilgiyi öne çıkarırız.
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                  </div>
+                  <p>
+                    <span className="font-semibold text-foreground">
+                      Etik AI:
+                    </span>{" "}
+                    Yapay zekâmız sizi yönlendirmez, size ayna tutar. Son karar
+                    her zaman sizin özgür iradenizdedir.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
         </section>
 
+        {/* Values Grid */}
         <section
           className={`${aboutSectionBase} px-4 py-16 md:py-24`}
           aria-labelledby="about-values-heading"
@@ -212,25 +252,25 @@ export default function HakkimizdaPage() {
                 id="about-values-heading"
                 className="mt-4 text-balance text-2xl font-bold tracking-tight text-foreground md:text-3xl"
               >
-                Söz verdiğimiz şey, deneyimin kendisi
+                İlkelerimizden ödün vermiyoruz
               </h2>
               <p className="mt-4 text-pretty text-muted-foreground md:text-lg">
-                Büyük vaatler yerine, her sürümde hissedilen kalite ve güven
-                inşa etmeyi tercih ediyoruz.
+                Yola çıkarken belirlediğimiz bu temel taşlar, ürünün her bir
+                pikselinde ve fonksiyonunda kendini hissettirir.
               </p>
             </div>
 
-            <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {values.map(({ icon: Icon, title, description }) => (
                 <li key={title}>
-                  <Card className="h-full border-border/70 bg-background/80 transition hover:border-emerald-500/30 hover:shadow-md">
+                  <Card className="group h-full border-border/70 bg-background/80 transition-all hover:border-emerald-500/50 hover:shadow-lg">
                     <CardHeader className="pb-2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                        <Icon className="h-5 w-5" aria-hidden />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 transition-colors group-hover:bg-emerald-500 group-hover:text-white dark:text-emerald-400">
+                        <Icon className="h-6 w-6" aria-hidden />
                       </div>
-                      <CardTitle className="pt-2 text-base">{title}</CardTitle>
+                      <CardTitle className="pt-4 text-lg">{title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                    <CardContent className="text-[15px] text-muted-foreground leading-relaxed">
                       {description}
                     </CardContent>
                   </Card>
@@ -240,46 +280,48 @@ export default function HakkimizdaPage() {
           </div>
         </section>
 
+        {/* CTA Section */}
         <section
           className={`${aboutSectionBase} px-4 py-16 md:py-20`}
           aria-labelledby="about-cta-heading"
         >
-          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-12 md:py-12">
+          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-3xl border border-emerald-500/20 bg-linear-to-b from-card/80 to-card/40 px-6 py-12 text-center shadow-2xl backdrop-blur-md md:px-16 md:py-16">
             <h2
               id="about-cta-heading"
-              className="text-balance text-2xl font-bold tracking-tight text-foreground md:text-3xl"
+              className="text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
             >
-              Finansal resminizi birlikte netleştirelim
+              Yeni nesil finans deneyimine katılın
             </h2>
             <p className="max-w-xl text-pretty text-muted-foreground md:text-lg">
-              Dakikalar içinde hesap oluşturun; gelir ve giderlerinizi
-              düzenlemeye, hedef koymaya ve içgörülere hemen başlayın.
+              IQfinansAI ile tanışmak için en doğru zaman bugün. Kontrolü
+              elinize alın, finansal geleceğinizi berraklaştırın.
             </p>
-            <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <div className="mt-4 flex w-full flex-col items-stretch justify-center gap-4 sm:w-auto sm:flex-row sm:items-center">
               <Button
                 size="lg"
                 asChild
-                className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
+                className="rounded-full bg-emerald-600 px-10 font-bold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-500 hover:scale-105"
               >
                 <Link href="/kayit">
-                  Ücretsiz başla
-                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                  Hemen Başla
+                  <ArrowRight className="ml-2 h-5 w-5" aria-hidden />
                 </Link>
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 asChild
-                className="rounded-full px-8"
+                className="rounded-full px-10 border-emerald-500/20 hover:bg-emerald-500/5"
               >
-                <Link href="/">Ana sayfaya dön</Link>
+                <Link href="/">Özellikleri İncele</Link>
               </Button>
             </div>
           </div>
         </section>
 
+        {/* Creator Section */}
         <section
-          className={`${aboutSectionBase} border-b-slate-300/55 px-4 py-16 dark:border-b-white/10 md:py-24 md:pb-20`}
+          className={`${aboutSectionBase} border-b-slate-300/55 px-4 py-20 dark:border-b-white/10 md:py-24`}
           aria-labelledby="about-team-heading"
         >
           <div className="mx-auto max-w-3xl text-center">
@@ -287,20 +329,29 @@ export default function HakkimizdaPage() {
               id="about-team-heading"
               className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
             >
-              Arkasında kim var?
+              Geliştirici Notu
             </h2>
-            <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
-              IQfinansAI,{" "}
+            <div className="mt-8 flex justify-center">
+              <div className="h-1 w-12 rounded-full bg-emerald-500" />
+            </div>
+            <p className="mt-8 text-pretty text-muted-foreground leading-relaxed md:text-lg italic">
+              &quot;Finansal bağımsızlık sadece ne kadar kazandığınızla değil,
+              sahip olduklarınızı ne kadar iyi yönettiğinizle ilgilidir.
+              IQfinansAI&apos;yi bu yönetimi herkes için adil ve erişilebilir
+              kılmak için inşa ediyorum.&quot;
+            </p>
+            <p className="mt-6 text-foreground font-medium">
               <a
                 href="http://omerhalisdemir.com.tr/"
-                className="font-semibold text-emerald-600 underline-offset-4 transition hover:underline dark:text-emerald-400"
+                className="text-emerald-600 underline-offset-4 transition hover:underline dark:text-emerald-400"
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Ömer Halis Demir
-              </a>{" "}
-              tarafından geliştirilmektedir. Ürün kararlarında şeffaflık,
-              erişilebilirlik ve uzun vadeli sürdürülebilirlik önceliklidir.
+              </a>
+              <span className="block text-xs text-muted-foreground mt-1 uppercase tracking-widest font-normal">
+                Full Stack Developer & Elektrik Elektronik Mühendisi
+              </span>
             </p>
           </div>
         </section>

@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BookOpen, KeyRound, LifeBuoy, Mail } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { SupportContactForm } from "@/components/landing/support-contact-form";
 import { getSupportInboxEmail } from "@/lib/support-contact-email";
 import { getSiteUrl } from "@/lib/site-url";
@@ -37,44 +31,42 @@ export const metadata: Metadata = {
 const eyebrow =
   "inline-flex items-center rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-700 ring-1 ring-emerald-500/20 dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30";
 
-const quickLinks = [
-  {
-    href: "/sifremi-unuttum",
-    icon: KeyRound,
-    title: "Şifremi unuttum",
-    description: "E-posta ile güvenli sıfırlama bağlantısı alın.",
-  },
-  {
-    href: "/giris",
-    icon: LifeBuoy,
-    title: "Giriş yapamıyorum",
-    description:
-      "E-posta ve şifrenizi kontrol edin; tarayıcı önbelleğini deneyin.",
-  },
-  {
-    href: "/hakkimizda",
-    icon: BookOpen,
-    title: "Ürün ve yaklaşım",
-    description: "IQfinansAI’nin misyonu ve değerleri hakkında bilgi.",
-  },
-] as const;
-
 const faqItems = [
   {
     q: "IQfinansAI ücretli mi?",
-    a: "Kayıt ve temel kullanım için sunduğumuz deneyim, sitede listelenen güncel planlara göre şekillenir. Fiyatlandırma bölümünden güncel paketleri görebilirsiniz.",
+    a: "IQfinansAI'ye kayıt olmak ve temel özellikleri kullanmak tamamen ücretsizdir. Daha kapsamlı analizler, sınırsız kategori ve gelişmiş yapay zekâ içgörüleri sunan Premium planlarımız hakkında detaylı bilgiye 'Fiyatlandırma' sayfamızdan ulaşabilirsiniz.",
   },
   {
-    q: "Verilerim nerede saklanıyor?",
-    a: "Hesabınıza bağlı finansal kayıtlar, güvenli altyapı üzerinde saklanır. Oturumunuzu paylaşmayın; güçlü ve benzersiz bir şifre kullanın.",
+    q: "Altın, döviz, hisse senedi ve kripto verileri ne sıklıkla güncellenir?",
+    a: "Yatırımlarınızın ve varlıklarınızın genel durumunu düzenli takip edebilmeniz için tüm piyasa verileri 60 dakikada bir periyodik olarak güncellenmektedir. Bu sayede portföy değerinizi güncel kurlar üzerinden izleyebilirsiniz.",
+  },
+  {
+    q: "Banka hesaplarımı sisteme bağlayabilir miyim?",
+    a: "Şu an için manuel veri girişi ve akıllı fiş/fatura tarama özelliğiyle hızlıca kayıt oluşturabilirsiniz. Banka entegrasyonları üzerindeki teknik çalışmalarımız ise devam ediyor.",
+  },
+  {
+    q: "Verilerim ne kadar güvende ve nerede saklanıyor?",
+    a: "Finansal verileriniz, endüstri standardı AES-256 şifreleme yöntemleri kullanılarak yüksek güvenlikli bulut altyapılarında saklanır. Verileriniz KVKK ve gizlilik ilkelerimize uygun olarak korunur; asla üçüncü taraflarla reklam veya pazarlama amacıyla paylaşılmaz.",
   },
   {
     q: "Yapay zekâ önerileri yatırım tavsiyesi midir?",
-    a: "Hayır. AI içgörüleri harcama özetleri ve düzen önerileri gibi bilgilendirme amaçlıdır; yatırım, vergi veya hukuki tavsiye yerine geçmez.",
+    a: "Hayır. IQfinansAI tarafından sunulan yapay zekâ analizleri; harcama alışkanlıklarınızı anlamanıza, tasarruf potansiyelinizi görmenize ve bütçe disiplini sağlamanıza yardımcı olmak için tasarlanmış istatistiksel içgörülerdir. Kesinlikle yatırım, vergi veya finansal danışmanlık yerine geçmez.",
   },
   {
-    q: "Hesabımı nasıl daha güvenli hale getiririm?",
-    a: "Güçlü şifre kullanın, ortak cihazlarda “beni hatırla” seçeneklerine dikkat edin ve oturumunuzu kullanımdan sonra kapatın.",
+    q: "Farklı para birimleriyle işlem yapabilir miyim?",
+    a: "Evet. IQfinansAI; TL, Dolar (USD), Euro (EUR) ve Sterlin (GBP) para birimlerini tam olarak destekler. Gelir ve giderlerinizi bu birimlerle kaydedebilir, güncel kurlar üzerinden ana para biriminize dönüştürülmüş şekilde raporlayabilirsiniz.",
+  },
+  {
+    q: "Hesabımı ve verilerimi istediğim zaman silebilir miyim?",
+    a: "Kesinlikle. Kullanıcı panelindeki ayarlar bölümünden hesabınızı dilediğiniz an silebilirsiniz. Hesabınızı sildiğinizde, sistemimizde kayıtlı olan tüm finansal verileriniz ve kişisel bilgileriniz geri döndürülemez şekilde kalıcı olarak temizlenir.",
+  },
+  {
+    q: "Destek taleplerime ne kadar sürede yanıt alırım?",
+    a: "Bize ilettiğiniz tüm mesajlar teknik ekibimize doğrudan ulaşır. Genellikle iş günlerinde 24 saat içinde, yoğunluk durumuna bağlı olarak en geç 48 saat içerisinde geri dönüş sağlamaktayız.",
+  },
+  {
+    q: "Şifremi unutursam ne yapmalıyım?",
+    a: "Giriş sayfasında bulunan 'Şifremi Unuttum' bağlantısına tıklayarak, kayıtlı e-posta adresinize güvenli bir şifre sıfırlama bağlantısı gönderebilir ve hesabınıza saniyeler içinde tekrar erişim sağlayabilirsiniz.",
   },
 ] as const;
 
@@ -134,44 +126,9 @@ export default function DestekPage() {
               </span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Kısayollar ve sık sorulan sorular çoğu konuda yol gösterir.
-              Aradığınızı bulamazsanız sayfanın altındaki formdan bize yazın.
+              Sık sorulan sorular çoğu konuda yol gösterir. Aradığınızı
+              bulamazsanız sayfanın altındaki formdan bize yazınız.
             </p>
-          </div>
-        </section>
-
-        <section
-          className="px-4 py-14 md:py-20"
-          aria-labelledby="support-quick-heading"
-        >
-          <div className="mx-auto max-w-7xl">
-            <h2
-              id="support-quick-heading"
-              className="text-center text-xl font-bold tracking-tight text-foreground md:text-2xl"
-            >
-              Hızlı bağlantılar
-            </h2>
-            <ul className="mt-10 grid gap-5 sm:grid-cols-3">
-              {quickLinks.map(({ href, icon: Icon, title, description }) => (
-                <li key={href}>
-                  <Link href={href} className="group block h-full">
-                    <Card className="h-full border-border/70 bg-background/80 transition group-hover:border-emerald-500/35 group-hover:shadow-md">
-                      <CardHeader>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                          <Icon className="h-5 w-5" aria-hidden />
-                        </div>
-                        <CardTitle className="pt-1 text-base group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                          {title}
-                        </CardTitle>
-                        <CardDescription className="text-sm leading-relaxed">
-                          {description}
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
