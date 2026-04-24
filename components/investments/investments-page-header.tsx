@@ -24,9 +24,9 @@ export function InvestmentsPageHeader({
       <div>
         <p className="max-w-5xl text-pretty text-sm text-muted-foreground">
           Altın, hisse, döviz ve kripto kayıtlarınızı takip edin. Güncel birim
-          fiyat CollectAPI ile otomatik gelir ve değiştirilemez. Kripto
-          fiyatları USD üzerinden USD/TRY ile TL hesaplanır. Canlı veri yoksa
-          tabloda alış fiyatı kullanılır.
+          fiyat otomatik olarak gelir ve değiştirilemez. Kripto fiyatları USD
+          üzerinden USD/TRY ile TL hesaplanır. Canlı veri yoksa tabloda alış
+          fiyatı kullanılır.
         </p>
       </div>
       <NewPositionDialog
