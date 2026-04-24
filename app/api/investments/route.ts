@@ -49,16 +49,14 @@ export async function POST(req: Request) {
     }
     const d = parsed.data;
     const ticker =
-      d.assetType === "BIST" && d.ticker?.trim()
+      (d.assetType === "STOCK" ||
+        d.assetType === "FX" ||
+        d.assetType === "CRYPTO") &&
+      d.ticker?.trim()
         ? d.ticker.trim().toUpperCase()
-        : (d.assetType === "STOCK" ||
-              d.assetType === "FX" ||
-              d.assetType === "CRYPTO") &&
-            d.ticker
-          ? d.ticker.trim().toUpperCase()
-          : d.ticker?.trim()
-            ? d.ticker.trim()
-            : null;
+        : d.ticker?.trim()
+          ? d.ticker.trim()
+          : null;
     const title =
       d.assetType === "GOLD"
         ? goldSubtypeLabel(d.goldSubtype!)
