@@ -10,7 +10,10 @@ export async function POST(req: Request) {
   try {
     json = await req.json();
   } catch {
-    return NextResponse.json({ error: "Geçersiz istek gövdesi." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Geçersiz istek gövdesi." },
+      { status: 400 },
+    );
   }
 
   const parsed = supportContactClientSchema.safeParse(json);
@@ -34,7 +37,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error:
-          "Destek gelen kutusu yapılandırılmamış. SUPPORT_INBOX_EMAIL veya NEXT_PUBLIC_SUPPORT_EMAIL tanımlayın.",
+          "Destek gelen kutusu yapılandırılmamış. NEXT_PUBLIC_SUPPORT_EMAIL tanımlayın.",
       },
       { status: 503 },
     );

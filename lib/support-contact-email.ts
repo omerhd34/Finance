@@ -9,9 +9,7 @@ function escapeHtml(text: string): string {
 }
 
 export function getSupportInboxEmail(): string | null {
-  const direct =
-    process.env.SUPPORT_INBOX_EMAIL?.trim() ||
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim();
+  const direct = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim();
   return direct || null;
 }
 

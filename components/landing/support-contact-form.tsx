@@ -101,12 +101,8 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
     return (
       <div className={cn(formShellClass, className)}>
         <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-950 dark:text-amber-100">
-          Mesaj göndermek için sunucuda en az bir gelen kutusu tanımlı
+          Mesaj göndermek için sunucuda bir destek e-posta adresi tanımlı
           olmalıdır:{" "}
-          <code className="rounded bg-background/60 px-1 font-mono text-xs">
-            SUPPORT_INBOX_EMAIL
-          </code>{" "}
-          veya{" "}
           <code className="rounded bg-background/60 px-1 font-mono text-xs">
             NEXT_PUBLIC_SUPPORT_EMAIL
           </code>
