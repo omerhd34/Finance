@@ -26,7 +26,8 @@ export function LandingHero() {
           fill
           priority
           quality={75}
-          className="object-cover object-center opacity-100 saturate-100"
+          className="object-cover object-center opacity-100 saturate-100 
+           scale-110 transition-transform duration-[2s]"
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/60 md:bg-black/55" />

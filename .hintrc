@@ -7,6 +7,7 @@
     "typescript-config/consistent-casing": "off",
     "manifest-is-valid": "off",
     "axe/aria": "off",
-    "axe/forms": "off"
+    "axe/forms": "off",
+    "css-prefix-order": "off"
   }
 }

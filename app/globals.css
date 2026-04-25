@@ -96,13 +96,27 @@ body {
 }
 
 @keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
   100% {
-    transform: translateX(100%);
+    background-position: 200% 0;
   }
 }
 
 .animate-shimmer {
   animation: shimmer 1.2s infinite;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--app-muted) 25%,
+    color-mix(in srgb, var(--app-muted) 60%, var(--app-bg)) 50%,
+    var(--app-muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 .rdp-root {
@@ -187,4 +201,11 @@ body {
     var(--app-primary) 15%,
     transparent
   );
+}
+
+.glass {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }

@@ -27,9 +27,10 @@ export function DashboardKpiCard({
     <Card
       className={cn(
         "relative overflow-hidden border-border/50",
-        "bg-linear-to-br from-card via-card to-muted/30",
-        "shadow-sm ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10",
+        "bg-linear-to-br from-card via-card/90 to-muted/30",
+        "shadow-sm ring-1 ring-black/5 dark:ring-white/10",
         "hover:border-border hover:shadow-md",
+        "hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300",
       )}
     >
       <div
@@ -48,7 +49,7 @@ export function DashboardKpiCard({
           >
             <Icon className="h-5 w-5" strokeWidth={2} />
           </div>
-          <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="min-w-0 flex-1 space-y-1.5 ">
             <CardDescription className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               {label}
             </CardDescription>

@@ -120,8 +120,8 @@ export function TransactionsTableCard({
                         key={t.id}
                         className={
                           isRecurringTransaction
-                            ? "[&>td]:bg-emerald-500/10 hover:[&>td]:bg-emerald-500/15"
-                            : undefined
+                            ? "[&>td]:bg-emerald-500/10 hover:[&>td]:bg-emerald-500/15 "
+                            : "hover:bg-primary/3 transition-colors duration-150"
                         }
                       >
                         <TableCell>{formatDateShort(t.date)}</TableCell>

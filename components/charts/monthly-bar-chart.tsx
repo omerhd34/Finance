@@ -4,12 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
+  AreaChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  Area,
 } from "recharts";
 import type { MonthlyBarRow } from "@/lib/dashboard-stats";
 import { formatMoney } from "@/lib/utils";
@@ -111,10 +111,20 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
         minWidth={0}
         minHeight={360}
       >
-        <LineChart
+        <AreaChart
           data={data}
           margin={{ top: 28, right: 12, left: -20, bottom: 0 }}
         >
+          <defs>
+            <linearGradient id="gelirGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.08} />
+              <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="giderGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.08} />
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
           <XAxis dataKey="label" stroke="#71717a" fontSize={12} />
           <YAxis
@@ -144,25 +154,27 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
             align="center"
             content={MonthlyBarLegendContent}
           />
-          <Line
+          <Area
             type="monotone"
             dataKey="gelir"
             name="Gelir"
             stroke="#22c55e"
             strokeWidth={2}
+            fill="url(#gelirGrad)"
             dot={{ r: 3, fill: "#22c55e", strokeWidth: 0 }}
             activeDot={{ r: 5 }}
           />
-          <Line
+          <Area
             type="monotone"
             dataKey="gider"
             name="Gider"
             stroke="#ef4444"
             strokeWidth={2}
+            fill="url(#giderGrad)"
             dot={{ r: 3, fill: "#ef4444", strokeWidth: 0 }}
             activeDot={{ r: 5 }}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
