@@ -36,14 +36,16 @@ export function TransactionsFiltersCard({
     <Card>
       <CardHeader>
         <CardTitle>Filtreler</CardTitle>
-        <CardDescription>Tarih aralığı ve kategori ile daraltın.</CardDescription>
+        <CardDescription>
+          Tarih aralığı ve filtrelerle daraltın.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
           <div className="flex flex-col gap-2.5">
             <Label className="shrink-0">Arama</Label>
             <Input
-              placeholder="Açıklama veya kategori"
+              placeholder="Açıklama ara"
               value={filters.search}
               onChange={(e) => onFiltersChange({ search: e.target.value })}
             />
