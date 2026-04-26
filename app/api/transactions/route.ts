@@ -55,10 +55,7 @@ export async function GET(req: Request) {
     }
     if (search?.trim()) {
       const q = search.trim();
-      where.OR = [
-        { description: { contains: q } },
-        { category: { contains: q } },
-      ];
+      where.description = { contains: q };
     }
 
     if (limit) {

@@ -30,6 +30,7 @@ import {
   lastNMonthsBars,
   sumByTypeInRange,
 } from "@/lib/dashboard-stats";
+import { computeFinancialHealthScore } from "@/lib/financial-health-score";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { endOfMonth, startOfMonth } from "date-fns";
@@ -152,6 +153,19 @@ export default function DashboardPage() {
     [investmentPositions, liveQuotes],
   );
 
+  const financialHealth = useMemo(
+    () =>
+      computeFinancialHealthScore({
+        monthIncome: stats.totalIncome,
+        monthExpense: stats.totalExpense,
+        debtReceivable: debtTotals?.receivable ?? 0,
+        debtPayable: debtTotals?.payable ?? 0,
+        monthlyBars: stats.bars,
+        investmentPnl: planPremium ? investmentPnl : undefined,
+      }),
+    [stats, debtTotals, planPremium, investmentPnl],
+  );
+
   const stockSummary = useMemo(
     () => aggregatePositionsTry(investmentPositions, "STOCK", liveQuotes),
     [investmentPositions, liveQuotes],
@@ -215,6 +229,7 @@ export default function DashboardPage() {
         totalIncome={stats.totalIncome}
         totalExpense={stats.totalExpense}
         net={stats.net}
+        financialHealth={financialHealth}
         debtNetBalance={
           debtTotals ? debtTotals.receivable - debtTotals.payable : undefined
         }

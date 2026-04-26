@@ -1,6 +1,14 @@
-import { HandCoins, LineChart, Receipt, Scale, Wallet } from "lucide-react";
+import {
+  Activity,
+  HandCoins,
+  LineChart,
+  Receipt,
+  Scale,
+  Wallet,
+} from "lucide-react";
 import { DashboardKpiCard } from "@/components/dashboard/dashboard-kpi-card";
 import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
+import type { FinancialHealthScore } from "@/lib/financial-health-score";
 
 type Props = {
   currency: string;
@@ -9,6 +17,7 @@ type Props = {
   net: number;
   debtNetBalance?: number;
   investmentPnl?: number;
+  financialHealth?: FinancialHealthScore;
 };
 
 export function DashboardKpiSection({
@@ -18,11 +27,17 @@ export function DashboardKpiSection({
   net,
   debtNetBalance,
   investmentPnl,
+  financialHealth,
 }: Props) {
   const showInvestmentKpi = investmentPnl !== undefined;
   const showDebtNetKpi = debtNetBalance !== undefined;
+  const showFinancialHealth = financialHealth !== undefined;
 
-  const cardCount = 3 + (showDebtNetKpi ? 1 : 0) + (showInvestmentKpi ? 1 : 0);
+  const cardCount =
+    3 +
+    (showDebtNetKpi ? 1 : 0) +
+    (showInvestmentKpi ? 1 : 0) +
+    (showFinancialHealth ? 1 : 0);
 
   const gridClassName =
     cardCount === 5
@@ -96,6 +111,31 @@ export function DashboardKpiSection({
               : investmentPnl < 0
                 ? "text-rose-600 dark:text-rose-400"
                 : "text-foreground"
+          }
+        />
+      ) : null}
+      {showFinancialHealth ? (
+        <DashboardKpiCard
+          icon={Activity}
+          iconClassName="bg-lime-500/15 text-lime-700 ring-lime-500/30 dark:text-lime-300"
+          glowClassName="bg-lime-500/25"
+          label="Finansal Sağlık Skoru (%)"
+          value={
+            <div className="space-y-0.5">
+              <div>{financialHealth.score}</div>
+              <p className="text-xs font-medium text-muted-foreground">
+                {financialHealth.insight}
+              </p>
+            </div>
+          }
+          valueClassName={
+            financialHealth.level === "cok-iyi"
+              ? "text-emerald-600 dark:text-emerald-400"
+              : financialHealth.level === "iyi"
+                ? "text-sky-600 dark:text-sky-400"
+                : financialHealth.level === "gelisiyor"
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-rose-600 dark:text-rose-400"
           }
         />
       ) : null}
