@@ -65,11 +65,11 @@ export function InvestmentsPositionsTabs({
         <TabsTrigger value="GOLD" className="cursor-pointer">
           Altın
         </TabsTrigger>
-        <TabsTrigger value="STOCK" className="cursor-pointer">
-          Hisse senedi
-        </TabsTrigger>
         <TabsTrigger value="FX" className="cursor-pointer">
           Döviz
+        </TabsTrigger>
+        <TabsTrigger value="STOCK" className="cursor-pointer">
+          Hisse senedi
         </TabsTrigger>
         <TabsTrigger value="CRYPTO" className="cursor-pointer">
           Kripto
