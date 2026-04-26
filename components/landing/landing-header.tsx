@@ -54,9 +54,9 @@ export function LandingHeader() {
               onClick={toggleTheme}
             >
               {themeResolved && resolvedTheme === "dark" ? (
-                <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
-              ) : (
                 <Sun className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+              ) : (
+                <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               )}
             </Button>
             <Button
