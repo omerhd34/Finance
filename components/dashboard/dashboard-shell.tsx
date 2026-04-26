@@ -330,7 +330,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-dvh min-h-0 overflow-hidden bg-background">
       <aside
         className={cn(
-          "hidden h-full min-h-0 shrink-0 flex-col overflow-y-auto border-r border-border bg-sidebar lg:flex glass",
+          "hidden h-full min-h-0 shrink-0 flex-col overflow-y-auto border-r border-border bg-sidebar lg:flex",
           sidebarCollapsed ? "w-18" : "w-64",
         )}
       >
@@ -350,7 +350,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="z-40 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80 glass">
+        <header className="z-40 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80">
           <div className="flex min-w-0 items-center gap-2">
             <Button
               variant="ghost"

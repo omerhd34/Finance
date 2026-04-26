@@ -25,7 +25,7 @@ import type { InvestmentPosition } from "@/types/investment";
 import type { RecurringRule } from "@/types/recurring";
 import type { Transaction } from "@/types/transaction";
 import {
-  expenseByCategoryForMonth,
+  expenseByCategoryForLastNMonths,
   lastNMonthsBars,
   sumByTypeInRange,
 } from "@/lib/dashboard-stats";
@@ -51,6 +51,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
+  const [barsChartMonths, setBarsChartMonths] = useState(6);
+  const [pieChartMonths, setPieChartMonths] = useState(1);
   const goldLive = useGoldLivePrices(planPremium);
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
@@ -126,8 +128,8 @@ export default function DashboardPage() {
       monthEnd,
     );
     const net = totalIncome - totalExpense;
-    const bars = lastNMonthsBars(items, 6, now);
-    const pie = expenseByCategoryForMonth(items, now);
+    const bars = lastNMonthsBars(items, barsChartMonths, now);
+    const pie = expenseByCategoryForLastNMonths(items, pieChartMonths, now);
     const recent = [...items]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5);
@@ -139,7 +141,7 @@ export default function DashboardPage() {
       pie,
       recent,
     };
-  }, [items, monthStart, monthEnd, now]);
+  }, [items, monthStart, monthEnd, now, barsChartMonths, pieChartMonths]);
 
   const investmentPnl = useMemo(
     () => totalInvestmentPnlTry(investmentPositions, liveQuotes),
@@ -211,7 +213,14 @@ export default function DashboardPage() {
         investmentPnl={planPremium ? investmentPnl : undefined}
       />
 
-      <DashboardChartsSection bars={stats.bars} pie={stats.pie} />
+      <DashboardChartsSection
+        bars={stats.bars}
+        pie={stats.pie}
+        barsMonths={barsChartMonths}
+        pieMonths={pieChartMonths}
+        onBarsMonthsChange={setBarsChartMonths}
+        onPieMonthsChange={setPieChartMonths}
+      />
 
       <DashboardRecurringCard
         activeRecurringCount={activeRecurringCount}

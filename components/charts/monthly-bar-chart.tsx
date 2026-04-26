@@ -52,6 +52,15 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
   const [mounted, setMounted] = useState(false);
   const blockInteractionRef = useRef<HTMLDivElement>(null);
   useBlockChartPointerActivation(blockInteractionRef, mounted);
+  const chartData = useMemo(
+    () =>
+      data.map((row) => ({
+        ...row,
+        tasarrufOrani:
+          row.gelir > 0 ? ((row.gelir - row.gider) / row.gelir) * 100 : null,
+      })),
+    [data],
+  );
 
   useEffect(() => {
     const id = window.setTimeout(() => setMounted(true), 0);
@@ -61,7 +70,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
   const { yDomainMax, yTicks } = useMemo(() => {
     let maxVal = 0;
     const raw = new Set<number>([0]);
-    for (const row of data) {
+    for (const row of chartData) {
       raw.add(row.gelir);
       raw.add(row.gider);
       maxVal = Math.max(maxVal, row.gelir, row.gider);
@@ -89,7 +98,24 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
     }
 
     return { yDomainMax: domainTop, yTicks: ticksInDomain };
-  }, [data]);
+  }, [chartData]);
+
+  const { savingsMin, savingsMax } = useMemo(() => {
+    const rates = chartData
+      .map((row) => row.tasarrufOrani)
+      .filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+
+    if (rates.length === 0) return { savingsMin: -100, savingsMax: 100 };
+
+    const min = Math.min(...rates, 0);
+    const max = Math.max(...rates, 0);
+    const pad = Math.max((max - min) * 0.12, 5);
+
+    return {
+      savingsMin: Math.floor(min - pad),
+      savingsMax: Math.ceil(max + pad),
+    };
+  }, [chartData]);
 
   if (!mounted) {
     return (
@@ -112,7 +138,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
         minHeight={360}
       >
         <AreaChart
-          data={data}
+          data={chartData}
           margin={{ top: 28, right: 12, left: -20, bottom: 0 }}
         >
           <defs>
@@ -129,6 +155,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
           <XAxis dataKey="label" stroke="#71717a" fontSize={12} />
           <YAxis
             type="number"
+            yAxisId="amount"
             domain={[0, yDomainMax]}
             ticks={yTicks}
             allowDecimals
@@ -140,6 +167,15 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
               return formatMoney(n, currency).replace(/\s/g, " ");
             }}
           />
+          <YAxis
+            yAxisId="percent"
+            orientation="right"
+            domain={[savingsMin, savingsMax]}
+            width={52}
+            stroke="#71717a"
+            fontSize={12}
+            tickFormatter={(v) => `${Math.round(Number(v))}%`}
+          />
           <Tooltip
             contentStyle={{
               background: "#111111",
@@ -147,7 +183,12 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
               borderRadius: "8px",
             }}
             labelStyle={{ color: "#fff" }}
-            formatter={(value) => formatMoney(Number(value ?? 0), currency)}
+            formatter={(value, name) => {
+              if (name === "Tasarruf Oranı") {
+                return [`${Number(value ?? 0).toFixed(1)}%`, "Tasarruf Oranı"];
+              }
+              return [formatMoney(Number(value ?? 0), currency), String(name)];
+            }}
           />
           <Legend
             verticalAlign="bottom"
@@ -156,6 +197,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
           />
           <Area
             type="monotone"
+            yAxisId="amount"
             dataKey="gelir"
             name="Gelir"
             stroke="#22c55e"
@@ -166,12 +208,25 @@ export function MonthlyBarChart({ data }: { data: MonthlyBarRow[] }) {
           />
           <Area
             type="monotone"
+            yAxisId="amount"
             dataKey="gider"
             name="Gider"
             stroke="#ef4444"
             strokeWidth={2}
             fill="url(#giderGrad)"
             dot={{ r: 3, fill: "#ef4444", strokeWidth: 0 }}
+            activeDot={{ r: 5 }}
+          />
+          <Area
+            type="monotone"
+            yAxisId="percent"
+            dataKey="tasarrufOrani"
+            name="Tasarruf Oranı"
+            stroke="#38bdf8"
+            strokeWidth={2}
+            fill="none"
+            connectNulls
+            dot={{ r: 3, fill: "#38bdf8", strokeWidth: 0 }}
             activeDot={{ r: 5 }}
           />
         </AreaChart>

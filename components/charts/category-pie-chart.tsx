@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
@@ -133,17 +132,35 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                background: "#111",
-                border: "1px solid #333",
-                borderRadius: "8px",
-                fontSize: "12px",
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const item = payload[0];
+                return (
+                  <div
+                    style={{
+                      background: "#111",
+                      border: "1px solid #333",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: item.payload?.fill ?? "#fff",
+                        fontWeight: 600,
+                        marginBottom: 4,
+                      }}
+                    >
+                      {item.name}
+                    </p>
+                    <p style={{ color: "#fff" }}>
+                      Tutar : {formatMoney(Number(item.value || 0), currency)}
+                    </p>
+                  </div>
+                );
               }}
-              formatter={(value: any) => [
-                formatMoney(Number(value || 0), currency),
-                "Tutar",
-              ]}
-            />
+            />{" "}
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -158,7 +175,7 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full px-4 mt-6 border-t border-border/40 pt-6">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full px-4 mt-6 border-t border-border/40 pt-6 md:hidden">
         {chartData.map((item, i) => (
           <div key={i} className="flex items-center gap-2">
             <div

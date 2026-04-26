@@ -50,6 +50,8 @@ function TransactionsPageContent() {
   const [amountSortOrder, setAmountSortOrder] = useState<"desc" | "asc" | null>(
     null,
   );
+  const [barsChartMonths, setBarsChartMonths] = useState(3);
+  const [pieChartMonths, setPieChartMonths] = useState(3);
   const [chartItems, setChartItems] = useState<Transaction[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
 
@@ -73,12 +75,12 @@ function TransactionsPageContent() {
 
   const chartNow = useMemo(() => new Date(), []);
   const transactionsChartBars = useMemo(
-    () => lastNMonthsBars(chartItems, 3, chartNow),
-    [chartItems, chartNow],
+    () => lastNMonthsBars(chartItems, barsChartMonths, chartNow),
+    [chartItems, barsChartMonths, chartNow],
   );
   const transactionsChartPie = useMemo(
-    () => expenseByCategoryForLastNMonths(chartItems, 3, chartNow),
-    [chartItems, chartNow],
+    () => expenseByCategoryForLastNMonths(chartItems, pieChartMonths, chartNow),
+    [chartItems, pieChartMonths, chartNow],
   );
 
   useEffect(() => {
@@ -234,6 +236,10 @@ function TransactionsPageContent() {
       <TransactionsChartsSection
         bars={transactionsChartBars}
         pie={transactionsChartPie}
+        barsMonths={barsChartMonths}
+        pieMonths={pieChartMonths}
+        onBarsMonthsChange={setBarsChartMonths}
+        onPieMonthsChange={setPieChartMonths}
         loading={chartLoading}
       />
 
