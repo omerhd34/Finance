@@ -34,6 +34,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
 
+function profileInitials(
+  name: string | null | undefined,
+  email: string,
+): string {
+  const n = name?.trim();
+  if (n) {
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+    }
+    return n.slice(0, 2).toUpperCase();
+  }
+  return email.slice(0, 2).toUpperCase();
+}
+
 const nav = [
   { href: "/gosterge-paneli", label: "Ana Panel", icon: LayoutDashboard },
   { href: "/islemler", label: "İşlemler", icon: Wallet },
@@ -70,9 +85,15 @@ function titleForPath(path: string): string {
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const reduxUserName = useAppSelector((s) => s.auth.user?.name);
+  const reduxUserEmail = useAppSelector((s) => s.auth.user?.email);
   const reduxUserImage = useAppSelector((s) => s.auth.user?.image);
   const { data: session } = useSession();
   const sidebarAvatarSrc = reduxUserImage ?? session?.user?.image ?? undefined;
+  const sidebarFallbackInitials = profileInitials(
+    reduxUserName ?? session?.user?.name ?? null,
+    reduxUserEmail ?? session?.user?.email ?? "?",
+  );
   const { setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -252,9 +273,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Avatar className="h-7 w-7">
                 <AvatarImage src={sidebarAvatarSrc} alt="" />
                 <AvatarFallback className="bg-primary/20 text-primary">
-                  {(session?.user?.name ?? session?.user?.email ?? "?")
-                    .slice(0, 2)
-                    .toUpperCase()}
+                  {sidebarFallbackInitials}
                 </AvatarFallback>
               </Avatar>
             </Link>
@@ -296,9 +315,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <Avatar className="h-7 w-7">
                   <AvatarImage src={sidebarAvatarSrc} alt="" />
                   <AvatarFallback className="bg-primary/20 text-primary">
-                    {(session?.user?.name ?? session?.user?.email ?? "?")
-                      .slice(0, 2)
-                      .toUpperCase()}
+                    {sidebarFallbackInitials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">

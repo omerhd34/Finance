@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarClock, Repeat2 } from "lucide-react";
+import { ArrowUpRight, CalendarClock, Repeat2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,7 +49,10 @@ export function DashboardRecurringCard({
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" className="shrink-0" asChild>
-          <Link href="/tekrarlayanlar">Tümünü gör</Link>
+          <Link href="/tekrarlayanlar" className="gap-1.5">
+            Tümünü gör
+            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
+          </Link>
         </Button>
       </CardHeader>
       <CardContent className="px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
@@ -64,9 +67,9 @@ export function DashboardRecurringCard({
             </Link>
           </p>
         ) : (
-          <ul className="space-y-3">
+          <ul className="grid gap-3 md:grid-cols-2">
             {upcomingRecurring.map((rule) => (
-              <li key={rule.id}>
+              <li key={rule.id} className="min-w-0">
                 <div className="rounded-xl border border-border/60 bg-muted/15 px-4 py-4 shadow-sm ring-1 ring-black/4 transition-colors hover:bg-muted/25 dark:ring-white/6 sm:px-5 sm:py-4">
                   <div className="flex gap-3.5 sm:gap-4">
                     <div

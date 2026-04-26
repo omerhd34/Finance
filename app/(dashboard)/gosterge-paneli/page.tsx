@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
 import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurring-card";
+import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
@@ -48,6 +49,7 @@ export default function DashboardPage() {
     receivable: number;
     payable: number;
   } | null>(null);
+  const [debts, setDebts] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
@@ -80,6 +82,7 @@ export default function DashboardPage() {
         apiClient.get<{ items: RecurringRule[] }>("/api/recurring"),
       ]);
       setItems(txRes.data.items);
+      setDebts(debtRes.data.items);
       if (planPremium) {
         try {
           const invRes = await apiClient.get<{ items: InvestmentPosition[] }>(
@@ -105,6 +108,7 @@ export default function DashboardPage() {
       setError("Veriler yüklenemedi");
       setInvestmentPositions([]);
       setDebtTotals(null);
+      setDebts([]);
       setRecurringRules([]);
     } finally {
       setLoading(false);
@@ -171,11 +175,15 @@ export default function DashboardPage() {
   const upcomingRecurring = useMemo(() => {
     return [...recurringRules]
       .filter((r) => r.isActive)
-      .sort(
-        (a, b) =>
-          new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime(),
-      )
-      .slice(0, 3);
+      .sort((a, b) => {
+        if (a.type !== b.type) {
+          return a.type === "income" ? -1 : 1;
+        }
+        return (
+          new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
+        );
+      })
+      .slice(0, 4);
   }, [recurringRules]);
 
   const activeRecurringCount = useMemo(
@@ -227,6 +235,15 @@ export default function DashboardPage() {
         upcomingRecurring={upcomingRecurring}
         currency={currency}
       />
+
+      {debtTotals ? (
+        <DashboardDebtCard
+          items={debts}
+          receivable={debtTotals.receivable}
+          payable={debtTotals.payable}
+          currency={currency}
+        />
+      ) : null}
 
       {planPremium ? (
         <DashboardInvestmentSection
