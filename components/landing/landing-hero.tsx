@@ -22,7 +22,7 @@ export function LandingHero() {
       >
         <Image
           src="/finance.jpg"
-          alt="Finance"
+          alt="Kişisel finans, bütçe ve harcama yönetimi — IQfinansAI arka plan görseli"
           fill
           priority
           quality={75}

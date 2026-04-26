@@ -10,7 +10,14 @@ export function LandingJsonLd() {
         "@id": `${base}/#organization`,
         name: "IQfinansAI",
         url: base,
-        logo: `${base}/FinansIQ-512.png`,
+        logo: {
+          "@type": "ImageObject",
+          url: `${base}/FinansIQ-512.png`,
+        },
+        areaServed: {
+          "@type": "Country",
+          name: "Türkiye",
+        },
       },
       {
         "@type": "WebSite",
@@ -24,16 +31,20 @@ export function LandingJsonLd() {
       },
       {
         "@type": "SoftwareApplication",
+        "@id": `${base}/#software`,
         name: "IQfinansAI",
+        url: base,
         applicationCategory: "FinanceApplication",
         operatingSystem: "Web",
         offers: {
           "@type": "Offer",
           price: "0",
           priceCurrency: "TRY",
+          url: `${base}/kayit`,
         },
         description:
           "Kişisel finans ve bütçe yönetimi; yapay zeka destekli harcama analizi ve raporlama.",
+        publisher: { "@id": `${base}/#organization` },
       },
     ],
   };

@@ -3,7 +3,6 @@ import "./globals.css";
 import { ThemeProvider } from "@wrksz/themes/next";
 import { Providers } from "@/components/providers";
 import { siteMetadata } from "@/lib/metadata";
-import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,12 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  ...siteMetadata,
-  other: {
-    "google-adsense-account": "ca-pub-5307815863038450",
-  },
-};
+export const metadata = siteMetadata;
 
 export default function RootLayout({
   children,
@@ -33,14 +27,6 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5307815863038450"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider
           attribute="class"

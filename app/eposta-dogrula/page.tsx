@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +15,16 @@ import {
 } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "E-posta doğrulama",
+  description: "IQfinansAI hesabınız için e-posta doğrulama bağlantısı.",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
+};
 
 function tokenFromSearchParams(sp: { token?: string | string[] }) {
   const raw = sp.token;
