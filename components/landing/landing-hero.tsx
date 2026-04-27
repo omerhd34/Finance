@@ -81,6 +81,13 @@ export function LandingHero() {
           >
             <Link href="/giris">Hesabım var</Link>
           </Button>
+          <Button
+            size="lg"
+            asChild
+            className="border border-white/15 bg-zinc-900 text-white shadow-lg shadow-black/45 transition hover:border-white/25 hover:bg-zinc-950 hover:shadow-xl hover:shadow-black/55 group h-12 w-full rounded-full px-8 text-base font-semibold sm:w-auto"
+          >
+            <Link href="/sss">SSS</Link>
+          </Button>
         </div>
         <ul
           className="mt-10 grid grid-cols-2 justify-center gap-2 text-xs sm:mt-14 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:text-sm"
