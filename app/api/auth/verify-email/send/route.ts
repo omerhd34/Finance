@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
-import { sendEmailVerificationMessage } from "@/lib/email-verification-email";
-import { emailVerificationToken, prisma } from "@/lib/prisma";
-import {
-  appBaseUrl,
-  generatePasswordResetSecret,
-  hashPasswordResetToken,
-} from "@/lib/password-reset-token";
-
-const VERIFY_TTL_MS = 24 * 60 * 60 * 1000;
+import { sendVerificationEmailForUserId } from "@/lib/send-verification-email";
 
 export async function POST() {
   try {
@@ -18,53 +10,22 @@ export async function POST() {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { id: true, email: true, emailVerified: true },
-    });
+    const result = await sendVerificationEmailForUserId(session.user.id);
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Kullanıcı bulunamadı" },
-        { status: 404 },
-      );
-    }
-
-    if (user.emailVerified) {
+    if (!result.ok) {
+      if (result.reason === "user_not_found") {
+        return NextResponse.json(
+          { error: "Kullanıcı bulunamadı" },
+          { status: 404 },
+        );
+      }
       return NextResponse.json(
         { error: "E-posta zaten doğrulanmış." },
         { status: 400 },
       );
     }
 
-    const rawToken = generatePasswordResetSecret();
-    const tokenHash = hashPasswordResetToken(rawToken);
-    const expiresAt = new Date(Date.now() + VERIFY_TTL_MS);
-
-    await emailVerificationToken.deleteMany({
-      where: { userId: user.id },
-    });
-    await emailVerificationToken.create({
-      data: {
-        userId: user.id,
-        tokenHash,
-        expiresAt,
-      },
-    });
-
-    const base = appBaseUrl();
-    const verifyUrl = `${base}/eposta-dogrula?token=${encodeURIComponent(rawToken)}`;
-    const sent = await sendEmailVerificationMessage({
-      to: user.email,
-      verifyUrl,
-    });
-
-    if (process.env.NODE_ENV === "development" && !sent) {
-      console.info(
-        "[verify-email/send] E-posta gönderilemedi; geliştirme için doğrulama URL:",
-        verifyUrl,
-      );
-    }
+    const { sent } = result;
 
     return NextResponse.json(
       {

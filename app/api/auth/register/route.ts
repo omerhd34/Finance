@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { sendVerificationEmailForUserId } from "@/lib/send-verification-email";
 import { registerSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
@@ -22,14 +23,28 @@ export async function POST(req: Request) {
       );
     }
     const hashed = await bcrypt.hash(password, 12);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashed,
       },
     });
-    return NextResponse.json({ ok: true }, { status: 201 });
+
+    let verificationEmailSent = false;
+    try {
+      const verifyResult = await sendVerificationEmailForUserId(user.id);
+      if (verifyResult.ok) {
+        verificationEmailSent = verifyResult.sent;
+      }
+    } catch (verifyErr) {
+      console.error("[register] doğrulama e-postası gönderilemedi", verifyErr);
+    }
+
+    return NextResponse.json(
+      { ok: true, verificationEmailSent },
+      { status: 201 },
+    );
   } catch (e) {
     console.error("[register]", e);
     return NextResponse.json({ error: "Kayıt başarısız" }, { status: 500 });
