@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SSSPosts } from "@/lib/sss-posts";
 import { getSiteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -25,28 +26,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.72,
     },
     {
-      url: `${base}/gizlilik-politikasi`,
+      url: `${base}/sss`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...SSSPosts.map((post) => ({
+      url: `${base}/sss/${post.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
+    })),
+    {
+      url: `${base}/yasal-bilgiler`,
       lastModified,
       changeFrequency: "yearly",
       priority: 0.45,
-    },
-    {
-      url: `${base}/kullanim-kosullari`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.45,
-    },
-    {
-      url: `${base}/cerez-politikasi`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.4,
-    },
-    {
-      url: `${base}/mesafeli-satis-sozlesmesi`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.4,
     },
   ];
 }
