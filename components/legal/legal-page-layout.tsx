@@ -20,7 +20,7 @@ export function LegalPageLayout({ title, description, children }: Props) {
               {title}
             </h1>
             {description ? (
-              <p className="mt-3 max-w-2xl text-pretty text-muted-foreground md:text-lg">
+              <p className="mt-3 max-w-none text-muted-foreground md:text-lg lg:whitespace-nowrap">
                 {description}
               </p>
             ) : null}

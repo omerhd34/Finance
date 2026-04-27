@@ -125,23 +125,14 @@ export function LandingFooter() {
 
           <FooterColumn title="Kurumsal">
             <FooterLink href="/hakkimizda">Hakkımızda</FooterLink>
-            <FooterLink href="/gizlilik-politikasi">
-              Gizlilik Politikası
-            </FooterLink>
-            <FooterLink href="/kullanim-kosullari">
-              Kullanım Koşulları
-            </FooterLink>
-            <FooterLink href="/mesafeli-satis-sozlesmesi">
-              Mesafeli Satış Sözleşmesi
-            </FooterLink>
-            <FooterLink href="/cerez-politikasi">Çerez Politikası</FooterLink>
+            <FooterLink href="/yasal-bilgiler">Yasal bilgiler</FooterLink>
           </FooterColumn>
 
-          <FooterColumn title="Hesabım ve Destek">
+          <FooterColumn title="Üyelik ve kaynaklar">
             <FooterLink href="/giris">Giriş Yap</FooterLink>
             <FooterLink href="/kayit">Kayıt Ol</FooterLink>
             <FooterLink href="/destek">Destek</FooterLink>
-            <FooterLink href="/destek#sss">Sık Sorulan Sorular</FooterLink>
+            <FooterLink href="/blog">Blog</FooterLink>
           </FooterColumn>
         </div>
 
