@@ -14,14 +14,15 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   title: "Destek",
   description:
-    "IQfinansAI destek merkezi: sık sorulan sorular, hesap ve güvenlik ipuçları, iletişim.",
+    "IQfinansAI destek merkezi: hesap ve güvenlik ipuçları, iletişim formu. Sık sorular için SSS sayfasına bakın.",
   alternates: {
     canonical: "/destek",
     languages: { "tr-TR": "/destek" },
   },
   openGraph: {
     title: "Destek | IQfinansAI",
-    description: "Sık sorulan sorular ve hesabınızla ilgili yardım kaynakları.",
+    description:
+      "Destek iletişimi ve hesabınızla ilgili yardım. Ayrıntılı sorular için SSS.",
     url: `${siteUrl}/destek`,
     type: "website",
     locale: "tr_TR",
@@ -31,66 +32,14 @@ export const metadata: Metadata = {
 const eyebrow =
   "inline-flex items-center rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-700 ring-1 ring-emerald-500/20 dark:border-emerald-400/40 dark:bg-emerald-400/12 dark:text-emerald-200 dark:ring-emerald-400/30";
 
-const faqItems = [
-  {
-    q: "IQfinansAI ücretli mi?",
-    a: "IQfinansAI'ye kayıt olmak ve temel özellikleri kullanmak tamamen ücretsizdir. Daha kapsamlı analizler, sınırsız kategori ve gelişmiş yapay zekâ içgörüleri sunan Premium planlarımız hakkında detaylı bilgiye 'Fiyatlandırma' sayfamızdan ulaşabilirsiniz.",
-  },
-  {
-    q: "Altın, döviz, hisse senedi ve kripto verileri ne sıklıkla güncellenir?",
-    a: "Yatırımlarınızın ve varlıklarınızın genel durumunu düzenli takip edebilmeniz için tüm piyasa verileri 60 dakikada bir periyodik olarak güncellenmektedir. Bu sayede portföy değerinizi güncel kurlar üzerinden izleyebilirsiniz.",
-  },
-  {
-    q: "Banka hesaplarımı sisteme bağlayabilir miyim?",
-    a: "Şu an için manuel veri girişi ve akıllı fiş/fatura tarama özelliğiyle hızlıca kayıt oluşturabilirsiniz. Banka entegrasyonları üzerindeki teknik çalışmalarımız ise devam ediyor.",
-  },
-  {
-    q: "Verilerim ne kadar güvende ve nerede saklanıyor?",
-    a: "Finansal verileriniz, endüstri standardı AES-256 şifreleme yöntemleri kullanılarak yüksek güvenlikli bulut altyapılarında saklanır. Verileriniz KVKK ve gizlilik ilkelerimize uygun olarak korunur; asla üçüncü taraflarla reklam veya pazarlama amacıyla paylaşılmaz.",
-  },
-  {
-    q: "Yapay zekâ önerileri yatırım tavsiyesi midir?",
-    a: "Hayır. IQfinansAI tarafından sunulan yapay zekâ analizleri; harcama alışkanlıklarınızı anlamanıza, tasarruf potansiyelinizi görmenize ve bütçe disiplini sağlamanıza yardımcı olmak için tasarlanmış istatistiksel içgörülerdir. Kesinlikle yatırım, vergi veya finansal danışmanlık yerine geçmez.",
-  },
-  {
-    q: "Farklı para birimleriyle işlem yapabilir miyim?",
-    a: "Evet. IQfinansAI; TL, Dolar (USD), Euro (EUR) ve Sterlin (GBP) para birimlerini tam olarak destekler. Gelir ve giderlerinizi bu birimlerle kaydedebilir, güncel kurlar üzerinden ana para biriminize dönüştürülmüş şekilde raporlayabilirsiniz.",
-  },
-  {
-    q: "Hesabımı ve verilerimi istediğim zaman silebilir miyim?",
-    a: "Kesinlikle. Kullanıcı panelindeki ayarlar bölümünden hesabınızı dilediğiniz an silebilirsiniz. Hesabınızı sildiğinizde, sistemimizde kayıtlı olan tüm finansal verileriniz ve kişisel bilgileriniz geri döndürülemez şekilde kalıcı olarak temizlenir.",
-  },
-  {
-    q: "Destek taleplerime ne kadar sürede yanıt alırım?",
-    a: "Bize ilettiğiniz tüm mesajlar teknik ekibimize doğrudan ulaşır. Genellikle iş günlerinde 24 saat içinde, yoğunluk durumuna bağlı olarak en geç 48 saat içerisinde geri dönüş sağlamaktayız.",
-  },
-  {
-    q: "Şifremi unutursam ne yapmalıyım?",
-    a: "Giriş sayfasında bulunan 'Şifremi Unuttum' bağlantısına tıklayarak, kayıtlı e-posta adresinize güvenli bir şifre sıfırlama bağlantısı gönderebilir ve hesabınıza saniyeler içinde tekrar erişim sağlayabilirsiniz.",
-  },
-] as const;
-
 export default function DestekPage() {
   const inboxConfigured = Boolean(getSupportInboxEmail());
-
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqItems.map(({ q, a }) => ({
-      "@type": "Question",
-      name: q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: a,
-      },
-    })),
-  };
 
   const webPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: "Destek",
-    description: "IQfinansAI destek merkezi ve sık sorulan sorular.",
+    description: "IQfinansAI destek merkezi; iletişim ve yardım kaynakları.",
     url: `${siteUrl}/destek`,
     inLanguage: "tr-TR",
     isPartOf: {
@@ -105,7 +54,7 @@ export default function DestekPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([webPageJsonLd, faqJsonLd]),
+          __html: JSON.stringify(webPageJsonLd),
         }}
       />
       <LandingHeader />
@@ -126,63 +75,16 @@ export default function DestekPage() {
               </span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Sık sorulan sorular çoğu konuda yol gösterir. Aradığınızı
-              bulamazsanız sayfanın altındaki formdan bize yazınız.
-            </p>
-          </div>
-        </section>
-
-        <section
-          className="px-4 py-14 md:py-24"
-          aria-labelledby="support-faq-heading"
-          id="sss"
-        >
-          <div className="mx-auto max-w-3xl">
-            <div className="text-center">
-              <p className={eyebrow}>SSS</p>
-              <h2
-                id="support-faq-heading"
-                className="mt-4 text-2xl font-bold tracking-tight text-foreground md:text-3xl"
+              Ürünle ilgili ayrıntılı soru ve yanıtlar için{" "}
+              <Link
+                href="/sss"
+                className="font-medium text-emerald-600 underline underline-offset-4 hover:text-emerald-500 dark:text-emerald-400"
               >
-                Sık sorulan sorular
-              </h2>
-            </div>
-
-            <div className="mt-10 space-y-3">
-              {faqItems.map(({ q, a }) => (
-                <details
-                  key={q}
-                  className="group rounded-xl border border-border/80 bg-card/80 px-4 py-3 shadow-sm open:shadow-md transition-shadow md:px-5"
-                >
-                  <summary className="cursor-pointer list-none font-medium text-foreground outline-none [&::-webkit-details-marker]:hidden">
-                    <span className="flex items-center justify-between gap-3">
-                      <span className="text-left text-sm md:text-base">
-                        {q}
-                      </span>
-                      <span className="shrink-0 text-muted-foreground transition group-open:rotate-180">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden
-                        >
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
-                      </span>
-                    </span>
-                  </summary>
-                  <p className="mt-3 border-t border-border/60 pt-3 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
-                    {a}
-                  </p>
-                </details>
-              ))}
-            </div>
+                SSS
+              </Link>{" "}
+              sayfasına göz atın. Aradığınızı bulamazsanız aşağıdaki formdan
+              bize yazın.
+            </p>
           </div>
         </section>
 
