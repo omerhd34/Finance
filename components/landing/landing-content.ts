@@ -108,7 +108,7 @@ export const LANDING_PLANS: LandingPlan[] = [
     id: "premium",
     title: "Premium",
     subtitle: "Premium'a geçince yapay zekâ destekli derin analiz",
-    priceAmountTry: 1,
+    priceAmountTry: 125,
     priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
@@ -128,5 +128,5 @@ export const LANDING_PLANS: LandingPlan[] = [
 
 export function getLandingPremiumPriceTry(): number {
   const p = LANDING_PLANS.find((x) => x.id === "premium");
-  return p?.priceAmountTry ?? 1;
+  return p?.priceAmountTry ?? 125;
 }
