@@ -142,6 +142,7 @@ export default function NewTransactionPage() {
         description: values.description || undefined,
         date: d.toISOString(),
       });
+      window.dispatchEvent(new Event("notifications:refresh"));
       router.push("/islemler");
       router.refresh();
     } catch (e: unknown) {
