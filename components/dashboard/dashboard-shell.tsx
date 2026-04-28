@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
+  ArrowRightLeft,
   Bell,
   CalendarClock,
   ChevronLeft,
@@ -56,6 +57,7 @@ const nav = [
   { href: "/butceler", label: "Bütçeler", icon: PieChart },
   { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
   { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
+  { href: "/kur-donusum", label: "Kur Dönüşüm", icon: ArrowRightLeft },
   { href: "/yapay-zeka-analizi", label: "AI Analiz", icon: Sparkles },
   { href: "/bildirimler", label: "Bildirimler", icon: Bell },
 ];
@@ -68,6 +70,7 @@ const titles: Record<string, string> = {
   "/butceler": "Kategori bütçeleri",
   "/borc-ve-alacak": "Borç ve Alacak",
   "/yatirimlar": "Yatırım",
+  "/kur-donusum": "Kur Dönüşüm",
   "/yapay-zeka-analizi": "AI Analiz",
   "/bildirimler": "Bildirimler",
   "/ayarlar": "Ayarlar",
