@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Bell, X } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ type NotificationItem = {
 };
 
 export function NotificationsPopover() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -57,8 +59,28 @@ export function NotificationsPopover() {
 
   useEffect(() => {
     void refreshUnread();
-    const t = window.setInterval(() => void refreshUnread(), 60000);
+    const t = window.setInterval(() => void refreshUnread(), 15000);
     return () => window.clearInterval(t);
+  }, [refreshUnread]);
+
+  useEffect(() => {
+    void refreshUnread();
+  }, [pathname, refreshUnread]);
+
+  useEffect(() => {
+    const onFocus = () => void refreshUnread();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void refreshUnread();
+    };
+    const onRefreshEvent = () => void refreshUnread();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("notifications:refresh", onRefreshEvent);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("notifications:refresh", onRefreshEvent);
+    };
   }, [refreshUnread]);
 
   useEffect(() => {
