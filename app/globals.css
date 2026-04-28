@@ -108,6 +108,26 @@ body {
   animation: shimmer 1.2s infinite;
 }
 
+@keyframes hero-bg-pan {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.12) translate3d(-1.5%, 0.5%, 0);
+  }
+}
+
+.animate-hero-bg-pan {
+  animation: hero-bg-pan 28s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-bg-pan {
+    animation: none;
+    transform: scale(1.06);
+  }
+}
+
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
