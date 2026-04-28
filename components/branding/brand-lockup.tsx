@@ -47,10 +47,12 @@ export function BrandLockup({
   variant,
   className,
   hideIcon = false,
+  finansClassName,
 }: {
   variant: BrandLockupVariant;
   className?: string;
   hideIcon?: boolean;
+  finansClassName?: string;
 }) {
   const styles = variantStyles[variant];
 
@@ -70,7 +72,7 @@ export function BrandLockup({
       ) : null}
       <div className={styles.textWrap}>
         <span className={styles.iq}>IQ</span>
-        <span className={styles.finans}>finans</span>
+        <span className={cn(styles.finans, finansClassName)}>finans</span>
         <span className={styles.ai}>AI</span>
       </div>
     </div>
