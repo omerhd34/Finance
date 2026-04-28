@@ -50,7 +50,11 @@ function AiPanel() {
             className="pointer-events-none origin-center select-none"
             style={{ transform: "translateY(0.5px) scale(0.34)" }}
           >
-            <BrandLockup variant="landing" hideIcon />
+            <BrandLockup
+              variant="landing"
+              hideIcon
+              finansClassName="text-emerald-100 dark:text-emerald-100"
+            />
           </div>
         </div>
       </foreignObject>
