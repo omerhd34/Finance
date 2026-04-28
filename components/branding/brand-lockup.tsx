@@ -46,24 +46,28 @@ const variantStyles: Record<
 export function BrandLockup({
   variant,
   className,
+  hideIcon = false,
 }: {
   variant: BrandLockupVariant;
   className?: string;
+  hideIcon?: boolean;
 }) {
   const styles = variantStyles[variant];
 
   return (
     <div className={cn("flex min-w-0 items-center", styles.wrapper, className)}>
-      <div className={styles.iconWrap}>
-        <Image
-          src="/FinansIQ-192.png"
-          alt="IQfinansAI Logosu"
-          width={44}
-          height={44}
-          className={styles.icon}
-          priority
-        />
-      </div>
+      {!hideIcon ? (
+        <div className={styles.iconWrap}>
+          <Image
+            src="/FinansIQ-192.png"
+            alt="IQfinansAI Logosu"
+            width={44}
+            height={44}
+            className={styles.icon}
+            priority
+          />
+        </div>
+      ) : null}
       <div className={styles.textWrap}>
         <span className={styles.iq}>IQ</span>
         <span className={styles.finans}>finans</span>
