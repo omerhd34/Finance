@@ -8,9 +8,9 @@ import {
   Lock,
   Sparkles,
   Target,
-  Zap, // Yeni icon
-  Shapes, // Yeni icon
-  ShieldCheck, // Yeni icon
+  Zap,
+  Shapes,
+  ShieldCheck,
 } from "lucide-react";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
@@ -71,13 +71,13 @@ const values = [
       "Yapay zekayı sadece bir araç olarak değil; kararlarınızı güçlendiren, gizli kalmış detayları fark eden bir asistan olarak konumluyoruz.",
   },
   {
-    icon: Shapes, // Yeni
+    icon: Shapes,
     title: "Bütünsel Bakış",
     description:
       "Bütçe, borç ve yatırımı birbirinden ayırmıyoruz. Paranızın tüm parçalarını tek bir büyük resimde birleştiriyoruz.",
   },
   {
-    icon: Zap, // Yeni
+    icon: Zap,
     title: "Zaman Verimliliği",
     description:
       "Finans yönetimi bir iş yükü olmamalı. Otomasyon yeteneklerimizle manuel veri girişini azaltıp size zaman kazandırıyoruz.",
@@ -95,7 +95,7 @@ const values = [
       "Finansal teknolojiler hızla değişiyor. Biz de her gün yeni algoritmalar ve özelliklerle bu değişimin öncüsü kalıyoruz.",
   },
   {
-    icon: ShieldCheck, // Yeni
+    icon: ShieldCheck,
     title: "Sürdürülebilir Finans",
     description:
       "Anlık harcamalardan ziyade uzun vadeli finansal sağlığınızı korumayı ve disiplinli bir gelecek inşa etmenizi hedefliyoruz.",
