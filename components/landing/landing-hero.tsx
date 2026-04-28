@@ -57,11 +57,11 @@ export function LandingHero() {
               id="landing-hero-heading"
               className="mt-6 text-balance text-3xl font-bold tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl md:leading-[1.08]"
             >
-              Paranızı{" "}
+              Finansını{" "}
               <span className="bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-400 bg-clip-text text-transparent">
                 akıllıca
               </span>{" "}
-              yönetin
+              yönet
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-white/92 sm:mt-8 sm:text-lg md:text-xl lg:mx-0">
