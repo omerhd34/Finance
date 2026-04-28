@@ -40,7 +40,7 @@ export function LandingHeader() {
             <BrandLockup variant="landing" />
           </Link>
           <nav
-            className="flex items-center gap-1.5 sm:gap-3"
+            className="flex items-center gap-1 sm:gap-3"
             aria-label="Giriş navigasyonu"
           >
             <Button
@@ -48,7 +48,7 @@ export function LandingHeader() {
               variant="ghost"
               size="icon"
               disabled={!themeReady}
-              className="h-8 w-8 cursor-pointer rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground shrink-0 sm:h-9 sm:w-9"
+              className="h-7.5 w-7.5 cursor-pointer rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground shrink-0 sm:h-9 sm:w-9"
               aria-label={themeLabel}
               title={themeLabel}
               onClick={toggleTheme}
@@ -63,14 +63,14 @@ export function LandingHeader() {
               variant="outline"
               asChild
               size="sm"
-              className="h-8 shrink-0 gap-1.5 rounded-full border-slate-300/90 bg-white/50 px-3 text-xs font-semibold shadow-sm transition-all duration-200 hover:border-emerald-500/65 hover:bg-emerald-500/15 hover:text-emerald-900 hover:shadow-md hover:shadow-emerald-500/15 active:scale-[0.98] sm:h-9 sm:px-4 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/50 dark:bg-white/95 dark:text-zinc-900 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-50 dark:hover:text-emerald-950 dark:hover:shadow-lg dark:hover:shadow-emerald-950/25 active:dark:scale-[0.98] dark:focus-visible:ring-emerald-400/50 dark:focus-visible:ring-offset-[#050507]"
+              className="h-8 shrink-0 gap-1 rounded-full border-slate-300/90 bg-white/50 px-2.5 text-xs font-semibold shadow-sm transition-all duration-200 hover:border-emerald-500/65 hover:bg-emerald-500/15 hover:text-emerald-900 hover:shadow-md hover:shadow-emerald-500/15 active:scale-[0.98] sm:h-9 sm:gap-1.5 sm:px-4 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/50 dark:bg-white/95 dark:text-zinc-900 dark:hover:border-emerald-400/60 dark:hover:bg-emerald-50 dark:hover:text-emerald-950 dark:hover:shadow-lg dark:hover:shadow-emerald-950/25 active:dark:scale-[0.98] dark:focus-visible:ring-emerald-400/50 dark:focus-visible:ring-offset-[#050507]"
             >
               <Link
                 href="/giris"
                 className="group inline-flex items-center gap-1.5"
               >
                 <LogIn
-                  className="h-3.5 w-3.5 opacity-80 transition-colors group-hover:text-emerald-800 group-hover:opacity-100 sm:h-4 sm:w-4 dark:group-hover:text-emerald-900"
+                  className="hidden sm:block h-3.5 w-3.5 opacity-80 transition-colors group-hover:text-emerald-800 group-hover:opacity-100 sm:h-4 sm:w-4 dark:group-hover:text-emerald-900"
                   aria-hidden
                 />
                 Giriş
@@ -80,9 +80,9 @@ export function LandingHeader() {
             <Button
               asChild
               size="sm"
-              className="h-8 shrink-0 rounded-full bg-emerald-500 px-3 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-500 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-400 dark:hover:text-white"
+              className="h-8 shrink-0 rounded-full bg-emerald-500 px-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-500 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-400 dark:hover:text-white"
             >
-              <Link href="/kayit">Ücretsiz Başla</Link>
+              <Link href="/kayit">Kayıt ol</Link>
             </Button>
           </nav>
         </div>
