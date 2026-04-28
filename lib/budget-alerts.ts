@@ -166,6 +166,69 @@ async function createNotificationAndMaybeEmail(opts: {
   }
 }
 
+async function createAlertWithRollback(opts: {
+  budgetId: string;
+  monthKey: string;
+  alertType: typeof THRESHOLD | typeof EXCEEDED;
+  createPayload: {
+    userId: string;
+    userEmail: string;
+    currency: string;
+    budgetId: string;
+    category: string;
+    monthKey: string;
+    spent: number;
+    monthlyLimit: number;
+    alertType: typeof THRESHOLD | typeof EXCEEDED;
+    emailAlertsEnabled: boolean;
+    thresholdPercent: number;
+    emailNotificationsEnabled: boolean;
+  };
+}): Promise<void> {
+  const inserted = await insertAlertLogOrSkip({
+    budgetId: opts.budgetId,
+    monthKey: opts.monthKey,
+    alertType: opts.alertType,
+  });
+  if (!inserted) return;
+
+  try {
+    await createNotificationAndMaybeEmail(opts.createPayload);
+  } catch (error) {
+    await prisma.budgetAlertLog.deleteMany({
+      where: {
+        budgetId: opts.budgetId,
+        monthKey: opts.monthKey,
+        alertType: opts.alertType,
+      },
+    });
+    throw error;
+  }
+}
+
+async function hasBudgetNotification(opts: {
+  userId: string;
+  alertType: typeof THRESHOLD | typeof EXCEEDED;
+  budgetId: string;
+  monthKey: string;
+}): Promise<boolean> {
+  const type =
+    opts.alertType === EXCEEDED ? "budget_exceeded" : "budget_threshold";
+  const row = await notification.findFirst({
+    where: {
+      userId: opts.userId,
+      type,
+      AND: [
+        { metadata: { path: "$.budgetId", equals: opts.budgetId } },
+        { metadata: { path: "$.monthKey", equals: opts.monthKey } },
+        { metadata: { path: "$.alertType", equals: opts.alertType } },
+      ],
+    },
+    select: { id: true },
+  });
+  return Boolean(row);
+}
+
 export async function evaluateCategoryBudgetForMonth(
   userId: string,
   category: string,
@@ -209,52 +272,100 @@ export async function evaluateCategoryBudgetForMonth(
   const hasExceeded = existing.some(
     (x: { alertType: string }) => x.alertType === EXCEEDED,
   );
+  const hasExceededNotification = hasExceeded
+    ? await hasBudgetNotification({
+        userId,
+        alertType: EXCEEDED,
+        budgetId: budget.id,
+        monthKey: mk,
+      })
+    : false;
+  const hasThresholdNotification = hasThreshold
+    ? await hasBudgetNotification({
+        userId,
+        alertType: THRESHOLD,
+        budgetId: budget.id,
+        monthKey: mk,
+      })
+    : false;
 
-  if (spent >= limit && !hasExceeded) {
-    const inserted = await insertAlertLogOrSkip({
-      budgetId: budget.id,
-      monthKey: mk,
-      alertType: EXCEEDED,
-    });
-    if (!inserted) return;
-    await createNotificationAndMaybeEmail({
-      userId,
-      userEmail: user.email,
-      currency,
-      budgetId: budget.id,
-      category,
-      monthKey: mk,
-      spent,
-      monthlyLimit: limit,
-      alertType: EXCEEDED,
-      emailAlertsEnabled: budget.emailAlertsEnabled,
-      thresholdPercent: budget.alertThresholdPercent,
-      emailNotificationsEnabled,
-    });
+  if (spent >= limit) {
+    if (!hasExceeded) {
+      await createAlertWithRollback({
+        budgetId: budget.id,
+        monthKey: mk,
+        alertType: EXCEEDED,
+        createPayload: {
+          userId,
+          userEmail: user.email,
+          currency,
+          budgetId: budget.id,
+          category,
+          monthKey: mk,
+          spent,
+          monthlyLimit: limit,
+          alertType: EXCEEDED,
+          emailAlertsEnabled: budget.emailAlertsEnabled,
+          thresholdPercent: budget.alertThresholdPercent,
+          emailNotificationsEnabled,
+        },
+      });
+    } else if (!hasExceededNotification) {
+      await createNotificationAndMaybeEmail({
+        userId,
+        userEmail: user.email,
+        currency,
+        budgetId: budget.id,
+        category,
+        monthKey: mk,
+        spent,
+        monthlyLimit: limit,
+        alertType: EXCEEDED,
+        emailAlertsEnabled: budget.emailAlertsEnabled,
+        thresholdPercent: budget.alertThresholdPercent,
+        emailNotificationsEnabled,
+      });
+    }
     return;
   }
 
-  if (spent >= thresholdAmount && !hasThreshold) {
-    const inserted = await insertAlertLogOrSkip({
-      budgetId: budget.id,
-      monthKey: mk,
-      alertType: THRESHOLD,
-    });
-    if (!inserted) return;
-    await createNotificationAndMaybeEmail({
-      userId,
-      userEmail: user.email,
-      currency,
-      budgetId: budget.id,
-      category,
-      monthKey: mk,
-      spent,
-      monthlyLimit: limit,
-      alertType: THRESHOLD,
-      emailAlertsEnabled: budget.emailAlertsEnabled,
-      thresholdPercent: budget.alertThresholdPercent,
-      emailNotificationsEnabled,
-    });
+  if (spent >= thresholdAmount) {
+    if (!hasThreshold) {
+      await createAlertWithRollback({
+        budgetId: budget.id,
+        monthKey: mk,
+        alertType: THRESHOLD,
+        createPayload: {
+          userId,
+          userEmail: user.email,
+          currency,
+          budgetId: budget.id,
+          category,
+          monthKey: mk,
+          spent,
+          monthlyLimit: limit,
+          alertType: THRESHOLD,
+          emailAlertsEnabled: budget.emailAlertsEnabled,
+          thresholdPercent: budget.alertThresholdPercent,
+          emailNotificationsEnabled,
+        },
+      });
+    } else if (!hasThresholdNotification) {
+      await createNotificationAndMaybeEmail({
+        userId,
+        userEmail: user.email,
+        currency,
+        budgetId: budget.id,
+        category,
+        monthKey: mk,
+        spent,
+        monthlyLimit: limit,
+        alertType: THRESHOLD,
+        emailAlertsEnabled: budget.emailAlertsEnabled,
+        thresholdPercent: budget.alertThresholdPercent,
+        emailNotificationsEnabled,
+      });
+    }
   }
 }
 
