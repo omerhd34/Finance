@@ -208,7 +208,7 @@ export default function SssIndexPage() {
               className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
             >
               <Link href="/kayit">
-                Ücretsiz başla
+                Kayıt ol
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>
             </Button>
