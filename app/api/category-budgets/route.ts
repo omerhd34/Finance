@@ -23,6 +23,7 @@ export async function GET() {
     });
     const items = await Promise.all(
       rows.map(async (b) => {
+        await evaluateCategoryBudgetForMonth(session.user!.id, b.category, now);
         const spentThisMonth = await getExpenseTotalForCategoryMonth(
           session.user!.id,
           b.category,
