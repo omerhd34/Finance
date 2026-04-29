@@ -6,7 +6,7 @@ type AdminSection = "uyeler" | "abonelikler";
 export function AdminSharedHeader({ active }: { active: AdminSection }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-3 justify-between">
         <div>
           <h1 className="text-base font-semibold">Admin Paneli</h1>
           <p className="text-sm text-muted-foreground">

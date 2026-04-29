@@ -2,8 +2,8 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
-  ADMIN_SESSION_COOKIE,
   getAdminEmailFromSessionToken,
+  ADMIN_SESSION_COOKIE,
 } from "@/lib/admin";
 import { AdminLoginForm } from "@/components/forms/admin-login-form";
 

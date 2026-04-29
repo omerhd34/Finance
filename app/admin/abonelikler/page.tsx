@@ -170,8 +170,8 @@ export default async function AdminAboneliklerPage({
       name: true,
       email: true,
       planTier: true,
-      premiumUntil: true,
       createdAt: true,
+      premiumUntil: true,
       shopierOrders: {
         select: {
           status: true,
