@@ -20,8 +20,8 @@ export async function GET(request: Request) {
       premiumUntil: { lt: now },
     },
     data: {
-      planTier: "free",
       premiumUntil: null,
+      planTier: "free",
     },
   });
 
