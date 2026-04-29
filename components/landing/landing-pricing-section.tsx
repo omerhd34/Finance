@@ -20,7 +20,8 @@ export function LandingPricingSection() {
             Sana uygun plan
           </h2>
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
-            Temel özellikler ücretsiz; gelişmiş AI Premium planında.
+            Ücretsiz planla finansını düzenlemeye hemen başla; gelişmiş AI
+            analizleri ve derin içgörüler için Premium planına geç.
           </p>
         </div>
 

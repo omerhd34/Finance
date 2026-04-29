@@ -66,8 +66,8 @@ export function LandingHero() {
 
             <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-white/92 sm:mt-8 sm:text-lg md:text-xl lg:mx-0">
               <strong className="font-semibold text-white">IQfinansAI</strong>{" "}
-              ile gelir ve giderlerinizi tek yerden izleyin, hedefler koyun ve
-              yapay zekâ destekli önerilerle tasarruf fırsatlarını kaçırmayın.
+              ile finansını tek ekrandan netleştir; harcamalarını anlık gör,
+              hedeflerine bilinçli ilerle ve akıllı önerilerle birikimini büyüt.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap lg:justify-start">
