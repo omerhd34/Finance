@@ -102,10 +102,10 @@ export function LandingHero() {
               {trustItems.map((label) => (
                 <li
                   key={label}
-                  className="flex w-full max-w-44 items-center justify-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-2 backdrop-blur-md sm:w-auto sm:max-w-none sm:bg-black/28 sm:py-1.5"
+                  className="flex w-full max-w-44 items-center justify-center gap-1 rounded-full border border-white/10 bg-black/35 px-3 py-2 backdrop-blur-md sm:w-auto sm:max-w-none sm:gap-2 sm:bg-black/28 sm:py-1.5"
                 >
                   <ShieldCheck
-                    className="h-3.5 w-3.5 shrink-0 text-emerald-400"
+                    className="hidden h-3.5 w-3.5 shrink-0 text-emerald-400 sm:block"
                     aria-hidden
                   />
                   <span className="whitespace-nowrap text-white/92">
