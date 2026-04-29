@@ -35,8 +35,8 @@ function getConfiguredAdmin() {
 }
 
 export function verifyAdminCredentials(
-  password: string,
   email: string,
+  password: string,
 ): boolean {
   const configured = getConfiguredAdmin();
   if (!configured.email || !configured.password) return false;
