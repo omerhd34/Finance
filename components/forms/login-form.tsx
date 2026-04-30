@@ -90,22 +90,39 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
             </div>
           </div>
         )}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <div className="space-y-2">
-            <Label htmlFor="email">E-posta</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
+            <div className="relative">
+              <Input
+                id="email"
+                type="email"
+                placeholder=" "
+                autoComplete="email"
+                className={`peer h-12 ${
+                  errors.email
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
+                {...register("email")}
+              />
+              <Label
+                htmlFor="email"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.email
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                E-posta
+              </Label>
+            </div>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Şifre</Label>
+            <div className="flex items-center justify-end">
               <Link
                 href="/sifremi-unuttum"
                 className="text-xs text-muted-foreground hover:text-primary hover:underline"
@@ -118,9 +135,24 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                className="pr-10"
+                placeholder=" "
+                className={`peer h-12 pr-10 ${
+                  errors.password
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
                 {...register("password")}
               />
+              <Label
+                htmlFor="password"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.password
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                Şifre
+              </Label>
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -135,11 +167,6 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
           </div>
           {errors.root && (
             <p className="text-sm text-destructive">{errors.root.message}</p>

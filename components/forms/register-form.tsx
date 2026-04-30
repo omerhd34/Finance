@@ -135,36 +135,86 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
             </div>
           </div>
         )}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <div className="space-y-2">
-            <Label htmlFor="name">Ad ve Soyad</Label>
-            <Input id="name" autoComplete="name" {...register("name")} />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
+            <div className="relative">
+              <Input
+                id="name"
+                autoComplete="name"
+                placeholder=" "
+                className={`peer h-12 ${
+                  errors.name
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
+                {...register("name")}
+              />
+              <Label
+                htmlFor="name"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.name
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                Ad ve Soyad
+              </Label>
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">E-posta</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
+            <div className="relative">
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder=" "
+                className={`peer h-12 ${
+                  errors.email
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
+                {...register("email")}
+              />
+              <Label
+                htmlFor="email"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.email
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                E-posta
+              </Label>
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Şifre</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
-                className="pr-10"
+                placeholder=" "
+                className={`peer h-12 pr-10 ${
+                  errors.password
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
                 {...register("password")}
               />
+              <Label
+                htmlFor="password"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.password
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                Şifre
+              </Label>
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -179,22 +229,31 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Şifre tekrar</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
-                className="pr-10"
+                placeholder=" "
+                className={`peer h-12 pr-10 ${
+                  errors.confirmPassword
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
                 {...register("confirmPassword")}
               />
+              <Label
+                htmlFor="confirmPassword"
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                  errors.confirmPassword
+                    ? "text-destructive peer-focus:text-destructive"
+                    : "text-muted-foreground peer-focus:text-primary"
+                }`}
+              >
+                Şifre tekrar
+              </Label>
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -217,11 +276,6 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 )}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="text-sm text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
           </div>
           {errors.root && (
             <p className="text-sm text-destructive">{errors.root.message}</p>
