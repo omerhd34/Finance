@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut, useSession } from "next-auth/react";
@@ -68,6 +68,10 @@ export default function SettingsPage() {
   const [latestOrder, setLatestOrder] = useState<LatestShopierOrder | null>(
     null,
   );
+  const [awaitingCheckoutCompletion, setAwaitingCheckoutCompletion] =
+    useState(false);
+  const checkoutWindowRef = useRef<Window | null>(null);
+  const checkoutWindowWatchRef = useRef<number | null>(null);
   const currentPlan = normalizePlanTier(session?.user?.planTier);
 
   const deleteForm = useForm<DeleteFormValues>({
@@ -107,11 +111,22 @@ export default function SettingsPage() {
   useEffect(() => {
     if (latestOrder?.status !== "PAID") return;
     if (currentPlan === "premium") return;
+    setAwaitingCheckoutCompletion(false);
     void (async () => {
       await updateSession({ reloadUser: true } as Record<string, unknown>);
       router.refresh();
     })();
   }, [currentPlan, latestOrder?.status, router, updateSession]);
+
+  useEffect(() => {
+    return () => {
+      if (checkoutWindowWatchRef.current != null) {
+        window.clearInterval(checkoutWindowWatchRef.current);
+      }
+      checkoutWindowWatchRef.current = null;
+      checkoutWindowRef.current = null;
+    };
+  }, []);
 
   async function onNotificationsEnabledChange(checked: boolean) {
     setNotifSaving(true);
@@ -162,7 +177,24 @@ export default function SettingsPage() {
       const opened = window.open(checkoutUrl, "_blank");
       if (opened) {
         opened.opener = null;
+        checkoutWindowRef.current = opened;
+        setAwaitingCheckoutCompletion(true);
+        if (checkoutWindowWatchRef.current != null) {
+          window.clearInterval(checkoutWindowWatchRef.current);
+        }
+        checkoutWindowWatchRef.current = window.setInterval(() => {
+          const popup = checkoutWindowRef.current;
+          if (!popup || popup.closed) {
+            setAwaitingCheckoutCompletion(false);
+            if (checkoutWindowWatchRef.current != null) {
+              window.clearInterval(checkoutWindowWatchRef.current);
+              checkoutWindowWatchRef.current = null;
+            }
+            checkoutWindowRef.current = null;
+          }
+        }, 1000);
       } else {
+        setAwaitingCheckoutCompletion(true);
         window.location.assign(checkoutUrl);
       }
     } catch (e) {
@@ -424,7 +456,9 @@ export default function SettingsPage() {
               Shopier ödeme sayfası hazırlanıyor…
             </p>
           ) : null}
-          {latestOrder?.status === "PENDING" && currentPlan !== "premium" ? (
+          {latestOrder?.status === "PENDING" &&
+          currentPlan !== "premium" &&
+          awaitingCheckoutCompletion ? (
             <p className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-center text-sm text-amber-700 dark:text-amber-300">
               Ödeme tamamlandıysa bu ekran otomatik güncellenecektir.
             </p>
