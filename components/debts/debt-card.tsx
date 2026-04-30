@@ -2,7 +2,11 @@
 
 import { differenceInCalendarDays } from "date-fns";
 import { debtProgressPercent, debtRemaining } from "@/lib/debt-remaining";
-import { formatDateTR, formatMoney } from "@/lib/utils";
+import {
+  currencySymbolLabel,
+  formatDateTR,
+  formatMoneyAmount,
+} from "@/lib/utils";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +37,9 @@ export function DebtCard({
 }: Props) {
   const rem = debtRemaining(d);
   const settled = rem <= 0;
+  const currencySymbol = currencySymbolLabel(currency);
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
   const daysLeft = d.dueDate
     ? differenceInCalendarDays(new Date(d.dueDate), new Date())
     : null;
@@ -42,25 +49,28 @@ export function DebtCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="line-clamp-2 pr-2">{d.counterparty}</CardTitle>
-          {settled && (
-            <Badge variant="secondary" className="shrink-0">
-              Kapandı
-            </Badge>
-          )}
+          <div className="flex items-center gap-1.5">
+            <span className={currencyChipClass}>{currencySymbol}</span>
+            {settled && (
+              <Badge variant="secondary" className="shrink-0">
+                Kapandı
+              </Badge>
+            )}
+          </div>
         </div>
         <CardDescription>
-          Kalan: {formatMoney(rem, currency)} · Toplam:{" "}
-          {formatMoney(d.totalAmount, currency)}
+          Kalan: {formatMoneyAmount(rem, currency)} - Toplam:{" "}
+          {formatMoneyAmount(d.totalAmount, currency)}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Progress value={debtProgressPercent(d)} />
         <p className="text-xs text-muted-foreground">
-          Ödenen: {formatMoney(d.paidAmount, currency)}
+          Ödenen: {formatMoneyAmount(d.paidAmount, currency)}
           {d.dueDate
-            ? ` · Vade: ${formatDateTR(d.dueDate)}${
+            ? ` - Vade: ${formatDateTR(d.dueDate)}${
                 !settled && daysLeft !== null
-                  ? ` · ${daysLeft >= 0 ? `${daysLeft} gün kaldı` : `${Math.abs(daysLeft)} gün geçti`}`
+                  ? ` - ${daysLeft >= 0 ? `${daysLeft} gün kaldı` : `${Math.abs(daysLeft)} gün geçti`}`
                   : ""
               }`
             : ""}

@@ -12,13 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   InvestmentPositionStats,
   type InvestmentAggregate,
@@ -188,23 +182,26 @@ export function DashboardInvestmentSection({
         return (
           <Card
             key={card.key}
-            className="min-w-0 border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+            className="min-w-0 overflow-hidden border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10"
           >
-            <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">
-              <div className="min-w-0 space-y-2">
-                <CardTitle className="flex items-center gap-3 text-lg leading-tight">
-                  <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ${card.iconClassName}`}
-                  >
-                    <Icon className="h-5 w-5" strokeWidth={2} aria-hidden />
-                  </span>
-                  <span className="min-w-0">{card.title}</span>
-                </CardTitle>
-                <div className="min-h-6">
-                  <CardDescription>{card.description}</CardDescription>
+            <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
+              <div className="flex min-w-0 gap-3.5">
+                <div
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${card.iconClassName}`}
+                  aria-hidden
+                >
+                  <Icon className="h-5 w-5" strokeWidth={2} />
+                </div>
+                <div className="min-w-0 space-y-1.5 pt-0.5">
+                  <h3 className="text-lg font-semibold leading-tight tracking-tight">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm leading-snug text-muted-foreground">
+                    {card.description}
+                  </p>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 items-start gap-2">
                 {visibleCardCount > 1 ? (
                   <>
                     <Button
@@ -236,7 +233,7 @@ export function DashboardInvestmentSection({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="shrink-0"
+                  className="shrink-0 gap-1.5"
                   asChild
                 >
                   <Link href="/yatirimlar" className="gap-1.5">
@@ -248,13 +245,13 @@ export function DashboardInvestmentSection({
                   </Link>
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent className="min-w-0 px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
+            </div>
+            <div className="min-w-0 p-4 sm:p-6">
               <InvestmentPositionStats
                 summary={card.summary}
                 currency={currency}
               />
-            </CardContent>
+            </div>
           </Card>
         );
       })}

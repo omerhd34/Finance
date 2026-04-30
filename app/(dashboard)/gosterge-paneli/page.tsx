@@ -27,6 +27,8 @@ import type { RecurringRule } from "@/types/recurring";
 import type { Transaction } from "@/types/transaction";
 import {
   expenseByCategoryForLastNMonths,
+  formatPeriodRangeLabel,
+  getLastNMonthsPeriodRange,
   lastNMonthsBars,
   sumByTypeInRange,
 } from "@/lib/dashboard-stats";
@@ -39,6 +41,7 @@ import { normalizePlanTier } from "@/lib/plan-tier";
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const monthStartDay = useAppSelector((s) => s.auth.user?.monthStartDay ?? 1);
   const planPremium =
     normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
     "premium";
@@ -133,8 +136,13 @@ export default function DashboardPage() {
       monthEnd,
     );
     const net = totalIncome - totalExpense;
-    const bars = lastNMonthsBars(items, barsChartMonths, now);
-    const pie = expenseByCategoryForLastNMonths(items, pieChartMonths, now);
+    const bars = lastNMonthsBars(items, barsChartMonths, now, monthStartDay);
+    const pie = expenseByCategoryForLastNMonths(
+      items,
+      pieChartMonths,
+      now,
+      monthStartDay,
+    );
     const recent = [...items]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5);
@@ -146,7 +154,33 @@ export default function DashboardPage() {
       pie,
       recent,
     };
-  }, [items, monthStart, monthEnd, now, barsChartMonths, pieChartMonths]);
+  }, [
+    items,
+    monthStart,
+    monthEnd,
+    now,
+    barsChartMonths,
+    pieChartMonths,
+    monthStartDay,
+  ]);
+
+  const barsRangeLabel = useMemo(() => {
+    const { start, end } = getLastNMonthsPeriodRange(
+      barsChartMonths,
+      now,
+      monthStartDay,
+    );
+    return formatPeriodRangeLabel(start, end);
+  }, [barsChartMonths, now, monthStartDay]);
+
+  const pieRangeLabel = useMemo(() => {
+    const { start, end } = getLastNMonthsPeriodRange(
+      pieChartMonths,
+      now,
+      monthStartDay,
+    );
+    return formatPeriodRangeLabel(start, end);
+  }, [pieChartMonths, now, monthStartDay]);
 
   const investmentPnl = useMemo(
     () => totalInvestmentPnlTry(investmentPositions, liveQuotes),
@@ -241,6 +275,8 @@ export default function DashboardPage() {
         pie={stats.pie}
         barsMonths={barsChartMonths}
         pieMonths={pieChartMonths}
+        barsRangeLabel={barsRangeLabel}
+        pieRangeLabel={pieRangeLabel}
         onBarsMonthsChange={setBarsChartMonths}
         onPieMonthsChange={setPieChartMonths}
       />

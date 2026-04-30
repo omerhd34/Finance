@@ -136,40 +136,40 @@ const SCORE_BANDS: ScoreBand[] = [
     min: 0,
     max: 25,
     level: "zayif",
-    insight: "Finansal risk kritik seviyede; acil gider kisma plani olustur.",
+    insight: "Finansal risk kritik seviyede; acil gider kısma planı oluştur.",
   },
   {
     min: 25,
     max: 40,
     level: "zayif",
     insight:
-      "Kirilgan bir denge var; borc baskisini ve zorunlu harcamayi azalt.",
+      "Kırılgan bir denge var; borç baskısını ve zorunlu harcamayı azalt.",
   },
   {
     min: 40,
     max: 55,
     level: "gelisiyor",
-    insight: "Ilerleme basladi; duzenli birikim ve butce disiplini kur.",
+    insight: "İlerleme başladı; düzenli birikim ve bütçe disiplinini kur.",
   },
   {
     min: 55,
     max: 70,
     level: "gelisiyor",
-    insight: "Denge kuruluyor; aylik net fazlayi istikrarli sekilde buyut.",
+    insight: "Denge kuruluyor; aylık net fazlayı istikrarlı şekilde büyüt.",
   },
   {
     min: 70,
     max: 85,
     level: "iyi",
     insight:
-      "Mali denge guclu; borc ve gider optimizasyonuyla ust banda cikabilirsin.",
+      "Mali denge güçlü; borç ve gider optimizasyonuyla üst banda çıkabilirsin.",
   },
   {
     min: 85,
     max: 100,
     level: "cok-iyi",
     insight:
-      "Nakit akisin saglikli; disiplini koruyup uzun vadeli hedeflere odaklan.",
+      "Nakit akışı sağlıklı; disiplini koruyup uzun vadeli hedeflere odaklan.",
   },
 ];
 

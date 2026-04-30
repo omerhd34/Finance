@@ -2,13 +2,7 @@ import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -33,27 +27,41 @@ export function DashboardRecentTransactionsCard({
   transactions,
   currency,
 }: Props) {
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <div className="min-w-0 space-y-1.5">
-          <CardTitle className="flex items-center gap-2">
-            <History
-              className="h-5 w-5 shrink-0 text-muted-foreground"
-              aria-hidden
-            />
-            Son işlemler
-          </CardTitle>
-          <CardDescription>En son 5 işlem</CardDescription>
+    <Card className="overflow-hidden">
+      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
+        <div className="flex min-w-0 gap-3.5">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
+            aria-hidden
+          >
+            <History className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 space-y-1.5 pt-0.5">
+            <h3 className="text-lg font-semibold leading-tight tracking-tight">
+              Son işlemler
+            </h3>
+            <p className="text-sm leading-snug text-muted-foreground">
+              En son 5 işlem
+            </p>
+          </div>
         </div>
-        <Button variant="outline" size="sm" className="shrink-0" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="shrink-0 gap-1.5"
+          asChild
+        >
           <Link href="/islemler" className="gap-1.5">
             Tümünü gör
             <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
           </Link>
         </Button>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-4 sm:p-6">
         <Table>
           <TableHeader>
             <TableRow>
@@ -62,7 +70,12 @@ export function DashboardRecentTransactionsCard({
               <TableHead>Açıklama</TableHead>
               <TableHead>Tür</TableHead>
               <TableHead className="text-right">
-                Tutar ({currencySymbolLabel(currency)})
+                <div className="flex items-center justify-end gap-2">
+                  Tutar
+                  <span className={currencyChipClass}>
+                    {currencySymbolLabel(currency)}
+                  </span>
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -107,7 +120,7 @@ export function DashboardRecentTransactionsCard({
             )}
           </TableBody>
         </Table>
-      </CardContent>
+      </div>
     </Card>
   );
 }

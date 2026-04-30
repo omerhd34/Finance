@@ -7,7 +7,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { EXPENSE_CATEGORIES } from "@/lib/categories";
-import { formatMoney } from "@/lib/utils";
+import { formatMoneyAmount } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -63,6 +63,8 @@ export function BudgetsClient({ currency }: Props) {
   const [monthlyLimit, setMonthlyLimit] = useState("");
   const [threshold, setThreshold] = useState("80");
   const [emailAlerts, setEmailAlerts] = useState(true);
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -215,7 +217,12 @@ export function BudgetsClient({ currency }: Props) {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-medium">{b.category}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{b.category}</p>
+                        <span className={currencyChipClass}>
+                          {currencySymbolLabel(currency)}
+                        </span>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {b.monthKey} dönemi
                       </p>
@@ -247,8 +254,8 @@ export function BudgetsClient({ currency }: Props) {
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Harcama</span>
                       <span>
-                        {formatMoney(b.spentThisMonth, currency)} /{" "}
-                        {formatMoney(b.monthlyLimit, currency)}
+                        {formatMoneyAmount(b.spentThisMonth, currency)} /{" "}
+                        {formatMoneyAmount(b.monthlyLimit, currency)}
                       </span>
                     </div>
                     <Progress

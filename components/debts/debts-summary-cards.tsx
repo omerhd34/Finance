@@ -19,12 +19,18 @@ export function DebtsSummaryCards({
   totalPayable,
   currency,
 }: Props) {
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Card>
         <CardHeader className="gap-3 p-6 space-y-0">
-          <CardDescription>
-            Kalan toplam alacak ({currencySymbolLabel(currency)})
+          <CardDescription className="flex items-center gap-2">
+            <span>Kalan toplam alacak</span>
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-emerald-500 tabular-nums">
             {formatMoneyAmount(totalReceivable, currency)}
@@ -33,8 +39,11 @@ export function DebtsSummaryCards({
       </Card>
       <Card>
         <CardHeader className="gap-3 p-6 space-y-0">
-          <CardDescription>
-            Kalan toplam borç ({currencySymbolLabel(currency)})
+          <CardDescription className="flex items-center gap-2">
+            <span>Kalan toplam borç</span>
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-amber-500 tabular-nums">
             {formatMoneyAmount(totalPayable, currency)}
@@ -44,3 +53,4 @@ export function DebtsSummaryCards({
     </div>
   );
 }
+ 

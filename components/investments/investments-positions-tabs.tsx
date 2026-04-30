@@ -58,6 +58,8 @@ export function InvestmentsPositionsTabs({
 }: Props) {
   const tableColSpan = tab === "GOLD" ? 7 : 8;
   const tabHasTitleAndCode = tab !== "GOLD";
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
 
   return (
     <Tabs value={tab} onValueChange={(v) => onTabChange(v as TabValue)}>
@@ -78,16 +80,26 @@ export function InvestmentsPositionsTabs({
       <TabsContent value={tab} className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">
-              {tab === "GOLD"
-                ? "Altın kayıtları"
-                : tab === "STOCK"
-                  ? "Hisse kayıtları"
-                  : tab === "FX"
-                    ? "Döviz kayıtları"
-                    : tab === "CRYPTO"
-                      ? "Kripto kayıtları"
-                      : "Kayıtlar"}
+            <CardTitle className="flex items-center gap-2 text-base">
+              <span>
+                {tab === "GOLD"
+                  ? "Altın kayıtları"
+                  : tab === "STOCK"
+                    ? "Hisse kayıtları"
+                    : tab === "FX"
+                      ? "Döviz kayıtları"
+                      : tab === "CRYPTO"
+                        ? "Kripto kayıtları"
+                        : "Kayıtlar"}
+              </span>
+              {tab === "GOLD" ||
+              tab === "FX" ||
+              tab === "STOCK" ||
+              tab === "CRYPTO" ? (
+                <span className={currencyChipClass}>
+                  {currencySymbolLabel(currency)}
+                </span>
+              ) : null}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -111,18 +123,10 @@ export function InvestmentsPositionsTabs({
                   {tab === "GOLD" && <TableHead>Altın türü</TableHead>}
                   {tabHasTitleAndCode && <TableHead>Kod</TableHead>}
                   <TableHead className="text-right">Miktar</TableHead>
-                  <TableHead className="text-right">
-                    Alış fiyatı ({currencySymbolLabel(currency)})
-                  </TableHead>
-                  <TableHead className="text-right">
-                    Güncel fiyat ({currencySymbolLabel(currency)})
-                  </TableHead>
-                  <TableHead className="text-right">
-                    Değer ({currencySymbolLabel(currency)})
-                  </TableHead>
-                  <TableHead className="text-right">
-                    K/Z ({currencySymbolLabel(currency)})
-                  </TableHead>
+                  <TableHead className="text-right">Alış fiyatı</TableHead>
+                  <TableHead className="text-right">Güncel fiyat</TableHead>
+                  <TableHead className="text-right">Değer</TableHead>
+                  <TableHead className="text-right">Kar/Zarar</TableHead>
                   <TableHead className="w-[100px]" />
                 </TableRow>
               </TableHeader>

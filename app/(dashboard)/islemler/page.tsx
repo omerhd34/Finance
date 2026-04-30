@@ -23,6 +23,8 @@ import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { apiClient } from "@/lib/api-client";
 import {
   expenseByCategoryForLastNMonths,
+  formatPeriodRangeLabel,
+  getLastNMonthsPeriodRange,
   lastNMonthsBars,
 } from "@/lib/dashboard-stats";
 import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
@@ -40,6 +42,7 @@ function TransactionsPageContent() {
   const { items, loading, error, filters, total, page, pageSize } =
     useAppSelector((s) => s.transactions);
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const monthStartDay = useAppSelector((s) => s.auth.user?.monthStartDay ?? 1);
 
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
@@ -75,13 +78,35 @@ function TransactionsPageContent() {
 
   const chartNow = useMemo(() => new Date(), []);
   const transactionsChartBars = useMemo(
-    () => lastNMonthsBars(chartItems, barsChartMonths, chartNow),
-    [chartItems, barsChartMonths, chartNow],
+    () => lastNMonthsBars(chartItems, barsChartMonths, chartNow, monthStartDay),
+    [chartItems, barsChartMonths, chartNow, monthStartDay],
   );
   const transactionsChartPie = useMemo(
-    () => expenseByCategoryForLastNMonths(chartItems, pieChartMonths, chartNow),
-    [chartItems, pieChartMonths, chartNow],
+    () =>
+      expenseByCategoryForLastNMonths(
+        chartItems,
+        pieChartMonths,
+        chartNow,
+        monthStartDay,
+      ),
+    [chartItems, pieChartMonths, chartNow, monthStartDay],
   );
+  const barsRangeLabel = useMemo(() => {
+    const { start, end } = getLastNMonthsPeriodRange(
+      barsChartMonths,
+      chartNow,
+      monthStartDay,
+    );
+    return formatPeriodRangeLabel(start, end);
+  }, [barsChartMonths, chartNow, monthStartDay]);
+  const pieRangeLabel = useMemo(() => {
+    const { start, end } = getLastNMonthsPeriodRange(
+      pieChartMonths,
+      chartNow,
+      monthStartDay,
+    );
+    return formatPeriodRangeLabel(start, end);
+  }, [pieChartMonths, chartNow, monthStartDay]);
 
   useEffect(() => {
     void (async () => {
@@ -238,6 +263,8 @@ function TransactionsPageContent() {
         pie={transactionsChartPie}
         barsMonths={barsChartMonths}
         pieMonths={pieChartMonths}
+        barsRangeLabel={barsRangeLabel}
+        pieRangeLabel={pieRangeLabel}
         onBarsMonthsChange={setBarsChartMonths}
         onPieMonthsChange={setPieChartMonths}
         loading={chartLoading}

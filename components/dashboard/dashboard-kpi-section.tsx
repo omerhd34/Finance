@@ -52,7 +52,8 @@ export function DashboardKpiSection({
         icon={Wallet}
         iconClassName="bg-emerald-500/15 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400"
         glowClassName="bg-emerald-500/25"
-        label={`Toplam Gelir (${currencySymbolLabel(currency)})`}
+        label="Toplam Gelir"
+        currencyTag={currencySymbolLabel(currency)}
         value={formatMoneyAmount(totalIncome, currency)}
         valueClassName="text-emerald-600 dark:text-emerald-400"
       />
@@ -60,7 +61,8 @@ export function DashboardKpiSection({
         icon={Receipt}
         iconClassName="bg-rose-500/15 text-rose-600 ring-rose-500/25 dark:text-rose-400"
         glowClassName="bg-rose-500/20"
-        label={`Toplam Gider (${currencySymbolLabel(currency)})`}
+        label="Toplam Gider"
+        currencyTag={currencySymbolLabel(currency)}
         value={formatMoneyAmount(totalExpense, currency)}
         valueClassName="text-rose-600 dark:text-rose-400"
       />
@@ -68,7 +70,8 @@ export function DashboardKpiSection({
         icon={Scale}
         iconClassName="bg-sky-500/15 text-sky-700 ring-sky-500/25 dark:text-sky-300"
         glowClassName="bg-sky-500/15"
-        label={`Net Bakiye (${currencySymbolLabel(currency)})`}
+        label="Net Bakiye"
+        currencyTag={currencySymbolLabel(currency)}
         value={formatMoneyAmount(net, currency)}
         valueClassName="text-foreground"
       />
@@ -77,7 +80,8 @@ export function DashboardKpiSection({
           icon={HandCoins}
           iconClassName="bg-amber-500/15 text-amber-700 ring-amber-500/25 dark:text-amber-300"
           glowClassName="bg-amber-500/20"
-          label={`Borç/Alacak Neti (${currencySymbolLabel(currency)})`}
+          label="Borç/Alacak Neti"
+          currencyTag={currencySymbolLabel(currency)}
           value={
             <>
               {debtNetBalance > 0 ? "+" : ""}
@@ -98,7 +102,8 @@ export function DashboardKpiSection({
           icon={LineChart}
           iconClassName="bg-violet-500/15 text-violet-700 ring-violet-500/25 dark:text-violet-300"
           glowClassName="bg-violet-500/20"
-          label={`Yatırım Kar/Zarar (${currencySymbolLabel(currency)})`}
+          label="Yatırım Kar/Zarar"
+          currencyTag={currencySymbolLabel(currency)}
           value={
             <>
               {investmentPnl > 0 ? "+" : ""}
@@ -119,7 +124,8 @@ export function DashboardKpiSection({
           icon={Activity}
           iconClassName="bg-lime-500/15 text-lime-700 ring-lime-500/30 dark:text-lime-300"
           glowClassName="bg-lime-500/25"
-          label="Finansal Sağlık Skoru (%)"
+          label="Finansal Sağlık Skoru"
+          currencyTag="%"
           value={
             <div className="space-y-0.5">
               <div>{financialHealth.score}</div>

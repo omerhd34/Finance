@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt } from "@/lib/prisma";
+import { evaluateDebtDueAlerts } from "@/lib/debt-due-alerts";
 import { debtCreateSchema } from "@/lib/validations";
 
 export async function GET() {
@@ -10,6 +11,7 @@ export async function GET() {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    await evaluateDebtDueAlerts(session.user.id);
     const items = await debt.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },

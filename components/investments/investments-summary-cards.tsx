@@ -21,12 +21,18 @@ export function InvestmentsSummaryCards({
   pnl,
   currency,
 }: Props) {
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       <Card>
         <CardHeader className="gap-3 p-6 space-y-0">
-          <CardDescription>
-            Toplam maliyet ({currencySymbolLabel(currency)})
+          <CardDescription className="flex items-center gap-2">
+            <span>Toplam maliyet</span>
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-amber-600 tabular-nums dark:text-amber-400">
             {formatMoneyAmount(totalCost, currency)}
@@ -35,8 +41,11 @@ export function InvestmentsSummaryCards({
       </Card>
       <Card>
         <CardHeader className="gap-3 p-6 space-y-0">
-          <CardDescription>
-            Güncel değer ({currencySymbolLabel(currency)})
+          <CardDescription className="flex items-center gap-2">
+            <span>Güncel değer</span>
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold leading-none tracking-tight text-sky-600 tabular-nums dark:text-sky-400">
             {formatMoneyAmount(totalValue, currency)}
@@ -45,8 +54,11 @@ export function InvestmentsSummaryCards({
       </Card>
       <Card>
         <CardHeader className="gap-3 p-6 space-y-0">
-          <CardDescription>
-            Kar / zarar ({currencySymbolLabel(currency)})
+          <CardDescription className="flex items-center gap-2">
+            <span>Kar / Zarar</span>
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
           </CardDescription>
           <CardTitle
             className={`text-2xl font-semibold leading-none tracking-tight tabular-nums ${

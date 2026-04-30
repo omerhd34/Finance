@@ -2,13 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, CalendarClock, Repeat2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   RECURRING_FREQUENCY_LABEL,
   RECURRING_MODE_LABEL,
@@ -31,31 +25,46 @@ export function DashboardRecurringCard({
   upcomingRecurring,
   currency,
 }: Props) {
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5">
-        <div className="min-w-0 space-y-1.5">
-          <CardTitle className="flex items-center gap-2.5">
-            <CalendarClock
-              className="h-5 w-5 shrink-0 text-muted-foreground"
-              aria-hidden
-            />
-            Tekrarlayan işlemler
-          </CardTitle>
-          <CardDescription>
-            {activeRecurringCount === 0
-              ? "Aktif tekrarlayan kural yok"
-              : `${activeRecurringCount} aktif kural`}
-          </CardDescription>
+    <Card className="overflow-hidden">
+      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
+        <div className="flex min-w-0 gap-3.5">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
+            aria-hidden
+          >
+            <CalendarClock className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 space-y-1.5 pt-0.5">
+            <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold leading-tight tracking-tight">
+              <span>Tekrarlayan işlemler</span>
+              <span className={currencyChipClass}>
+                {currencySymbolLabel(currency)}
+              </span>
+            </h3>
+            <p className="text-sm leading-snug text-muted-foreground">
+              {activeRecurringCount === 0
+                ? "Aktif tekrarlayan kural yok"
+                : `${activeRecurringCount} aktif kural`}
+            </p>
+          </div>
         </div>
-        <Button variant="outline" size="sm" className="shrink-0" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="shrink-0 gap-1.5"
+          asChild
+        >
           <Link href="/tekrarlayanlar" className="gap-1.5">
             Tümünü gör
             <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
           </Link>
         </Button>
-      </CardHeader>
-      <CardContent className="px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
+      </div>
+      <div className="p-4 sm:p-6">
         {upcomingRecurring.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Henüz tekrarlayan kural yok veya tüm kurallar pasif.{" "}
@@ -82,7 +91,7 @@ export function DashboardRecurringCard({
                       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-x-6">
                         <div className="min-w-0 space-y-0.5">
                           <p className="font-semibold leading-snug">
-                            {rule.category} ({currencySymbolLabel(currency)})
+                            {rule.category}
                           </p>
                           {rule.description ? (
                             <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
@@ -122,7 +131,7 @@ export function DashboardRecurringCard({
                           <span className="text-muted-foreground/90">
                             Sonraki
                           </span>{" "}
-                          · {formatDateShort(rule.nextDueDate)}
+                          - {formatDateShort(rule.nextDueDate)}
                         </p>
                       </div>
                     </div>
@@ -132,7 +141,7 @@ export function DashboardRecurringCard({
             ))}
           </ul>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

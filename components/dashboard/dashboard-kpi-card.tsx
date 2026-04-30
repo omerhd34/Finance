@@ -15,6 +15,7 @@ export function DashboardKpiCard({
   label,
   value,
   valueClassName,
+  currencyTag,
 }: {
   icon: LucideIcon;
   iconClassName: string;
@@ -22,6 +23,7 @@ export function DashboardKpiCard({
   label: ReactNode;
   value: ReactNode;
   valueClassName?: string;
+  currencyTag?: ReactNode;
 }) {
   return (
     <Card
@@ -39,6 +41,11 @@ export function DashboardKpiCard({
           glowClassName,
         )}
       />
+      {currencyTag ? (
+        <div className="absolute right-3 top-3 z-10 inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+          {currencyTag}
+        </div>
+      ) : null}
       <CardHeader className="relative space-y-0 p-5 pb-4">
         <div className="flex items-start gap-4">
           <div

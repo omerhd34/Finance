@@ -204,6 +204,17 @@ export function NotificationsPopover() {
                             Bütçelere git
                           </Link>
                         )}
+                        {(n.type === "debt_due_soon" ||
+                          n.type === "debt_due_today" ||
+                          n.type === "debt_overdue") && (
+                          <Link
+                            href="/borc-ve-alacak"
+                            className="mt-2 inline-block text-xs font-medium text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Borç ve Alacak&apos;a git
+                          </Link>
+                        )}
                       </button>
                       <Button
                         type="button"

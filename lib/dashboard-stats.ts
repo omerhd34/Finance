@@ -1,9 +1,11 @@
 import type { Transaction } from "@/types/transaction";
 import {
-  eachMonthOfInterval,
+  addMonths,
   endOfMonth,
   format,
+  isBefore,
   startOfMonth,
+  startOfDay,
   subMonths,
 } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -15,35 +17,86 @@ export type MonthlyBarRow = {
   gider: number;
 };
 
+export type CategorySlice = { name: string; value: number };
+
+function resolveCompletedPeriodEnd(now: Date, monthStartDay: number): Date {
+  const currentPeriodStart = startOfDay(
+    new Date(now.getFullYear(), now.getMonth(), monthStartDay),
+  );
+  return isBefore(now, currentPeriodStart)
+    ? subMonths(currentPeriodStart, 1)
+    : currentPeriodStart;
+}
+
+export function getLastNMonthsPeriodRange(
+  n: number,
+  now: Date = new Date(),
+  monthStartDay = 1,
+): { start: Date; end: Date } {
+  const safeN = Math.max(1, Math.trunc(n));
+  const safeMonthStartDay = Math.min(
+    28,
+    Math.max(1, Math.trunc(monthStartDay)),
+  );
+  const currentPeriodStart = resolveCompletedPeriodEnd(now, safeMonthStartDay);
+  const start = subMonths(currentPeriodStart, safeN - 1);
+  const end = now;
+  return { start, end };
+}
+
+export function formatPeriodRangeLabel(
+  start: Date,
+  end: Date,
+  locale = "tr-TR",
+): string {
+  const includeYear = start.getFullYear() !== end.getFullYear();
+  const formatter = new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    ...(includeYear ? { year: "numeric" } : {}),
+  });
+  return `${formatter.format(start)} - ${formatter.format(end)}`;
+}
+
 export function lastNMonthsBars(
   transactions: Transaction[],
   n: number,
   now: Date = new Date(),
+  monthStartDay = 1,
 ): MonthlyBarRow[] {
-  const start = startOfMonth(subMonths(now, n - 1));
-  const end = endOfMonth(now);
-  const months = eachMonthOfInterval({ start, end });
-  return months.map((m) => {
-    const ms = startOfMonth(m).getTime();
-    const me = endOfMonth(m).getTime();
+  const safeN = Math.max(1, Math.trunc(n));
+  const { start: rangeStart, end: rangeEnd } = getLastNMonthsPeriodRange(
+    safeN,
+    now,
+    monthStartDay,
+  );
+  const periods = Array.from({ length: safeN }, (_, i) => {
+    const start = addMonths(rangeStart, i);
+    const end = i === safeN - 1 ? rangeEnd : addMonths(rangeStart, i + 1);
+    return { start, end, isLast: i === safeN - 1 };
+  });
+
+  return periods.map((period) => {
+    const startMs = period.start.getTime();
+    const endMs = period.end.getTime();
     let gelir = 0;
     let gider = 0;
     for (const t of transactions) {
       const d = new Date(t.date).getTime();
-      if (d < ms || d > me) continue;
+      if (period.isLast) {
+        if (d < startMs || d > endMs) continue;
+      } else if (d < startMs || d >= endMs) continue;
       if (t.type === "income") gelir += t.amount;
       else gider += t.amount;
     }
     return {
-      key: format(m, "yyyy-MM"),
-      label: format(m, "MMMM", { locale: tr }),
+      key: format(period.start, "yyyy-MM-dd"),
+      label: format(period.start, "MMMM", { locale: tr }),
       gelir,
       gider,
     };
   });
 }
-
-export type CategorySlice = { name: string; value: number };
 
 export function expenseByCategoryForMonth(
   transactions: Transaction[],
@@ -65,11 +118,15 @@ export function expenseByCategoryForLastNMonths(
   transactions: Transaction[],
   n: number,
   now: Date = new Date(),
+  monthStartDay = 1,
 ): CategorySlice[] {
-  const start = startOfMonth(subMonths(now, n - 1));
-  const end = endOfMonth(now);
-  const s = start.getTime();
-  const e = end.getTime();
+  const { start: periodStart, end: rangeEnd } = getLastNMonthsPeriodRange(
+    n,
+    now,
+    monthStartDay,
+  );
+  const s = periodStart.getTime();
+  const e = rangeEnd.getTime();
   const map = new Map<string, number>();
   for (const t of transactions) {
     if (t.type !== "expense") continue;

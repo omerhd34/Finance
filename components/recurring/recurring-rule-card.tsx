@@ -4,7 +4,7 @@ import {
   RECURRING_FREQUENCY_LABEL,
   RECURRING_MODE_LABEL,
 } from "@/lib/recurring-labels";
-import { formatDateTR, formatMoney } from "@/lib/utils";
+import { currencySymbolLabel, formatDateTR, formatMoney } from "@/lib/utils";
 import type { RecurringRule } from "@/types/recurring";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,9 @@ export function RecurringRuleCard({
   onEdit,
   onDelete,
 }: Props) {
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
     <Card>
       <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -40,11 +43,14 @@ export function RecurringRuleCard({
           </p>
           <p className="text-sm text-muted-foreground">
             Sonraki: {formatDateTR(r.nextDueDate)}
-            {r.endDate && ` · Bitiş: ${formatDateTR(r.endDate)}`}
+            {r.endDate && ` - Bitiş: ${formatDateTR(r.endDate)}`}
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
           {!r.isActive && <Badge variant="secondary">Pasif</Badge>}
+          <span className={currencyChipClass}>
+            {currencySymbolLabel(currency)}
+          </span>
           <Badge variant="outline">
             {RECURRING_MODE_LABEL[r.mode] ?? r.mode}
           </Badge>

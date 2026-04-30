@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, HandCoins } from "lucide-react";
+import { ArrowUpRight, HandCoins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { debtRemaining } from "@/lib/debt-remaining";
@@ -28,6 +28,9 @@ export function DashboardDebtCard({
     .sort((a, b) => debtRemaining(b) - debtRemaining(a))
     .slice(0, 3);
 
+  const currencyChipClass =
+    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
+
   return (
     <Card className="overflow-hidden">
       <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
@@ -39,8 +42,11 @@ export function DashboardDebtCard({
             <HandCoins className="h-5 w-5" />
           </div>
           <div className="min-w-0 space-y-1.5 pt-0.5">
-            <h3 className="text-lg font-semibold leading-tight tracking-tight">
-              Borç ve Alacaklar
+            <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold leading-tight tracking-tight">
+              <span>Borç ve Alacaklar</span>
+              <span className={currencyChipClass}>
+                {currencySymbolLabel(currency)}
+              </span>
             </h3>
             <p className="text-sm leading-snug text-muted-foreground">
               Bana borçlu olanlar ve benim borçlarım
@@ -55,7 +61,7 @@ export function DashboardDebtCard({
         >
           <Link href="/borc-ve-alacak">
             Tümünü gör
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
           </Link>
         </Button>
       </div>
@@ -64,7 +70,7 @@ export function DashboardDebtCard({
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-4 py-4 sm:px-5 sm:py-5">
           <div className="mb-3 flex items-end justify-between gap-3">
             <p className="text-xs font-medium uppercase tracking-wide text-emerald-600/90 dark:text-emerald-400/90">
-              Bana borçlular ({currencySymbolLabel(currency)})
+              Bana borçlular
             </p>
             <p className="text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
               {formatMoneyAmount(receivable, currency)}
@@ -95,7 +101,7 @@ export function DashboardDebtCard({
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.07] px-4 py-4 sm:px-5 sm:py-5">
           <div className="mb-3 flex items-end justify-between gap-3">
             <p className="text-xs font-medium uppercase tracking-wide text-amber-700/90 dark:text-amber-400/90">
-              Benim borçlarım ({currencySymbolLabel(currency)})
+              Benim borçlarım
             </p>
             <p className="text-sm font-semibold tabular-nums text-amber-600 dark:text-amber-400">
               {formatMoneyAmount(payable, currency)}
