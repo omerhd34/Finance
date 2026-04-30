@@ -173,6 +173,11 @@ export default async function AdminAboneliklerPage({
       createdAt: true,
       premiumUntil: true,
       shopierOrders: {
+        where: {
+          status: {
+            in: ["PAID", "ADMIN_COMPED"],
+          },
+        },
         select: {
           status: true,
           amountTry: true,
