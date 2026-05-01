@@ -13,7 +13,9 @@ import type { Debt } from "@/types/debt";
 
 const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın. Yanıtın Türkçe olacak; dil profesyonel, net ve ölçülü olsun. Aşırı samimiyet, klişe AI ifadeleri ve gereksiz ünlem kullanma (ör. "Hadi birlikte", "size tam destek", "Başarılar dilerim!" gibi boş kapanışlar yerine kısa ve somut bir cümle tercih et).
 
-Veri: \`son30GunHarcamalar\` son 30 takvim günü içindeki giderleri listeler; aralık \`harcamaPenceresi\` içindeki tarihlerle çerçevelenir (kullanıcının ay başlangıç ayarından bağımsız, gün sayısı sabittir). Borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
+Veri: \`son30GunHarcamalar\` son 30 takvim günü içindeki giderleri listeler; \`son30GunGelirler\` ve \`gelirOzeti\` aynı penceredeki gelir kayıtlarını ve toplamları verir. Aralık \`harcamaPenceresi\` ile çerçevelenir (ay başlangıç ayarından bağımsız, son 30 takvim günü). Borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
+
+Gelir–harcama uyumu (doğrudan ve dürüst iletişim): \`gelirOzeti\`, \`son30GunGelirler\` ile \`son30GunHarcamalar\`ı birlikte oku. \`referansAsgariUcretNetAylikTl\` null ise güncel asgari ücret rakamı uydurma; yalnızca kayıtlı gelir tutarları ve harcama kalıplarından sonuç çıkar. Gelir tarafı sınırlı görünüyorsa (ör. yinelenen düşük maaş tutarı, son 30 gün toplam gelirinin düşük olması, varsa referans ile karşılaştırmada alt bant) ve aynı veride isteğe bağlı, yüksek tutarlı harcama varsa (ör. üst segment akıllı telefon, lüks elektronik, açıklama veya kategori bunu düşündürüyorsa) bunu kurumsal mesafeli dil ile geçiştirme: kullanıcıya net şekilde, **kazandığı düzeyle örtüşmeyen bir harcama tercihi** olduğunu söyle; daha uygun fiyatlı alternatiflerin çoğu ihtiyacı karşılayabileceğini, önceliğin temel ihtiyaç ve tasarruf olması gerektiğini “kazandığın kadar harca” ilkesiyle bağla. Ton: saygılı, küçümsemeyen, alay etmeyen; kişiliğe saldırmayan ama **çekingen de olmayan** uyarı. Bu tema veriye dayanmıyorsa veya gelir yüksekse zorla kullanma.
 
 Kullanıcı ayı: JSON içindeki \`kullaniciAyAyarlari\`, kullanıcının profilde seçtiği \`ayBaslangicGunu\` (1–28) ve bunun bütçe dönemine etkisini özetleyen \`butceDonemiNotu\` metnini içerir. "Bu ay", "gelecek ay" veya "aylık bütçe çerçevesi" anlatırken takvim ayının 1'i yerine bu dönemi esas al; harcama rakamları ise yine yalnızca son 30 güne dayanır—iki kavramı birbirine karıştırma.
 
@@ -21,9 +23,9 @@ Kategoriler: JSON içindeki \`giderKategoriSemasi\`, uygulamada işlemler için 
 
 Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sırayla kullan; başlık satırına ek metin veya alt başlık ekleme (arayüzde görünen başlık budur): \`## Karşılama\`, \`## Genel değerlendirme\`, \`## En yüksek 5 harcama kategorisi ve yorumu\`, \`## Harcama kalıpları ve işlem notları\`, \`## Somut tasarruf önerileri\`, \`## Gelecek ay için bütçe çerçevesi\`, \`## Borç ve alacaklar\`, \`## Riskler ve dikkat edilmesi gerekenler\`, \`## Öncelikli aksiyonlar\`, \`## Kısa özet ve bir sonraki adım\`. Veri yetersizse ilgili bölümde kısaca “Bu dönem için bu bölümde yorumlanacak veri yok.” benzeri tek cümle yeterli.
 
-- **Karşılama:** Kullanıcıya doğrudan hitap etmeden, son 30 günlük gider ve borç/alacak özetini incelediğini kısa ve kurumsal bir dille belirt. Ne kadar detaya ineceğini bu girişte anlatma; en fazla iki cümle.
+- **Karşılama:** Kullanıcıya doğrudan hitap etmeden, son 30 günlük gelir, gider ve borç/alacak özetini incelediğini kısa ve kurumsal bir dille belirt. Ne kadar detaya ineceğini bu girişte anlatma; en fazla iki cümle.
 
-- **Genel değerlendirme:** \`borcVeAlacaklar.ozet\` ile net pozisyonu (kalan alacak − kalan borç) ve son 30 gün toplam gideri birlikte çerçevele. Harcamaların hangi geniş alanlarda yoğunlaştığını (birkaç grup veya ana kategori) özetle; dikkat çeken tek örüntü veya tutarsızlık varsa somut rakamla bağla. Üç ila altı cümle; spekülasyon yok.
+- **Genel değerlendirme:** \`borcVeAlacaklar.ozet\` ile net pozisyonu (kalan alacak − kalan borç) ve son 30 gün toplam gideri birlikte çerçevele. Gelir özeti varsa gelir ile gider dengesine kısaca değin. Harcamaların hangi geniş alanlarda yoğunlaştığını (birkaç grup veya ana kategori) özetle; gelir düşükken lüks veya isteğe bağlı yüksek harcama örtüşüyorsa yukarıdaki “gelir–harcama uyumu” ilkesine uy. Üç ila altı cümle; spekülasyon yok.
 
 - **En yüksek 5 harcama kategorisi ve yorumu:** Önce tek cümleyle listenin neyi temsil ettiğini belirt. Sonra her kalem için ayrı paragraf: satır başı **Ana kategori – Alt kategori (X TL)** veya alt kategori yoksa **Kategori (X TL)**; altında tutarı destekleyen kısa gözlem (bütçedeki rol, tekrar eden işlem ipucu, açıklama alanıyla örtüşme). En fazla beş kalem; tutarlar JSON’daki işlemlerle uyumlu toplamlar olsun.
 
@@ -35,7 +37,7 @@ Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sı
 
 - **Borç ve alacaklar:** Toplam kalan alacak ve borç; \`borcVeAlacaklar.kayitlar\` içinden vadeleri yakın veya tutarı yüksek kalemleri özetle. Tahsilat veya ödeme sıralaması için kısa, gerekçeli öneri. Kayıt yoksa veya kalanlar sıfırsa açıkça yaz.
 
-- **Riskler ve dikkat edilmesi gerekenler:** Likidite, üst üste vadeler, tek kategoride yoğunlaşma, borç stresi sinyalleri; veriye bağlı, abartısız. Gerekirse kısa madde listesi.
+- **Riskler ve dikkat edilmesi gerekenler:** Likidite, üst üste vadeler, tek kategoride yoğunlaşma, borç stresi sinyalleri; veriye bağlı, abartısız. Gelir sınırlıyken yüksek isteğe bağlı harcama birlikte görülüyorsa bunu risk olarak açıkça adlandır (davranışsal risk / önceliklendirme). Gerekirse kısa madde listesi.
 
 - **Öncelikli aksiyonlar:** Dört ila yedi satır; her satır tek, fiili eylem; önceki bölümlerle gereksiz tekrar yok.
 
@@ -53,6 +55,13 @@ type TxPayload = {
   aciklama: string | null;
 }[];
 
+type GelirPayload = {
+  tarih: string;
+  kategori: string;
+  tutar: unknown;
+  aciklama: string | null;
+}[];
+
 type DebtLine = {
   yon: "alacak" | "borç";
   karsiTaraf: string;
@@ -62,6 +71,13 @@ type DebtLine = {
   vade: string | null;
   not: string | null;
 };
+
+function resolveReferansAsgariUcretNetAylik(): number | null {
+  const raw = process.env.AI_ANALYZE_NET_ASGARI_UCRET_REFERANS_TRY?.trim();
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 function kullaniciAyAyarlariForPayload(ayBaslangicGunu: number): {
   ayBaslangicGunu: number;
@@ -85,8 +101,15 @@ function kullaniciAyAyarlariForPayload(ayBaslangicGunu: number): {
 type AnalyzePayload = {
   kullaniciAyAyarlari: ReturnType<typeof kullaniciAyAyarlariForPayload>;
   harcamaPenceresi: { baslangic: string; bitis: string; not: string };
+  gelirOzeti: {
+    son30GunToplamGelir: number;
+    gelirKayitSayisi: number;
+  };
+  /** Opsiyonel: .env ile güncellenir; kıyas için büyüklük sırası */
+  referansAsgariUcretNetAylikTl: number | null;
   giderKategoriSemasi: typeof EXPENSE_CATEGORY_TREE;
   son30GunHarcamalar: TxPayload;
+  son30GunGelirler: GelirPayload;
   borcVeAlacaklar: {
     kayitlar: DebtLine[];
     ozet: {
@@ -277,12 +300,20 @@ export async function POST() {
     const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(
       dbUser.monthStartDay ?? 1,
     );
-    const [transactions, debts] = await Promise.all([
+    const [transactions, incomeTransactions, debts] = await Promise.all([
       prisma.transaction.findMany({
         where: {
           userId: session.user.id,
           date: { gte: since },
           type: "expense",
+        },
+        orderBy: { date: "desc" },
+      }),
+      prisma.transaction.findMany({
+        where: {
+          userId: session.user.id,
+          date: { gte: since },
+          type: "income",
         },
         orderBy: { date: "desc" },
       }),
@@ -300,6 +331,19 @@ export async function POST() {
         tutar: t.amount,
         aciklama: t.description,
       }),
+    );
+
+    const son30GunGelirler: GelirPayload = incomeTransactions.map(
+      (t: Transaction) => ({
+        tarih: t.date.toISOString(),
+        kategori: t.category,
+        tutar: t.amount,
+        aciklama: t.description,
+      }),
+    );
+    const son30GunToplamGelir = incomeTransactions.reduce(
+      (s, t) => s + t.amount,
+      0,
     );
 
     let toplamAlacakKalan = 0;
@@ -330,8 +374,14 @@ export async function POST() {
         bitis: analizAnı.toISOString(),
         not: "İşlem tarihine göre son 30 takvim günü (ay başlangıç ayarından bağımsız pencere).",
       },
+      gelirOzeti: {
+        son30GunToplamGelir,
+        gelirKayitSayisi: incomeTransactions.length,
+      },
+      referansAsgariUcretNetAylikTl: resolveReferansAsgariUcretNetAylik(),
       giderKategoriSemasi: EXPENSE_CATEGORY_TREE,
       son30GunHarcamalar,
+      son30GunGelirler,
       borcVeAlacaklar: {
         kayitlar,
         ozet: {
