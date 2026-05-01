@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
   ArrowRightLeft,
@@ -26,14 +25,47 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
-import { useAppSelector } from "@/store/hooks";
+import { apiClient } from "@/lib/api-client";
+import { normalizeUserCurrency } from "@/lib/currency";
+import { normalizePlanTier } from "@/lib/plan-tier";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setUser } from "@/store/slices/authSlice";
 import { NotificationsPopover } from "@/components/notifications/notifications-popover";
 import { BrandLockup } from "@/components/branding/brand-lockup";
-import { cn } from "@/lib/utils";
+import { cn, currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
+
+type ProfilePatchResponse = {
+  name: string | null;
+  profession: string | null;
+  city: string | null;
+  country: string | null;
+  monthStartDay: number;
+  email: string;
+  phone: string | null;
+  currency: string;
+  image: string | null;
+  notificationsEnabled: boolean;
+  planTier: string;
+};
 
 function profileInitials(
   name: string | null | undefined,
@@ -88,10 +120,13 @@ function titleForPath(path: string): string {
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const reduxUserName = useAppSelector((s) => s.auth.user?.name);
   const reduxUserEmail = useAppSelector((s) => s.auth.user?.email);
   const reduxUserImage = useAppSelector((s) => s.auth.user?.image);
-  const { data: session } = useSession();
+  const authUser = useAppSelector((s) => s.auth.user);
+  const { data: session, update: updateSession } = useSession();
   const sidebarAvatarSrc = reduxUserImage ?? session?.user?.image ?? undefined;
   const sidebarFallbackInitials = profileInitials(
     reduxUserName ?? session?.user?.name ?? null,
@@ -101,7 +136,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [themeReady, setThemeReady] = useState(false);
+  const [currencySaving, setCurrencySaving] = useState(false);
   const title = titleForPath(pathname);
+  const currency = normalizeUserCurrency(
+    authUser?.currency ?? session?.user?.currency ?? "TL",
+  );
 
   const toggleTheme = () => {
     const current = resolvedTheme ?? "dark";
@@ -154,6 +193,53 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       }
       return next;
     });
+  }
+
+  async function onSidebarCurrencyChange(nextRaw: string) {
+    if (!session?.user?.id) return;
+    const next = normalizeUserCurrency(nextRaw);
+    if (next === currency) return;
+    setCurrencySaving(true);
+    try {
+      const { data } = await apiClient.patch<ProfilePatchResponse>(
+        "/api/user/profile",
+        { currency: next },
+      );
+      dispatch(
+        setUser({
+          id: session.user.id,
+          name: data.name,
+          email: data.email,
+          image: data.image ?? null,
+          currency: data.currency,
+          phone: data.phone ?? null,
+          profession: data.profession ?? null,
+          city: data.city ?? null,
+          country: data.country ?? null,
+          monthStartDay: data.monthStartDay ?? 1,
+          notificationsEnabled: data.notificationsEnabled !== false,
+          planTier: normalizePlanTier(data.planTier),
+        }),
+      );
+      await updateSession({
+        name: data.name ?? session.user.name ?? "",
+        profession: data.profession ?? null,
+        city: data.city ?? null,
+        country: data.country ?? null,
+        monthStartDay: data.monthStartDay ?? 1,
+        currency: normalizeUserCurrency(data.currency),
+        phone: data.phone ?? null,
+        email: data.email,
+        image: data.image ?? null,
+        notificationsEnabled: data.notificationsEnabled !== false,
+        reloadUser: true,
+      } as Record<string, unknown>);
+      router.refresh();
+    } catch {
+      /* ignore */
+    } finally {
+      setCurrencySaving(false);
+    }
   }
 
   function renderSidebar(collapsed: boolean, isMobile: boolean = false) {
@@ -254,6 +340,50 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className="mt-auto" />
         {collapsed ? (
           <div className="flex flex-col items-center gap-2 border-t border-border p-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  disabled={currencySaving || !session?.user}
+                  className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border-border/80 bg-muted/25 shadow-none"
+                  title={`Para birimi: ${currency}`}
+                  aria-label="Para birimi seç"
+                >
+                  <span className="text-xs font-semibold tabular-nums">
+                    {currencySymbolLabel(currency)}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-44"
+                align={isMobile ? "start" : "center"}
+                side={isMobile ? "bottom" : "right"}
+                sideOffset={6}
+              >
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                  Para birimi
+                </DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={currency}
+                  onValueChange={(v) => void onSidebarCurrencyChange(v)}
+                >
+                  <DropdownMenuRadioItem value="TL" className="cursor-pointer">
+                    TL (₺)
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="USD" className="cursor-pointer">
+                    USD ($)
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="EUR" className="cursor-pointer">
+                    EUR (€)
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="GBP" className="cursor-pointer">
+                    GBP (£)
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link
               href="/ayarlar"
               onClick={() => setOpen(false)}
@@ -294,6 +424,34 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </div>
         ) : (
           <>
+            <div className="border-t border-border p-3">
+              <Select
+                value={currency}
+                disabled={currencySaving || !session?.user}
+                onValueChange={(v) => void onSidebarCurrencyChange(v)}
+              >
+                <SelectTrigger
+                  className="h-9 w-full cursor-pointer rounded-lg border-border/80 bg-muted/30 shadow-none"
+                  aria-label="Para birimi"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper" sideOffset={4}>
+                  <SelectItem value="TL" className="cursor-pointer">
+                    TL (₺)
+                  </SelectItem>
+                  <SelectItem value="USD" className="cursor-pointer">
+                    USD ($)
+                  </SelectItem>
+                  <SelectItem value="EUR" className="cursor-pointer">
+                    EUR (€)
+                  </SelectItem>
+                  <SelectItem value="GBP" className="cursor-pointer">
+                    GBP (£)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="border-t border-border p-3">
               <Link
                 href="/ayarlar"
