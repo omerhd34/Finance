@@ -1,6 +1,12 @@
 "use client";
 
 import type { UseFormReturn } from "react-hook-form";
+import {
+  displayAmountToTry,
+  normalizeUserCurrency,
+  tryAmountToDisplay,
+  type UserDisplayCurrency,
+} from "@/lib/currency";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -23,9 +29,16 @@ function categoriesFor(t: "income" | "expense") {
 type Props = {
   form: UseFormReturn<RecurringFormValues>;
   variant: "new" | "edit";
+  amountEntryCurrency: UserDisplayCurrency;
+  onAmountEntryCurrencyChange: (c: UserDisplayCurrency) => void;
 };
 
-export function RecurringFormFields({ form, variant }: Props) {
+export function RecurringFormFields({
+  form,
+  variant,
+  amountEntryCurrency,
+  onAmountEntryCurrencyChange,
+}: Props) {
   const typeTab = form.watch("type");
 
   return (
@@ -51,7 +64,7 @@ export function RecurringFormFields({ form, variant }: Props) {
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Tutar</Label>
           <Input
@@ -67,6 +80,44 @@ export function RecurringFormFields({ form, variant }: Props) {
           )}
         </div>
 
+        <div className="space-y-2">
+          <Label>Para birimi</Label>
+          <Select
+            value={amountEntryCurrency}
+            onValueChange={(v) => {
+              const next = normalizeUserCurrency(v);
+              if (next === amountEntryCurrency) return;
+              const raw = form.getValues("amount");
+              const n = typeof raw === "number" && !Number.isNaN(raw) ? raw : 0;
+              const inTry = displayAmountToTry(n, amountEntryCurrency);
+              onAmountEntryCurrencyChange(next);
+              form.setValue("amount", tryAmountToDisplay(inTry, next), {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+          >
+            <SelectTrigger className="cursor-pointer">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper" sideOffset={4}>
+              <SelectItem value="TL" className="cursor-pointer">
+                TL (₺)
+              </SelectItem>
+              <SelectItem value="USD" className="cursor-pointer">
+                USD ($)
+              </SelectItem>
+              <SelectItem value="EUR" className="cursor-pointer">
+                EUR (€)
+              </SelectItem>
+              <SelectItem value="GBP" className="cursor-pointer">
+                GBP (£)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>
             {variant === "new" ? "İlk / referans tarih" : "Başlangıç tarihi"}

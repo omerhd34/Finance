@@ -8,7 +8,12 @@ import { z } from "zod";
 import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
 import { transactionCreateSchema } from "@/lib/validations";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
-import { displayAmountToTry, tryAmountToDisplay } from "@/lib/currency";
+import {
+  displayAmountToTry,
+  normalizeUserCurrency,
+  tryAmountToDisplay,
+  type UserDisplayCurrency,
+} from "@/lib/currency";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { apiClient } from "@/lib/api-client";
 import { useAppSelector } from "@/store/hooks";
@@ -47,7 +52,12 @@ type Props = {
 };
 
 export function NewTransactionForm({ variant, onSuccess }: Props) {
-  const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  /** Kenar çubuğu / profil: yalnızca panelde tutarların nasıl gösterileceği */
+  const displayCurrency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  /** Bu işlem satırı için tutarın girildiği para birimi (kayıt yine kur ile TL’ye çevrilir) */
+  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
+    normalizeUserCurrency(displayCurrency),
+  );
   const planPremium =
     normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
     "premium";
@@ -117,13 +127,16 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       const row = data as {
         type: "income" | "expense";
         amountTry: number;
+        currency?: "TL" | "USD" | "EUR" | "GBP" | null;
         category: string;
         description: string | null;
         date: string;
       };
+      const detectedCurrency = normalizeUserCurrency(row.currency ?? "TL");
+      setEntryCurrency(detectedCurrency);
       setTypeTab(row.type);
       setValue("category", row.category, { shouldValidate: true });
-      setValue("amount", tryAmountToDisplay(row.amountTry, currency), {
+      setValue("amount", tryAmountToDisplay(row.amountTry, detectedCurrency), {
         shouldValidate: true,
       });
       setValue("description", row.description ?? "", { shouldValidate: true });
@@ -141,7 +154,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     try {
       await apiClient.post("/api/transactions", {
         type: typeTab,
-        amount: displayAmountToTry(values.amount, currency),
+        amount: displayAmountToTry(values.amount, entryCurrency),
         category: values.category,
         description: values.description || undefined,
         date: d.toISOString(),
@@ -153,6 +166,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         description: "",
         date: new Date().toISOString().slice(0, 10),
       });
+      setEntryCurrency(normalizeUserCurrency(displayCurrency));
       setTypeTab("expense");
       await onSuccess();
     } catch (e: unknown) {
@@ -170,8 +184,8 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Fiş veya fatura tarama</CardTitle>
           <CardDescription>
-            Fotoğraf yükleyin; tutar, tarih ve kategoriyi formda önerir.
-            Kaydetmeden önce kontrol edin.
+            Fotoğraf yükleyin; tutar, para birimi (okunabiliyorsa), tarih ve
+            kategoriyi formda önerir. Kaydetmeden önce kontrol edin.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -201,7 +215,8 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       <div className="rounded-lg border border-border bg-card/40 px-3 py-3">
         <p className="text-sm font-medium">Fiş veya fatura tarama</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Fotoğraf yükleyin; tutar, tarih ve kategoriyi formda önerir.
+          Fotoğraf yükleyin; tutar, para birimi (okunabiliyorsa), tarih ve
+          kategoriyi formda önerir.
         </p>
         <input
           ref={fileInputRef}
@@ -266,13 +281,38 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
 
       <div className="space-y-2">
         <Label htmlFor="nt-amount">Tutar</Label>
-        <Input
-          id="nt-amount"
-          type="number"
-          step="0.01"
-          min={0}
-          {...register("amount", { valueAsNumber: true })}
-        />
+        <div className="flex gap-2">
+          <Input
+            id="nt-amount"
+            type="number"
+            step="0.01"
+            min={0}
+            className="min-w-0 flex-1"
+            {...register("amount", { valueAsNumber: true })}
+          />
+          <Select
+            value={entryCurrency}
+            onValueChange={(v) => setEntryCurrency(normalizeUserCurrency(v))}
+          >
+            <SelectTrigger className="w-[min(11rem,42%)] shrink-0 cursor-pointer">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper" sideOffset={4}>
+              <SelectItem value="TL" className="cursor-pointer">
+                TL (₺)
+              </SelectItem>
+              <SelectItem value="USD" className="cursor-pointer">
+                USD ($)
+              </SelectItem>
+              <SelectItem value="EUR" className="cursor-pointer">
+                EUR (€)
+              </SelectItem>
+              <SelectItem value="GBP" className="cursor-pointer">
+                GBP (£)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         {errors.amount && (
           <p className="text-sm text-destructive">{errors.amount.message}</p>
         )}
@@ -347,7 +387,11 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Detaylar</CardTitle>
-          <CardDescription>Tutarı girin; kayıt TL olarak saklanır.</CardDescription>
+          <CardDescription>
+            Tutarı işlemin para biriminde girin; sistem güncel kurla TL
+            karşılığına çevirerek saklar. Paneldeki gösterim için kenar
+            çubuğundan para birimi seçebilirsiniz.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form

@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tryAmountToDisplay } from "@/lib/currency";
+import {
+  normalizeUserCurrency,
+  tryAmountToDisplay,
+  type UserDisplayCurrency,
+} from "@/lib/currency";
 import { defaultRecurringFormValues } from "@/lib/recurring-defaults";
 import {
   recurringRuleFormSchema,
@@ -25,7 +29,11 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currency: string;
-  onSave: (ruleId: string, values: RecurringFormValues) => Promise<void>;
+  onSave: (
+    ruleId: string,
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) => Promise<void>;
 };
 
 export function EditRecurringDialog({
@@ -35,6 +43,10 @@ export function EditRecurringDialog({
   currency,
   onSave,
 }: Props) {
+  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
+    normalizeUserCurrency(currency),
+  );
+
   const form = useForm<RecurringFormValues>({
     resolver: zodResolver(recurringRuleFormSchema),
     defaultValues: defaultRecurringFormValues(),
@@ -42,9 +54,12 @@ export function EditRecurringDialog({
 
   useEffect(() => {
     if (!rule) return;
+    const dc = normalizeUserCurrency(currency);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setEntryCurrency(dc);
     form.reset({
       type: rule.type as "income" | "expense",
-      amount: tryAmountToDisplay(rule.amount, currency),
+      amount: tryAmountToDisplay(rule.amount, dc),
       category: rule.category,
       description: rule.description ?? "",
       frequency: rule.frequency as RecurringFormValues["frequency"],
@@ -60,7 +75,7 @@ export function EditRecurringDialog({
 
   async function handleSubmit(values: RecurringFormValues) {
     if (!rule) return;
-    await onSave(rule.id, values);
+    await onSave(rule.id, values, entryCurrency);
     onOpenChange(false);
   }
 
@@ -75,7 +90,12 @@ export function EditRecurringDialog({
             className="space-y-4"
             onSubmit={form.handleSubmit((v) => void handleSubmit(v))}
           >
-            <RecurringFormFields form={form} variant="edit" />
+            <RecurringFormFields
+              form={form}
+              variant="edit"
+              amountEntryCurrency={entryCurrency}
+              onAmountEntryCurrencyChange={setEntryCurrency}
+            />
             <DialogFooter>
               <Button type="submit">Kaydet</Button>
             </DialogFooter>

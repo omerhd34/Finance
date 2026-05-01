@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import {
+  normalizeUserCurrency,
+  type UserDisplayCurrency,
+} from "@/lib/currency";
 import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { defaultRecurringFormValues } from "@/lib/recurring-defaults";
 import {
@@ -20,12 +24,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAppSelector } from "@/store/hooks";
 import { RecurringFormFields } from "./recurring-form-fields";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: RecurringFormValues) => Promise<void>;
+  onSubmit: (
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) => Promise<void>;
 };
 
 export function NewRecurringDialog({
@@ -34,17 +42,28 @@ export function NewRecurringDialog({
   onSubmit,
 }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const displayCurrency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
+    normalizeUserCurrency(displayCurrency),
+  );
 
   const form = useForm<RecurringFormValues>({
     resolver: zodResolver(recurringRuleFormSchema),
     defaultValues: defaultRecurringFormValues(),
   });
 
+  useEffect(() => {
+    if (open) {
+      setEntryCurrency(normalizeUserCurrency(displayCurrency));
+    }
+  }, [open, displayCurrency]);
+
   async function handleSubmit(values: RecurringFormValues) {
     setSubmitError(null);
     try {
-      await onSubmit(values);
+      await onSubmit(values, entryCurrency);
       form.reset(defaultRecurringFormValues());
+      setEntryCurrency(normalizeUserCurrency(displayCurrency));
       onOpenChange(false);
     } catch (e: unknown) {
       setSubmitError(
@@ -88,7 +107,12 @@ export function NewRecurringDialog({
               </p>
             </div>
           ) : null}
-          <RecurringFormFields form={form} variant="new" />
+          <RecurringFormFields
+            form={form}
+            variant="new"
+            amountEntryCurrency={entryCurrency}
+            onAmountEntryCurrencyChange={setEntryCurrency}
+          />
           <DialogFooter>
             <Button
               type="submit"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { displayAmountToTry } from "@/lib/currency";
+import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/currency";
 import { isRecurringReminderDue } from "@/lib/recurring-reminder";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -55,10 +55,13 @@ export default function RecurringPage() {
     return <LogoLoading />;
   }
 
-  function buildPayload(values: RecurringFormValues) {
+  function buildPayload(
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) {
     return {
       type: values.type,
-      amount: displayAmountToTry(values.amount, currency),
+      amount: displayAmountToTry(values.amount, amountEntryCurrency),
       category: values.category,
       description: values.description?.trim()
         ? values.description.trim()
@@ -74,16 +77,25 @@ export default function RecurringPage() {
     };
   }
 
-  async function onCreate(values: RecurringFormValues) {
-    await dispatch(addRecurringRule(buildPayload(values))).unwrap();
+  async function onCreate(
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) {
+    await dispatch(
+      addRecurringRule(buildPayload(values, amountEntryCurrency)),
+    ).unwrap();
     void dispatch(fetchRecurringRules());
   }
 
-  async function onEditSave(ruleId: string, values: RecurringFormValues) {
+  async function onEditSave(
+    ruleId: string,
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) {
     await dispatch(
       updateRecurringRule({
         id: ruleId,
-        body: buildPayload(values),
+        body: buildPayload(values, amountEntryCurrency),
       }),
     ).unwrap();
     try {

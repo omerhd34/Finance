@@ -16,16 +16,9 @@ type Props = {
   onCreated: () => void | Promise<void>;
 };
 
-export function NewTransactionDialog({
-  open,
-  onOpenChange,
-  onCreated,
-}: Props) {
+export function NewTransactionDialog({ open, onOpenChange, onCreated }: Props) {
   return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="cursor-pointer bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90">
           Yeni İşlem Ekle

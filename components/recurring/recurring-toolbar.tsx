@@ -1,5 +1,6 @@
 "use client";
 
+import type { UserDisplayCurrency } from "@/lib/currency";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
 import { NewRecurringDialog } from "./new-recurring-dialog";
 
@@ -7,7 +8,10 @@ type Props = {
   count: number;
   newOpen: boolean;
   onNewOpenChange: (open: boolean) => void;
-  onCreate: (values: RecurringFormValues) => Promise<void>;
+  onCreate: (
+    values: RecurringFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
+  ) => Promise<void>;
 };
 
 export function RecurringToolbar({

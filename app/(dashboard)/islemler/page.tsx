@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Transaction } from "@/types/transaction";
 import type { TransactionEditFormValues } from "@/lib/validations";
-import { displayAmountToTry } from "@/lib/currency";
+import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/currency";
 import {
   downloadTransactionsCsv,
   downloadTransactionsPdfFiltered,
@@ -181,6 +181,7 @@ function TransactionsPageContent() {
   async function saveEdit(
     transactionId: string,
     values: TransactionEditFormValues,
+    amountEntryCurrency: UserDisplayCurrency,
   ) {
     const t = items.find((x) => x.id === transactionId) ?? editing;
     if (!t) return;
@@ -189,7 +190,7 @@ function TransactionsPageContent() {
       updateTransaction({
         id: transactionId,
         body: {
-          amount: displayAmountToTry(values.amount, currency),
+          amount: displayAmountToTry(values.amount, amountEntryCurrency),
           category: values.category,
           description: values.description || undefined,
           date: d.toISOString(),
