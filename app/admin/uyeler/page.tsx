@@ -251,57 +251,59 @@ export default async function AdminUyelerPage({
               </div>
             </div>
           </div>
-          <Table className="table-fixed">
-            <TableHeader className="bg-muted/40">
-              <TableRow>
-                <TableHead>Ad Soyad</TableHead>
-                <TableHead className="w-[300px]">E-posta</TableHead>
-                <TableHead>Meslek</TableHead>
-                <TableHead>Şehir</TableHead>
-                <TableHead>Ülke</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Doğrulama</TableHead>
-                <TableHead>
-                  <Link
-                    href={sortHref}
-                    className="inline-flex items-center cursor-pointer hover:underline"
-                  >
-                    Kayıt Tarihi
-                  </Link>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {members.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>{member.name?.trim() || "-"}</TableCell>
-                  <TableCell className="max-w-[300px] truncate">
-                    {member.email}
-                  </TableCell>
-                  <TableCell>{member.profession?.trim() || "-"}</TableCell>
-                  <TableCell>{member.city?.trim() || "-"}</TableCell>
-                  <TableCell>{member.country?.trim() || "-"}</TableCell>
-                  <TableCell>
-                    {member.planTier === "premium" ? "Premium" : "Free"}
-                  </TableCell>
-                  <TableCell>
-                    {member.emailVerified ? (
-                      <Check
-                        className="h-4 w-4 text-emerald-500"
-                        aria-label="Doğrulandı"
-                      />
-                    ) : (
-                      <X
-                        className="h-4 w-4 text-red-500"
-                        aria-label="Doğrulanmadı"
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>{formatDate(member.createdAt)}</TableCell>
+          <div className="w-full overflow-x-auto">
+            <Table className="min-w-[900px]">
+              <TableHeader className="bg-muted/40">
+                <TableRow>
+                  <TableHead>Ad Soyad</TableHead>
+                  <TableHead className="w-[300px]">E-posta</TableHead>
+                  <TableHead>Meslek</TableHead>
+                  <TableHead>Şehir</TableHead>
+                  <TableHead>Ülke</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Doğrulama</TableHead>
+                  <TableHead>
+                    <Link
+                      href={sortHref}
+                      className="inline-flex cursor-pointer items-center hover:underline"
+                    >
+                      Kayıt Tarihi
+                    </Link>
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {members.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell>{member.name?.trim() || "-"}</TableCell>
+                    <TableCell className="max-w-[300px] truncate">
+                      {member.email}
+                    </TableCell>
+                    <TableCell>{member.profession?.trim() || "-"}</TableCell>
+                    <TableCell>{member.city?.trim() || "-"}</TableCell>
+                    <TableCell>{member.country?.trim() || "-"}</TableCell>
+                    <TableCell>
+                      {member.planTier === "premium" ? "Premium" : "Free"}
+                    </TableCell>
+                    <TableCell>
+                      {member.emailVerified ? (
+                        <Check
+                          className="h-4 w-4 text-emerald-500"
+                          aria-label="Doğrulandı"
+                        />
+                      ) : (
+                        <X
+                          className="h-4 w-4 text-red-500"
+                          aria-label="Doğrulanmadı"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDate(member.createdAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
       <div className="flex items-center justify-end gap-2">
