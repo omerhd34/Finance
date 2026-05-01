@@ -80,7 +80,6 @@ export async function POST(req: Request) {
     return NextResponse.json({
       type: parsed.type,
       amountTry: parsed.amountTry,
-      currency: parsed.currency ?? null,
       category: parsed.category,
       description: parsed.description ?? null,
       date: parsed.date,

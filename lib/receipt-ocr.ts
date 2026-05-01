@@ -41,7 +41,6 @@ function resolveModelChain(): string[] {
 const rawOcrSchema = z.object({
   type: z.enum(["income", "expense"]),
   amountTry: z.number().positive(),
-  currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
   category: z.string().min(1),
   description: z.string().max(2000).nullable().optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -53,7 +52,6 @@ const RECEIPT_SYSTEM = `Sen fiş ve fatura okuyan bir asistansın. Görüntüdek
 
 Kurallar:
 - amountTry: Belgedeki ana toplam tutarı Türk Lirası (TRY) cinsinden sayı olarak ver. Para birimi farklıysa makul kur ile TL'ye çevir veya belgede TL/₺ yoksa tutarı olduğu gibi sayı olarak yorumla.
-- currency: Belgede ana toplamın yazıldığı para birimini seç: "TL" (₺, TRY, TL), "USD" ($, USD), "EUR" (€, EUR) veya "GBP" (£, GBP). Belgede net bir döviz yoksa veya yalnızca TL/₺ görünüyorsa "TL" ver.
 - type: Fiş/fatura genelde giderdir; maaş bordrosu veya gelir belgesi ise "income" seç.
 - category: Aşağıdaki izin verilen listelerden TAM olarak bir değer seç; emin değilsen "Diğer" kullan.
 - description: Kısa mağaza veya belge özeti (opsiyonel, Türkçe).

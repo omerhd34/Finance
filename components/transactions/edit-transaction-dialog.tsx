@@ -1,15 +1,10 @@
 /* eslint-disable react-hooks/incompatible-library */
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  displayAmountToTry,
-  normalizeUserCurrency,
-  tryAmountToDisplay,
-  type UserDisplayCurrency,
-} from "@/lib/currency";
+import { tryAmountToDisplay } from "@/lib/currency";
 import {
   transactionEditFormSchema,
   type TransactionEditFormValues,
@@ -45,7 +40,6 @@ type Props = {
   onSave: (
     transactionId: string,
     values: TransactionEditFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
   ) => Promise<void>;
 };
 
@@ -61,21 +55,15 @@ export function EditTransactionDialog({
     Boolean(transaction?.recurringSlotKey) ||
     transaction?.description?.startsWith("[Tekrarlayan]") === true;
 
-  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
-    normalizeUserCurrency(currency),
-  );
-
   const form = useForm<TransactionEditFormValues>({
     resolver: zodResolver(transactionEditFormSchema),
   });
 
   useEffect(() => {
     if (!transaction) return;
-    const dc = normalizeUserCurrency(currency);
-    setEntryCurrency(dc);
     form.reset({
       type: transaction.type === "income" ? "income" : "expense",
-      amount: tryAmountToDisplay(transaction.amount, dc),
+      amount: tryAmountToDisplay(transaction.amount, currency),
       category: transaction.category,
       description: transaction.description ?? "",
       date: new Date(transaction.date).toISOString().slice(0, 10),
@@ -91,7 +79,7 @@ export function EditTransactionDialog({
   async function handleSubmit(values: TransactionEditFormValues) {
     if (!transaction) return;
     if (isRecurringTransaction) return;
-    await onSave(transaction.id, values, entryCurrency);
+    await onSave(transaction.id, values);
     onOpenChange(false);
   }
 
@@ -146,50 +134,15 @@ export function EditTransactionDialog({
             </Tabs>
             <div className="space-y-2">
               <Label>Tutar</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  step="0.01"
-                  className="min-w-0 flex-1"
-                  disabled={isRecurringTransaction}
-                  {...form.register("amount", { valueAsNumber: true })}
-                />
-                <Select
-                  value={entryCurrency}
-                  disabled={isRecurringTransaction}
-                  onValueChange={(v) => {
-                    const next = normalizeUserCurrency(v);
-                    if (next === entryCurrency) return;
-                    const raw = form.getValues("amount");
-                    const n =
-                      typeof raw === "number" && !Number.isNaN(raw) ? raw : 0;
-                    const inTry = displayAmountToTry(n, entryCurrency);
-                    setEntryCurrency(next);
-                    form.setValue("amount", tryAmountToDisplay(inTry, next), {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  }}
-                >
-                  <SelectTrigger className="w-[min(11rem,42%)] shrink-0 cursor-pointer">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="TL" className="cursor-pointer">
-                      TL (₺)
-                    </SelectItem>
-                    <SelectItem value="USD" className="cursor-pointer">
-                      USD ($)
-                    </SelectItem>
-                    <SelectItem value="EUR" className="cursor-pointer">
-                      EUR (€)
-                    </SelectItem>
-                    <SelectItem value="GBP" className="cursor-pointer">
-                      GBP (£)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                type="number"
+                step="0.01"
+                disabled={isRecurringTransaction}
+                {...form.register("amount", { valueAsNumber: true })}
+              />
+              <p className="text-xs text-muted-foreground">
+                Kayıt TL olarak saklanır.
+              </p>
             </div>
             <div className="space-y-2">
               <Label>Kategori</Label>
