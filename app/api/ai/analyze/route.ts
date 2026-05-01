@@ -43,7 +43,7 @@ Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sı
 
 - **Kısa özet ve bir sonraki adım:** İki ila dört cümle: en kritik bulgu + bu hafta yapılabilecek somut bir kontrol veya davranış (genel motivasyon cümlesi yok).
 
-Görselleştirme: Piksel tabanlı grafik, görsel dosya veya harici görsel link üretemezsin. Karşılaştırmayı net göstermek için uygun yerlerde GitHub tarzı Markdown tablo kullan (ör. Kategori veya Kategori–Alt kategori | Tutar TL | Toplam gider içinde %); rakamlar JSON ile tutarlı olsun.
+Görselleştirme: Piksel tabanlı grafik, görsel dosya veya harici görsel link üretemezsin. Karşılaştırmayı net göstermek için uygun yerlerde GitHub-Flavor Markdown tablo kullan: \`| sütun | sütun |\` satırları ve ayırıcı \`|---|---|\` ile yaz; boşlukla hizalı sahte tablo üretme (uygulama tabloyu biçimlendiremez). Örnek sütunlar: Kategori–Alt kategori | Tutar TL | Toplam gider içinde %; rakamlar JSON ile tutarlı olsun.
 
 Biçim: Yalnızca Markdown; paragraflar arasında boş satır; listeler için - veya numaralı madde. Abartılı emoji kullanma. Parantez içinde İngilizce veri şeması kodu (RECEIVABLE, PAYABLE vb.) yazma.`;
 

@@ -1,5 +1,6 @@
 import { type ReactElement, type ReactNode } from "react";
 import type { Components } from "react-markdown";
+import { cn } from "@/lib/utils";
 
 function textFromNodes(node: ReactNode): string {
   if (node == null || typeof node === "boolean") return "";
@@ -53,5 +54,62 @@ export const aiInsightsMarkdownComponents: Components = {
   },
   li({ children }) {
     return <li className="leading-relaxed">{children}</li>;
+  },
+  table({ children }) {
+    return (
+      <div className="not-prose my-6 w-full overflow-x-auto rounded-xl border border-border/60 bg-muted/15 shadow-sm ring-1 ring-border/30">
+        <table
+          className={cn(
+            "w-full min-w-[min(100%,480px)] table-fixed border-collapse text-[0.9375rem] leading-relaxed",
+            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(1)]:w-[30%]",
+            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(2)]:w-[26%]",
+            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(3)]:w-[44%]",
+            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(1)]:w-[30%]",
+            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(2)]:w-[26%]",
+            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(3)]:w-[44%]",
+          )}
+        >
+          {children}
+        </table>
+      </div>
+    );
+  },
+  thead({ children }) {
+    return (
+      <thead className="border-b border-border/80 bg-muted/40">
+        {children}
+      </thead>
+    );
+  },
+  tbody({ children }) {
+    return (
+      <tbody className="[&>tr]:border-b [&>tr]:border-border/40 [&>tr:last-child]:border-b-0">
+        {children}
+      </tbody>
+    );
+  },
+  tr({ children }) {
+    return <tr className="transition-colors hover:bg-muted/25">{children}</tr>;
+  },
+  th({ children }) {
+    return (
+      <th className="whitespace-normal px-5 py-4 text-left align-bottom text-sm font-semibold leading-snug tracking-tight text-foreground md:px-6 md:py-4.5">
+        {children}
+      </th>
+    );
+  },
+  td({ children }) {
+    return (
+      <td className="whitespace-normal px-5 py-4 align-middle text-sm leading-relaxed text-muted-foreground md:px-6 md:py-4.5 [&>strong]:font-semibold [&>strong]:text-foreground">
+        {children}
+      </td>
+    );
+  },
+  tfoot({ children }) {
+    return (
+      <tfoot className="border-t border-border/70 bg-muted/30 font-medium text-foreground">
+        {children}
+      </tfoot>
+    );
   },
 };
