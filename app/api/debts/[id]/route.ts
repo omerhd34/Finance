@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt } from "@/lib/prisma";
+import { clearDebtDueAlertHistoryForDebt } from "@/lib/debt-due-alerts";
 import { debtUpdateSchema } from "@/lib/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -30,6 +31,13 @@ export async function PUT(req: Request, context: RouteContext) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
     const data = parsed.data;
+    let dueDateChanged = false;
+    if (data.dueDate !== undefined) {
+      const existingDue = existing.dueDate ? new Date(existing.dueDate) : null;
+      const nextDue = data.dueDate ? new Date(data.dueDate) : null;
+      dueDateChanged = existingDue?.getTime() !== nextDue?.getTime();
+    }
+
     const nextTotal =
       data.totalAmount !== undefined ? data.totalAmount : existing.totalAmount;
     const nextPaid =
@@ -55,6 +63,11 @@ export async function PUT(req: Request, context: RouteContext) {
         ...(data.note !== undefined && { note: data.note }),
       },
     });
+
+    if (dueDateChanged) {
+      await clearDebtDueAlertHistoryForDebt(session.user.id, id);
+    }
+
     return NextResponse.json(row);
   } catch {
     return NextResponse.json({ error: "Güncellenemedi" }, { status: 500 });

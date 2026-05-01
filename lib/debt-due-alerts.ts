@@ -16,6 +16,14 @@ type DebtRow = {
 
 type AlertKind = "DUE_SOON_3" | "DUE_TODAY" | "OVERDUE";
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function debtLabel(direction: DebtDirection): string {
   return direction === "RECEIVABLE" ? "Alacak" : "Borç";
 }
@@ -30,6 +38,7 @@ async function hasDebtDueNotification(opts: {
   userId: string;
   debtId: string;
   kind: AlertKind;
+  dueDateIso: string;
 }): Promise<boolean> {
   const row = await notification.findFirst({
     where: {
@@ -38,11 +47,25 @@ async function hasDebtDueNotification(opts: {
       AND: [
         { metadata: { path: "$.debtId", equals: opts.debtId } },
         { metadata: { path: "$.alertKind", equals: opts.kind } },
+        { metadata: { path: "$.dueDate", equals: opts.dueDateIso } },
       ],
     },
     select: { id: true },
   });
   return Boolean(row);
+}
+
+export async function clearDebtDueAlertHistoryForDebt(
+  userId: string,
+  debtId: string,
+): Promise<void> {
+  await prisma.notification.deleteMany({
+    where: {
+      userId,
+      type: { in: ["debt_due_soon", "debt_due_today", "debt_overdue"] },
+      metadata: { path: "$.debtId", equals: debtId },
+    },
+  });
 }
 
 function buildDebtDueEmailHtml(params: {
@@ -52,20 +75,103 @@ function buildDebtDueEmailHtml(params: {
   amountLabel: string;
 }): string {
   const { title, body, dueDateLabel, amountLabel } = params;
-  return `
-  <div style="background:#0b0f14;padding:24px;font-family:Inter,Arial,sans-serif;color:#e5e7eb;">
-    <div style="max-width:560px;margin:0 auto;background:#111827;border:1px solid #1f2937;border-radius:12px;padding:20px;">
-      <p style="margin:0 0 8px 0;font-size:12px;color:#9ca3af;">IQfinansAI bildirim</p>
-      <h2 style="margin:0 0 10px 0;font-size:20px;color:#f9fafb;">${title}</h2>
-      <p style="margin:0 0 14px 0;font-size:14px;line-height:1.6;color:#d1d5db;">${body}</p>
-      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:12px 14px;">
-        <p style="margin:0 0 6px 0;font-size:13px;color:#cbd5e1;">Vade: <strong style="color:#f8fafc;">${dueDateLabel}</strong></p>
-        <p style="margin:0;font-size:13px;color:#cbd5e1;">Kalan tutar: <strong style="color:#f8fafc;">${amountLabel}</strong></p>
-      </div>
-      <p style="margin:14px 0 0 0;font-size:12px;color:#94a3b8;">Borç ve Alacak ekranından kaydı güncelleyebilirsiniz.</p>
-    </div>
-  </div>
-  `;
+  const safeTitle = escapeHtml(title);
+  const safeBody = escapeHtml(body);
+  const safeDueDate = escapeHtml(dueDateLabel);
+  const safeAmount = escapeHtml(amountLabel);
+  const loweredTitle = title.toLocaleLowerCase("tr-TR");
+
+  const accent = loweredTitle.includes("geçti")
+    ? "#dc2626"
+    : loweredTitle.includes("bugün")
+      ? "#d97706"
+      : "#2563eb";
+  const accentSoft = loweredTitle.includes("geçti")
+    ? "#fef2f2"
+    : loweredTitle.includes("bugün")
+      ? "#fffbeb"
+      : "#eff6ff";
+  const borderSoft = loweredTitle.includes("geçti")
+    ? "#fecaca"
+    : loweredTitle.includes("bugün")
+      ? "#fde68a"
+      : "#bfdbfe";
+
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${safeTitle}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f5;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width:560px;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0 0 20px 0;text-align:center;">
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#0f172a;">IQfinansAI</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);border:1px solid #e4e4e7;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="padding:28px 28px 8px 28px;">
+                    <p style="margin:0 0 8px 0;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:${accent};">
+                      Borç ve Alacak
+                    </p>
+                    <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;font-weight:700;color:#0f172a;">
+                      ${safeTitle}
+                    </h1>
+                    <p style="margin:0;font-size:15px;line-height:1.55;color:#475569;">
+                      ${safeBody}
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 28px 20px 28px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${accentSoft};border-radius:10px;border:1px solid ${borderSoft};">
+                      <tr>
+                        <td style="padding:18px 20px;">
+                          <p style="margin:0 0 12px 0;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;">
+                            Özet
+                          </p>
+                          <p style="margin:0 0 8px 0;font-size:14px;line-height:1.5;color:#334155;">
+                            Vade: <strong style="color:#0f172a;">${safeDueDate}</strong>
+                          </p>
+                          <p style="margin:0;font-size:14px;line-height:1.5;color:#334155;">
+                            Kalan tutar: <strong style="color:#0f172a;">${safeAmount}</strong>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 28px 28px 28px;text-align:center;">
+                    <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.5;">
+                      Borç ve Alacak ekranından kaydı güncelleyebilirsiniz.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 8px 0 8px;text-align:center;">
+              <p style="margin:0;font-size:11px;color:#a1a1aa;line-height:1.5;">
+                © ${new Date().getFullYear()} IQfinansAI · Vade bildirimi
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 async function sendDebtAlertEmail(params: {
@@ -119,6 +225,7 @@ function buildTitleAndBody(params: {
   dueDateLabel: string;
   remainingLabel: string;
   overdueDays: number;
+  daysLeft: number;
 }): { title: string; body: string } {
   const {
     kind,
@@ -127,12 +234,14 @@ function buildTitleAndBody(params: {
     dueDateLabel,
     remainingLabel,
     overdueDays,
+    daysLeft,
   } = params;
   const label = debtLabel(direction);
 
   if (kind === "DUE_SOON_3") {
+    const safeDaysLeft = Math.max(1, daysLeft);
     return {
-      title: `${label} vadesi 3 gün kaldı`,
+      title: `${label} vadesi ${safeDaysLeft} gün kaldı`,
       body: `${counterparty} kaydı için vade ${dueDateLabel}. Kalan tutar ${remainingLabel}.`,
     };
   }
@@ -194,6 +303,7 @@ export async function evaluateDebtDueAlerts(userId: string): Promise<void> {
       userId,
       debtId: d.id,
       kind,
+      dueDateIso: due.toISOString(),
     });
     if (alreadySent) continue;
 
@@ -206,6 +316,7 @@ export async function evaluateDebtDueAlerts(userId: string): Promise<void> {
       dueDateLabel,
       remainingLabel,
       overdueDays: Math.max(1, Math.abs(daysLeft)),
+      daysLeft,
     });
 
     await notification.create({

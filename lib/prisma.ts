@@ -67,6 +67,7 @@ type NotificationDelegate = {
   create(args: { data: object }): Promise<NotificationRow>;
   update(args: { where: object; data: object }): Promise<NotificationRow>;
   updateMany(args: { where: object; data: object }): Promise<{ count: number }>;
+  deleteMany(args: { where: object }): Promise<{ count: number }>;
   delete(args: { where: object }): Promise<NotificationRow>;
   count(args?: object): Promise<number>;
 };
@@ -128,11 +129,15 @@ type EmailVerificationTokenDelegate = {
     where: { tokenHash: string };
     select?: { userId?: boolean; expiresAt?: boolean };
   }): Promise<Pick<EmailVerificationTokenRow, "userId" | "expiresAt"> | null>;
-  delete(args: { where: { tokenHash: string } }): Promise<EmailVerificationTokenRow>;
+  delete(args: {
+    where: { tokenHash: string };
+  }): Promise<EmailVerificationTokenRow>;
 };
 
 export const emailVerificationToken: EmailVerificationTokenDelegate = (
-  prisma as unknown as { emailVerificationToken: EmailVerificationTokenDelegate }
+  prisma as unknown as {
+    emailVerificationToken: EmailVerificationTokenDelegate;
+  }
 ).emailVerificationToken;
 
 type CategoryBudgetRow = {
