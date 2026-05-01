@@ -3,8 +3,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function DashboardPageSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
-        {[1, 2, 3, 4, 5].map((i) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
           <Skeleton key={i} className="h-36 rounded-xl" />
         ))}
       </div>
