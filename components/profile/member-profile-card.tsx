@@ -145,6 +145,8 @@ export function MemberProfileCard({
 
   const profileImageSrc = session?.user?.image ?? initial.image ?? undefined;
   const hasProfileImage = Boolean(profileImageSrc);
+  const canChangeProfileImage =
+    !avatarBusy && !saving && Boolean(session?.user);
 
   async function patchProfileImage(image: string | null) {
     if (!session?.user?.id || session.user.id !== initial.id) return;
@@ -387,15 +389,28 @@ export function MemberProfileCard({
         <form className="space-y-6" onSubmit={(e) => void onSubmit(e)}>
           <div className="rounded-xl border border-border/70 bg-muted/15 p-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
-              <Avatar className="h-20 w-20 shrink-0 ring-2 ring-border/60">
-                <AvatarImage src={profileImageSrc} alt="" />
-                <AvatarFallback className="text-lg font-semibold">
-                  {profileInitials(
-                    form.name || initial.name,
-                    session?.user?.email ?? initial.email,
-                  )}
-                </AvatarFallback>
-              </Avatar>
+              <button
+                type="button"
+                disabled={!canChangeProfileImage}
+                aria-label="Profil fotoğrafını değiştir"
+                className={cn(
+                  "shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                  canChangeProfileImage
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed",
+                )}
+                onClick={() => avatarFileInputRef.current?.click()}
+              >
+                <Avatar className="h-20 w-20 ring-2 ring-border/60">
+                  <AvatarImage src={profileImageSrc} alt="" />
+                  <AvatarFallback className="text-lg font-semibold">
+                    {profileInitials(
+                      form.name || initial.name,
+                      session?.user?.email ?? initial.email,
+                    )}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
               <div className="min-w-0 flex-1 space-y-2">
                 <p className="text-sm font-medium text-foreground">
                   Profil fotoğrafı
@@ -422,7 +437,7 @@ export function MemberProfileCard({
                     type="button"
                     variant="outline"
                     size="sm"
-                    disabled={avatarBusy || saving || !session?.user}
+                    disabled={!canChangeProfileImage}
                     className="cursor-pointer"
                     onClick={() => avatarFileInputRef.current?.click()}
                   >
@@ -434,7 +449,7 @@ export function MemberProfileCard({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      disabled={avatarBusy || saving || !session?.user}
+                      disabled={!canChangeProfileImage}
                       className="cursor-pointer text-muted-foreground hover:text-destructive"
                       onClick={() => void patchProfileImage(null)}
                     >
