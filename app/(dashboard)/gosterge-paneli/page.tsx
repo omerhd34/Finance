@@ -35,7 +35,6 @@ import {
 import { computeFinancialHealthScore } from "@/lib/financial-health-score";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
-import { endOfMonth, startOfMonth } from "date-fns";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 export default function DashboardPage() {
@@ -124,16 +123,21 @@ export default function DashboardPage() {
   }, [load]);
 
   const now = new Date();
-  const monthStart = startOfMonth(now);
-  const monthEnd = endOfMonth(now);
+  const { start: kpiPeriodStart, end: kpiPeriodEnd } =
+    getLastNMonthsPeriodRange(1, now, monthStartDay);
 
   const stats = useMemo(() => {
-    const totalIncome = sumByTypeInRange(items, "income", monthStart, monthEnd);
+    const totalIncome = sumByTypeInRange(
+      items,
+      "income",
+      kpiPeriodStart,
+      kpiPeriodEnd,
+    );
     const totalExpense = sumByTypeInRange(
       items,
       "expense",
-      monthStart,
-      monthEnd,
+      kpiPeriodStart,
+      kpiPeriodEnd,
     );
     const net = totalIncome - totalExpense;
     const bars = lastNMonthsBars(items, barsChartMonths, now, monthStartDay);
@@ -156,8 +160,8 @@ export default function DashboardPage() {
     };
   }, [
     items,
-    monthStart,
-    monthEnd,
+    kpiPeriodStart,
+    kpiPeriodEnd,
     now,
     barsChartMonths,
     pieChartMonths,
