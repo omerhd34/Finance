@@ -8,7 +8,7 @@ import {
   pnlTry,
   valueTry,
 } from "@/lib/investment-position-math";
-import { currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
+import { formatMoneyAmount } from "@/lib/utils";
 import type {
   InvestmentAssetType,
   InvestmentPosition,
@@ -58,8 +58,6 @@ export function InvestmentsPositionsTabs({
 }: Props) {
   const tableColSpan = tab === "GOLD" ? 7 : 8;
   const tabHasTitleAndCode = tab !== "GOLD";
-  const currencyChipClass =
-    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
 
   return (
     <Tabs value={tab} onValueChange={(v) => onTabChange(v as TabValue)}>
@@ -80,26 +78,16 @@ export function InvestmentsPositionsTabs({
       <TabsContent value={tab} className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <span>
-                {tab === "GOLD"
-                  ? "Altın kayıtları"
-                  : tab === "STOCK"
-                    ? "Hisse kayıtları"
-                    : tab === "FX"
-                      ? "Döviz kayıtları"
-                      : tab === "CRYPTO"
-                        ? "Kripto kayıtları"
-                        : "Kayıtlar"}
-              </span>
-              {tab === "GOLD" ||
-              tab === "FX" ||
-              tab === "STOCK" ||
-              tab === "CRYPTO" ? (
-                <span className={currencyChipClass}>
-                  {currencySymbolLabel(currency)}
-                </span>
-              ) : null}
+            <CardTitle className="text-base">
+              {tab === "GOLD"
+                ? "Altın kayıtları"
+                : tab === "STOCK"
+                  ? "Hisse kayıtları"
+                  : tab === "FX"
+                    ? "Döviz kayıtları"
+                    : tab === "CRYPTO"
+                      ? "Kripto kayıtları"
+                      : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (

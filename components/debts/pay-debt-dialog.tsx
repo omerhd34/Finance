@@ -53,7 +53,7 @@ export function PayDebtDialog({ open, onOpenChange, currency, onPay }: Props) {
             aşmayacak şekilde uygulanır.
           </p>
           <div className="space-y-2">
-            <Label>Tutar ({currencySymbolLabel(currency)})</Label>
+            <Label>Tutar</Label>
             <Input
               type="number"
               step="0.01"

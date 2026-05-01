@@ -2,11 +2,7 @@
 
 import { differenceInCalendarDays } from "date-fns";
 import { debtProgressPercent, debtRemaining } from "@/lib/debt-remaining";
-import {
-  currencySymbolLabel,
-  formatDateTR,
-  formatMoneyAmount,
-} from "@/lib/utils";
+import { formatDateTR, formatMoneyAmount } from "@/lib/utils";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,9 +33,6 @@ export function DebtCard({
 }: Props) {
   const rem = debtRemaining(d);
   const settled = rem <= 0;
-  const currencySymbol = currencySymbolLabel(currency);
-  const currencyChipClass =
-    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
   const daysLeft = d.dueDate
     ? differenceInCalendarDays(new Date(d.dueDate), new Date())
     : null;
@@ -50,7 +43,6 @@ export function DebtCard({
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="line-clamp-2 pr-2">{d.counterparty}</CardTitle>
           <div className="flex items-center gap-1.5">
-            <span className={currencyChipClass}>{currencySymbol}</span>
             {settled && (
               <Badge variant="secondary" className="shrink-0">
                 Kapandı

@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn, currencySymbolLabel } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { LogoLoading } from "@/components/ui/logo-loading";
 
 export type CategoryBudgetRow = {
@@ -63,8 +63,6 @@ export function BudgetsClient({ currency }: Props) {
   const [monthlyLimit, setMonthlyLimit] = useState("");
   const [threshold, setThreshold] = useState("80");
   const [emailAlerts, setEmailAlerts] = useState(true);
-  const currencyChipClass =
-    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -221,9 +219,6 @@ export function BudgetsClient({ currency }: Props) {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{b.category}</p>
-                        <span className={currencyChipClass}>
-                          {currencySymbolLabel(currency)}
-                        </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
                         {b.monthKey} dönemi
@@ -346,9 +341,7 @@ export function BudgetsClient({ currency }: Props) {
               )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="budget-limit">
-                Aylık limit ({currencySymbolLabel(currency)})
-              </Label>
+              <Label htmlFor="budget-limit">Aylık limit</Label>
               <Input
                 id="budget-limit"
                 inputMode="decimal"

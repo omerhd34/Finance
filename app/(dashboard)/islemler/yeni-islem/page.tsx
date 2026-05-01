@@ -12,7 +12,6 @@ import { transactionCreateSchema } from "@/lib/validations";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import { displayAmountToTry, tryAmountToDisplay } from "@/lib/currency";
 import { normalizePlanTier } from "@/lib/plan-tier";
-import { currencySymbolLabel } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
@@ -249,9 +248,7 @@ export default function NewTransactionPage() {
             </Tabs>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">
-                Tutar ({currencySymbolLabel(currency)})
-              </Label>
+              <Label htmlFor="amount">Tutar</Label>
               <Input
                 id="amount"
                 type="number"

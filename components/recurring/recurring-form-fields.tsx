@@ -3,7 +3,6 @@
 import type { UseFormReturn } from "react-hook-form";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,11 +22,10 @@ function categoriesFor(t: "income" | "expense") {
 
 type Props = {
   form: UseFormReturn<RecurringFormValues>;
-  currency: string;
   variant: "new" | "edit";
 };
 
-export function RecurringFormFields({ form, currency, variant }: Props) {
+export function RecurringFormFields({ form, variant }: Props) {
   const typeTab = form.watch("type");
 
   return (
@@ -55,7 +53,7 @@ export function RecurringFormFields({ form, currency, variant }: Props) {
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div className="space-y-2">
-          <Label>Tutar ({currencySymbolLabel(currency)})</Label>
+          <Label>Tutar</Label>
           <Input
             type="number"
             step="0.01"

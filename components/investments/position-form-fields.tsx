@@ -16,7 +16,6 @@ import {
   goldMiktarLabel,
 } from "@/lib/gold-subtypes";
 import type { PositionFormValues } from "@/lib/investments-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -326,7 +325,7 @@ export function PositionFormFields({
       </div>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="space-y-2">
-          <Label>Alış fiyatı ({currencySymbolLabel(currency)})</Label>
+          <Label>Alış fiyatı</Label>
           <Input
             type="number"
             step="0.01"
@@ -334,7 +333,7 @@ export function PositionFormFields({
           />
         </div>
         <div className="space-y-2">
-          <Label>Güncel fiyat ({currencySymbolLabel(currency)})</Label>
+          <Label>Güncel fiyat</Label>
           <Controller
             name="marketPricePerUnit"
             control={form.control}

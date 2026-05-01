@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import type { Transaction } from "@/types/transaction";
-import {
-  cn,
-  currencySymbolLabel,
-  formatMoneyAmount,
-  formatDateShort,
-} from "@/lib/utils";
+import { cn, formatMoneyAmount, formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,7 +79,7 @@ export function TransactionsTableCard({
                     className="inline-flex w-full items-center justify-end gap-1 text-right transition-colors hover:text-foreground cursor-pointer"
                     aria-label="Tutara göre sırala"
                   >
-                    Tutar ({currencySymbolLabel(currency)})
+                    Tutar
                   </button>
                 </TableHead>
                 <TableHead>Tür</TableHead>

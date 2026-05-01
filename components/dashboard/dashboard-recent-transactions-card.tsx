@@ -12,11 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Transaction } from "@/types/transaction";
-import {
-  currencySymbolLabel,
-  formatDateShort,
-  formatMoneyAmount,
-} from "@/lib/utils";
+import { formatDateShort, formatMoneyAmount } from "@/lib/utils";
 
 type Props = {
   transactions: Transaction[];
@@ -27,9 +23,6 @@ export function DashboardRecentTransactionsCard({
   transactions,
   currency,
 }: Props) {
-  const currencyChipClass =
-    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
-
   return (
     <Card className="overflow-hidden">
       <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
@@ -70,12 +63,7 @@ export function DashboardRecentTransactionsCard({
               <TableHead>Açıklama</TableHead>
               <TableHead>Tür</TableHead>
               <TableHead className="text-right">
-                <div className="flex items-center justify-end gap-2">
-                  Tutar
-                  <span className={currencyChipClass}>
-                    {currencySymbolLabel(currency)}
-                  </span>
-                </div>
+                <div className="flex items-center justify-end gap-2">Tutar</div>
               </TableHead>
             </TableRow>
           </TableHeader>

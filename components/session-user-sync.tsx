@@ -67,7 +67,8 @@ export function SessionUserSync() {
     let cancelled = false;
     void (async () => {
       try {
-        const { data } = await apiClient.get<ProfilePayload>("/api/user/profile");
+        const { data } =
+          await apiClient.get<ProfilePayload>("/api/user/profile");
         if (cancelled) return;
         dispatch(
           setUser({

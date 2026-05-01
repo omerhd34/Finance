@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { parseApiErrorForUser } from "@/lib/email-verification-client";
 import { newDebtSchema, type NewDebtFormValues } from "@/lib/debts-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
@@ -37,12 +36,7 @@ type Props = {
   onSubmit: (values: NewDebtFormValues) => Promise<void>;
 };
 
-export function NewDebtDialog({
-  open,
-  onOpenChange,
-  currency,
-  onSubmit,
-}: Props) {
+export function NewDebtDialog({ open, onOpenChange, onSubmit }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<NewDebtFormValues>({
@@ -109,10 +103,6 @@ export function NewDebtDialog({
               </p>
             </div>
           ) : null}
-          <p className="text-xs text-muted-foreground">
-            Tutarlar {currencySymbolLabel(currency)} cinsinden; kayıt TL olarak
-            saklanır.
-          </p>
           <div className="space-y-2">
             <Label>Tür</Label>
             <Select
@@ -145,7 +135,7 @@ export function NewDebtDialog({
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
+              <Label>Toplam tutar</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -153,9 +143,7 @@ export function NewDebtDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>
-                Şu ana kadar ödenen ({currencySymbolLabel(currency)})
-              </Label>
+              <Label>Şu ana kadar ödenen</Label>
               <Input
                 type="number"
                 step="0.01"

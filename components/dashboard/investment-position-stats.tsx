@@ -1,4 +1,4 @@
-import { cn, currencySymbolLabel, formatMoneyAmount } from "@/lib/utils";
+import { cn, formatMoneyAmount } from "@/lib/utils";
 
 export type InvestmentAggregate = {
   count: number;
@@ -21,9 +21,6 @@ export function InvestmentPositionStats({
   const valueClass =
     "mt-2.5 w-full min-w-0 max-w-full text-right text-xl font-semibold tabular-nums leading-snug tracking-tight wrap-break-word [overflow-wrap:anywhere]";
 
-  const currencyChipClass =
-    "inline-flex items-center rounded-md border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground";
-
   return (
     <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3.5 lg:gap-4">
       <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
@@ -35,9 +32,6 @@ export function InvestmentPositionStats({
       <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
         <p className="flex flex-wrap items-center gap-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Toplam maliyet</span>
-          <span className={currencyChipClass}>
-            {currencySymbolLabel(currency)}
-          </span>
         </p>
         <p className={cn(valueClass, "text-foreground")}>
           {formatMoneyAmount(costTry, currency)}
@@ -46,9 +40,6 @@ export function InvestmentPositionStats({
       <div className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/50 bg-muted/20 p-4 shadow-sm ring-1 ring-black/4 dark:ring-white/6 sm:p-4">
         <p className="flex flex-wrap items-center gap-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Güncel değer</span>
-          <span className={currencyChipClass}>
-            {currencySymbolLabel(currency)}
-          </span>
         </p>
         <p className={cn(valueClass, "text-foreground")}>
           {formatMoneyAmount(valueTry, currency)}
@@ -68,9 +59,6 @@ export function InvestmentPositionStats({
       >
         <p className="flex flex-wrap items-center gap-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Kar / Zarar</span>
-          <span className={currencyChipClass}>
-            {currencySymbolLabel(currency)}
-          </span>
         </p>
         <p
           className={cn(

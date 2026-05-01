@@ -9,7 +9,6 @@ import {
   transactionEditFormSchema,
   type TransactionEditFormValues,
 } from "@/lib/validations";
-import { currencySymbolLabel } from "@/lib/utils";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { Transaction } from "@/types/transaction";
 import { Button } from "@/components/ui/button";
@@ -134,7 +133,7 @@ export function EditTransactionDialog({
               </TabsList>
             </Tabs>
             <div className="space-y-2">
-              <Label>Tutar ({currencySymbolLabel(currency)})</Label>
+              <Label>Tutar</Label>
               <Input
                 type="number"
                 step="0.01"

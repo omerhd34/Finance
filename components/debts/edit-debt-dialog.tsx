@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tryAmountToDisplay } from "@/lib/currency";
 import { editDebtSchema, type NewDebtFormValues } from "@/lib/debts-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -104,7 +103,7 @@ export function EditDebtDialog({
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Toplam tutar ({currencySymbolLabel(currency)})</Label>
+              <Label>Toplam tutar</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -112,7 +111,7 @@ export function EditDebtDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Ödenen ({currencySymbolLabel(currency)})</Label>
+              <Label>Ödenen</Label>
               <Input
                 type="number"
                 step="0.01"
