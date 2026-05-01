@@ -3,7 +3,11 @@ import {
   GoogleGenerativeAIFetchError,
 } from "@google/generative-ai";
 import { z } from "zod";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
+import {
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+  isValidExpenseSubcategory,
+} from "@/lib/categories";
 
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503]);
 
@@ -42,6 +46,7 @@ const rawOcrSchema = z.object({
   type: z.enum(["income", "expense"]),
   amountTry: z.number().positive(),
   category: z.string().min(1),
+  subcategory: z.string().max(200).nullable().optional(),
   description: z.string().max(2000).nullable().optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
@@ -55,9 +60,11 @@ Kurallar:
 - type: Fiş/fatura genelde giderdir; maaş bordrosu veya gelir belgesi ise "income" seç.
 - category: Aşağıdaki izin verilen listelerden TAM olarak bir değer seç; emin değilsen "Diğer" kullan.
 - description: Kısa mağaza veya belge özeti (opsiyonel, Türkçe).
+- subcategory: Yalnızca type expense ise, seçilen gider kategorisine uygun TEK alt kategori (aşağıdaki haritadan); emin değil veya yoksa bu alanı atla veya null bırak.
 - date: Belge tarihi YYYY-MM-DD; okunamıyorsa bugünün tarihini tahmin etme, mümkün olan en iyi tarihi çıkar.
 
 Gider kategorileri (yalnızca bunlardan biri, type expense ise): ${EXPENSE_CATEGORIES.join(", ")}
+Alt kategori: Faturada açıkça belli oluyorsa, fiş türüne göre en uygun alt kategoriyi seç; değer, o ana kategori için geçerli alt kategorilerden biriyle TAM eşleşmeli. Geçerli eşleşmeler örnek: "Fatura" + "Elektrik", "Market Alışverişi" + "Süpermarket", "Yemek Alışverişi" + "Restoran / kafe". Emin değilsen subcategory alanını verme.
 Gelir kategorileri (yalnızca bunlardan biri, type income ise): ${INCOME_CATEGORIES.join(", ")}
 
 Yanıtın YALNIZCA tek bir JSON nesnesi olsun; markdown kod çiti veya açıklama metni ekleme.`;
@@ -70,6 +77,18 @@ function normalizeCategory(
   const allowed = type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
   if ((allowed as readonly string[]).includes(trimmed)) return trimmed;
   return "Diğer";
+}
+
+function normalizeOcrSubcategory(
+  type: "income" | "expense",
+  category: string,
+  sub: string | null | undefined,
+): string | null {
+  if (type !== "expense") return null;
+  const t = sub?.trim();
+  if (!t) return null;
+  if (!isValidExpenseSubcategory(category, t)) return null;
+  return t;
 }
 
 function extractJsonObject(text: string): unknown {
@@ -124,9 +143,11 @@ export async function scanReceiptImageWithGemini(
           throw new Error("Model yanıtı beklenen alanlara uymuyor");
         }
         const d = parsed.data;
+        const category = normalizeCategory(d.type, d.category);
         return {
           ...d,
-          category: normalizeCategory(d.type, d.category),
+          category,
+          subcategory: normalizeOcrSubcategory(d.type, category, d.subcategory),
           description: d.description?.trim() || undefined,
         };
       } catch (e) {

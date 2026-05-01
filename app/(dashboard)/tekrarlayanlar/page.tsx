@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/currency";
+import { formValueToExpenseSubcategory } from "@/lib/categories";
 import { isRecurringReminderDue } from "@/lib/recurring-reminder";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -63,6 +64,10 @@ export default function RecurringPage() {
       type: values.type,
       amount: displayAmountToTry(values.amount, amountEntryCurrency),
       category: values.category,
+      subcategory:
+        values.type === "expense"
+          ? (formValueToExpenseSubcategory(values.subcategory) ?? null)
+          : null,
       description: values.description?.trim()
         ? values.description.trim()
         : null,

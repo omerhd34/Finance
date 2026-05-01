@@ -41,6 +41,7 @@ export async function POST(req: Request) {
       type,
       amount,
       category,
+      subcategory,
       description,
       frequency,
       interval,
@@ -51,6 +52,10 @@ export async function POST(req: Request) {
     } = parsed.data;
 
     const nextDueDate = normalizeDueDate(startDate);
+    const sub =
+      type === "expense"
+        ? (subcategory?.trim() ? subcategory.trim() : null)
+        : null;
 
     const row = await recurringRule.create({
       data: {
@@ -58,6 +63,7 @@ export async function POST(req: Request) {
         type,
         amount,
         category,
+        subcategory: sub,
         description: description?.trim() ? description.trim() : null,
         frequency,
         interval,

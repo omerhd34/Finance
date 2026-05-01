@@ -8,6 +8,7 @@ import {
   RECURRING_MODE_LABEL,
 } from "@/lib/dashboard-recurring-labels";
 import type { RecurringRule } from "@/types/recurring";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { formatDateShort, formatMoneyAmount } from "@/lib/utils";
 
 type Props = {
@@ -81,7 +82,10 @@ export function DashboardRecurringCard({
                       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-x-6">
                         <div className="min-w-0 space-y-0.5">
                           <p className="font-semibold leading-snug">
-                            {rule.category}
+                            {formatExpenseCategoryLabel(
+                              rule.category,
+                              rule.subcategory,
+                            )}
                           </p>
                           {rule.description ? (
                             <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Transaction } from "@/types/transaction";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { cn, formatMoneyAmount, formatDateShort } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,8 +87,15 @@ export function TransactionsTableCard({
                 <TableHead className="text-right">İşlemler</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {loading ? (
+            <TableBody
+              aria-busy={loading}
+              className={cn(
+                loading &&
+                  items.length > 0 &&
+                  "pointer-events-none opacity-55 transition-opacity",
+              )}
+            >
+              {loading && items.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="p-0">
                     <LoadingMessage variant="table" />
@@ -125,7 +133,10 @@ export function TransactionsTableCard({
                             href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
                             className="text-primary underline-offset-4 hover:underline"
                           >
-                            {t.category}
+                            {formatExpenseCategoryLabel(
+                              t.category,
+                              t.subcategory,
+                            )}
                           </Link>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
@@ -174,13 +185,18 @@ export function TransactionsTableCard({
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border px-4 py-4 sm:flex-row sm:px-6">
           <p className="text-sm text-muted-foreground">
             Toplam {total} kayıt — sayfa {page} / {totalPages}
+            {loading && items.length > 0 ? (
+              <span className="ml-2 text-xs text-muted-foreground/90">
+                Yükleniyor…
+              </span>
+            ) : null}
           </p>
           <div className="flex gap-2">
             <Button
               variant="outline"
               className="cursor-pointer"
               size="sm"
-              disabled={page <= 1}
+              disabled={loading || page <= 1}
               onClick={onPrevPage}
             >
               Önceki
@@ -189,7 +205,7 @@ export function TransactionsTableCard({
               variant="outline"
               className="cursor-pointer"
               size="sm"
-              disabled={page >= totalPages}
+              disabled={loading || page >= totalPages}
               onClick={onNextPage}
             >
               Sonraki

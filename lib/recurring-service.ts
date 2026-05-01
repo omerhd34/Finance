@@ -110,6 +110,12 @@ async function runProcessAutoRecurringForUser(
             type: rule.type,
             amount: rule.amount,
             category: rule.category,
+            subcategory:
+              rule.type === "expense"
+                ? rule.subcategory?.trim()
+                  ? rule.subcategory.trim()
+                  : null
+                : null,
             description: txDescription(rule.description, true),
             date: cursor,
             userId,
@@ -190,6 +196,12 @@ export async function fulfillRecurringReminder(
         type: rule.type,
         amount: rule.amount,
         category: rule.category,
+        subcategory:
+          rule.type === "expense"
+            ? rule.subcategory?.trim()
+              ? rule.subcategory.trim()
+              : null
+            : null,
         description: txDescription(rule.description, true),
         date: due,
         userId,

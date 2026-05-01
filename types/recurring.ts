@@ -4,6 +4,7 @@ export type RecurringRule = {
   type: string;
   amount: number;
   category: string;
+  subcategory?: string | null;
   description: string | null;
   frequency: string;
   interval: number;

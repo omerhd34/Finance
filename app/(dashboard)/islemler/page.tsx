@@ -27,6 +27,7 @@ import {
   getLastNMonthsPeriodRange,
   lastNMonthsBars,
 } from "@/lib/dashboard-stats";
+import { formValueToExpenseSubcategory } from "@/lib/categories";
 import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
 import { DeleteTransactionDialog } from "@/components/transactions/delete-transaction-dialog";
 import { EditTransactionDialog } from "@/components/transactions/edit-transaction-dialog";
@@ -191,6 +192,10 @@ function TransactionsPageContent() {
         body: {
           amount: displayAmountToTry(values.amount, currency),
           category: values.category,
+          subcategory:
+            values.type === "expense"
+              ? (formValueToExpenseSubcategory(values.subcategory) ?? null)
+              : null,
           description: values.description || undefined,
           date: d.toISOString(),
           type: t.recurringRuleId || t.recurringSlotKey ? t.type : values.type,
@@ -215,7 +220,10 @@ function TransactionsPageContent() {
     void loadChartTransactions();
   }
 
-  if (loading || chartLoading) {
+  const showFullPageLoader =
+    chartLoading || (loading && items.length === 0);
+
+  if (showFullPageLoader) {
     return <LogoLoading />;
   }
 

@@ -8,7 +8,7 @@ import {
   normalizeDueDate,
   type RecurringFrequency,
 } from "@/lib/recurring-schedule";
-import { recurringUpdateSchema } from "@/lib/validations";
+import { recurringCreateSchema } from "@/lib/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -18,6 +18,20 @@ function isSameCalendarDate(a: Date, b: Date): boolean {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+function normalizeRecurringLabel(s: string | null | undefined): string {
+  return (s ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+/** `[Tekrarlayan] …` sonrası kullanıcı metni; biçim farklarını tolere etmek için. */
+function extractTekrarlayanSuffix(
+  description: string | null | undefined,
+): string | null {
+  if (!description?.trim()) return null;
+  const m = description.trim().match(/^\[\s*Tekrarlayan\s*\]\s*(.*)$/i);
+  if (!m) return null;
+  return m[1] ?? "";
 }
 
 export async function GET(_req: Request, context: RouteContext) {
@@ -54,8 +68,58 @@ export async function PUT(req: Request, context: RouteContext) {
     if (!existing) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
-    const body: unknown = await req.json();
-    const parsed = recurringUpdateSchema.safeParse(body);
+    const raw: unknown = await req.json();
+    const body =
+      typeof raw === "object" && raw !== null
+        ? (raw as Record<string, unknown>)
+        : {};
+
+    const merged = {
+      type: (body.type as string | undefined) ?? existing.type,
+      amount: (body.amount as number | undefined) ?? existing.amount,
+      category: (body.category as string | undefined) ?? existing.category,
+      subcategory:
+        body.subcategory !== undefined
+          ? (body.subcategory as string | null)
+          : existing.subcategory,
+      description:
+        body.description !== undefined
+          ? (body.description as string | null | undefined)
+          : existing.description,
+      frequency: (body.frequency as string | undefined) ?? existing.frequency,
+      interval: (body.interval as number | undefined) ?? existing.interval,
+      startDate:
+        body.startDate !== undefined
+          ? new Date(body.startDate as string)
+          : new Date(existing.startDate),
+      endDate:
+        body.endDate !== undefined
+          ? body.endDate === null
+            ? null
+            : new Date(body.endDate as string)
+          : existing.endDate
+            ? new Date(existing.endDate)
+            : null,
+      mode: (body.mode as string | undefined) ?? existing.mode,
+      isActive:
+        body.isActive !== undefined
+          ? (body.isActive as boolean)
+          : existing.isActive,
+    };
+
+    const parsed = recurringCreateSchema.safeParse({
+      type: merged.type,
+      amount: merged.amount,
+      category: merged.category,
+      subcategory: merged.subcategory ?? undefined,
+      description: merged.description,
+      frequency: merged.frequency,
+      interval: merged.interval,
+      startDate: merged.startDate,
+      endDate: merged.endDate,
+      mode: merged.mode,
+      isActive: merged.isActive,
+    });
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten().fieldErrors },
@@ -64,11 +128,10 @@ export async function PUT(req: Request, context: RouteContext) {
     }
     const data = parsed.data;
 
-    const startDate = data.startDate ?? new Date(existing.startDate);
-    const frequency = data.frequency ?? existing.frequency;
-    const interval = data.interval ?? existing.interval;
-    const endDate =
-      data.endDate !== undefined ? data.endDate : existing.endDate;
+    const startDate = data.startDate;
+    const frequency = data.frequency;
+    const interval = data.interval;
+    const endDate = data.endDate ?? null;
 
     if (endDate && startDate > endDate) {
       return NextResponse.json(
@@ -79,13 +142,9 @@ export async function PUT(req: Request, context: RouteContext) {
 
     let nextDueDate: Date = new Date(existing.nextDueDate);
     const scheduleChanged =
-      (data.startDate !== undefined &&
-        !isSameCalendarDate(
-          new Date(data.startDate),
-          new Date(existing.startDate),
-        )) ||
-      (data.frequency !== undefined && data.frequency !== existing.frequency) ||
-      (data.interval !== undefined && data.interval !== existing.interval);
+      !isSameCalendarDate(new Date(startDate), new Date(existing.startDate)) ||
+      frequency !== existing.frequency ||
+      interval !== existing.interval;
     if (scheduleChanged) {
       nextDueDate = alignNextDueToFuture(
         normalizeDueDate(startDate),
@@ -93,7 +152,7 @@ export async function PUT(req: Request, context: RouteContext) {
         interval,
         new Date(),
       );
-    } else if ((data.mode ?? existing.mode) === "AUTO") {
+    } else if (data.mode === "AUTO") {
       const lastGenerated = await prisma.transaction.findFirst({
         where: {
           userId: session.user.id,
@@ -114,27 +173,70 @@ export async function PUT(req: Request, context: RouteContext) {
       }
     }
 
-    const row = await recurringRule.update({
-      where: { id },
-      data: {
-        ...(data.type !== undefined ? { type: data.type } : {}),
-        ...(data.amount !== undefined ? { amount: data.amount } : {}),
-        ...(data.category !== undefined ? { category: data.category } : {}),
-        ...(data.description !== undefined
-          ? {
-              description: data.description?.trim()
-                ? data.description.trim()
-                : null,
-            }
-          : {}),
-        ...(data.frequency !== undefined ? { frequency: data.frequency } : {}),
-        ...(data.interval !== undefined ? { interval: data.interval } : {}),
-        ...(data.startDate !== undefined ? { startDate: data.startDate } : {}),
-        ...(data.endDate !== undefined ? { endDate: data.endDate } : {}),
-        ...(data.mode !== undefined ? { mode: data.mode } : {}),
-        ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
-        nextDueDate,
-      },
+    const sub =
+      data.type === "expense"
+        ? data.subcategory?.trim()
+          ? data.subcategory.trim()
+          : null
+        : null;
+
+    const row = await prisma.$transaction(async (tx) => {
+      const updated = await tx.recurringRule.update({
+        where: { id },
+        data: {
+          type: data.type,
+          amount: data.amount,
+          category: data.category,
+          subcategory: sub,
+          description: data.description?.trim()
+            ? data.description.trim()
+            : null,
+          frequency: data.frequency,
+          interval: data.interval,
+          startDate: data.startDate,
+          endDate: data.endDate ?? null,
+          mode: data.mode,
+          isActive: data.isActive,
+          nextDueDate,
+        },
+      });
+      await tx.transaction.updateMany({
+        where: { userId: session.user.id, recurringRuleId: id },
+        data: {
+          category: data.category,
+          subcategory: sub,
+        },
+      });
+
+      const ruleNoteNorm = normalizeRecurringLabel(existing.description);
+      if (ruleNoteNorm) {
+        const orphans = await tx.transaction.findMany({
+          where: {
+            userId: session.user.id,
+            recurringRuleId: null,
+            description: { contains: "Tekrarlayan" },
+          },
+          select: { id: true, description: true },
+        });
+        const orphanIds = orphans
+          .filter((row) => {
+            const suffix = extractTekrarlayanSuffix(row.description);
+            if (suffix === null) return false;
+            return normalizeRecurringLabel(suffix) === ruleNoteNorm;
+          })
+          .map((r) => r.id);
+        if (orphanIds.length > 0) {
+          await tx.transaction.updateMany({
+            where: { id: { in: orphanIds } },
+            data: {
+              category: data.category,
+              subcategory: sub,
+              recurringRuleId: id,
+            },
+          });
+        }
+      }
+      return updated;
     });
     return NextResponse.json(row);
   } catch {

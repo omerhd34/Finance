@@ -3,6 +3,7 @@ import type {
   TVirtualFileSystem,
 } from "pdfmake/interfaces";
 import type { Transaction } from "@/types/transaction";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import {
   currencySymbolLabel,
   formatDateShort,
@@ -24,7 +25,7 @@ export async function downloadTransactionsPdf(
     ["Tarih", "Kategori", "Açıklama", "Tutar (" + sym + ")", "Tür"],
     ...rows.map((t) => [
       formatDateShort(t.date),
-      t.category,
+      formatExpenseCategoryLabel(t.category, t.subcategory),
       t.description ?? "—",
       formatMoneyAmount(t.amount, currency),
       t.type === "income" ? "Gelir" : "Gider",

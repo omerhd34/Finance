@@ -110,12 +110,18 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    const { type, amount, category, description, date } = parsed.data;
+    const { type, amount, category, subcategory, description, date } =
+      parsed.data;
+    const sub =
+      type === "expense"
+        ? (subcategory?.trim() ? subcategory.trim() : null)
+        : null;
     const tx = await prisma.transaction.create({
       data: {
         type,
         amount,
         category,
+        subcategory: sub,
         description: description ?? null,
         date,
         userId: session.user.id,

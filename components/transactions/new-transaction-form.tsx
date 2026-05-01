@@ -6,8 +6,17 @@ import { useFieldArray, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
-import { transactionCreateSchema } from "@/lib/validations";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
+import {
+  transactionBodyFieldsSchema,
+} from "@/lib/validations";
+import {
+  EXPENSE_CATEGORIES,
+  EXPENSE_SUBCATEGORY_NONE,
+  INCOME_CATEGORIES,
+  expenseSubcategoryToFormValue,
+  formValueToExpenseSubcategory,
+} from "@/lib/categories";
+import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import { displayAmountToTry, tryAmountToDisplay } from "@/lib/currency";
 import { normalizePlanTier } from "@/lib/plan-tier";
 import { apiClient } from "@/lib/api-client";
@@ -35,10 +44,11 @@ import {
 } from "@/components/ui/card";
 import { Plus, ScanLine, Trash2 } from "lucide-react";
 
-const singleTransactionFormSchema = transactionCreateSchema
+const singleTransactionFormSchema = transactionBodyFieldsSchema
   .omit({ date: true, type: true })
   .extend({
     date: z.string().min(1, "Tarih seçin"),
+    subcategory: z.string().optional(),
   });
 
 const splitExpenseFormSchema = z.object({
@@ -49,6 +59,7 @@ const splitExpenseFormSchema = z.object({
       z.object({
         amount: z.number().positive("Her satırda pozitif tutar girin"),
         category: z.string().min(1, "Kategori seçin"),
+        subcategory: z.string().optional(),
         note: z.string().optional(),
       }),
     )
@@ -113,9 +124,17 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     defaultValues: {
       amount: 0,
       category: EXPENSE_CATEGORIES[0],
+      subcategory: EXPENSE_SUBCATEGORY_NONE,
       description: "",
       date: new Date().toISOString().slice(0, 10),
-      lines: [{ amount: 0, category: EXPENSE_CATEGORIES[0], note: "" }],
+      lines: [
+        {
+          amount: 0,
+          category: EXPENSE_CATEGORIES[0],
+          subcategory: EXPENSE_SUBCATEGORY_NONE,
+          note: "",
+        },
+      ],
     },
   });
 
@@ -168,6 +187,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         type: "income" | "expense";
         amountTry: number;
         category: string;
+        subcategory?: string | null;
         description: string | null;
         date: string;
       };
@@ -180,6 +200,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
             {
               amount: tryAmountToDisplay(row.amountTry, currency),
               category: row.category,
+              subcategory: expenseSubcategoryToFormValue(row.subcategory),
               note: row.description ?? "",
             },
           ],
@@ -188,6 +209,11 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         setValue("description", "", { shouldValidate: true });
       } else {
         setValue("category", row.category, { shouldValidate: true });
+        setValue(
+          "subcategory",
+          expenseSubcategoryToFormValue(row.subcategory),
+          { shouldValidate: true },
+        );
         setValue("amount", tryAmountToDisplay(row.amountTry, currency), {
           shouldValidate: true,
         });
@@ -212,6 +238,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
           type: "expense" as const,
           amount: displayAmountToTry(line.amount, currency),
           category: line.category,
+          subcategory: formValueToExpenseSubcategory(line.subcategory) ?? null,
           description: combineLineDescription(values.description, line.note),
           date: d.toISOString(),
         }));
@@ -221,6 +248,10 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
           type: typeTab,
           amount: displayAmountToTry(values.amount, currency),
           category: values.category,
+          subcategory:
+            typeTab === "expense"
+              ? (formValueToExpenseSubcategory(values.subcategory) ?? null)
+              : null,
           description: values.description || undefined,
           date: d.toISOString(),
         });
@@ -229,9 +260,17 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       reset({
         amount: 0,
         category: EXPENSE_CATEGORIES[0],
+        subcategory: EXPENSE_SUBCATEGORY_NONE,
         description: "",
         date: new Date().toISOString().slice(0, 10),
-        lines: [{ amount: 0, category: EXPENSE_CATEGORIES[0], note: "" }],
+        lines: [
+          {
+            amount: 0,
+            category: EXPENSE_CATEGORIES[0],
+            subcategory: EXPENSE_SUBCATEGORY_NONE,
+            note: "",
+          },
+        ],
       });
       setSplitExpense(false);
       setTypeTab("expense");
@@ -334,6 +373,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
             "category",
             t === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0],
           );
+          setValue("subcategory", EXPENSE_SUBCATEGORY_NONE);
         }}
       >
         <TabsList className="grid w-full grid-cols-2">
@@ -362,6 +402,8 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                     {
                       amount: getValues("amount") || 0,
                       category: getValues("category") || EXPENSE_CATEGORIES[0],
+                      subcategory:
+                        getValues("subcategory") ?? EXPENSE_SUBCATEGORY_NONE,
                       note: "",
                     },
                   ],
@@ -372,6 +414,10 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                 if (first) {
                   setValue("amount", first.amount);
                   setValue("category", first.category);
+                  setValue(
+                    "subcategory",
+                    first.subcategory ?? EXPENSE_SUBCATEGORY_NONE,
+                  );
                 }
                 clearErrors("lines");
               }
@@ -433,33 +479,28 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                     </p>
                   ) : null}
                 </div>
-                <div className="space-y-2">
-                  <Label>Kategori</Label>
-                  <Select
-                    value={watch(`lines.${index}.category`)}
-                    onValueChange={(v) =>
-                      setValue(`lines.${index}.category`, v, {
-                        shouldValidate: true,
-                      })
-                    }
-                  >
-                    <SelectTrigger className="cursor-pointer">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EXPENSE_CATEGORIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.lines?.[index]?.category ? (
-                    <p className="text-sm text-destructive">
-                      {errors.lines[index]?.category?.message}
-                    </p>
-                  ) : null}
-                </div>
+                <ExpenseCategoryPair
+                  category={watch(`lines.${index}.category`)}
+                  subcategory={
+                    watch(`lines.${index}.subcategory`) ??
+                    EXPENSE_SUBCATEGORY_NONE
+                  }
+                  onCategoryChange={(v) =>
+                    setValue(`lines.${index}.category`, v, {
+                      shouldValidate: true,
+                    })
+                  }
+                  onSubcategoryChange={(v) =>
+                    setValue(`lines.${index}.subcategory`, v, {
+                      shouldValidate: true,
+                    })
+                  }
+                />
+                {errors.lines?.[index]?.category ? (
+                  <p className="text-sm text-destructive">
+                    {errors.lines[index]?.category?.message}
+                  </p>
+                ) : null}
                 <div className="space-y-2">
                   <Label htmlFor={`nt-line-note-${index}`}>
                     Bu kalem notu (isteğe bağlı)
@@ -481,6 +522,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                 append({
                   amount: 0,
                   category: EXPENSE_CATEGORIES[0],
+                  subcategory: EXPENSE_SUBCATEGORY_NONE,
                   note: "",
                 })
               }
@@ -525,29 +567,40 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label>Kategori</Label>
-            <Select
-              value={watch("category")}
-              onValueChange={(v) => setValue("category", v)}
-            >
-              <SelectTrigger className="cursor-pointer">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.category && (
-              <p className="text-sm text-destructive">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
+          {typeTab === "expense" ? (
+            <ExpenseCategoryPair
+              category={watch("category")}
+              subcategory={
+                watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
+              }
+              onCategoryChange={(v) => setValue("category", v)}
+              onSubcategoryChange={(v) => setValue("subcategory", v)}
+            />
+          ) : (
+            <div className="space-y-2">
+              <Label>Kategori</Label>
+              <Select
+                value={watch("category")}
+                onValueChange={(v) => setValue("category", v)}
+              >
+                <SelectTrigger className="cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {errors.category && (
+            <p className="text-sm text-destructive">
+              {errors.category.message}
+            </p>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="nt-desc">Açıklama (isteğe bağlı)</Label>

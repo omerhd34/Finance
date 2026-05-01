@@ -1,4 +1,5 @@
 import type { Transaction } from "@/types/transaction";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { apiClient } from "@/lib/api-client";
 import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
 import { currencySymbolLabel, formatDateShort } from "@/lib/utils";
@@ -44,7 +45,7 @@ export function downloadTransactionsCsv(
     ...rows.map((t) =>
       [
         formatDateShort(t.date),
-        q(t.category),
+        q(formatExpenseCategoryLabel(t.category, t.subcategory)),
         q(t.description ?? ""),
         String(t.amount),
         t.type === "income" ? "Gelir" : "Gider",

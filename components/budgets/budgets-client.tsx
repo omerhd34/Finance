@@ -6,7 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { parseApiErrorForUser } from "@/lib/email-verification-client";
-import { EXPENSE_CATEGORIES } from "@/lib/categories";
+import {
+  EXPENSE_CATEGORIES,
+  EXPENSE_CATEGORY_TREE,
+  expenseCategorySelectGroupLabelClassName,
+} from "@/lib/categories";
 import { formatMoneyAmount } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +26,9 @@ import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -326,10 +332,23 @@ export function BudgetsClient({ currency }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {EXPENSE_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c} className="cursor-pointer">
-                      {c}
-                    </SelectItem>
+                  {EXPENSE_CATEGORY_TREE.map((g, i) => (
+                    <SelectGroup key={g.group}>
+                      <SelectLabel
+                        className={expenseCategorySelectGroupLabelClassName(i)}
+                      >
+                        {g.group}
+                      </SelectLabel>
+                      {g.categories.map((row) => (
+                        <SelectItem
+                          key={row.category}
+                          value={row.category}
+                          className="cursor-pointer"
+                        >
+                          {row.category}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   ))}
                 </SelectContent>
               </Select>

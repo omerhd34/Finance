@@ -33,6 +33,12 @@ export async function POST(req: Request) {
             type: item.type,
             amount: item.amount,
             category: item.category,
+            subcategory:
+              item.type === "expense"
+                ? item.subcategory?.trim()
+                  ? item.subcategory.trim()
+                  : null
+                : null,
             description: item.description ?? null,
             date: item.date,
             userId,

@@ -60,6 +60,7 @@ export async function PUT(req: Request, context: RouteContext) {
         { status: 400 },
       );
     }
+
     if (nextType === "CRYPTO" && (!tickerToSave || tickerToSave.length === 0)) {
       return NextResponse.json(
         { error: { ticker: ["Kripto kodu gerekli"] } },

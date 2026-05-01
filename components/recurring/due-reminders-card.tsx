@@ -2,6 +2,7 @@
 
 import { formatDateTR, formatMoney } from "@/lib/utils";
 import type { RecurringRule } from "@/types/recurring";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,7 +46,7 @@ export function DueRemindersCard({
           >
             <div>
               <p className="font-medium">
-                {r.category}
+                {formatExpenseCategoryLabel(r.category, r.subcategory)}
                 {r.description ? ` — ${r.description}` : ""}
               </p>
               <p className="text-sm text-muted-foreground">

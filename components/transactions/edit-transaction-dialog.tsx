@@ -9,7 +9,13 @@ import {
   transactionEditFormSchema,
   type TransactionEditFormValues,
 } from "@/lib/validations";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
+import {
+  EXPENSE_SUBCATEGORY_NONE,
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+  expenseSubcategoryToFormValue,
+} from "@/lib/categories";
+import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import type { Transaction } from "@/types/transaction";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -65,6 +71,7 @@ export function EditTransactionDialog({
       type: transaction.type === "income" ? "income" : "expense",
       amount: tryAmountToDisplay(transaction.amount, currency),
       category: transaction.category,
+      subcategory: expenseSubcategoryToFormValue(transaction.subcategory),
       description: transaction.description ?? "",
       date: new Date(transaction.date).toISOString().slice(0, 10),
     });
@@ -113,6 +120,10 @@ export function EditTransactionDialog({
                     shouldDirty: true,
                   });
                 }
+                form.setValue("subcategory", EXPENSE_SUBCATEGORY_NONE, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
               }}
             >
               <TabsList className="grid w-full grid-cols-2">
@@ -144,25 +155,39 @@ export function EditTransactionDialog({
                 Kayıt TL olarak saklanır.
               </p>
             </div>
-            <div className="space-y-2">
-              <Label>Kategori</Label>
-              <Select
-                value={form.watch("category")}
+            {selectedType === "expense" ? (
+              <ExpenseCategoryPair
+                category={form.watch("category")}
+                subcategory={
+                  form.watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
+                }
                 disabled={isRecurringTransaction}
-                onValueChange={(v) => form.setValue("category", v)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                onCategoryChange={(v) => form.setValue("category", v)}
+                onSubcategoryChange={(v) =>
+                  form.setValue("subcategory", v, { shouldValidate: true })
+                }
+              />
+            ) : (
+              <div className="space-y-2">
+                <Label>Kategori</Label>
+                <Select
+                  value={form.watch("category")}
+                  disabled={isRecurringTransaction}
+                  onValueChange={(v) => form.setValue("category", v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Açıklama</Label>
               <Textarea

@@ -81,6 +81,7 @@ export async function POST(req: Request) {
       type: parsed.type,
       amountTry: parsed.amountTry,
       category: parsed.category,
+      subcategory: parsed.subcategory ?? null,
       description: parsed.description ?? null,
       date: parsed.date,
     });

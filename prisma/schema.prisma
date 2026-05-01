@@ -82,6 +82,7 @@ model Transaction {
   type              String
   amount            Float
   category          String
+  subcategory       String?
   description       String?
   date              DateTime       @default(now())
   userId            String
@@ -102,6 +103,7 @@ model RecurringRule {
   type        String
   amount      Float
   category    String
+  subcategory String?
   description String?
   frequency   String
   interval    Int       @default(1)

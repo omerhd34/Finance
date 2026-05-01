@@ -52,12 +52,26 @@ export const updateRecurringRule = createAsyncThunk(
   "recurring/update",
   async (
     arg: { id: string; body: Record<string, unknown> },
-    { rejectWithValue },
+    { dispatch, getState, rejectWithValue },
   ) => {
     try {
       const { data } = await apiClient.put<RecurringRule>(
         `/api/recurring/${arg.id}`,
         arg.body,
+      );
+      const st = getState() as {
+        transactions: {
+          filters: TransactionFilters;
+          page: number;
+          pageSize: number;
+        };
+      };
+      await dispatch(
+        fetchTransactions({
+          filters: st.transactions.filters,
+          page: st.transactions.page,
+          pageSize: st.transactions.pageSize,
+        }),
       );
       return data;
     } catch (e: unknown) {

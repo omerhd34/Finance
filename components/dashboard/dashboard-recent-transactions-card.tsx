@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Transaction } from "@/types/transaction";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { formatDateShort, formatMoneyAmount } from "@/lib/utils";
 
 type Props = {
@@ -81,7 +82,9 @@ export function DashboardRecentTransactionsCard({
               transactions.map((t) => (
                 <TableRow key={t.id}>
                   <TableCell>{formatDateShort(t.date)}</TableCell>
-                  <TableCell>{t.category}</TableCell>
+                  <TableCell>
+                    {formatExpenseCategoryLabel(t.category, t.subcategory)}
+                  </TableCell>
                   <TableCell className="max-w-[140px] truncate">
                     {t.description ?? "—"}
                   </TableCell>

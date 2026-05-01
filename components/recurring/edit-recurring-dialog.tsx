@@ -8,6 +8,7 @@ import {
   tryAmountToDisplay,
   type UserDisplayCurrency,
 } from "@/lib/currency";
+import { expenseSubcategoryToFormValue } from "@/lib/categories";
 import { defaultRecurringFormValues } from "@/lib/recurring-defaults";
 import {
   recurringRuleFormSchema,
@@ -61,6 +62,7 @@ export function EditRecurringDialog({
       type: rule.type as "income" | "expense",
       amount: tryAmountToDisplay(rule.amount, dc),
       category: rule.category,
+      subcategory: expenseSubcategoryToFormValue(rule.subcategory),
       description: rule.description ?? "",
       frequency: rule.frequency as RecurringFormValues["frequency"],
       interval: rule.interval,
@@ -97,7 +99,9 @@ export function EditRecurringDialog({
               onAmountEntryCurrencyChange={setEntryCurrency}
             />
             <DialogFooter>
-              <Button type="submit">Kaydet</Button>
+              <Button type="submit" className="cursor-pointer">
+                Kaydet
+              </Button>
             </DialogFooter>
           </form>
         )}

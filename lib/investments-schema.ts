@@ -18,7 +18,7 @@ export const positionFormSchema = z
     if (data.assetType === "GOLD") {
       if (!data.goldSubtype) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Altın türü seçin",
           path: ["goldSubtype"],
         });
@@ -28,7 +28,7 @@ export const positionFormSchema = z
       const tit = data.title?.trim() ?? "";
       if (tit.length < 1) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Başlık gerekli",
           path: ["title"],
         });
@@ -36,7 +36,7 @@ export const positionFormSchema = z
       const t = data.ticker?.trim() ?? "";
       if (t.length < 1) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Hisse kodu gerekli",
           path: ["ticker"],
         });
@@ -46,7 +46,7 @@ export const positionFormSchema = z
       const t = data.ticker?.trim().toUpperCase() ?? "";
       if (t.length < 2) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Döviz seçin",
           path: ["ticker"],
         });
@@ -54,7 +54,7 @@ export const positionFormSchema = z
       const tit = data.title?.trim() ?? "";
       if (tit.length < 1) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Döviz seçin",
           path: ["title"],
         });
@@ -64,7 +64,7 @@ export const positionFormSchema = z
       const t = data.ticker?.trim().toUpperCase() ?? "";
       if (t.length < 1) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Kripto seçin",
           path: ["ticker"],
         });
@@ -72,7 +72,7 @@ export const positionFormSchema = z
       const tit = data.title?.trim() ?? "";
       if (tit.length < 1) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Kripto seçin",
           path: ["title"],
         });
@@ -83,7 +83,7 @@ export const positionFormSchema = z
       const n = Number(raw.replace(",", "."));
       if (!Number.isFinite(n) || n <= 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Geçerli bir fiyat girin veya boş bırakın",
           path: ["marketPricePerUnit"],
         });

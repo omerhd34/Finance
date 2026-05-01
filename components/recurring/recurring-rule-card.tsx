@@ -6,6 +6,7 @@ import {
 } from "@/lib/recurring-labels";
 import { formatDateTR, formatMoney } from "@/lib/utils";
 import type { RecurringRule } from "@/types/recurring";
+import { formatExpenseCategoryLabel } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,7 +29,9 @@ export function RecurringRuleCard({
     <Card>
       <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="truncate font-medium">{r.category}</p>
+          <p className="truncate font-medium">
+            {formatExpenseCategoryLabel(r.category, r.subcategory)}
+          </p>
           {r.description && (
             <p className="truncate text-sm text-muted-foreground">
               {r.description}

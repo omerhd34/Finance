@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { refineIncomeExpenseSubcategory } from "@/lib/categories";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/gold-subtypes";
 
 export const loginSchema = z.object({
@@ -58,13 +59,18 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const transactionCreateSchema = z.object({
+export const transactionBodyFieldsSchema = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.number().positive("Tutar pozitif olmalı"),
   category: z.string().min(1, "Kategori seçin"),
+  subcategory: z.union([z.string(), z.null()]).optional(),
   description: z.string().optional(),
   date: z.coerce.date(),
 });
+
+export const transactionCreateSchema = transactionBodyFieldsSchema.superRefine(
+  (data, ctx) => refineIncomeExpenseSubcategory(data, ctx, "subcategory"),
+);
 
 export const transactionBatchCreateSchema = z.object({
   items: z
@@ -73,13 +79,24 @@ export const transactionBatchCreateSchema = z.object({
     .max(30, "En fazla 30 kalem"),
 });
 
-export const transactionUpdateSchema = transactionCreateSchema.partial();
+export const transactionUpdateSchema = transactionBodyFieldsSchema.partial();
 
-export const transactionEditFormSchema = transactionCreateSchema
+export const transactionEditFormSchema = transactionBodyFieldsSchema
   .omit({ date: true })
   .extend({
     date: z.string().min(1),
-  });
+  })
+  .superRefine((data, ctx) =>
+    refineIncomeExpenseSubcategory(
+      {
+        type: data.type,
+        category: data.category,
+        subcategory: data.subcategory,
+      },
+      ctx,
+      "subcategory",
+    ),
+  );
 
 export type TransactionEditFormValues = z.infer<
   typeof transactionEditFormSchema
@@ -89,6 +106,7 @@ const recurringFieldsObject = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.number().positive("Tutar pozitif olmalı"),
   category: z.string().min(1, "Kategori seçin"),
+  subcategory: z.union([z.string(), z.null()]).optional(),
   description: z.string().optional().nullable(),
   frequency: z.enum(["WEEKLY", "MONTHLY", "YEARLY"]),
   interval: z.number().int().min(1).max(52),
@@ -105,7 +123,10 @@ export const recurringCreateSchema = recurringFieldsObject
   .refine((d) => !d.endDate || d.startDate <= d.endDate, {
     message: "Bitiş tarihi başlangıçtan önce olamaz",
     path: ["endDate"],
-  });
+  })
+  .superRefine((data, ctx) =>
+    refineIncomeExpenseSubcategory(data, ctx, "subcategory"),
+  );
 
 export const recurringUpdateSchema = recurringFieldsObject
   .partial()

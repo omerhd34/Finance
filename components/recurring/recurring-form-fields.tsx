@@ -7,7 +7,12 @@ import {
   tryAmountToDisplay,
   type UserDisplayCurrency,
 } from "@/lib/currency";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
+import {
+  EXPENSE_CATEGORIES,
+  EXPENSE_SUBCATEGORY_NONE,
+  INCOME_CATEGORIES,
+} from "@/lib/categories";
+import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import type { RecurringFormValues } from "@/lib/recurring-schema";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
@@ -52,6 +57,7 @@ export function RecurringFormFields({
             "category",
             t === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0],
           );
+          form.setValue("subcategory", EXPENSE_SUBCATEGORY_NONE);
         }}
       >
         <TabsList className="grid w-full grid-cols-2">
@@ -146,24 +152,35 @@ export function RecurringFormFields({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Kategori</Label>
-        <Select
-          value={form.watch("category")}
-          onValueChange={(v) => form.setValue("category", v)}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {categoriesFor(typeTab).map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {typeTab === "expense" ? (
+        <ExpenseCategoryPair
+          category={form.watch("category")}
+          subcategory={
+            form.watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
+          }
+          onCategoryChange={(v) => form.setValue("category", v)}
+          onSubcategoryChange={(v) => form.setValue("subcategory", v)}
+        />
+      ) : (
+        <div className="space-y-2">
+          <Label>Kategori</Label>
+          <Select
+            value={form.watch("category")}
+            onValueChange={(v) => form.setValue("category", v)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categoriesFor(typeTab).map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label>
