@@ -97,7 +97,6 @@ const nav = [
 const titles: Record<string, string> = {
   "/gosterge-paneli": "Ana Panel",
   "/islemler": "İşlemler",
-  "/islemler/yeni-islem": "Yeni İşlem",
   "/tekrarlayanlar": "Tekrarlayan işlemler",
   "/butceler": "Kategori bütçeleri",
   "/borc-ve-alacak": "Borç ve Alacak",

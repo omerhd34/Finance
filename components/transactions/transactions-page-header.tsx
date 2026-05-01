@@ -1,19 +1,24 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { NewTransactionDialog } from "./new-transaction-dialog";
 import { TransactionsExportDropdown } from "./transactions-export-dropdown";
 
 type Props = {
   exporting: "csv" | "pdf" | null;
   onExportCsv: () => void;
   onExportPdf: () => void;
+  newTransactionOpen: boolean;
+  onNewTransactionOpenChange: (open: boolean) => void;
+  onTransactionCreated: () => void | Promise<void>;
 };
 
 export function TransactionsPageHeader({
   exporting,
   onExportCsv,
   onExportPdf,
+  newTransactionOpen,
+  onNewTransactionOpenChange,
+  onTransactionCreated,
 }: Props) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -28,9 +33,11 @@ export function TransactionsPageHeader({
           onExportCsv={onExportCsv}
           onExportPdf={onExportPdf}
         />
-        <Button asChild className="cursor-pointer">
-          <Link href="/islemler/yeni-islem">Yeni İşlem Ekle</Link>
-        </Button>
+        <NewTransactionDialog
+          open={newTransactionOpen}
+          onOpenChange={onNewTransactionOpenChange}
+          onCreated={onTransactionCreated}
+        />
       </div>
     </div>
   );

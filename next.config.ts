@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         destination: "/yasal-bilgiler",
         permanent: true,
       },
+      {
+        source: "/islemler/yeni-islem",
+        destination: "/islemler",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

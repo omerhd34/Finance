@@ -57,6 +57,7 @@ function TransactionsPageContent() {
   const [pieChartMonths, setPieChartMonths] = useState(3);
   const [chartItems, setChartItems] = useState<Transaction[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
+  const [newTransactionOpen, setNewTransactionOpen] = useState(false);
 
   const loadChartTransactions = useCallback(async () => {
     setChartLoading(true);
@@ -209,6 +210,11 @@ function TransactionsPageContent() {
     void loadChartTransactions();
   }
 
+  async function afterTransactionCreated() {
+    await dispatch(fetchTransactions({ filters, page, pageSize }));
+    void loadChartTransactions();
+  }
+
   if (loading || chartLoading) {
     return <LogoLoading />;
   }
@@ -219,6 +225,9 @@ function TransactionsPageContent() {
         exporting={exporting}
         onExportCsv={exportCsv}
         onExportPdf={exportPdf}
+        newTransactionOpen={newTransactionOpen}
+        onNewTransactionOpenChange={setNewTransactionOpen}
+        onTransactionCreated={afterTransactionCreated}
       />
 
       <TransactionsFiltersCard
