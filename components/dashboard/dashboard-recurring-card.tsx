@@ -76,7 +76,7 @@ export function DashboardRecurringCard({
             </Link>
           </p>
         ) : (
-          <ul className="grid gap-3 md:grid-cols-2">
+          <ul className="grid gap-3 md:grid-cols-2 [&>li:nth-child(n+3)]:hidden sm:[&>li:nth-child(n+3)]:block">
             {upcomingRecurring.map((rule) => (
               <li key={rule.id} className="min-w-0">
                 <div className="rounded-xl border border-border/60 bg-muted/15 px-4 py-4 shadow-sm ring-1 ring-black/4 transition-colors hover:bg-muted/25 dark:ring-white/6 sm:px-5 sm:py-4">
