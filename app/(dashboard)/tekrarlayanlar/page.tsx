@@ -143,7 +143,6 @@ export default function RecurringPage() {
         count={items.length}
         newOpen={newOpen}
         onNewOpenChange={setNewOpen}
-        currency={currency}
         onCreate={onCreate}
       />
 

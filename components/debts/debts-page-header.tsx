@@ -6,14 +6,12 @@ import type { NewDebtFormValues } from "@/lib/debts-schema";
 type Props = {
   newOpen: boolean;
   onNewOpenChange: (open: boolean) => void;
-  currency: string;
   onCreate: (values: NewDebtFormValues) => Promise<void>;
 };
 
 export function DebtsPageHeader({
   newOpen,
   onNewOpenChange,
-  currency,
   onCreate,
 }: Props) {
   return (
@@ -26,7 +24,6 @@ export function DebtsPageHeader({
       <NewDebtDialog
         open={newOpen}
         onOpenChange={onNewOpenChange}
-        currency={currency}
         onSubmit={onCreate}
       />
     </div>

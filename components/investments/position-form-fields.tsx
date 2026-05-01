@@ -227,7 +227,7 @@ export function PositionFormFields({
       )}
       {assetType === "FX" && (
         <div className="space-y-2">
-          <Label>Para birimi</Label>
+          <Label>Döviz kodu</Label>
           <Select
             value={ticker?.trim() ? ticker.trim().toUpperCase() : undefined}
             onValueChange={(code) => {
@@ -243,7 +243,7 @@ export function PositionFormFields({
                 placeholder={
                   currencySymbols.loading
                     ? "Semboller yükleniyor…"
-                    : "Para birimi seçin"
+                    : "Döviz seçin"
                 }
               />
             </SelectTrigger>
@@ -369,9 +369,9 @@ export function PositionFormFields({
                           : fxLive.error
                             ? "Fiyat alınamadı"
                             : !ticker?.trim()
-                              ? "Para birimi seçin"
+                              ? "Döviz seçin"
                               : !fxLive.byCode[ticker.trim().toUpperCase()]
-                                ? "Bu para birimi için kur yok"
+                                ? "Bu döviz için kur yok"
                                 : ""
                         : assetType === "CRYPTO"
                           ? cryptoLive.loading

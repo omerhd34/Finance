@@ -7,7 +7,6 @@ type Props = {
   count: number;
   newOpen: boolean;
   onNewOpenChange: (open: boolean) => void;
-  currency: string;
   onCreate: (values: RecurringFormValues) => Promise<void>;
 };
 
@@ -15,7 +14,6 @@ export function RecurringToolbar({
   count,
   newOpen,
   onNewOpenChange,
-  currency,
   onCreate,
 }: Props) {
   return (
@@ -24,7 +22,6 @@ export function RecurringToolbar({
       <NewRecurringDialog
         open={newOpen}
         onOpenChange={onNewOpenChange}
-        currency={currency}
         onSubmit={onCreate}
       />
     </div>

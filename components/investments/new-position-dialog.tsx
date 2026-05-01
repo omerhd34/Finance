@@ -8,7 +8,6 @@ import {
   positionFormSchema,
   type PositionFormValues,
 } from "@/lib/investments-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -96,8 +95,7 @@ export function NewPositionDialog({
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">
-            Birim fiyatlar {currencySymbolLabel(currency)} ile girilir; kayıt TL
-            bazında saklanır.
+            Birim fiyatları girin; kayıt TL bazında saklanır.
           </p>
           <PositionFormFields
             form={form}

@@ -206,7 +206,7 @@ export default function NewTransactionPage() {
         <CardHeader>
           <CardTitle>Detaylar</CardTitle>
           <CardDescription>
-            Tutarı seçtiğiniz para biriminde girin; kayıt TL olarak saklanır.
+            Tutarı girin; kayıt TL olarak saklanır.
           </CardDescription>
         </CardHeader>
         <CardContent>

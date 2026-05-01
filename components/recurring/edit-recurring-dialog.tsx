@@ -75,11 +75,7 @@ export function EditRecurringDialog({
             className="space-y-4"
             onSubmit={form.handleSubmit((v) => void handleSubmit(v))}
           >
-            <RecurringFormFields
-              form={form}
-              currency={currency}
-              variant="edit"
-            />
+            <RecurringFormFields form={form} variant="edit" />
             <DialogFooter>
               <Button type="submit">Kaydet</Button>
             </DialogFooter>

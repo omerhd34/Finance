@@ -47,7 +47,7 @@ export const positionFormSchema = z
       if (t.length < 2) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Para birimi seçin",
+          message: "Döviz seçin",
           path: ["ticker"],
         });
       }
@@ -55,7 +55,7 @@ export const positionFormSchema = z
       if (tit.length < 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Para birimi seçin",
+          message: "Döviz seçin",
           path: ["title"],
         });
       }

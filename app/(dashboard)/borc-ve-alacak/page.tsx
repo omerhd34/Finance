@@ -118,7 +118,6 @@ export default function DebtsPage() {
       <DebtsPageHeader
         newOpen={newOpen}
         onNewOpenChange={setNewOpen}
-        currency={currency}
         onCreate={onCreate}
       />
 
@@ -143,7 +142,6 @@ export default function DebtsPage() {
       <PayDebtDialog
         open={!!payingId}
         onOpenChange={(o) => !o && setPayingId(null)}
-        currency={currency}
         onPay={onPaySubmit}
       />
 

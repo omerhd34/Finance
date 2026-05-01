@@ -245,13 +245,13 @@ export const investmentCreateSchema = z
     (d) =>
       d.assetType !== "FX" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 2),
-    { message: "Para birimi seçin", path: ["ticker"] },
+    { message: "Döviz seçin", path: ["ticker"] },
   )
   .refine(
     (d) =>
       d.assetType !== "FX" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Para birimi seçin", path: ["title"] },
+    { message: "Döviz seçin", path: ["title"] },
   )
   .refine(
     (d) =>

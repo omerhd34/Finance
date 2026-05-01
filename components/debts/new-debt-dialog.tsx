@@ -32,7 +32,6 @@ import {
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currency: string;
   onSubmit: (values: NewDebtFormValues) => Promise<void>;
 };
 

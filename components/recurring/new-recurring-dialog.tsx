@@ -25,14 +25,12 @@ import { RecurringFormFields } from "./recurring-form-fields";
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currency: string;
   onSubmit: (values: RecurringFormValues) => Promise<void>;
 };
 
 export function NewRecurringDialog({
   open,
   onOpenChange,
-  currency,
   onSubmit,
 }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -90,7 +88,7 @@ export function NewRecurringDialog({
               </p>
             </div>
           ) : null}
-          <RecurringFormFields form={form} currency={currency} variant="new" />
+          <RecurringFormFields form={form} variant="new" />
           <DialogFooter>
             <Button
               type="submit"

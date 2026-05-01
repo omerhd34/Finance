@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { payDebtSchema } from "@/lib/debts-schema";
-import { currencySymbolLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,11 +20,10 @@ type PayForm = { amount: number };
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currency: string;
   onPay: (amountDisplay: number) => Promise<void>;
 };
 
-export function PayDebtDialog({ open, onOpenChange, currency, onPay }: Props) {
+export function PayDebtDialog({ open, onOpenChange, onPay }: Props) {
   const form = useForm<PayForm>({
     resolver: zodResolver(payDebtSchema),
     defaultValues: { amount: 0 },
@@ -49,8 +47,7 @@ export function PayDebtDialog({ open, onOpenChange, currency, onPay }: Props) {
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <p className="text-xs text-muted-foreground">
-            Tutar {currencySymbolLabel(currency)} cinsinden; kalan tutarı
-            aşmayacak şekilde uygulanır.
+            Girdiğiniz tutar uygulanır; kalan tutarı aşmamalıdır.
           </p>
           <div className="space-y-2">
             <Label>Tutar</Label>
