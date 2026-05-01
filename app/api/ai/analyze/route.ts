@@ -7,30 +7,48 @@ import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { debt, prisma } from "@/lib/prisma";
 import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
+import { EXPENSE_CATEGORY_TREE } from "@/lib/categories";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
 
 const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın. Yanıtın Türkçe olacak; dil profesyonel, net ve ölçülü olsun. Aşırı samimiyet, klişe AI ifadeleri ve gereksiz ünlem kullanma (ör. "Hadi birlikte", "size tam destek", "Başarılar dilerim!" gibi boş kapanışlar yerine kısa ve somut bir cümle tercih et).
 
-Veri: Son 30 gün giderleri JSON'da; borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
+Veri: \`son30GunHarcamalar\` son 30 takvim günü içindeki giderleri listeler; aralık \`harcamaPenceresi\` içindeki tarihlerle çerçevelenir (kullanıcının ay başlangıç ayarından bağımsız, gün sayısı sabittir). Borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
 
-Yapı: Aşağıdaki başlıkların tamamını bu sırayla üret; veri yetmeyen yerde tek cümlelik “bu bölüm için veri yetersiz” benzeri kısa bir not yeterli. Her ana bölüm için ayrı ## başlık kullan.
-1) ## Karşılama — En fazla 1-2 cümle: verileri incelediğini profesyonelce belirt; gereksiz uzatma.
-2) ## Genel değerlendirme — Net pozisyon, harcama dağılımı ve dikkat çeken bir nokta (3-6 cümle); toplam gider özeti ve varsa en büyük 1-2 kalem vurgusu.
-3) ## En yüksek 3 harcama kategorisi ve yorumu — Önce tek cümlelik özet; ardından her kategori için **Kategori adı (tutar TL):** ile başlayan kısa paragraflar; veriye dayalı, yargıdan çok gözlem ve yorum.
-4) ## Harcama kalıpları ve işlem notları — Tarih sıklığına göre (hafta içi/sonu, yoğun günler), tek seferlik yüksek tutarlar ve açıklama alanından çıkarılabilecek tekrar veya anomali; spekülasyon yapma, rakam ve metne dayan.
-5) ## Somut tasarruf önerileri — Tam 3-5 numaralı madde; her maddede başlık (ör. **Eğitim harcamalarını bütçeleme**) Markdown kalın ile yazılsın, açıklama metni ayrı paragraf veya yeni satırda; başlık + 2-4 cümle, uygulanabilir ve ölçülebilir.
-6) ## Gelecek ay için bütçe çerçevesi — Sabit/değişken/tasarruf gibi başlıkları net ayır; gerektiğinde alt satırlarda **kalın** etiketler kullan; mümkünse son 30 güne oransal dayan.
-7) ## Borç ve alacaklar — Toplamlar, öne çıkan kalemler (tutar, vade varsa), tahsilat veya ödeme önceliği önerisi. Borç/alacak yoksa veya veri yetersizse kısaca belirt.
-8) ## Riskler ve dikkat edilmesi gerekenler — Likidite veya vadeler, kategori yoğunlaşması, borç stresi belirtileri; abartısız, veriye bağlı; gerektiğinde madde işaretli kısa liste.
-9) ## Öncelikli aksiyonlar — 4-7 numaralı madde; her satır tek net eylem (kısa ve uygulanabilir), gereksiz tekrar etme.
-10) ## Kısa özet ve bir sonraki adım — 2-4 cümle: en kritik çıkarım + kullanıcıya yönelik bir sonraki somut kontrol veya davranış (genel vaat değil).
+Kullanıcı ayı: JSON içindeki \`kullaniciAyAyarlari\`, kullanıcının profilde seçtiği \`ayBaslangicGunu\` (1–28) ve bunun bütçe dönemine etkisini özetleyen \`butceDonemiNotu\` metnini içerir. "Bu ay", "gelecek ay" veya "aylık bütçe çerçevesi" anlatırken takvim ayının 1'i yerine bu dönemi esas al; harcama rakamları ise yine yalnızca son 30 güne dayanır—iki kavramı birbirine karıştırma.
 
-Biçim: Yalnızca Markdown; her ana bölüm ## ile başlasın; paragraflar arasında boş satır; listeler için - veya numaralı madde kullan. Abartılı emoji kullanma. Parantez içinde İngilizce terim veya veri şeması kodu (RECEIVABLE, PAYABLE vb.) yazma.`;
+Kategoriler: JSON içindeki \`giderKategoriSemasi\`, uygulamada işlemler için tanımlı güncel gider grupları, ana kategoriler ve alt kategorileri içerir (Yaşam, Alışveriş, Ulaşım & Araç, Kişisel, Eğitim & Kariyer, Finans, Sosyal & Yaşam, Diğer vb.). Harcamaları ve dağılımı yorumlarken bu şemaya uy; ana kategori ile alt kategori (\`altKategori\`) birlikte geldiğinde ikisini birlikte ele al (ör. "Market – Süpermarket" ile "Yiyecek & İçecek – Paket sipariş" farklı harcama türleridir). Şemada listelenmeyen bir kategori metni görürsen kullanıcı tarafından seçilmiş veya özel bir etiket olabilir; anlamını işlem açıklaması ve tutarla ilişkilendirerek yorumla.
+
+Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sırayla kullan; başlık satırına ek metin veya alt başlık ekleme (arayüzde görünen başlık budur): \`## Karşılama\`, \`## Genel değerlendirme\`, \`## En yüksek 5 harcama kategorisi ve yorumu\`, \`## Harcama kalıpları ve işlem notları\`, \`## Somut tasarruf önerileri\`, \`## Gelecek ay için bütçe çerçevesi\`, \`## Borç ve alacaklar\`, \`## Riskler ve dikkat edilmesi gerekenler\`, \`## Öncelikli aksiyonlar\`, \`## Kısa özet ve bir sonraki adım\`. Veri yetersizse ilgili bölümde kısaca “Bu dönem için bu bölümde yorumlanacak veri yok.” benzeri tek cümle yeterli.
+
+- **Karşılama:** Kullanıcıya doğrudan hitap etmeden, son 30 günlük gider ve borç/alacak özetini incelediğini kısa ve kurumsal bir dille belirt. Ne kadar detaya ineceğini bu girişte anlatma; en fazla iki cümle.
+
+- **Genel değerlendirme:** \`borcVeAlacaklar.ozet\` ile net pozisyonu (kalan alacak − kalan borç) ve son 30 gün toplam gideri birlikte çerçevele. Harcamaların hangi geniş alanlarda yoğunlaştığını (birkaç grup veya ana kategori) özetle; dikkat çeken tek örüntü veya tutarsızlık varsa somut rakamla bağla. Üç ila altı cümle; spekülasyon yok.
+
+- **En yüksek 5 harcama kategorisi ve yorumu:** Önce tek cümleyle listenin neyi temsil ettiğini belirt. Sonra her kalem için ayrı paragraf: satır başı **Ana kategori – Alt kategori (X TL)** veya alt kategori yoksa **Kategori (X TL)**; altında tutarı destekleyen kısa gözlem (bütçedeki rol, tekrar eden işlem ipucu, açıklama alanıyla örtüşme). En fazla beş kalem; tutarlar JSON’daki işlemlerle uyumlu toplamlar olsun.
+
+- **Harcama kalıpları ve işlem notları:** \`tarih\` alanlarından haftanın hangi günlerinde veya hangi aralıklarda yoğunluk olduğunu; tek seferlik belirgin yüksek tutarları; \`aciklama\` metinlerindeki tekrarlayan üye işyeri veya abonelik izlerini tarif et. Varsayımda bulunma.
+
+- **Somut tasarruf önerileri:** Tam üç ila beş numaralı madde. Her madde: kalın başlık (**ör. X harcamalarında küçük düzenlemeler**), ardından iki ila dört cümle; öneri ölçülebilir ve son 30 güne veya listelenen kategorilere bağlı olsun.
+
+- **Gelecek ay için bütçe çerçevesi:** Sabit giderler, değişken harcamalar ve varsa borç ödemesi veya tasarruf ayırımını net etiketlerle ayır. Payları mümkünse son 30 günün dağılımına dayandır. "Gelecek ay" ve dönem sınırları için \`kullaniciAyAyarlari\` ile uyumlu düşün (kullanıcı ayı 15’te başlıyorsa bir sonraki bütçe dönemi ona göre).
+
+- **Borç ve alacaklar:** Toplam kalan alacak ve borç; \`borcVeAlacaklar.kayitlar\` içinden vadeleri yakın veya tutarı yüksek kalemleri özetle. Tahsilat veya ödeme sıralaması için kısa, gerekçeli öneri. Kayıt yoksa veya kalanlar sıfırsa açıkça yaz.
+
+- **Riskler ve dikkat edilmesi gerekenler:** Likidite, üst üste vadeler, tek kategoride yoğunlaşma, borç stresi sinyalleri; veriye bağlı, abartısız. Gerekirse kısa madde listesi.
+
+- **Öncelikli aksiyonlar:** Dört ila yedi satır; her satır tek, fiili eylem; önceki bölümlerle gereksiz tekrar yok.
+
+- **Kısa özet ve bir sonraki adım:** İki ila dört cümle: en kritik bulgu + bu hafta yapılabilecek somut bir kontrol veya davranış (genel motivasyon cümlesi yok).
+
+Görselleştirme: Piksel tabanlı grafik, görsel dosya veya harici görsel link üretemezsin. Karşılaştırmayı net göstermek için uygun yerlerde GitHub tarzı Markdown tablo kullan (ör. Kategori veya Kategori–Alt kategori | Tutar TL | Toplam gider içinde %); rakamlar JSON ile tutarlı olsun.
+
+Biçim: Yalnızca Markdown; paragraflar arasında boş satır; listeler için - veya numaralı madde. Abartılı emoji kullanma. Parantez içinde İngilizce veri şeması kodu (RECEIVABLE, PAYABLE vb.) yazma.`;
 
 type TxPayload = {
   tarih: string;
   kategori: string;
+  altKategori: string | null;
   tutar: unknown;
   aciklama: string | null;
 }[];
@@ -45,7 +63,29 @@ type DebtLine = {
   not: string | null;
 };
 
+function kullaniciAyAyarlariForPayload(ayBaslangicGunu: number): {
+  ayBaslangicGunu: number;
+  butceDonemiNotu: string;
+} {
+  const d = Math.min(28, Math.max(1, Math.trunc(ayBaslangicGunu)));
+  if (d === 1) {
+    return {
+      ayBaslangicGunu: d,
+      butceDonemiNotu:
+        "Kullanıcı standart takvim ayını kullanıyor: bir bütçe dönemi, her takvim ayının 1'i ile son günü arasıdır.",
+    };
+  }
+  const sonGun = d - 1;
+  return {
+    ayBaslangicGunu: d,
+    butceDonemiNotu: `Kullanıcı uygulama ayarlarında her ayın ${d}. gününü ay başlangıcı olarak seçmiş. Bir bütçe dönemi, bir ayın ${d}. günü başlayıp bir sonraki ayın ${sonGun}. gününün sonuna kadar sürer (ör.: başlangıç 15 ise 15 Ocak–14 Şubat tek dönem). “Bu ay” ve “gelecek ay” önerilerinde takvim ayının 1'ini değil bu kesiti esas al.`,
+  };
+}
+
 type AnalyzePayload = {
+  kullaniciAyAyarlari: ReturnType<typeof kullaniciAyAyarlariForPayload>;
+  harcamaPenceresi: { baslangic: string; bitis: string; not: string };
+  giderKategoriSemasi: typeof EXPENSE_CATEGORY_TREE;
   son30GunHarcamalar: TxPayload;
   borcVeAlacaklar: {
     kayitlar: DebtLine[];
@@ -186,7 +226,7 @@ export async function POST() {
     await ensurePremiumNotExpired(session.user.id);
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { planTier: true },
+      select: { planTier: true, monthStartDay: true },
     });
     if (!dbUser || dbUser.planTier !== "premium") {
       return NextResponse.json(
@@ -231,8 +271,12 @@ export async function POST() {
         { status: 503 },
       );
     }
-    const since = new Date();
+    const analizAnı = new Date();
+    const since = new Date(analizAnı);
     since.setDate(since.getDate() - 30);
+    const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(
+      dbUser.monthStartDay ?? 1,
+    );
     const [transactions, debts] = await Promise.all([
       prisma.transaction.findMany({
         where: {
@@ -252,6 +296,7 @@ export async function POST() {
       (t: Transaction) => ({
         tarih: t.date.toISOString(),
         kategori: t.category,
+        altKategori: t.subcategory ?? null,
         tutar: t.amount,
         aciklama: t.description,
       }),
@@ -279,6 +324,13 @@ export async function POST() {
     });
 
     const payload: AnalyzePayload = {
+      kullaniciAyAyarlari,
+      harcamaPenceresi: {
+        baslangic: since.toISOString(),
+        bitis: analizAnı.toISOString(),
+        not: "İşlem tarihine göre son 30 takvim günü (ay başlangıç ayarından bağımsız pencere).",
+      },
+      giderKategoriSemasi: EXPENSE_CATEGORY_TREE,
       son30GunHarcamalar,
       borcVeAlacaklar: {
         kayitlar,
