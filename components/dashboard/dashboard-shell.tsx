@@ -56,8 +56,8 @@ const nav = [
   { href: "/tekrarlayanlar", label: "Tekrarlayan", icon: CalendarClock },
   { href: "/butceler", label: "Bütçeler", icon: PieChart },
   { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
-  { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
   { href: "/kur-donusum", label: "Kur Dönüşüm", icon: ArrowRightLeft },
+  { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
   { href: "/yapay-zeka-analizi", label: "AI Analiz", icon: Sparkles },
   { href: "/bildirimler", label: "Bildirimler", icon: Bell },
 ];
