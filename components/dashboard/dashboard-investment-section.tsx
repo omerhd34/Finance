@@ -201,7 +201,7 @@ export function DashboardInvestmentSection({
                   </p>
                 </div>
               </div>
-              <div className="flex shrink-0 items-start gap-2">
+              <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap sm:items-start">
                 {visibleCardCount > 1 ? (
                   <>
                     <Button
@@ -233,10 +233,13 @@ export function DashboardInvestmentSection({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="shrink-0 gap-1.5"
+                  className="w-full gap-1.5 sm:w-auto"
                   asChild
                 >
-                  <Link href="/yatirimlar" className="gap-1.5">
+                  <Link
+                    href="/yatirimlar"
+                    className="w-full justify-center gap-1.5 sm:w-auto"
+                  >
                     Yatırımlar
                     <ArrowUpRight
                       className="h-3.5 w-3.5 opacity-70"
