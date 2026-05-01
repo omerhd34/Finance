@@ -113,8 +113,8 @@ export function buildBudgetAlertEmailHtml(opts: {
                 </tr>
                 <tr>
                   <td style="padding:0 28px 28px 28px;text-align:center;">
-                    <a href="${budgetsUrl}" style="display:inline-block;padding:12px 28px;background:${accent};color:#ffffff !important;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">
-                      Bütçeleri aç
+                    <a href="${budgetsUrl}" style="display:inline-block;padding:12px 28px;background:${accent};color:#ffffff !important;-webkit-text-fill-color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">
+                      <span style="color:#ffffff !important;-webkit-text-fill-color:#ffffff;text-decoration:none;">Bütçeleri aç</span>
                     </a>
                     <p style="margin:16px 0 0 0;font-size:12px;color:#94a3b8;line-height:1.5;">
                       Bu e-posta, tanımladığınız kategori bütçesi kurallarına göre otomatik gönderildi.
