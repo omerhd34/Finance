@@ -58,9 +58,9 @@ export function InvestmentPositionStats({
         className={cn(
           "flex min-w-0 flex-col overflow-hidden rounded-xl border p-4 shadow-sm ring-1 sm:p-4",
           pnlUp &&
-            "border-emerald-500/30 bg-emerald-500/[0.07] ring-emerald-500/15 dark:bg-emerald-500/10",
+            "border-emerald-500/30 bg-linear-to-r from-emerald-500/12 via-emerald-500/6 to-card ring-emerald-500/15 dark:from-emerald-500/18 dark:via-emerald-500/8 dark:to-card",
           pnlDown &&
-            "border-rose-500/30 bg-rose-500/[0.07] ring-rose-500/15 dark:bg-rose-500/10",
+            "border-rose-500/30 bg-linear-to-r from-rose-500/12 via-rose-500/6 to-card ring-rose-500/15 dark:from-rose-500/18 dark:via-rose-500/8 dark:to-card",
           !pnlUp &&
             !pnlDown &&
             "border-border/50 bg-muted/20 ring-black/4 dark:ring-white/6",
