@@ -151,9 +151,6 @@ export function EditTransactionDialog({
                 disabled={isRecurringTransaction}
                 {...form.register("amount", { valueAsNumber: true })}
               />
-              <p className="text-xs text-muted-foreground">
-                Kayıt TL olarak saklanır.
-              </p>
             </div>
             {selectedType === "expense" ? (
               <ExpenseCategoryPair
