@@ -28,6 +28,7 @@ import { InvestmentsPageHeader } from "@/components/investments/investments-page
 import { InvestmentsPositionsTabs } from "@/components/investments/investments-positions-tabs";
 import { InvestmentsSummaryCards } from "@/components/investments/investments-summary-cards";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
+import { LogoLoading } from "@/components/ui/logo-loading";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
@@ -39,6 +40,7 @@ const PREMIUM_INVESTMENT_PERKS = [
 
 export default function InvestmentsPage() {
   const dispatch = useAppDispatch();
+  const authLoading = useAppSelector((s) => s.auth.loading);
   const authPlanTier = useAppSelector((s) => s.auth.user?.planTier);
   const planPremium = normalizePlanTier(authPlanTier) === "premium";
   const { items, loading, error } = useAppSelector((s) => s.investments);
@@ -154,6 +156,10 @@ export default function InvestmentsPage() {
     await dispatch(deleteInvestment(deletingId));
     setDeletingId(null);
     void dispatch(fetchInvestments());
+  }
+
+  if (authLoading || (planPremium && loading)) {
+    return <LogoLoading />;
   }
 
   return (

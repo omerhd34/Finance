@@ -7,7 +7,7 @@ import axios from "axios";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { LoadingMessage } from "@/components/ui/loading-message";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 export type NotificationItem = {
   id: string;
@@ -130,7 +130,7 @@ export function NotificationsPageClient() {
       )}
 
       {loading ? (
-        <LoadingMessage variant="page" />
+        <LogoLoading />
       ) : (
         <>
           {!error && items.length === 0 ? (

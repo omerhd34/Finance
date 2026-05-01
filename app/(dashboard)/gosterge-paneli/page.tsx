@@ -10,7 +10,7 @@ import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
-import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-page-skeleton";
+import { LogoLoading } from "@/components/ui/logo-loading";
 import { apiClient } from "@/lib/api-client";
 import {
   aggregatePositionsTry,
@@ -244,7 +244,7 @@ export default function DashboardPage() {
   );
 
   if (loading) {
-    return <DashboardPageSkeleton />;
+    return <LogoLoading />;
   }
 
   if (error) {

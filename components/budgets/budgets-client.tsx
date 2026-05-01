@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn, currencySymbolLabel } from "@/lib/utils";
-import { LoadingMessage } from "@/components/ui/loading-message";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 export type CategoryBudgetRow = {
   id: string;
@@ -165,22 +165,24 @@ export function BudgetsClient({ currency }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            Harcama kategorileri için aylık limit tanımlayın; eşik ve aşım
-            durumunda bildirim alırsınız.
-          </p>
+      {!loading ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Harcama kategorileri için aylık limit tanımlayın; eşik ve aşım
+              durumunda bildirim alırsınız.
+            </p>
+          </div>
+          <Button
+            type="button"
+            className="cursor-pointer gap-2"
+            onClick={() => openCreate()}
+          >
+            <Plus className="h-4 w-4" />
+            Yeni bütçe
+          </Button>
         </div>
-        <Button
-          type="button"
-          className="cursor-pointer gap-2"
-          onClick={() => openCreate()}
-        >
-          <Plus className="h-4 w-4" />
-          Yeni bütçe
-        </Button>
-      </div>
+      ) : null}
 
       {listError && (
         <p className="text-sm text-destructive" role="alert">
@@ -188,7 +190,7 @@ export function BudgetsClient({ currency }: Props) {
         </p>
       )}
       {loading ? (
-        <LoadingMessage variant="page" />
+        <LogoLoading />
       ) : (
         <>
           {items.length === 0 && (

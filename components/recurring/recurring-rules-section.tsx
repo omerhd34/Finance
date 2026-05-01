@@ -2,7 +2,7 @@
 
 import type { RecurringRule } from "@/types/recurring";
 import { Card, CardContent } from "@/components/ui/card";
-import { LoadingMessage } from "@/components/ui/loading-message";
+import { LogoLoading } from "@/components/ui/logo-loading";
 import { RecurringRuleCard } from "./recurring-rule-card";
 
 type Props = {
@@ -21,7 +21,7 @@ export function RecurringRulesSection({
   onDelete,
 }: Props) {
   if (loading && items.length === 0) {
-    return <LoadingMessage variant="page" />;
+    return <LogoLoading />;
   }
 
   if (items.length === 0) {

@@ -1,10 +1,5 @@
-import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-page-skeleton";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 export default function DashboardGroupLoading() {
-  return (
-    <div className="space-y-6">
-      <div className="h-6 w-44 animate-pulse rounded-md bg-muted" />
-      <DashboardPageSkeleton />
-    </div>
-  );
+  return <LogoLoading />;
 }

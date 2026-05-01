@@ -17,9 +17,9 @@ import {
 import { DeleteRecurringDialog } from "@/components/recurring/delete-recurring-dialog";
 import { DueRemindersCard } from "@/components/recurring/due-reminders-card";
 import { EditRecurringDialog } from "@/components/recurring/edit-recurring-dialog";
-import { RecurringPageIntro } from "@/components/recurring/recurring-page-intro";
 import { RecurringRulesSection } from "@/components/recurring/recurring-rules-section";
 import { RecurringToolbar } from "@/components/recurring/recurring-toolbar";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 export default function RecurringPage() {
   const dispatch = useAppDispatch();
@@ -50,6 +50,10 @@ export default function RecurringPage() {
     if (!editingId) return null;
     return items.find((x) => x.id === editingId) ?? null;
   }, [editingId, items]);
+
+  if (loading && items.length === 0) {
+    return <LogoLoading />;
+  }
 
   function buildPayload(values: RecurringFormValues) {
     return {
@@ -118,7 +122,14 @@ export default function RecurringPage() {
 
   return (
     <div className="space-y-8">
-      <RecurringPageIntro />
+      <p className="text-sm text-muted-foreground">
+        Kira, abonelik ve maaş gibi düzenli ödemeleri bir kez tanımlayarak
+        kolayca takip edin. Otomatik modda vade günü geldiğinde işlem kaydı
+        sistem tarafından oluşturulur; hatırlatıcı modda ise bildirim alır ve
+        kaydı siz onaylayarak eklersiniz. Tutarı sonradan güncellerseniz,
+        geçmişte oluşmuş kayıtlar değişmez; yeni tutar yalnızca sonraki
+        dönemlerde geçerli olur.
+      </p>
 
       <DueRemindersCard
         items={dueReminders}

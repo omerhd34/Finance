@@ -34,7 +34,7 @@ import { TransactionsChartsSection } from "@/components/transactions/transaction
 import { TransactionsFiltersCard } from "@/components/transactions/transactions-filters-card";
 import { TransactionsPageHeader } from "@/components/transactions/transactions-page-header";
 import { TransactionsTableCard } from "@/components/transactions/transactions-table-card";
-import { LoadingMessage } from "@/components/ui/loading-message";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 function TransactionsPageContent() {
   const dispatch = useAppDispatch();
@@ -209,6 +209,10 @@ function TransactionsPageContent() {
     void loadChartTransactions();
   }
 
+  if (loading || chartLoading) {
+    return <LogoLoading />;
+  }
+
   return (
     <div className="space-y-6">
       <TransactionsPageHeader
@@ -289,13 +293,7 @@ function TransactionsPageContent() {
 
 export default function TransactionsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="space-y-6">
-          <LoadingMessage variant="page" />
-        </div>
-      }
-    >
+    <Suspense fallback={<LogoLoading />}>
       <TransactionsPageContent />
     </Suspense>
   );

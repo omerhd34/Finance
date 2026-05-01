@@ -17,7 +17,7 @@ import { DebtsList } from "@/components/debts/debts-list";
 import { EditDebtDialog } from "@/components/debts/edit-debt-dialog";
 import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
 import { DeleteDebtDialog } from "@/components/debts/delete-debt-dialog";
-import { LoadingMessage } from "@/components/ui/loading-message";
+import { LogoLoading } from "@/components/ui/logo-loading";
 
 export default function DebtsPage() {
   const dispatch = useAppDispatch();
@@ -109,6 +109,10 @@ export default function DebtsPage() {
 
   const editingDebt = items.find((x) => x.id === editingId);
 
+  if (loading) {
+    return <LogoLoading />;
+  }
+
   return (
     <div className="space-y-6">
       <DebtsPageHeader
@@ -125,20 +129,16 @@ export default function DebtsPage() {
       />
 
       {error && <p className="text-destructive">{error}</p>}
-      {loading ? (
-        <LoadingMessage variant="page" />
-      ) : (
-        <DebtsList
-          tab={tab}
-          onTabChange={setTab}
-          items={filtered}
-          loading={loading}
-          currency={currency}
-          onPay={setPayingId}
-          onEdit={setEditingId}
-          onDelete={setDeletingId}
-        />
-      )}
+      <DebtsList
+        tab={tab}
+        onTabChange={setTab}
+        items={filtered}
+        loading={loading}
+        currency={currency}
+        onPay={setPayingId}
+        onEdit={setEditingId}
+        onDelete={setDeletingId}
+      />
 
       <PayDebtDialog
         open={!!payingId}
