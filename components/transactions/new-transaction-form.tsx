@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ChangeEvent } from "react";
-import { useForm } from "react-hook-form";
+import { useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useFieldArray, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
@@ -33,13 +33,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ScanLine } from "lucide-react";
+import { Plus, ScanLine, Trash2 } from "lucide-react";
 
-const schema = transactionCreateSchema.omit({ date: true, type: true }).extend({
+const singleTransactionFormSchema = transactionCreateSchema
+  .omit({ date: true, type: true })
+  .extend({
+    date: z.string().min(1, "Tarih seçin"),
+  });
+
+const splitExpenseFormSchema = z.object({
   date: z.string().min(1, "Tarih seçin"),
+  description: z.string().optional(),
+  lines: z
+    .array(
+      z.object({
+        amount: z.number().positive("Her satırda pozitif tutar girin"),
+        category: z.string().min(1, "Kategori seçin"),
+        note: z.string().optional(),
+      }),
+    )
+    .min(1, "En az bir kalem ekleyin"),
 });
 
-export type NewTransactionFormValues = z.infer<typeof schema>;
+export type NewTransactionFormValues = z.infer<
+  typeof singleTransactionFormSchema
+> & {
+  lines: z.infer<typeof splitExpenseFormSchema>["lines"];
+};
+
+function combineLineDescription(
+  common: string | undefined,
+  lineNote: string | undefined,
+): string | undefined {
+  const parts = [common?.trim(), lineNote?.trim()].filter(Boolean);
+  return parts.length ? parts.join(" — ") : undefined;
+}
 
 type Props = {
   variant: "dialog" | "page";
@@ -53,25 +81,47 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     "premium";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [typeTab, setTypeTab] = useState<"income" | "expense">("expense");
+  const [splitExpense, setSplitExpense] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrError, setOcrError] = useState<string | null>(null);
 
+  const dynamicResolver = useMemo(
+    () =>
+      (async (values, context, options) => {
+        const schema =
+          splitExpense && typeTab === "expense"
+            ? splitExpenseFormSchema
+            : singleTransactionFormSchema;
+        return zodResolver(schema)(values, context, options as never);
+      }) as Resolver<NewTransactionFormValues>,
+    [splitExpense, typeTab],
+  );
+
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
+    getValues,
     reset,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<NewTransactionFormValues>({
-    resolver: zodResolver(schema),
+    resolver: dynamicResolver,
     defaultValues: {
       amount: 0,
       category: EXPENSE_CATEGORIES[0],
       description: "",
       date: new Date().toISOString().slice(0, 10),
+      lines: [{ amount: 0, category: EXPENSE_CATEGORIES[0], note: "" }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "lines",
   });
 
   const categories =
@@ -122,12 +172,29 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         date: string;
       };
       setTypeTab(row.type);
-      setValue("category", row.category, { shouldValidate: true });
-      setValue("amount", tryAmountToDisplay(row.amountTry, currency), {
-        shouldValidate: true,
-      });
-      setValue("description", row.description ?? "", { shouldValidate: true });
       setValue("date", row.date, { shouldValidate: true });
+      if (splitExpense && row.type === "expense") {
+        setValue(
+          "lines",
+          [
+            {
+              amount: tryAmountToDisplay(row.amountTry, currency),
+              category: row.category,
+              note: row.description ?? "",
+            },
+          ],
+          { shouldValidate: true },
+        );
+        setValue("description", "", { shouldValidate: true });
+      } else {
+        setValue("category", row.category, { shouldValidate: true });
+        setValue("amount", tryAmountToDisplay(row.amountTry, currency), {
+          shouldValidate: true,
+        });
+        setValue("description", row.description ?? "", {
+          shouldValidate: true,
+        });
+      }
     } catch {
       setOcrError("Bağlantı hatası. Tekrar deneyin.");
     } finally {
@@ -135,24 +202,38 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     }
   }
 
-  async function onSubmit(values: NewTransactionFormValues) {
+  async function onSubmit() {
     setSubmitError(null);
+    const values = getValues();
     const d = new Date(values.date + "T12:00:00");
     try {
-      await apiClient.post("/api/transactions", {
-        type: typeTab,
-        amount: displayAmountToTry(values.amount, currency),
-        category: values.category,
-        description: values.description || undefined,
-        date: d.toISOString(),
-      });
+      if (splitExpense && typeTab === "expense") {
+        const items = values.lines.map((line) => ({
+          type: "expense" as const,
+          amount: displayAmountToTry(line.amount, currency),
+          category: line.category,
+          description: combineLineDescription(values.description, line.note),
+          date: d.toISOString(),
+        }));
+        await apiClient.post("/api/transactions/batch", { items });
+      } else {
+        await apiClient.post("/api/transactions", {
+          type: typeTab,
+          amount: displayAmountToTry(values.amount, currency),
+          category: values.category,
+          description: values.description || undefined,
+          date: d.toISOString(),
+        });
+      }
       window.dispatchEvent(new Event("notifications:refresh"));
       reset({
         amount: 0,
         category: EXPENSE_CATEGORIES[0],
         description: "",
         date: new Date().toISOString().slice(0, 10),
+        lines: [{ amount: 0, category: EXPENSE_CATEGORIES[0], note: "" }],
       });
+      setSplitExpense(false);
       setTypeTab("expense");
       await onSuccess();
     } catch (e: unknown) {
@@ -248,6 +329,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         onValueChange={(v) => {
           const t = v as "income" | "expense";
           setTypeTab(t);
+          if (t === "income") setSplitExpense(false);
           setValue(
             "category",
             t === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0],
@@ -264,46 +346,215 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         </TabsList>
       </Tabs>
 
-      <div className="space-y-2">
-        <Label htmlFor="nt-amount">Tutar</Label>
-        <Input
-          id="nt-amount"
-          type="number"
-          step="0.01"
-          min={0}
-          {...register("amount", { valueAsNumber: true })}
-        />
-        {errors.amount && (
-          <p className="text-sm text-destructive">{errors.amount.message}</p>
-        )}
-      </div>
+      {typeTab === "expense" ? (
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
+          <input
+            id="nt-split-expense"
+            type="checkbox"
+            className="mt-1 size-4 shrink-0 cursor-pointer accent-primary"
+            checked={splitExpense}
+            onChange={(e) => {
+              const next = e.target.checked;
+              if (next) {
+                setValue(
+                  "lines",
+                  [
+                    {
+                      amount: getValues("amount") || 0,
+                      category: getValues("category") || EXPENSE_CATEGORIES[0],
+                      note: "",
+                    },
+                  ],
+                  { shouldValidate: true },
+                );
+              } else {
+                const first = getValues("lines")?.[0];
+                if (first) {
+                  setValue("amount", first.amount);
+                  setValue("category", first.category);
+                }
+                clearErrors("lines");
+              }
+              setSplitExpense(next);
+            }}
+          />
+          <div className="min-w-0 space-y-0.5">
+            <Label htmlFor="nt-split-expense" className="cursor-pointer">
+              Birden fazla kalem
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Aynı tarihte market, fatura vb. gibi ayrı tutar ve kategorilerle
+              birden fazla gider kaydı oluşturur.
+            </p>
+          </div>
+        </div>
+      ) : null}
 
-      <div className="space-y-2">
-        <Label>Kategori</Label>
-        <Select
-          value={watch("category")}
-          onValueChange={(v) => setValue("category", v)}
-        >
-          <SelectTrigger className="cursor-pointer">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
+      {splitExpense && typeTab === "expense" ? (
+        <>
+          <div className="space-y-3">
+            <Label>Kalemler</Label>
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="space-y-2 rounded-lg border border-border bg-card/50 p-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Kalem {index + 1}
+                  </span>
+                  {fields.length > 1 ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 shrink-0 cursor-pointer text-destructive hover:text-destructive"
+                      onClick={() => remove(index)}
+                      aria-label="Satırı sil"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`nt-line-amt-${index}`}>Tutar</Label>
+                  <Input
+                    id={`nt-line-amt-${index}`}
+                    type="number"
+                    step="0.01"
+                    min={0}
+                    {...register(`lines.${index}.amount`, {
+                      valueAsNumber: true,
+                    })}
+                  />
+                  {errors.lines?.[index]?.amount ? (
+                    <p className="text-sm text-destructive">
+                      {errors.lines[index]?.amount?.message}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <Label>Kategori</Label>
+                  <Select
+                    value={watch(`lines.${index}.category`)}
+                    onValueChange={(v) =>
+                      setValue(`lines.${index}.category`, v, {
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    <SelectTrigger className="cursor-pointer">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EXPENSE_CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.lines?.[index]?.category ? (
+                    <p className="text-sm text-destructive">
+                      {errors.lines[index]?.category?.message}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`nt-line-note-${index}`}>
+                    Bu kalem notu (isteğe bağlı)
+                  </Label>
+                  <Input
+                    id={`nt-line-note-${index}`}
+                    placeholder="örn. Depo, kart ödemesi"
+                    {...register(`lines.${index}.note`)}
+                  />
+                </div>
+              </div>
             ))}
-          </SelectContent>
-        </Select>
-        {errors.category && (
-          <p className="text-sm text-destructive">{errors.category.message}</p>
-        )}
-      </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() =>
+                append({
+                  amount: 0,
+                  category: EXPENSE_CATEGORIES[0],
+                  note: "",
+                })
+              }
+            >
+              <Plus className="size-4" />
+              Satır ekle
+            </Button>
+            {errors.lines &&
+            typeof errors.lines === "object" &&
+            "message" in errors.lines ? (
+              <p className="text-sm text-destructive">
+                {(errors.lines as { message?: string }).message}
+              </p>
+            ) : null}
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="nt-desc">Açıklama (isteğe bağlı)</Label>
-        <Textarea id="nt-desc" {...register("description")} rows={3} />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="nt-desc-split">Ortak açıklama (isteğe bağlı)</Label>
+            <Textarea
+              id="nt-desc-split"
+              {...register("description")}
+              rows={2}
+              placeholder="Tüm satırlara eklenecek kısa not"
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="nt-amount">Tutar</Label>
+            <Input
+              id="nt-amount"
+              type="number"
+              step="0.01"
+              min={0}
+              {...register("amount", { valueAsNumber: true })}
+            />
+            {errors.amount && (
+              <p className="text-sm text-destructive">
+                {errors.amount.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Kategori</Label>
+            <Select
+              value={watch("category")}
+              onValueChange={(v) => setValue("category", v)}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.category && (
+              <p className="text-sm text-destructive">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nt-desc">Açıklama (isteğe bağlı)</Label>
+            <Textarea id="nt-desc" {...register("description")} rows={3} />
+          </div>
+        </>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="nt-date">Tarih</Label>
@@ -324,7 +575,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     return (
       <form
         className="space-y-4"
-        onSubmit={handleSubmit((v) => void onSubmit(v))}
+        onSubmit={handleSubmit(() => void onSubmit())}
       >
         {ocrCard}
         {formInner}
@@ -353,7 +604,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         </CardHeader>
         <CardContent>
           <form
-            onSubmit={handleSubmit((v) => void onSubmit(v))}
+            onSubmit={handleSubmit(() => void onSubmit())}
             className="space-y-4"
           >
             {formInner}

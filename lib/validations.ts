@@ -66,6 +66,13 @@ export const transactionCreateSchema = z.object({
   date: z.coerce.date(),
 });
 
+export const transactionBatchCreateSchema = z.object({
+  items: z
+    .array(transactionCreateSchema)
+    .min(1, "En az bir kalem gerekli")
+    .max(30, "En fazla 30 kalem"),
+});
+
 export const transactionUpdateSchema = transactionCreateSchema.partial();
 
 export const transactionEditFormSchema = transactionCreateSchema
