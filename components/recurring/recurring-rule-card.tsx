@@ -46,38 +46,42 @@ export function RecurringRuleCard({
             {r.endDate && ` - Bitiş: ${formatDateTR(r.endDate)}`}
           </p>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
-          {!r.isActive && <Badge variant="secondary">Pasif</Badge>}
-          <span className={currencyChipClass}>
-            {currencySymbolLabel(currency)}
-          </span>
-          <Badge variant="outline">
-            {RECURRING_MODE_LABEL[r.mode] ?? r.mode}
-          </Badge>
-          <Badge variant="outline">
-            {RECURRING_FREQUENCY_LABEL[r.frequency] ?? r.frequency}
-            {r.interval > 1 ? ` ×${r.interval}` : ""}
-          </Badge>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Düzenle"
-            onClick={onEdit}
-            className="cursor-pointer"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="text-destructive cursor-pointer"
-            aria-label="Sil"
-            onClick={onDelete}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+        <div className="flex w-full shrink-0 flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:gap-3">
+          <div className="flex flex-wrap items-center gap-1.5 sm:contents">
+            {!r.isActive && <Badge variant="secondary">Pasif</Badge>}
+            <span className={currencyChipClass}>
+              {currencySymbolLabel(currency)}
+            </span>
+            <Badge variant="outline" className="text-[11px] sm:text-xs">
+              {RECURRING_MODE_LABEL[r.mode] ?? r.mode}
+            </Badge>
+            <Badge variant="outline" className="text-[11px] sm:text-xs">
+              {RECURRING_FREQUENCY_LABEL[r.frequency] ?? r.frequency}
+              {r.interval > 1 ? ` ×${r.interval}` : ""}
+            </Badge>
+          </div>
+          <div className="flex items-center justify-start gap-2 sm:contents">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Düzenle"
+              onClick={onEdit}
+              className="h-9 w-9 cursor-pointer sm:h-10 sm:w-10"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 cursor-pointer text-destructive sm:h-10 sm:w-10"
+              aria-label="Sil"
+              onClick={onDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
