@@ -1,4 +1,4 @@
-import type { GoldSubtype } from "@/lib/gold-subtypes";
+import type { GoldSubtype } from "@/lib/investments/gold-subtypes";
 
 export type InvestmentAssetType =
   | "GOLD"

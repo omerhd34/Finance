@@ -7,8 +7,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { DashboardKpiCard } from "@/components/dashboard/dashboard-kpi-card";
-import { formatMoneyAmount } from "@/lib/utils";
-import type { FinancialHealthScore } from "@/lib/financial-health-score";
+import { formatMoneyAmount } from "@/lib/common/utils";
+import type { FinancialHealthScore } from "@/lib/dashboard/financial-health-score";
 
 type Props = {
   currency: string;

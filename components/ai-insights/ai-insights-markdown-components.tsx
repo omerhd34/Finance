@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode } from "react";
 import type { Components } from "react-markdown";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 
 function textFromNodes(node: ReactNode): string {
   if (node == null || typeof node === "boolean") return "";

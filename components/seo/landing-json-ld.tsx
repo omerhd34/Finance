@@ -1,4 +1,4 @@
-import { getSiteUrl } from "@/lib/site-url";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 export function LandingJsonLd() {
   const base = getSiteUrl();

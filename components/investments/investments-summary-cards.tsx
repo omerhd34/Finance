@@ -1,6 +1,6 @@
 "use client";
 
-import { formatMoneyAmount } from "@/lib/utils";
+import { formatMoneyAmount } from "@/lib/common/utils";
 import {
   Card,
   CardDescription,

@@ -23,7 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getSiteUrl } from "@/lib/site-url";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
 

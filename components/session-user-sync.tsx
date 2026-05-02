@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { apiClient } from "@/lib/api-client";
-import { normalizePlanTier } from "@/lib/plan-tier";
+import { apiClient } from "@/lib/client/api-client";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { clearUser, setUser, type AuthUser } from "@/store/slices/authSlice";
 import type { AppDispatch } from "@/store";
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { AiInsightSection } from "@/lib/ai-insights-parse";
+import type { AiInsightSection } from "@/lib/ai/ai-insights-parse";
 import { AiInsightsSectionCard } from "@/components/ai-insights/ai-insights-section-card";
 import {
   accentVariantAt,

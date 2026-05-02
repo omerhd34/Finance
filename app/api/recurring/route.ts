@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { recurringRule } from "@/lib/prisma";
-import { normalizeDueDate } from "@/lib/recurring-schedule";
-import { recurringCreateSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { recurringRule } from "@/lib/db/prisma";
+import { normalizeDueDate } from "@/lib/recurring/recurring-schedule";
+import { recurringCreateSchema } from "@/lib/schemas/validations";
 
 export async function GET() {
   try {

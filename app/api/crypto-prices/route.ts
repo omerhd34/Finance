@@ -4,7 +4,7 @@ import {
   criptoRowsToSymbols,
   fetchUsdTryFromCollectapi,
   type CollectapiCriptoPayload,
-} from "@/lib/collectapi-crypto";
+} from "@/lib/collectapi/collectapi-crypto";
 
 const CRIPTO_URL = "https://api.collectapi.com/economy/cripto";
 

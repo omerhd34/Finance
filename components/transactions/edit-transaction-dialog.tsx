@@ -4,17 +4,17 @@
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tryAmountToDisplay } from "@/lib/currency";
+import { tryAmountToDisplay } from "@/lib/common/currency";
 import {
   transactionEditFormSchema,
   type TransactionEditFormValues,
-} from "@/lib/validations";
+} from "@/lib/schemas/validations";
 import {
   EXPENSE_SUBCATEGORY_NONE,
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   expenseSubcategoryToFormValue,
-} from "@/lib/categories";
+} from "@/lib/domain/categories";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import type { Transaction } from "@/types/transaction";
 import { Button } from "@/components/ui/button";

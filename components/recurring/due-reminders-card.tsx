@@ -1,8 +1,8 @@
 "use client";
 
-import { formatDateTR, formatMoney } from "@/lib/utils";
+import { formatDateTR, formatMoney } from "@/lib/common/utils";
 import type { RecurringRule } from "@/types/recurring";
-import { formatExpenseCategoryLabel } from "@/lib/categories";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
 import { Button } from "@/components/ui/button";
 import {
   Card,

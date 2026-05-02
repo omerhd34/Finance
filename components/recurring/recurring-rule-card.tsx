@@ -3,10 +3,10 @@
 import {
   RECURRING_FREQUENCY_LABEL,
   RECURRING_MODE_LABEL,
-} from "@/lib/recurring-labels";
-import { formatDateTR, formatMoney } from "@/lib/utils";
+} from "@/lib/recurring/recurring-labels";
+import { formatDateTR, formatMoney } from "@/lib/common/utils";
 import type { RecurringRule } from "@/types/recurring";
-import { formatExpenseCategoryLabel } from "@/lib/categories";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

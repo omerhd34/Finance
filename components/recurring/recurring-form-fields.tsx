@@ -6,14 +6,14 @@ import {
   normalizeUserCurrency,
   tryAmountToDisplay,
   type UserDisplayCurrency,
-} from "@/lib/currency";
+} from "@/lib/common/currency";
 import {
   EXPENSE_CATEGORIES,
   EXPENSE_SUBCATEGORY_NONE,
   INCOME_CATEGORIES,
-} from "@/lib/categories";
+} from "@/lib/domain/categories";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
-import type { RecurringFormValues } from "@/lib/recurring-schema";
+import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

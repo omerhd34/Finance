@@ -2,8 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { GoldSubtype } from "@/lib/gold-subtypes";
-import { isSupportedGoldSubtype } from "@/lib/collectapi-gold";
+import type { GoldSubtype } from "@/lib/investments/gold-subtypes";
+import { isSupportedGoldSubtype } from "@/lib/collectapi/collectapi-gold";
 
 export type GoldLivePricesState = {
   prices: Partial<Record<GoldSubtype, number>>;

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { dedupeTransactionRows } from "@/lib/dedupe-transactions-display";
-import { prisma } from "@/lib/prisma";
-import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
-import { transactionCreateSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { dedupeTransactionRows } from "@/lib/transactions/dedupe-transactions-display";
+import { prisma } from "@/lib/db/prisma";
+import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
+import { transactionCreateSchema } from "@/lib/schemas/validations";
 import type { Prisma } from "@prisma/client";
 
 const transactionTotalDedupeSelect = {

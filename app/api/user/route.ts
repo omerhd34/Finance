@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { accountDeleteSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/db/prisma";
+import { accountDeleteSchema } from "@/lib/schemas/validations";
 
 export async function DELETE(req: Request) {
   try {

@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   resetPasswordSchema,
   type ResetPasswordInput,
-} from "@/lib/validations";
+} from "@/lib/schemas/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/client/api-client";
 
 export function ResetPasswordForm() {
   const router = useRouter();

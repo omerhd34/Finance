@@ -1,8 +1,8 @@
 "use client";
 
 import { differenceInCalendarDays } from "date-fns";
-import { debtProgressPercent, debtRemaining } from "@/lib/debt-remaining";
-import { formatDateTR, formatMoneyAmount } from "@/lib/utils";
+import { debtProgressPercent, debtRemaining } from "@/lib/debts/debt-remaining";
+import { formatDateTR, formatMoneyAmount } from "@/lib/common/utils";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

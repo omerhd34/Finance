@@ -1,7 +1,7 @@
 "use client";
 
 import { NewDebtDialog } from "./new-debt-dialog";
-import type { NewDebtFormValues } from "@/lib/debts-schema";
+import type { NewDebtFormValues } from "@/lib/debts/debts-schema";
 
 type Props = {
   newOpen: boolean;

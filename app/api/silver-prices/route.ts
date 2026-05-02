@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type {
   CollectapiGoldPayload,
   CollectapiGoldRow,
-} from "@/lib/collectapi-gold";
-import { silverGramTryFromCollectapiRows } from "@/lib/collectapi-silver";
+} from "@/lib/collectapi/collectapi-gold";
+import { silverGramTryFromCollectapiRows } from "@/lib/collectapi/collectapi-silver";
 
 const COLLECT_URL = "https://api.collectapi.com/economy/silverPrice";
 

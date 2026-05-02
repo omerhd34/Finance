@@ -24,16 +24,16 @@ import {
 import {
   ADMIN_SESSION_COOKIE,
   getAdminEmailFromSessionToken,
-} from "@/lib/admin";
+} from "@/lib/admin/admin";
 import {
   PREMIUM_SUBSCRIPTION_DAYS,
   addPremiumPeriod,
-} from "@/lib/premium-subscription";
-import { prisma } from "@/lib/prisma";
+} from "@/lib/premium/premium-subscription";
+import { prisma } from "@/lib/db/prisma";
 import {
   generateShopierOrderCode,
   getPremiumPlanAmountTry,
-} from "@/lib/shopier";
+} from "@/lib/premium/shopier";
 
 const PAGE_SIZE = 10;
 

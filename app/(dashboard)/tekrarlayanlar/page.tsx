@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/currency";
-import { formValueToExpenseSubcategory } from "@/lib/categories";
-import { isRecurringReminderDue } from "@/lib/recurring-reminder";
-import type { RecurringFormValues } from "@/lib/recurring-schema";
+import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/common/currency";
+import { formValueToExpenseSubcategory } from "@/lib/domain/categories";
+import { isRecurringReminderDue } from "@/lib/recurring/recurring-reminder";
+import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addRecurringRule,

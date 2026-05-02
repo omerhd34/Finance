@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   flattenCollectapiNestedResult,
   platinumGramTryFromUnknownRows,
-} from "@/lib/collectapi-platinum";
+} from "@/lib/collectapi/collectapi-platinum";
 
 const EMTIA_URL = "https://api.collectapi.com/economy/emtia";
 

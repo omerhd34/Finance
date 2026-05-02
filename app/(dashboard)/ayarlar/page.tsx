@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { accountDeleteSchema } from "@/lib/validations";
-import { cn } from "@/lib/utils";
-import { apiClient } from "@/lib/api-client";
+import { accountDeleteSchema } from "@/lib/schemas/validations";
+import { cn } from "@/lib/common/utils";
+import { apiClient } from "@/lib/client/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { Badge } from "@/components/ui/badge";
@@ -22,11 +22,11 @@ import {
 } from "@/components/ui/card";
 import type { z } from "zod";
 import { Check, CreditCard, Shield, Sparkles } from "lucide-react";
-import { normalizePlanTier } from "@/lib/plan-tier";
-import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
-import { PREMIUM_SUBSCRIPTION_DAYS } from "@/lib/premium-subscription-constants";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
+import { PREMIUM_PRICE_TRY } from "@/lib/premium/premium-price";
+import { PREMIUM_SUBSCRIPTION_DAYS } from "@/lib/premium/premium-subscription-constants";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
-import { parseApiErrorForUser } from "@/lib/email-verification-client";
+import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 
 const PREMIUM_LANDING_PERKS =
   LANDING_PLANS.find((p) => p.id === "premium")?.perks ?? [];

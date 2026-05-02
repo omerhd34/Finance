@@ -9,7 +9,7 @@ import { ChevronUp, Moon, Sun } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 
 const BACK_TO_TOP_REVEAL_AFTER_PX = 72;
 

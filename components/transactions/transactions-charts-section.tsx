@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import type { CategorySlice, MonthlyBarRow } from "@/lib/dashboard-stats";
+import type { CategorySlice, MonthlyBarRow } from "@/lib/dashboard/dashboard-stats";
 
 type Props = {
   bars: MonthlyBarRow[];

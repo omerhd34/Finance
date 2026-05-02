@@ -3,11 +3,11 @@ import {
   GoogleGenerativeAI,
   GoogleGenerativeAIFetchError,
 } from "@google/generative-ai";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { debt, prisma } from "@/lib/prisma";
-import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
-import { EXPENSE_CATEGORY_TREE } from "@/lib/categories";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { debt, prisma } from "@/lib/db/prisma";
+import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
+import { EXPENSE_CATEGORY_TREE } from "@/lib/domain/categories";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
 

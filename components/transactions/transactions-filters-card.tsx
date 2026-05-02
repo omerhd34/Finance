@@ -5,7 +5,7 @@ import {
   EXPENSE_CATEGORIES,
   expenseCategorySelectGroupLabelClassName,
   INCOME_CATEGORIES,
-} from "@/lib/categories";
+} from "@/lib/domain/categories";
 import type { TransactionFilters } from "@/store/slices/transactionSlice";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";

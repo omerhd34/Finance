@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { normalizeUserCurrency } from "@/lib/currency";
-import { normalizePlanTier } from "@/lib/plan-tier";
-import { apiClient } from "@/lib/api-client";
+import { normalizeUserCurrency } from "@/lib/common/currency";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
+import { apiClient } from "@/lib/client/api-client";
 import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { fileToAvatarDataUrl, validateAvatarFile } from "@/lib/avatar-resize";
+import { cn } from "@/lib/common/utils";
+import { fileToAvatarDataUrl, validateAvatarFile } from "@/lib/common/avatar-resize";
 import { UserRound } from "lucide-react";
 
 type ProfilePatchResponse = {

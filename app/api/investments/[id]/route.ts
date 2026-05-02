@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { GOLD_SUBTYPE_VALUES, goldSubtypeLabel } from "@/lib/gold-subtypes";
-import { PLATINUM_INVESTMENT_TITLE } from "@/lib/platinum-investment";
-import { SILVER_INVESTMENT_TITLE } from "@/lib/silver-investment";
-import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
-import { investmentPosition } from "@/lib/prisma";
-import { investmentUpdateSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { GOLD_SUBTYPE_VALUES, goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
+import { PLATINUM_INVESTMENT_TITLE } from "@/lib/investments/platinum-investment";
+import { SILVER_INVESTMENT_TITLE } from "@/lib/investments/silver-investment";
+import { isUserPremiumInDb } from "@/lib/premium/is-user-premium-db";
+import { investmentPosition } from "@/lib/db/prisma";
+import { investmentUpdateSchema } from "@/lib/schemas/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

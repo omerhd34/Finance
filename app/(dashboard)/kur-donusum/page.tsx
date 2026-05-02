@@ -2,7 +2,7 @@
 
 import { ArrowRightLeft, BadgeDollarSign } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { FALLBACK_TL_PER_FOREIGN_UNIT } from "@/lib/currency";
+import { FALLBACK_TL_PER_FOREIGN_UNIT } from "@/lib/common/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

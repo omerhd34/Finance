@@ -1,14 +1,14 @@
 import crypto from "crypto";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import {
   isPaidStatus,
   parseTryAmount,
   verifyShopierSignature,
   getShopierApiSecret,
   getShopierOsbCredentials,
-} from "@/lib/shopier";
-import { addPremiumPeriod } from "@/lib/premium-subscription-constants";
+} from "@/lib/premium/shopier";
+import { addPremiumPeriod } from "@/lib/premium/premium-subscription-constants";
 
 export const dynamic = "force-dynamic";
 

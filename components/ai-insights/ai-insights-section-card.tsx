@@ -4,9 +4,9 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 import type { LucideIcon } from "lucide-react";
-import type { AiInsightSection } from "@/lib/ai-insights-parse";
+import type { AiInsightSection } from "@/lib/ai/ai-insights-parse";
 import type { AiInsightAccentVariant } from "@/components/ai-insights/ai-insights-section-style";
 import { aiInsightsMarkdownComponents } from "@/components/ai-insights/ai-insights-markdown-components";
 

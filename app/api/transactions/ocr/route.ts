@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAIFetchError } from "@google/generative-ai";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
-import { prisma } from "@/lib/prisma";
-import { scanReceiptImageWithGemini } from "@/lib/receipt-ocr";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
+import { prisma } from "@/lib/db/prisma";
+import { scanReceiptImageWithGemini } from "@/lib/misc/receipt-ocr";
 
 const MAX_BYTES = 4 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);

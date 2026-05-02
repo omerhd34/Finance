@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { apiClient } from "@/lib/api-client";
-import { downloadAiInsightsPdf } from "@/lib/ai-insights-export";
-import { sectionsFromMarkdown } from "@/lib/ai-insights-parse";
-import { messageFromAiAnalyzeError } from "@/lib/ai-insights-errors";
+import { apiClient } from "@/lib/client/api-client";
+import { downloadAiInsightsPdf } from "@/lib/ai/ai-insights-export";
+import { sectionsFromMarkdown } from "@/lib/ai/ai-insights-parse";
+import { messageFromAiAnalyzeError } from "@/lib/ai/ai-insights-errors";
 import { AiInsightsExportDropdown } from "@/components/ai-insights/ai-insights-export-dropdown";
 import { AiInsightsHero } from "@/components/ai-insights/ai-insights-hero";
 import { AiInsightsHistoryDialog } from "@/components/ai-insights/ai-insights-history-dialog";
@@ -14,7 +14,7 @@ import { AiInsightsRunControls } from "@/components/ai-insights/ai-insights-run-
 import { AiInsightsLoadingSkeleton } from "@/components/ai-insights/ai-insights-loading-skeleton";
 import { AiInsightsSections } from "@/components/ai-insights/ai-insights-sections";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
-import { normalizePlanTier } from "@/lib/plan-tier";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 export default function AiInsightsPage() {
   const { data: session } = useSession();

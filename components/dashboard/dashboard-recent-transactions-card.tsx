@@ -12,8 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Transaction } from "@/types/transaction";
-import { formatExpenseCategoryLabel } from "@/lib/categories";
-import { formatDateShort, formatMoneyAmount } from "@/lib/utils";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
+import { formatDateShort, formatMoneyAmount } from "@/lib/common/utils";
 
 type Props = {
   transactions: Transaction[];

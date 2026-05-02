@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { setLiveExchangeRates } from "@/lib/currency";
+import { setLiveExchangeRates } from "@/lib/common/currency";
 
 export function ExchangeRatesSync() {
   useEffect(() => {

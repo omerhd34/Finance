@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { auth } from "@/lib/auth";
-import { sendVerificationEmailForUserId } from "@/lib/send-verification-email";
+import { auth } from "@/lib/auth/auth";
+import { sendVerificationEmailForUserId } from "@/lib/email/send-verification-email";
 
 export async function POST() {
   try {

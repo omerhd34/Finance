@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/db/prisma";
 import {
   addPremiumPeriod,
   ensurePremiumNotExpired,
-} from "@/lib/premium-subscription";
+} from "@/lib/premium/premium-subscription";
 
 export async function GET() {
   try {

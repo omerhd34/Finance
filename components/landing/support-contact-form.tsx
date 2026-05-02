@@ -11,8 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   supportContactClientSchema,
   type SupportContactClientInput,
-} from "@/lib/validations";
-import { cn } from "@/lib/utils";
+} from "@/lib/schemas/validations";
+import { cn } from "@/lib/common/utils";
 
 type Props = {
   inboxConfigured: boolean;

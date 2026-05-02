@@ -1,14 +1,14 @@
 "use client";
 
-import { formatGoldQuantityCell, goldSubtypeLabel } from "@/lib/gold-subtypes";
-import type { LiveInvestmentQuotes } from "@/lib/investment-position-math";
+import { formatGoldQuantityCell, goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
+import type { LiveInvestmentQuotes } from "@/lib/investments/investment-position-math";
 import {
   costBasisTry,
   hasDisplayableMarketPrice,
   pnlTry,
   valueTry,
-} from "@/lib/investment-position-math";
-import { formatMoneyAmount } from "@/lib/utils";
+} from "@/lib/investments/investment-position-math";
+import { formatMoneyAmount } from "@/lib/common/utils";
 import type {
   InvestmentAssetType,
   InvestmentPosition,

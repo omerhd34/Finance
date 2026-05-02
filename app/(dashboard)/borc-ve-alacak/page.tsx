@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { displayAmountToTry } from "@/lib/currency";
-import { debtRemaining } from "@/lib/debt-remaining";
-import type { NewDebtFormValues } from "@/lib/debts-schema";
+import { displayAmountToTry } from "@/lib/common/currency";
+import { debtRemaining } from "@/lib/debts/debt-remaining";
+import type { NewDebtFormValues } from "@/lib/debts/debts-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addDebt,

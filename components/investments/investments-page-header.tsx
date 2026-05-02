@@ -1,7 +1,7 @@
 "use client";
 
 import { NewPositionDialog } from "./new-position-dialog";
-import type { PositionFormValues } from "@/lib/investments-schema";
+import type { PositionFormValues } from "@/lib/investments/investments-schema";
 import type { InvestmentAssetType } from "@/types/investment";
 
 type Props = {

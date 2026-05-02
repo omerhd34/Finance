@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { passwordChangeSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/db/prisma";
+import { passwordChangeSchema } from "@/lib/schemas/validations";
 
 export async function PATCH(req: Request) {
   try {

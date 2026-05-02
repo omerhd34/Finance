@@ -7,13 +7,13 @@ import {
   normalizeUserCurrency,
   tryAmountToDisplay,
   type UserDisplayCurrency,
-} from "@/lib/currency";
-import { expenseSubcategoryToFormValue } from "@/lib/categories";
-import { defaultRecurringFormValues } from "@/lib/recurring-defaults";
+} from "@/lib/common/currency";
+import { expenseSubcategoryToFormValue } from "@/lib/domain/categories";
+import { defaultRecurringFormValues } from "@/lib/recurring/recurring-defaults";
 import {
   recurringRuleFormSchema,
   type RecurringFormValues,
-} from "@/lib/recurring-schema";
+} from "@/lib/recurring/recurring-schema";
 import type { RecurringRule } from "@/types/recurring";
 import { Button } from "@/components/ui/button";
 import {

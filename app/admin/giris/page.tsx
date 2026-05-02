@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import {
   getAdminEmailFromSessionToken,
   ADMIN_SESSION_COOKIE,
-} from "@/lib/admin";
+} from "@/lib/admin/admin";
 import { AdminLoginForm } from "@/components/forms/admin-login-form";
 
 export default async function AdminLoginPage() {

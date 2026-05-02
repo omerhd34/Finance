@@ -7,7 +7,7 @@ import { KullanimKosullariContent } from "@/components/legal/content/kullanim-ko
 import { MesafeliSatisContent } from "@/components/legal/content/mesafeli-satis-content";
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
 import { Separator } from "@/components/ui/separator";
-import { getSiteUrl } from "@/lib/site-url";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
 

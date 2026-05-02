@@ -2,9 +2,9 @@ import Link from "next/link";
 import { ArrowUpRight, HandCoins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { debtRemaining } from "@/lib/debt-remaining";
+import { debtRemaining } from "@/lib/debts/debt-remaining";
 import type { Debt } from "@/types/debt";
-import { formatMoneyAmount } from "@/lib/utils";
+import { formatMoneyAmount } from "@/lib/common/utils";
 
 type Props = {
   items: Debt[];

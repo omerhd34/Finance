@@ -5,7 +5,7 @@ import {
   EXPENSE_CATEGORY_TREE,
   expenseCategorySelectGroupLabelClassName,
   getExpenseSubcategories,
-} from "@/lib/categories";
+} from "@/lib/domain/categories";
 import { Label } from "@/components/ui/label";
 import {
   Select,

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { passwordResetToken, prisma } from "@/lib/prisma";
-import { forgotPasswordSchema } from "@/lib/validations";
-import { sendPasswordResetEmail } from "@/lib/password-reset-email";
+import { passwordResetToken, prisma } from "@/lib/db/prisma";
+import { forgotPasswordSchema } from "@/lib/schemas/validations";
+import { sendPasswordResetEmail } from "@/lib/email/password-reset-email";
 import {
   appBaseUrl,
   generatePasswordResetSecret,
   hashPasswordResetToken,
-} from "@/lib/password-reset-token";
+} from "@/lib/auth/password-reset-token";
 
 const RESET_TTL_MS = 60 * 60 * 1000;
 

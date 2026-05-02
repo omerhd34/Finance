@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { processAutoRecurringForUser } from "@/lib/recurring-service";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { processAutoRecurringForUser } from "@/lib/recurring/recurring-service";
 
 export async function POST() {
   try {

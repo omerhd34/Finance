@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { tryAmountToDisplay } from "@/lib/currency";
+import { tryAmountToDisplay } from "@/lib/common/currency";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useCurrencySymbols } from "@/hooks/use-currency-symbols";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
@@ -11,13 +11,13 @@ import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
 import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
 import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
-import type { GoldSubtype } from "@/lib/gold-subtypes";
+import type { GoldSubtype } from "@/lib/investments/gold-subtypes";
 import {
   GOLD_SUBTYPE_OPTIONS,
   GOLD_SUBTYPE_VALUES,
   goldMiktarLabel,
-} from "@/lib/gold-subtypes";
-import type { PositionFormValues } from "@/lib/investments-schema";
+} from "@/lib/investments/gold-subtypes";
+import type { PositionFormValues } from "@/lib/investments/investments-schema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

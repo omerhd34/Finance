@@ -11,18 +11,18 @@ import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-inv
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
 import { LogoLoading } from "@/components/ui/logo-loading";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/client/api-client";
 import {
   aggregatePositionsTry,
   totalInvestmentPnlTry,
-} from "@/lib/investment-position-math";
+} from "@/lib/investments/investment-position-math";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
 import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
 import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
-import { debtRemaining } from "@/lib/debt-remaining";
+import { debtRemaining } from "@/lib/debts/debt-remaining";
 import type { Debt } from "@/types/debt";
 import type { InvestmentPosition } from "@/types/investment";
 import type { RecurringRule } from "@/types/recurring";
@@ -33,11 +33,11 @@ import {
   getLastNMonthsPeriodRange,
   lastNMonthsBars,
   sumByTypeInRange,
-} from "@/lib/dashboard-stats";
-import { computeFinancialHealthScore } from "@/lib/financial-health-score";
+} from "@/lib/dashboard/dashboard-stats";
+import { computeFinancialHealthScore } from "@/lib/dashboard/financial-health-score";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
-import { normalizePlanTier } from "@/lib/plan-tier";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();

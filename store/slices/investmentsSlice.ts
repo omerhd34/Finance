@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api-client";
-import { parseApiErrorForUser } from "@/lib/email-verification-client";
+import { apiClient } from "@/lib/client/api-client";
+import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 import type { InvestmentPosition } from "@/types/investment";
 
 export type InvestmentsState = {

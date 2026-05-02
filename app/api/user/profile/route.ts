@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { profileUpdateSchema } from "@/lib/validations";
-import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/db/prisma";
+import { profileUpdateSchema } from "@/lib/schemas/validations";
+import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 
 const profileSelectFields = {
   id: true,

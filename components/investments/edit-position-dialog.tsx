@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tryAmountToDisplay } from "@/lib/currency";
+import { tryAmountToDisplay } from "@/lib/common/currency";
 import {
   positionFormSchema,
   type PositionFormValues,
-} from "@/lib/investments-schema";
+} from "@/lib/investments/investments-schema";
 import type { InvestmentPosition } from "@/types/investment";
 import { Button } from "@/components/ui/button";
 import {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   buildFxTryMap,
   type CollectapiAllCurrencyPayload,
-} from "@/lib/collectapi-currency";
+} from "@/lib/collectapi/collectapi-currency";
 
 const COLLECT_URL = "https://api.collectapi.com/economy/allCurrency";
 

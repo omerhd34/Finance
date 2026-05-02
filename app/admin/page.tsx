@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import {
   ADMIN_SESSION_COOKIE,
   getAdminEmailFromSessionToken,
-} from "@/lib/admin";
+} from "@/lib/admin/admin";
 
 export default async function AdminPage() {
   const cookieStore = await cookies();

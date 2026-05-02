@@ -5,21 +5,21 @@ import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useFieldArray, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { EmailVerificationRequiredError } from "@/lib/email-verification-client";
+import { EmailVerificationRequiredError } from "@/lib/email/email-verification-client";
 import {
   transactionBodyFieldsSchema,
-} from "@/lib/validations";
+} from "@/lib/schemas/validations";
 import {
   EXPENSE_CATEGORIES,
   EXPENSE_SUBCATEGORY_NONE,
   INCOME_CATEGORIES,
   expenseSubcategoryToFormValue,
   formValueToExpenseSubcategory,
-} from "@/lib/categories";
+} from "@/lib/domain/categories";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
-import { displayAmountToTry, tryAmountToDisplay } from "@/lib/currency";
-import { normalizePlanTier } from "@/lib/plan-tier";
-import { apiClient } from "@/lib/api-client";
+import { displayAmountToTry, tryAmountToDisplay } from "@/lib/common/currency";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
+import { apiClient } from "@/lib/client/api-client";
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";

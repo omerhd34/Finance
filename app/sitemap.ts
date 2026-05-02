@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { SSSPosts } from "@/lib/sss-posts";
-import { getSiteUrl } from "@/lib/site-url";
+import { SSSPosts } from "@/lib/site/sss-posts";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = getSiteUrl();

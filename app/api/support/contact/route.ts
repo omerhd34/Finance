@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import {
   getSupportInboxEmail,
   sendSupportContactEmail,
-} from "@/lib/support-contact-email";
-import { supportContactClientSchema } from "@/lib/validations";
+} from "@/lib/email/support-contact-email";
+import { supportContactClientSchema } from "@/lib/schemas/validations";
 
 export async function POST(req: Request) {
   let json: unknown;

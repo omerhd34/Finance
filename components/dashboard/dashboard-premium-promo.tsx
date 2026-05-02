@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PREMIUM_PRICE_TRY } from "@/lib/premium-price";
-import { cn } from "@/lib/utils";
+import { PREMIUM_PRICE_TRY } from "@/lib/premium/premium-price";
+import { cn } from "@/lib/common/utils";
 
 export function DashboardPremiumPromo() {
   return (

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { verifyEmailWithRawToken } from "@/lib/verify-email-token-server";
+import { verifyEmailWithRawToken } from "@/lib/auth/verify-email-token-server";
 
 const bodySchema = z.object({
   token: z.string().min(1),

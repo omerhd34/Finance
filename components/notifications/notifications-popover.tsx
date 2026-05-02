@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, X } from "lucide-react";
-import { apiClient } from "@/lib/api-client";
-import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/client/api-client";
+import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import {
   Popover,

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 
 export function DashboardKpiCard({
   icon: Icon,

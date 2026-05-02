@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   buildStockQuoteMapTry,
   type CollectapiHissePayload,
-} from "@/lib/collectapi-stock";
+} from "@/lib/collectapi/collectapi-stock";
 
 const COLLECT_URL = "https://api.collectapi.com/economy/hisseSenedi";
 

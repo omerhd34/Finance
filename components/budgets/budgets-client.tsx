@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { apiClient } from "@/lib/api-client";
-import { parseApiErrorForUser } from "@/lib/email-verification-client";
+import { apiClient } from "@/lib/client/api-client";
+import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 import {
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORY_TREE,
   expenseCategorySelectGroupLabelClassName,
-} from "@/lib/categories";
-import { formatMoneyAmount } from "@/lib/utils";
+} from "@/lib/domain/categories";
+import { formatMoneyAmount } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 import { LogoLoading } from "@/components/ui/logo-loading";
 
 export type CategoryBudgetRow = {

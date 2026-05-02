@@ -7,8 +7,8 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SSSPosts, getPostBySlug } from "@/lib/sss-posts";
-import { getSiteUrl } from "@/lib/site-url";
+import { SSSPosts, getPostBySlug } from "@/lib/site/sss-posts";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
 

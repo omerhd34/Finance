@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
-import { apiClient } from "@/lib/api-client";
-import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/client/api-client";
+import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { LogoLoading } from "@/components/ui/logo-loading";
 

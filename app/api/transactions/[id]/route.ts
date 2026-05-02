@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget-alerts";
-import { prisma } from "@/lib/prisma";
-import { transactionCreateSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
+import { prisma } from "@/lib/db/prisma";
+import { transactionCreateSchema } from "@/lib/schemas/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

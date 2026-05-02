@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginInput } from "@/lib/validations";
+import { loginSchema, type LoginInput } from "@/lib/schemas/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default async function DashboardGroupLayout({

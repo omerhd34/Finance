@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { prisma, recurringRule } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { prisma, recurringRule } from "@/lib/db/prisma";
 import {
   addRecurringInterval,
   alignNextDueToFuture,
   normalizeDueDate,
   type RecurringFrequency,
-} from "@/lib/recurring-schedule";
-import { recurringCreateSchema } from "@/lib/validations";
+} from "@/lib/recurring/recurring-schedule";
+import { recurringCreateSchema } from "@/lib/schemas/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

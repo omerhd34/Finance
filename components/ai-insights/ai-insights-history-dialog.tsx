@@ -4,7 +4,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { History } from "lucide-react";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/client/api-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

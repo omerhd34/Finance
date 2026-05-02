@@ -1,5 +1,5 @@
 import { BrandLockup } from "@/components/branding/brand-lockup";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 
 type LogoLoadingProps = {
   fullScreen?: boolean;

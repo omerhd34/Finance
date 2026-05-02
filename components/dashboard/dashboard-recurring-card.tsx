@@ -6,10 +6,10 @@ import { Card } from "@/components/ui/card";
 import {
   RECURRING_FREQUENCY_LABEL,
   RECURRING_MODE_LABEL,
-} from "@/lib/dashboard-recurring-labels";
+} from "@/lib/dashboard/dashboard-recurring-labels";
 import type { RecurringRule } from "@/types/recurring";
-import { formatExpenseCategoryLabel } from "@/lib/categories";
-import { formatDateShort, formatMoneyAmount } from "@/lib/utils";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
+import { formatDateShort, formatMoneyAmount } from "@/lib/common/utils";
 
 type Props = {
   activeRecurringCount: number;

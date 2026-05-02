@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { verifyEmailWithRawToken } from "@/lib/verify-email-token-server";
+import { auth } from "@/lib/auth/auth";
+import { verifyEmailWithRawToken } from "@/lib/auth/verify-email-token-server";
 import { Button } from "@/components/ui/button";
 import {
   Card,

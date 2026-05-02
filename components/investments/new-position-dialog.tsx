@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import {
   positionFormSchema,
   type PositionFormValues,
-} from "@/lib/investments-schema";
+} from "@/lib/investments/investments-schema";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

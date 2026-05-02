@@ -1,4 +1,4 @@
-import { cn, formatMoneyAmount } from "@/lib/utils";
+import { cn, formatMoneyAmount } from "@/lib/common/utils";
 
 export type InvestmentAggregate = {
   count: number;

@@ -3,13 +3,13 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Transaction } from "@/types/transaction";
-import type { TransactionEditFormValues } from "@/lib/validations";
-import { displayAmountToTry } from "@/lib/currency";
+import type { TransactionEditFormValues } from "@/lib/schemas/validations";
+import { displayAmountToTry } from "@/lib/common/currency";
 import {
   downloadTransactionsCsv,
   downloadTransactionsPdfFiltered,
   fetchTransactionsForExport,
-} from "@/lib/transactions-export";
+} from "@/lib/transactions/transactions-export";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   deleteTransaction,
@@ -20,15 +20,15 @@ import {
   type TransactionFilters,
 } from "@/store/slices/transactionSlice";
 import { processDueRecurring } from "@/store/slices/recurringSlice";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/client/api-client";
 import {
   expenseByCategoryForLastNMonths,
   formatPeriodRangeLabel,
   getLastNMonthsPeriodRange,
   lastNMonthsBars,
-} from "@/lib/dashboard-stats";
-import { formValueToExpenseSubcategory } from "@/lib/categories";
-import { dedupeTransactionsForDisplay } from "@/lib/dedupe-transactions-display";
+} from "@/lib/dashboard/dashboard-stats";
+import { formValueToExpenseSubcategory } from "@/lib/domain/categories";
+import { dedupeTransactionsForDisplay } from "@/lib/transactions/dedupe-transactions-display";
 import { DeleteTransactionDialog } from "@/components/transactions/delete-transaction-dialog";
 import { EditTransactionDialog } from "@/components/transactions/edit-transaction-dialog";
 import { TransactionsChartsSection } from "@/components/transactions/transactions-charts-section";

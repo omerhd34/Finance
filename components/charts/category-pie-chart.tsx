@@ -6,8 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { PieLabelRenderProps } from "recharts";
-import type { CategorySlice } from "@/lib/dashboard-stats";
-import { formatMoney } from "@/lib/utils";
+import type { CategorySlice } from "@/lib/dashboard/dashboard-stats";
+import { formatMoney } from "@/lib/common/utils";
 import { useAppSelector } from "@/store/hooks";
 
 const SLICE_COLORS = [

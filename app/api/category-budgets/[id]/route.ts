@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import {
   evaluateCategoryBudgetForMonth,
   getExpenseTotalForCategoryMonth,
-} from "@/lib/budget-alerts";
-import { categoryBudget } from "@/lib/prisma";
-import { categoryBudgetUpdateSchema } from "@/lib/validations";
+} from "@/lib/budget/budget-alerts";
+import { categoryBudget } from "@/lib/db/prisma";
+import { categoryBudgetUpdateSchema } from "@/lib/schemas/validations";
 import { format } from "date-fns";
 
 type RouteContext = { params: Promise<{ id: string }> };

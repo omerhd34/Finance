@@ -1,7 +1,7 @@
 "use client";
 
-import type { UserDisplayCurrency } from "@/lib/currency";
-import type { RecurringFormValues } from "@/lib/recurring-schema";
+import type { UserDisplayCurrency } from "@/lib/common/currency";
+import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { NewRecurringDialog } from "./new-recurring-dialog";
 
 type Props = {

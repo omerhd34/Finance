@@ -3,8 +3,8 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api-client";
-import { parseApiErrorForUser } from "@/lib/email-verification-client";
+import { apiClient } from "@/lib/client/api-client";
+import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 import type { Transaction } from "@/types/transaction";
 
 export type TransactionFilters = {

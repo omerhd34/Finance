@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import type { Transaction } from "@/types/transaction";
-import { formatExpenseCategoryLabel } from "@/lib/categories";
-import { cn, formatMoneyAmount, formatDateShort } from "@/lib/utils";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
+import { cn, formatMoneyAmount, formatDateShort } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

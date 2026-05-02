@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { debt } from "@/lib/prisma";
-import { evaluateDebtDueAlerts } from "@/lib/debt-due-alerts";
-import { debtCreateSchema } from "@/lib/validations";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { debt } from "@/lib/db/prisma";
+import { evaluateDebtDueAlerts } from "@/lib/debts/debt-due-alerts";
+import { debtCreateSchema } from "@/lib/schemas/validations";
 
 export async function GET() {
   try {

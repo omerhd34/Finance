@@ -3,7 +3,7 @@ import {
   ADMIN_SESSION_COOKIE,
   createAdminSessionToken,
   verifyAdminCredentials,
-} from "@/lib/admin";
+} from "@/lib/admin/admin";
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as {

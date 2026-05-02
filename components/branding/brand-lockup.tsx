@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/common/utils";
 
 type BrandLockupVariant = "landing" | "sidebar";
 

@@ -6,8 +6,8 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
 import { Button } from "@/components/ui/button";
 import { SupportContactForm } from "@/components/landing/support-contact-form";
-import { getSupportInboxEmail } from "@/lib/support-contact-email";
-import { getSiteUrl } from "@/lib/site-url";
+import { getSupportInboxEmail } from "@/lib/email/support-contact-email";
+import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
 

@@ -11,8 +11,8 @@ import {
   YAxis,
   Area,
 } from "recharts";
-import type { MonthlyBarRow } from "@/lib/dashboard-stats";
-import { formatMoney } from "@/lib/utils";
+import type { MonthlyBarRow } from "@/lib/dashboard/dashboard-stats";
+import { formatMoney } from "@/lib/common/utils";
 import { useAppSelector } from "@/store/hooks";
 import { useBlockChartPointerActivation } from "@/components/charts/use-block-chart-pointer-activation";
 

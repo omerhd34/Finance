@@ -6,8 +6,8 @@ import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   ADMIN_SESSION_COOKIE,
   getAdminEmailFromSessionToken,
-} from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
+} from "@/lib/admin/admin";
+import { prisma } from "@/lib/db/prisma";
 import { Button } from "@/components/ui/button";
 import { AdminSharedHeader } from "@/components/admin/admin-shared-header";
 import {

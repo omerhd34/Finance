@@ -25,14 +25,14 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
-import { apiClient } from "@/lib/api-client";
-import { normalizeUserCurrency } from "@/lib/currency";
-import { normalizePlanTier } from "@/lib/plan-tier";
+import { apiClient } from "@/lib/client/api-client";
+import { normalizeUserCurrency } from "@/lib/common/currency";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { NotificationsPopover } from "@/components/notifications/notifications-popover";
 import { BrandLockup } from "@/components/branding/brand-lockup";
-import { cn, currencySymbolLabel } from "@/lib/utils";
+import { cn, currencySymbolLabel } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {

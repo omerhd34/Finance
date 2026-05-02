@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { normalizeUserCurrency } from "@/lib/currency";
-import { normalizePlanTier } from "@/lib/plan-tier";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/db/prisma";
+import { normalizeUserCurrency } from "@/lib/common/currency";
+import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { MemberProfileCard } from "@/components/profile/member-profile-card";
 
 type ProfilePageProps = {

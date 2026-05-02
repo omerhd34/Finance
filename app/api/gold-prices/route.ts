@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   mapCollectapiRowsToSubtypePrices,
   type CollectapiGoldPayload,
-} from "@/lib/collectapi-gold";
+} from "@/lib/collectapi/collectapi-gold";
 
 const COLLECT_URL = "https://api.collectapi.com/economy/goldPrice";
 

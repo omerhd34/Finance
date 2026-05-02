@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
+import { prisma } from "@/lib/db/prisma";
 import {
   buildShopierCheckoutUrl,
   generateShopierOrderCode,
   getPremiumPlanAmountTry,
-} from "@/lib/shopier";
-import { ensurePremiumNotExpired } from "@/lib/premium-subscription";
+} from "@/lib/premium/shopier";
+import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 
 export async function POST() {
   try {

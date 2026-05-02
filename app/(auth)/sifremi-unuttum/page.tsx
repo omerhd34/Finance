@@ -19,9 +19,9 @@ import {
 import {
   forgotPasswordSchema,
   type ForgotPasswordInput,
-} from "@/lib/validations";
+} from "@/lib/schemas/validations";
 import axios from "axios";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/client/api-client";
 
 export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
