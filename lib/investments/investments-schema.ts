@@ -32,14 +32,6 @@ export const positionFormSchema = z
       }
     }
     if (data.assetType === "STOCK") {
-      const tit = data.title?.trim() ?? "";
-      if (tit.length < 1) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Başlık gerekli",
-          path: ["title"],
-        });
-      }
       const t = data.ticker?.trim() ?? "";
       if (t.length < 1) {
         ctx.addIssue({

@@ -279,12 +279,6 @@ export const investmentCreateSchema = z
   )
   .refine(
     (d) =>
-      d.assetType !== "STOCK" ||
-      (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Başlık gerekli", path: ["title"] },
-  )
-  .refine(
-    (d) =>
       d.assetType !== "FX" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 2),
     { message: "Döviz seçin", path: ["ticker"] },

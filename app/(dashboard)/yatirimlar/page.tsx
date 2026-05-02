@@ -129,7 +129,9 @@ export default function InvestmentsPage() {
               ? SILVER_INVESTMENT_TITLE
               : values.assetType === "PLATINUM"
                 ? PLATINUM_INVESTMENT_TITLE
-                : (values.title ?? "").trim(),
+                : values.assetType === "STOCK"
+                  ? (values.ticker ?? "").trim().toUpperCase()
+                  : (values.title ?? "").trim(),
         ticker:
           values.assetType === "STOCK" ||
           values.assetType === "FX" ||
@@ -162,7 +164,9 @@ export default function InvestmentsPage() {
                 ? SILVER_INVESTMENT_TITLE
                 : values.assetType === "PLATINUM"
                   ? PLATINUM_INVESTMENT_TITLE
-                  : (values.title ?? "").trim(),
+                  : values.assetType === "STOCK"
+                    ? (values.ticker ?? "").trim().toUpperCase()
+                    : (values.title ?? "").trim(),
           ticker:
             values.assetType === "STOCK" ||
             values.assetType === "FX" ||

@@ -97,9 +97,11 @@ export async function PUT(req: Request, context: RouteContext) {
             ? { title: SILVER_INVESTMENT_TITLE }
             : nextType === "PLATINUM"
               ? { title: PLATINUM_INVESTMENT_TITLE }
-              : data.title !== undefined
-                ? { title: data.title.trim() }
-                : {}),
+              : nextType === "STOCK"
+                ? { title: tickerToSave ?? "" }
+                : data.title !== undefined
+                  ? { title: data.title.trim() }
+                  : {}),
         ...(data.ticker !== undefined && { ticker: tickerToSave }),
         ...(data.quantity !== undefined && { quantity: data.quantity }),
         ...(data.avgCostPerUnitTry !== undefined && {

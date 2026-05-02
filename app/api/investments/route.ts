@@ -66,7 +66,9 @@ export async function POST(req: Request) {
           ? SILVER_INVESTMENT_TITLE
           : d.assetType === "PLATINUM"
             ? PLATINUM_INVESTMENT_TITLE
-            : (d.title ?? "").trim();
+            : d.assetType === "STOCK"
+              ? ticker ?? ""
+              : (d.title ?? "").trim();
     const row = await investmentPosition.create({
       data: {
         assetType: d.assetType,

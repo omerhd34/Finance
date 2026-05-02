@@ -68,3 +68,10 @@ export function formatDateShort(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("tr-TR");
 }
+
+export function sentenceCaseFirstTr(text: string): string {
+  const t = text.trim();
+  if (!t) return "";
+  const lower = t.toLocaleLowerCase("tr-TR");
+  return lower.charAt(0).toLocaleUpperCase("tr-TR") + lower.slice(1);
+}

@@ -12,7 +12,7 @@ import {
   pnlTry,
   valueTry,
 } from "@/lib/investments/investment-position-math";
-import { cn, formatMoneyAmount } from "@/lib/common/utils";
+import { cn, formatMoneyAmount, sentenceCaseFirstTr } from "@/lib/common/utils";
 import type {
   InvestmentAssetType,
   InvestmentPosition,
@@ -60,10 +60,9 @@ export function InvestmentsPositionsTabs({
   onEdit,
   onDelete,
 }: Props) {
-  const compactPreciousTab =
-    tab === "GOLD" || tab === "SILVER" || tab === "PLATINUM";
-  const tableColSpan = compactPreciousTab ? 7 : 8;
-  const tabHasTitleAndCode = !compactPreciousTab;
+  const tableColSpan = 7;
+  const tabHasTitleAndCode =
+    tab === "FX" || tab === "STOCK" || tab === "CRYPTO";
 
   const categoryTotals = useMemo(() => {
     let cost = 0;
@@ -133,12 +132,11 @@ export function InvestmentsPositionsTabs({
             <Table>
               <TableHeader>
                 <TableRow>
-                  {tabHasTitleAndCode && <TableHead>Başlık</TableHead>}
+                  {tabHasTitleAndCode && <TableHead>Tür</TableHead>}
                   {tab === "GOLD" && <TableHead>Tür</TableHead>}
                   {(tab === "SILVER" || tab === "PLATINUM") && (
                     <TableHead>Tür</TableHead>
                   )}
-                  {tabHasTitleAndCode && <TableHead>Kod</TableHead>}
                   <TableHead className="text-right">Miktar</TableHead>
                   <TableHead className="text-right">Alış fiyatı</TableHead>
                   <TableHead className="text-right">Güncel fiyat</TableHead>
@@ -207,10 +205,27 @@ export function InvestmentsPositionsTabs({
                                   liveTryCrypto > 0
                                 ? liveTryCrypto
                                 : (p.marketPricePerUnitTry ?? undefined);
+                  const instrumentBadgeLabel =
+                    p.ticker?.trim().toUpperCase() || p.title?.trim() || "";
+                  const instrumentBadgeDisplay =
+                    (p.assetType === "STOCK" ||
+                      p.assetType === "FX" ||
+                      p.assetType === "CRYPTO") &&
+                    instrumentBadgeLabel
+                      ? sentenceCaseFirstTr(instrumentBadgeLabel)
+                      : instrumentBadgeLabel;
                   return (
                     <TableRow key={p.id}>
                       {tabHasTitleAndCode && (
-                        <TableCell className="font-medium">{p.title}</TableCell>
+                        <TableCell>
+                          {instrumentBadgeDisplay ? (
+                            <Badge variant="outline">
+                              {instrumentBadgeDisplay}
+                            </Badge>
+                          ) : (
+                            "—"
+                          )}
+                        </TableCell>
                       )}
                       {tab === "GOLD" && (
                         <TableCell>
@@ -222,15 +237,6 @@ export function InvestmentsPositionsTabs({
                       {(tab === "SILVER" || tab === "PLATINUM") && (
                         <TableCell>
                           <Badge variant="outline">Gram</Badge>
-                        </TableCell>
-                      )}
-                      {tabHasTitleAndCode && (
-                        <TableCell>
-                          {p.ticker ? (
-                            <Badge variant="secondary">{p.ticker}</Badge>
-                          ) : (
-                            "—"
-                          )}
                         </TableCell>
                       )}
                       <TableCell className="text-right tabular-nums">
@@ -322,86 +328,43 @@ export function InvestmentsPositionsTabs({
                         "border-border bg-muted/35 hover:bg-muted/45 dark:bg-muted/25 dark:hover:bg-muted/35",
                     )}
                   >
-                    {tabHasTitleAndCode ? (
-                      <>
-                        <TableCell className="text-muted-foreground">
-                          Toplam
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          —
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          —
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="tabular-nums">
-                            <span className="text-muted-foreground text-xs">
-                              Toplam maliyet
-                            </span>
-                            <div>
-                              {formatMoneyAmount(categoryTotals.cost, currency)}
-                            </div>
+                    <>
+                      <TableCell className="text-muted-foreground">
+                        Toplam
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        —
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="tabular-nums">
+                          <span className="text-muted-foreground text-xs">
+                            Toplam maliyet
+                          </span>
+                          <div>
+                            {formatMoneyAmount(categoryTotals.cost, currency)}
                           </div>
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          —
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatMoneyAmount(categoryTotals.val, currency)}
-                        </TableCell>
-                        <TableCell
-                          className={`text-right tabular-nums ${
-                            categoryTotals.pnl > 0
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : categoryTotals.pnl < 0
-                                ? "text-destructive"
-                                : ""
-                          }`}
-                        >
-                          {categoryTotals.pnl >= 0 ? "+" : ""}
-                          {formatMoneyAmount(categoryTotals.pnl, currency)}
-                        </TableCell>
-                        <TableCell />
-                      </>
-                    ) : (
-                      <>
-                        <TableCell className="text-muted-foreground">
-                          Toplam
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          —
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="tabular-nums">
-                            <span className="text-muted-foreground text-xs">
-                              Toplam maliyet
-                            </span>
-                            <div>
-                              {formatMoneyAmount(categoryTotals.cost, currency)}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          —
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatMoneyAmount(categoryTotals.val, currency)}
-                        </TableCell>
-                        <TableCell
-                          className={`text-right tabular-nums ${
-                            categoryTotals.pnl > 0
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : categoryTotals.pnl < 0
-                                ? "text-destructive"
-                                : ""
-                          }`}
-                        >
-                          {categoryTotals.pnl >= 0 ? "+" : ""}
-                          {formatMoneyAmount(categoryTotals.pnl, currency)}
-                        </TableCell>
-                        <TableCell />
-                      </>
-                    )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        —
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatMoneyAmount(categoryTotals.val, currency)}
+                      </TableCell>
+                      <TableCell
+                        className={`text-right tabular-nums ${
+                          categoryTotals.pnl > 0
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : categoryTotals.pnl < 0
+                              ? "text-destructive"
+                              : ""
+                        }`}
+                      >
+                        {categoryTotals.pnl >= 0 ? "+" : ""}
+                        {formatMoneyAmount(categoryTotals.pnl, currency)}
+                      </TableCell>
+                      <TableCell />
+                    </>
                   </TableRow>
                 )}
               </TableBody>

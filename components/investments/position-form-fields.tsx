@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { tryAmountToDisplay } from "@/lib/common/currency";
+import { sentenceCaseFirstTr } from "@/lib/common/utils";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useCurrencySymbols } from "@/hooks/use-currency-symbols";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
@@ -242,23 +243,13 @@ export function PositionFormFields({
       {assetType === "STOCK" && (
         <>
           <div className="space-y-2">
-            <Label>Başlık</Label>
-            <Input
-              placeholder={
-                stockPlaceholders ? "Örn. Türk Hava Yolları" : undefined
-              }
-              {...form.register("title")}
-            />
-            {form.formState.errors.title && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.title.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2">
             <Label>Hisse kodu</Label>
             <Input
-              placeholder={stockPlaceholders ? "THYAO" : undefined}
+              placeholder={
+                stockPlaceholders
+                  ? "THYAO / ODAS / PGSUS / ASELS / ..."
+                  : undefined
+              }
               {...form.register("ticker")}
             />
             {form.formState.errors.ticker && (
@@ -335,7 +326,7 @@ export function PositionFormFields({
             <SelectContent className="max-h-64">
               {cryptoLive.symbols.map(({ code, name }) => (
                 <SelectItem key={code} value={code} className="cursor-pointer">
-                  {code} — {name}
+                  {sentenceCaseFirstTr(code)} — {name}
                 </SelectItem>
               ))}
             </SelectContent>
