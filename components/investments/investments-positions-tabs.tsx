@@ -134,7 +134,7 @@ export function InvestmentsPositionsTabs({
               <TableHeader>
                 <TableRow>
                   {tabHasTitleAndCode && <TableHead>Başlık</TableHead>}
-                  {tab === "GOLD" && <TableHead>Altın türü</TableHead>}
+                  {tab === "GOLD" && <TableHead>Tür</TableHead>}
                   {(tab === "SILVER" || tab === "PLATINUM") && (
                     <TableHead>Tür</TableHead>
                   )}
