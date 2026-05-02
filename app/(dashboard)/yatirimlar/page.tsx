@@ -7,7 +7,10 @@ import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
 import { PLATINUM_INVESTMENT_TITLE } from "@/lib/investments/platinum-investment";
 import { SILVER_INVESTMENT_TITLE } from "@/lib/investments/silver-investment";
 import { parseOptionalUnitPrice } from "@/lib/investments/investment-unit-price";
-import { costBasisTry, valueTry } from "@/lib/investments/investment-position-math";
+import {
+  costBasisTry,
+  valueTry,
+} from "@/lib/investments/investment-position-math";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
@@ -99,12 +102,12 @@ export default function InvestmentsPage() {
   const totals = useMemo(() => {
     let cost = 0;
     let val = 0;
-    for (const p of filtered) {
+    for (const p of items) {
       cost += costBasisTry(p);
       val += valueTry(p, liveQuotes);
     }
     return { cost, val, pnl: val - cost };
-  }, [filtered, liveQuotes]);
+  }, [items, liveQuotes]);
 
   const editingResolved = useMemo(() => {
     if (!editing) return null;
