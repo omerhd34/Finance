@@ -1,6 +1,10 @@
 "use client";
 
-import { formatGoldQuantityCell, goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
+import { useMemo } from "react";
+import {
+  formatGoldQuantityCell,
+  goldSubtypeLabel,
+} from "@/lib/investments/gold-subtypes";
 import type { LiveInvestmentQuotes } from "@/lib/investments/investment-position-math";
 import {
   costBasisTry,
@@ -8,7 +12,7 @@ import {
   pnlTry,
   valueTry,
 } from "@/lib/investments/investment-position-math";
-import { formatMoneyAmount } from "@/lib/common/utils";
+import { cn, formatMoneyAmount } from "@/lib/common/utils";
 import type {
   InvestmentAssetType,
   InvestmentPosition,
@@ -61,6 +65,16 @@ export function InvestmentsPositionsTabs({
   const tableColSpan = compactPreciousTab ? 7 : 8;
   const tabHasTitleAndCode = !compactPreciousTab;
 
+  const categoryTotals = useMemo(() => {
+    let cost = 0;
+    let val = 0;
+    for (const p of items) {
+      cost += costBasisTry(p);
+      val += valueTry(p, liveQuotes);
+    }
+    return { cost, val, pnl: val - cost };
+  }, [items, liveQuotes]);
+
   return (
     <Tabs value={tab} onValueChange={(v) => onTabChange(v as TabValue)}>
       <TabsList>
@@ -91,15 +105,15 @@ export function InvestmentsPositionsTabs({
                 ? "Altın kayıtları"
                 : tab === "SILVER"
                   ? "Gümüş kayıtları"
-                    : tab === "PLATINUM"
-                      ? "Platin kayıtları"
-                      : tab === "STOCK"
-                        ? "Hisse kayıtları"
-                        : tab === "FX"
-                          ? "Döviz kayıtları"
-                          : tab === "CRYPTO"
-                            ? "Kripto kayıtları"
-                            : "Kayıtlar"}
+                  : tab === "PLATINUM"
+                    ? "Platin kayıtları"
+                    : tab === "STOCK"
+                      ? "Hisse kayıtları"
+                      : tab === "FX"
+                        ? "Döviz kayıtları"
+                        : tab === "CRYPTO"
+                          ? "Kripto kayıtları"
+                          : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -185,8 +199,7 @@ export function InvestmentsPositionsTabs({
                         : typeof liveTryPlatinum === "number" &&
                             liveTryPlatinum > 0
                           ? liveTryPlatinum
-                          : typeof liveTryStock === "number" &&
-                              liveTryStock > 0
+                          : typeof liveTryStock === "number" && liveTryStock > 0
                             ? liveTryStock
                             : typeof liveTryFx === "number" && liveTryFx > 0
                               ? liveTryFx
@@ -297,6 +310,100 @@ export function InvestmentsPositionsTabs({
                     </TableRow>
                   );
                 })}
+                {items.length > 0 && !loading && (
+                  <TableRow
+                    className={cn(
+                      "border-t-2 font-medium",
+                      categoryTotals.pnl > 0 &&
+                        "border-emerald-500/35 bg-emerald-500/10 hover:bg-emerald-500/14 dark:border-emerald-400/30 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/55",
+                      categoryTotals.pnl < 0 &&
+                        "border-red-500/35 bg-red-500/10 hover:bg-red-500/14 dark:border-red-400/30 dark:bg-red-950/40 dark:hover:bg-red-950/55",
+                      categoryTotals.pnl === 0 &&
+                        "border-border bg-muted/35 hover:bg-muted/45 dark:bg-muted/25 dark:hover:bg-muted/35",
+                    )}
+                  >
+                    {tabHasTitleAndCode ? (
+                      <>
+                        <TableCell className="text-muted-foreground">
+                          Toplam
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          —
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          —
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="tabular-nums">
+                            <span className="text-muted-foreground text-xs">
+                              Toplam maliyet
+                            </span>
+                            <div>
+                              {formatMoneyAmount(categoryTotals.cost, currency)}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          —
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatMoneyAmount(categoryTotals.val, currency)}
+                        </TableCell>
+                        <TableCell
+                          className={`text-right tabular-nums ${
+                            categoryTotals.pnl > 0
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : categoryTotals.pnl < 0
+                                ? "text-destructive"
+                                : ""
+                          }`}
+                        >
+                          {categoryTotals.pnl >= 0 ? "+" : ""}
+                          {formatMoneyAmount(categoryTotals.pnl, currency)}
+                        </TableCell>
+                        <TableCell />
+                      </>
+                    ) : (
+                      <>
+                        <TableCell className="text-muted-foreground">
+                          Toplam
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          —
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="tabular-nums">
+                            <span className="text-muted-foreground text-xs">
+                              Toplam maliyet
+                            </span>
+                            <div>
+                              {formatMoneyAmount(categoryTotals.cost, currency)}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          —
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatMoneyAmount(categoryTotals.val, currency)}
+                        </TableCell>
+                        <TableCell
+                          className={`text-right tabular-nums ${
+                            categoryTotals.pnl > 0
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : categoryTotals.pnl < 0
+                                ? "text-destructive"
+                                : ""
+                          }`}
+                        >
+                          {categoryTotals.pnl >= 0 ? "+" : ""}
+                          {formatMoneyAmount(categoryTotals.pnl, currency)}
+                        </TableCell>
+                        <TableCell />
+                      </>
+                    )}
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
