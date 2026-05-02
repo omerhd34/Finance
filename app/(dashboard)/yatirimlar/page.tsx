@@ -32,6 +32,7 @@ import type {
 import { DeleteInvestmentDialog } from "@/components/investments/delete-investment-dialog";
 import { EditPositionDialog } from "@/components/investments/edit-position-dialog";
 import { InvestmentsPageHeader } from "@/components/investments/investments-page-header";
+import { InvestmentsPortfolioCharts } from "@/components/investments/investments-portfolio-charts";
 import { InvestmentsPositionsTabs } from "@/components/investments/investments-positions-tabs";
 import { InvestmentsSummaryCards } from "@/components/investments/investments-summary-cards";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
@@ -295,6 +296,12 @@ export default function InvestmentsPage() {
             liveQuotes={liveQuotes}
             onEdit={setEditing}
             onDelete={setDeletingId}
+          />
+
+          <InvestmentsPortfolioCharts
+            items={items}
+            liveQuotes={liveQuotes}
+            currency={currency}
           />
 
           <EditPositionDialog
