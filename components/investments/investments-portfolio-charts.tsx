@@ -45,7 +45,12 @@ export function InvestmentsPortfolioCharts({
       acc.set(t, { value: 0, cost: 0 });
     }
     for (const p of items) {
-      const cur = acc.get(p.assetType);
+      const bucket =
+        p.assetType === "PLATINUM" ||
+        p.assetType === "SILVER"
+          ? "COMMODITY"
+          : p.assetType;
+      const cur = acc.get(bucket);
       if (!cur) continue;
       cur.value += valueTry(p, liveQuotes);
       cur.cost += costBasisTry(p);

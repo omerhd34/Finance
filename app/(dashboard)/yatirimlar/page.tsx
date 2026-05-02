@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
-import { displayAmountToTry } from "@/lib/common/currency";
+import { displayAmountToTry, normalizeUserCurrency } from "@/lib/common/currency";
 import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
 import { PLATINUM_INVESTMENT_TITLE } from "@/lib/investments/platinum-investment";
 import { SILVER_INVESTMENT_TITLE } from "@/lib/investments/silver-investment";
@@ -11,6 +11,7 @@ import {
   costBasisTry,
   valueTry,
 } from "@/lib/investments/investment-position-math";
+import { useCommodityLiveQuotes } from "@/hooks/use-commodity-live-quotes";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
@@ -40,7 +41,7 @@ import { LogoLoading } from "@/components/ui/logo-loading";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
-  "Hisse, döviz, kripto, altın, gümüş ve platin kayıtlarını ekleyip düzenlemek veya silmek",
+  "Hisse, döviz, kripto, emtia ve altın kayıtlarını ekleyip düzenlemek veya silmek",
   "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
   "Kayıt bazında not tutmak ve fiyatları güncel tutmak",
   "Ana panelde yatırım Kar/Zarar kartı ile özetleri birlikte görmek",
@@ -64,6 +65,7 @@ export default function InvestmentsPage() {
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
+  const commodityLive = useCommodityLiveQuotes(planPremium);
 
   const liveQuotes = useMemo(
     () => ({
@@ -79,6 +81,7 @@ export default function InvestmentsPage() {
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
+      commodityByTicker: commodityLive.byTicker,
     }),
     [
       goldLive.prices,
@@ -87,6 +90,7 @@ export default function InvestmentsPage() {
       stockLive.byTicker,
       fxLive.byCode,
       cryptoLive.byTicker,
+      commodityLive.byTicker,
     ],
   );
 
@@ -95,10 +99,21 @@ export default function InvestmentsPage() {
     void dispatch(fetchInvestments());
   }, [dispatch, planPremium]);
 
-  const filtered = useMemo(
-    () => items.filter((p) => p.assetType === tab),
-    [items, tab],
-  );
+  useEffect(() => {
+    if (tab === "PLATINUM" || tab === "SILVER") setTab("COMMODITY");
+  }, [tab]);
+
+  const filtered = useMemo(() => {
+    if (tab === "COMMODITY") {
+      return items.filter(
+        (p) =>
+          p.assetType === "COMMODITY" ||
+          p.assetType === "PLATINUM" ||
+          p.assetType === "SILVER",
+      );
+    }
+    return items.filter((p) => p.assetType === tab);
+  }, [items, tab]);
 
   const totals = useMemo(() => {
     let cost = 0;
@@ -125,23 +140,32 @@ export default function InvestmentsPage() {
         title:
           values.assetType === "GOLD"
             ? goldSubtypeLabel(values.goldSubtype)
-            : values.assetType === "SILVER"
-              ? SILVER_INVESTMENT_TITLE
-              : values.assetType === "PLATINUM"
-                ? PLATINUM_INVESTMENT_TITLE
-                : values.assetType === "STOCK"
-                  ? (values.ticker ?? "").trim().toUpperCase()
-                  : (values.title ?? "").trim(),
+            : values.assetType === "STOCK"
+              ? (values.ticker ?? "").trim().toUpperCase()
+              : (values.title ?? "").trim(),
         ticker:
           values.assetType === "STOCK" ||
           values.assetType === "FX" ||
-          values.assetType === "CRYPTO"
+          values.assetType === "CRYPTO" ||
+          values.assetType === "COMMODITY"
             ? values.ticker?.trim().toUpperCase()
             : null,
         quantity: values.quantity,
-        avgCostPerUnitTry: displayAmountToTry(values.avgCostPerUnit, currency),
+        avgCostPerUnitTry: displayAmountToTry(
+          values.avgCostPerUnit,
+          values.assetType === "COMMODITY"
+            ? normalizeUserCurrency(values.avgCostEntryCurrency ?? currency)
+            : normalizeUserCurrency(currency),
+        ),
         marketPricePerUnitTry:
-          m != null ? displayAmountToTry(m, currency) : null,
+          m != null
+            ? displayAmountToTry(
+                m,
+                values.assetType === "COMMODITY"
+                  ? normalizeUserCurrency(values.avgCostEntryCurrency ?? currency)
+                  : normalizeUserCurrency(currency),
+              )
+            : null,
         note: values.note?.trim() ? values.note.trim() : null,
       }),
     );
@@ -170,16 +194,28 @@ export default function InvestmentsPage() {
           ticker:
             values.assetType === "STOCK" ||
             values.assetType === "FX" ||
-            values.assetType === "CRYPTO"
+            values.assetType === "CRYPTO" ||
+            values.assetType === "COMMODITY"
               ? values.ticker?.trim().toUpperCase()
               : null,
           quantity: values.quantity,
           avgCostPerUnitTry: displayAmountToTry(
             values.avgCostPerUnit,
-            currency,
+            values.assetType === "COMMODITY"
+              ? normalizeUserCurrency(values.avgCostEntryCurrency ?? currency)
+              : normalizeUserCurrency(currency),
           ),
           marketPricePerUnitTry:
-            m === null ? null : displayAmountToTry(m, currency),
+            m === null
+              ? null
+              : displayAmountToTry(
+                  m,
+                  values.assetType === "COMMODITY"
+                    ? normalizeUserCurrency(
+                        values.avgCostEntryCurrency ?? currency,
+                      )
+                    : normalizeUserCurrency(currency),
+                ),
           note: values.note?.trim() ? values.note.trim() : null,
         },
       }),
@@ -246,20 +282,25 @@ export default function InvestmentsPage() {
             </p>
           )}
 
-          {silverLive.error && tab === "SILVER" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı gümüş fiyatı yüklenemedi ({silverLive.error}). Güncel fiyat
-              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
-            </p>
-          )}
+          {silverLive.error &&
+            tab === "COMMODITY" &&
+            items.some((p) => p.assetType === "SILVER") && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Eski gümüş (gram) kayıtları için canlı fiyat yüklenemedi (
+                {silverLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
+                değerler veya alış fiyatı kullanılır.
+              </p>
+            )}
 
-          {platinumLive.error && tab === "PLATINUM" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı platin fiyatı yüklenemedi ({platinumLive.error}). Güncel
-              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
-              kullanılır.
-            </p>
-          )}
+          {platinumLive.error &&
+            tab === "COMMODITY" &&
+            items.some((p) => p.assetType === "PLATINUM") && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Eski platin (gram) kayıtları için canlı fiyat yüklenemedi (
+                {platinumLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
+                değerler veya alış fiyatı kullanılır.
+              </p>
+            )}
 
           {stockLive.error && tab === "STOCK" && (
             <p className="text-sm text-muted-foreground" role="status">
@@ -279,6 +320,14 @@ export default function InvestmentsPage() {
           {cryptoLive.error && tab === "CRYPTO" && (
             <p className="text-sm text-muted-foreground" role="status">
               Canlı kripto fiyatları yüklenemedi ({cryptoLive.error}). Güncel
+              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+              kullanılır.
+            </p>
+          )}
+
+          {commodityLive.error && tab === "COMMODITY" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı emtia fiyatları yüklenemedi ({commodityLive.error}). Güncel
               fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
               kullanılır.
             </p>

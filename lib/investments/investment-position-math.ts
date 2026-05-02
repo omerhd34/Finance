@@ -11,6 +11,8 @@ export type LiveFxTryMap = Record<string, number>;
 
 export type LiveCryptoTryMap = Record<string, number>;
 
+export type LiveCommodityTryMap = Record<string, number>;
+
 export type LiveInvestmentQuotes = {
   gold?: LiveGoldPriceMap;
   silverTryPerGram?: number;
@@ -18,6 +20,7 @@ export type LiveInvestmentQuotes = {
   stockByTicker?: LiveStockTryMap;
   fxByCode?: LiveFxTryMap;
   cryptoByTicker?: LiveCryptoTryMap;
+  commodityByTicker?: LiveCommodityTryMap;
 };
 
 function stockTickerUpper(ticker: string | null | undefined): string | null {
@@ -68,6 +71,13 @@ export function effectiveMarketUnitTry(
     if (k) {
       const cx = live.cryptoByTicker[k];
       if (typeof cx === "number" && cx > 0) return cx;
+    }
+  }
+  if (p.assetType === "COMMODITY" && live?.commodityByTicker) {
+    const k = stockTickerUpper(p.ticker);
+    if (k) {
+      const cm = live.commodityByTicker[k];
+      if (typeof cm === "number" && cm > 0) return cm;
     }
   }
   if (p.marketPricePerUnitTry != null) return p.marketPricePerUnitTry;
@@ -130,6 +140,13 @@ export function hasDisplayableMarketPrice(
     if (k && live?.cryptoByTicker) {
       const cx = live.cryptoByTicker[k];
       if (typeof cx === "number" && cx > 0) return true;
+    }
+  }
+  if (p.assetType === "COMMODITY") {
+    const k = stockTickerUpper(p.ticker);
+    if (k && live?.commodityByTicker) {
+      const cm = live.commodityByTicker[k];
+      if (typeof cm === "number" && cm > 0) return true;
     }
   }
   return false;

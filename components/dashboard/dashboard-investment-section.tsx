@@ -8,9 +8,8 @@ import {
   ArrowUpRight,
   Bitcoin,
   Coins,
-  Gem,
   LineChart,
-  Sparkles,
+  Package,
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ import {
   type InvestmentAggregate,
 } from "@/components/dashboard/investment-position-stats";
 
-type AssetKey = "STOCK" | "FX" | "CRYPTO" | "GOLD" | "SILVER" | "PLATINUM";
+type AssetKey = "STOCK" | "FX" | "CRYPTO" | "GOLD" | "COMMODITY";
 
 type InvestmentCardConfig = {
   key: AssetKey;
@@ -33,12 +32,11 @@ type InvestmentCardConfig = {
 
 const ORDER_STORAGE_KEY = "iqfinansai-dashboard-investment-order-v1";
 const DEFAULT_ORDER: AssetKey[] = [
-  "STOCK",
-  "FX",
-  "CRYPTO",
   "GOLD",
-  "SILVER",
-  "PLATINUM",
+  "FX",
+  "STOCK",
+  "COMMODITY",
+  "CRYPTO",
 ];
 
 function loadSavedOrder(): AssetKey[] {
@@ -48,17 +46,25 @@ function loadSavedOrder(): AssetKey[] {
     if (!raw) return DEFAULT_ORDER;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return DEFAULT_ORDER;
-    const cleaned = parsed.filter(
+    const normalized = parsed.map((v: unknown) =>
+      v === "PLATINUM" || v === "SILVER" ? "COMMODITY" : v,
+    );
+    const cleaned = normalized.filter(
       (v): v is AssetKey =>
         v === "STOCK" ||
         v === "FX" ||
         v === "CRYPTO" ||
         v === "GOLD" ||
-        v === "SILVER" ||
-        v === "PLATINUM",
+        v === "COMMODITY",
     );
-    const missing = DEFAULT_ORDER.filter((k) => !cleaned.includes(k));
-    const nextOrder = [...cleaned, ...missing];
+    const seen = new Set<AssetKey>();
+    const unique = cleaned.filter((k) => {
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+    const missing = DEFAULT_ORDER.filter((k) => !unique.includes(k));
+    const nextOrder = [...unique, ...missing];
     return nextOrder.length === DEFAULT_ORDER.length
       ? nextOrder
       : DEFAULT_ORDER;
@@ -73,9 +79,8 @@ type Props = {
   stockSummary: InvestmentAggregate;
   fxSummary: InvestmentAggregate;
   cryptoSummary: InvestmentAggregate;
+  commoditySummary: InvestmentAggregate;
   goldSummary: InvestmentAggregate;
-  silverSummary: InvestmentAggregate;
-  platinumSummary: InvestmentAggregate;
 };
 
 export function DashboardInvestmentSection({
@@ -84,9 +89,8 @@ export function DashboardInvestmentSection({
   stockSummary,
   fxSummary,
   cryptoSummary,
+  commoditySummary,
   goldSummary,
-  silverSummary,
-  platinumSummary,
 }: Props) {
   const [assetOrder, setAssetOrder] = useState<AssetKey[]>(loadSavedOrder);
 
@@ -105,14 +109,14 @@ export function DashboardInvestmentSection({
     if (!planPremium) return [];
     return [
       {
-        key: "STOCK" as const,
-        title: "Hisse Senedi",
+        key: "GOLD" as const,
+        title: "Altın",
         description:
-          "Hisse kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
-        icon: LineChart,
+          "Altın kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
+        icon: Coins,
         iconClassName:
-          "bg-violet-500/12 text-violet-600 ring-violet-500/25 dark:text-violet-300",
-        summary: stockSummary,
+          "bg-amber-500/12 text-amber-800 ring-amber-500/25 dark:text-amber-300",
+        summary: goldSummary,
       },
       {
         key: "FX" as const,
@@ -125,6 +129,26 @@ export function DashboardInvestmentSection({
         summary: fxSummary,
       },
       {
+        key: "STOCK" as const,
+        title: "Hisse Senedi",
+        description:
+          "Hisse kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
+        icon: LineChart,
+        iconClassName:
+          "bg-violet-500/12 text-violet-600 ring-violet-500/25 dark:text-violet-300",
+        summary: stockSummary,
+      },
+      {
+        key: "COMMODITY" as const,
+        title: "Emtia",
+        description:
+          "Emtia ile eski gümüş/platin (gram) kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
+        icon: Package,
+        iconClassName:
+          "bg-lime-500/12 text-lime-800 ring-lime-500/25 dark:text-lime-300",
+        summary: commoditySummary,
+      },
+      {
         key: "CRYPTO" as const,
         title: "Kripto",
         description:
@@ -134,45 +158,14 @@ export function DashboardInvestmentSection({
           "bg-orange-500/12 text-orange-700 ring-orange-500/25 dark:text-orange-300",
         summary: cryptoSummary,
       },
-      {
-        key: "GOLD" as const,
-        title: "Altın",
-        description:
-          "Altın kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
-        icon: Coins,
-        iconClassName:
-          "bg-amber-500/12 text-amber-800 ring-amber-500/25 dark:text-amber-300",
-        summary: goldSummary,
-      },
-      {
-        key: "SILVER" as const,
-        title: "Gümüş",
-        description:
-          "Gümüş (gram) kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
-        icon: Gem,
-        iconClassName:
-          "bg-slate-500/12 text-slate-700 ring-slate-500/25 dark:text-slate-300",
-        summary: silverSummary,
-      },
-      {
-        key: "PLATINUM" as const,
-        title: "Platin",
-        description:
-          "Platin (gram) kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
-        icon: Sparkles,
-        iconClassName:
-          "bg-indigo-500/12 text-indigo-800 ring-indigo-500/25 dark:text-indigo-300",
-        summary: platinumSummary,
-      },
     ].filter((card) => card.summary.count > 0);
   }, [
     planPremium,
     stockSummary,
     fxSummary,
     cryptoSummary,
+    commoditySummary,
     goldSummary,
-    silverSummary,
-    platinumSummary,
   ]);
 
   const orderedCards = useMemo(() => {

@@ -240,8 +240,7 @@ export const investmentCreateSchema = z
   .object({
     assetType: z.enum([
       "GOLD",
-      "SILVER",
-      "PLATINUM",
+      "COMMODITY",
       "STOCK",
       "FX",
       "CRYPTO",
@@ -272,13 +271,6 @@ export const investmentCreateSchema = z
   )
   .refine(
     (d) =>
-      (d.assetType !== "SILVER" && d.assetType !== "PLATINUM") ||
-      d.goldSubtype === undefined ||
-      d.goldSubtype === null,
-    { message: "Bu tür için altın türü kullanılmaz", path: ["goldSubtype"] },
-  )
-  .refine(
-    (d) =>
       d.assetType !== "FX" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 2),
     { message: "Döviz seçin", path: ["ticker"] },
@@ -300,12 +292,32 @@ export const investmentCreateSchema = z
       d.assetType !== "CRYPTO" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
     { message: "Kripto seçin", path: ["title"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "COMMODITY" ||
+      (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
+    { message: "Emtia seçin", path: ["ticker"] },
+  )
+  .refine(
+    (d) =>
+      d.assetType !== "COMMODITY" ||
+      (typeof d.title === "string" && d.title.trim().length >= 1),
+    { message: "Emtia seçin", path: ["title"] },
   );
 
 export const investmentUpdateSchema = z
   .object({
     assetType: z
-      .enum(["GOLD", "SILVER", "PLATINUM", "STOCK", "FX", "CRYPTO"])
+      .enum([
+        "GOLD",
+        "SILVER",
+        "PLATINUM",
+        "COMMODITY",
+        "STOCK",
+        "FX",
+        "CRYPTO",
+      ])
       .optional(),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])

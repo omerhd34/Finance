@@ -16,6 +16,7 @@ import {
   aggregatePositionsTry,
   totalInvestmentPnlTry,
 } from "@/lib/investments/investment-position-math";
+import { useCommodityLiveQuotes } from "@/hooks/use-commodity-live-quotes";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
@@ -66,6 +67,7 @@ export default function DashboardPage() {
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
+  const commodityLive = useCommodityLiveQuotes(planPremium);
   const liveQuotes = useMemo(
     () => ({
       gold: goldLive.prices,
@@ -80,6 +82,7 @@ export default function DashboardPage() {
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
+      commodityByTicker: commodityLive.byTicker,
     }),
     [
       goldLive.prices,
@@ -88,6 +91,7 @@ export default function DashboardPage() {
       stockLive.byTicker,
       fxLive.byCode,
       cryptoLive.byTicker,
+      commodityLive.byTicker,
     ],
   );
 
@@ -233,16 +237,6 @@ export default function DashboardPage() {
     [investmentPositions, liveQuotes],
   );
 
-  const silverSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
-  const platinumSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "PLATINUM", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
   const fxSummary = useMemo(
     () => aggregatePositionsTry(investmentPositions, "FX", liveQuotes),
     [investmentPositions, liveQuotes],
@@ -252,6 +246,30 @@ export default function DashboardPage() {
     () => aggregatePositionsTry(investmentPositions, "CRYPTO", liveQuotes),
     [investmentPositions, liveQuotes],
   );
+
+  const commoditySummary = useMemo(() => {
+    const c = aggregatePositionsTry(
+      investmentPositions,
+      "COMMODITY",
+      liveQuotes,
+    );
+    const pt = aggregatePositionsTry(
+      investmentPositions,
+      "PLATINUM",
+      liveQuotes,
+    );
+    const ag = aggregatePositionsTry(
+      investmentPositions,
+      "SILVER",
+      liveQuotes,
+    );
+    return {
+      count: c.count + pt.count + ag.count,
+      costTry: c.costTry + pt.costTry + ag.costTry,
+      valueTry: c.valueTry + pt.valueTry + ag.valueTry,
+      pnlTry: c.pnlTry + pt.pnlTry + ag.pnlTry,
+    };
+  }, [investmentPositions, liveQuotes]);
 
   const upcomingRecurring = useMemo(() => {
     return [...recurringRules]
@@ -336,9 +354,8 @@ export default function DashboardPage() {
           stockSummary={stockSummary}
           fxSummary={fxSummary}
           cryptoSummary={cryptoSummary}
+          commoditySummary={commoditySummary}
           goldSummary={goldSummary}
-          silverSummary={silverSummary}
-          platinumSummary={platinumSummary}
         />
       ) : null}
 

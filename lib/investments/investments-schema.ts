@@ -1,12 +1,20 @@
 import { z } from "zod";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/investments/gold-subtypes";
 
+export const COMMODITY_COST_ENTRY_CURRENCIES = [
+  "TL",
+  "USD",
+  "EUR",
+  "GBP",
+] as const;
+
 export const positionFormSchema = z
   .object({
     assetType: z.enum([
       "GOLD",
       "SILVER",
       "PLATINUM",
+      "COMMODITY",
       "STOCK",
       "FX",
       "CRYPTO",
@@ -18,6 +26,9 @@ export const positionFormSchema = z
     ticker: z.string().optional(),
     quantity: z.number().positive("Miktar pozitif olmalı"),
     avgCostPerUnit: z.number().positive("Alış fiyatı pozitif olmalı"),
+    avgCostEntryCurrency: z
+      .enum(COMMODITY_COST_ENTRY_CURRENCIES)
+      .optional(),
     marketPricePerUnit: z.string().optional(),
     note: z.string().optional(),
   })
@@ -73,6 +84,24 @@ export const positionFormSchema = z
         ctx.addIssue({
           code: "custom",
           message: "Kripto seçin",
+          path: ["title"],
+        });
+      }
+    }
+    if (data.assetType === "COMMODITY") {
+      const t = data.ticker?.trim().toUpperCase() ?? "";
+      if (t.length < 1) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Emtia seçin",
+          path: ["ticker"],
+        });
+      }
+      const tit = data.title?.trim() ?? "";
+      if (tit.length < 1) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Emtia seçin",
           path: ["title"],
         });
       }

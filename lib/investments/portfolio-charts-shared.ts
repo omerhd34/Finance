@@ -2,19 +2,17 @@ import type { InvestmentAssetType } from "@/types/investment";
 
 export const PORTFOLIO_ASSET_ORDER: InvestmentAssetType[] = [
   "GOLD",
-  "SILVER",
-  "PLATINUM",
   "FX",
   "STOCK",
+  "COMMODITY",
   "CRYPTO",
 ];
 
 export const PORTFOLIO_SLICE_COLORS = [
   "#eab308",
-  "#C0C0C0",
-  "#E5E4E2",
   "#3b82f6",
   "#008000",
+  "#84cc16",
   "#F7931A",
 ];
 
@@ -26,6 +24,8 @@ export function portfolioAssetTypeLabel(t: InvestmentAssetType): string {
       return "Gümüş";
     case "PLATINUM":
       return "Platin";
+    case "COMMODITY":
+      return "Emtia";
     case "FX":
       return "Döviz";
     case "STOCK":

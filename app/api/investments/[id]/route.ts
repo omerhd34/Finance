@@ -45,7 +45,10 @@ export async function PUT(req: Request, context: RouteContext) {
       data.ticker !== undefined
         ? data.ticker === null || data.ticker === ""
           ? null
-          : nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
+          : nextType === "STOCK" ||
+              nextType === "FX" ||
+              nextType === "CRYPTO" ||
+              nextType === "COMMODITY"
             ? data.ticker.trim().toUpperCase()
             : data.ticker.trim()
         : existing.ticker;
@@ -66,6 +69,16 @@ export async function PUT(req: Request, context: RouteContext) {
     if (nextType === "CRYPTO" && (!tickerToSave || tickerToSave.length === 0)) {
       return NextResponse.json(
         { error: { ticker: ["Kripto kodu gerekli"] } },
+        { status: 400 },
+      );
+    }
+
+    if (
+      nextType === "COMMODITY" &&
+      (!tickerToSave || tickerToSave.length === 0)
+    ) {
+      return NextResponse.json(
+        { error: { ticker: ["Emtia kodu gerekli"] } },
         { status: 400 },
       );
     }

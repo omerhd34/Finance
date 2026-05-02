@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tryAmountToDisplay } from "@/lib/common/currency";
+import {
+  normalizeUserCurrency,
+  tryAmountToDisplay,
+} from "@/lib/common/currency";
 import {
   positionFormSchema,
   type PositionFormValues,
@@ -60,6 +63,7 @@ export function EditPositionDialog({
       ticker: position.ticker ?? "",
       quantity: position.quantity,
       avgCostPerUnit: tryAmountToDisplay(position.avgCostPerUnitTry, currency),
+      avgCostEntryCurrency: normalizeUserCurrency(currency),
       marketPricePerUnit:
         position.marketPricePerUnitTry != null
           ? String(tryAmountToDisplay(position.marketPricePerUnitTry, currency))

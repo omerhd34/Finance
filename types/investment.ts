@@ -4,6 +4,7 @@ export type InvestmentAssetType =
   | "GOLD"
   | "SILVER"
   | "PLATINUM"
+  | "COMMODITY"
   | "STOCK"
   | "FX"
   | "CRYPTO";

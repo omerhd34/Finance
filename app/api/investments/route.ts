@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
-import { PLATINUM_INVESTMENT_TITLE } from "@/lib/investments/platinum-investment";
-import { SILVER_INVESTMENT_TITLE } from "@/lib/investments/silver-investment";
 import { isUserPremiumInDb } from "@/lib/premium/is-user-premium-db";
 import { investmentPosition } from "@/lib/db/prisma";
 import { investmentCreateSchema } from "@/lib/schemas/validations";
@@ -53,7 +51,8 @@ export async function POST(req: Request) {
     const ticker =
       (d.assetType === "STOCK" ||
         d.assetType === "FX" ||
-        d.assetType === "CRYPTO") &&
+        d.assetType === "CRYPTO" ||
+        d.assetType === "COMMODITY") &&
       d.ticker?.trim()
         ? d.ticker.trim().toUpperCase()
         : d.ticker?.trim()
@@ -62,13 +61,9 @@ export async function POST(req: Request) {
     const title =
       d.assetType === "GOLD"
         ? goldSubtypeLabel(d.goldSubtype!)
-        : d.assetType === "SILVER"
-          ? SILVER_INVESTMENT_TITLE
-          : d.assetType === "PLATINUM"
-            ? PLATINUM_INVESTMENT_TITLE
-            : d.assetType === "STOCK"
-              ? ticker ?? ""
-              : (d.title ?? "").trim();
+        : d.assetType === "STOCK"
+          ? ticker ?? ""
+          : (d.title ?? "").trim();
     const row = await investmentPosition.create({
       data: {
         assetType: d.assetType,

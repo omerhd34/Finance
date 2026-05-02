@@ -62,7 +62,7 @@ export function InvestmentsPositionsTabs({
 }: Props) {
   const tableColSpan = 7;
   const tabHasTitleAndCode =
-    tab === "FX" || tab === "STOCK" || tab === "CRYPTO";
+    tab === "FX" || tab === "STOCK" || tab === "CRYPTO" || tab === "COMMODITY";
 
   const categoryTotals = useMemo(() => {
     let cost = 0;
@@ -80,17 +80,14 @@ export function InvestmentsPositionsTabs({
         <TabsTrigger value="GOLD" className="cursor-pointer">
           Altın
         </TabsTrigger>
-        <TabsTrigger value="SILVER" className="cursor-pointer">
-          Gümüş
-        </TabsTrigger>
-        <TabsTrigger value="PLATINUM" className="cursor-pointer">
-          Platin
-        </TabsTrigger>
         <TabsTrigger value="FX" className="cursor-pointer">
           Döviz
         </TabsTrigger>
         <TabsTrigger value="STOCK" className="cursor-pointer">
           Hisse senedi
+        </TabsTrigger>
+        <TabsTrigger value="COMMODITY" className="cursor-pointer">
+          Emtia
         </TabsTrigger>
         <TabsTrigger value="CRYPTO" className="cursor-pointer">
           Kripto
@@ -102,10 +99,8 @@ export function InvestmentsPositionsTabs({
             <CardTitle className="text-base">
               {tab === "GOLD"
                 ? "Altın kayıtları"
-                : tab === "SILVER"
-                  ? "Gümüş kayıtları"
-                  : tab === "PLATINUM"
-                    ? "Platin kayıtları"
+                : tab === "COMMODITY"
+                    ? "Emtia kayıtları"
                     : tab === "STOCK"
                       ? "Hisse kayıtları"
                       : tab === "FX"
@@ -134,9 +129,6 @@ export function InvestmentsPositionsTabs({
                 <TableRow>
                   {tabHasTitleAndCode && <TableHead>Tür</TableHead>}
                   {tab === "GOLD" && <TableHead>Tür</TableHead>}
-                  {(tab === "SILVER" || tab === "PLATINUM") && (
-                    <TableHead>Tür</TableHead>
-                  )}
                   <TableHead className="text-right">Miktar</TableHead>
                   <TableHead className="text-right">Alış fiyatı</TableHead>
                   <TableHead className="text-right">Güncel fiyat</TableHead>
@@ -189,6 +181,12 @@ export function InvestmentsPositionsTabs({
                           p.ticker.trim().toUpperCase()
                         ]
                       : undefined;
+                  const liveTryCommodity =
+                    p.assetType === "COMMODITY" && p.ticker?.trim()
+                      ? liveQuotes?.commodityByTicker?.[
+                          p.ticker.trim().toUpperCase()
+                        ]
+                      : undefined;
                   const unitTryDisplay =
                     typeof liveTryGold === "number" && liveTryGold > 0
                       ? liveTryGold
@@ -204,13 +202,17 @@ export function InvestmentsPositionsTabs({
                               : typeof liveTryCrypto === "number" &&
                                   liveTryCrypto > 0
                                 ? liveTryCrypto
-                                : (p.marketPricePerUnitTry ?? undefined);
+                                : typeof liveTryCommodity === "number" &&
+                                    liveTryCommodity > 0
+                                  ? liveTryCommodity
+                                  : (p.marketPricePerUnitTry ?? undefined);
                   const instrumentBadgeLabel =
                     p.ticker?.trim().toUpperCase() || p.title?.trim() || "";
                   const instrumentBadgeDisplay =
                     (p.assetType === "STOCK" ||
                       p.assetType === "FX" ||
-                      p.assetType === "CRYPTO") &&
+                      p.assetType === "CRYPTO" ||
+                      p.assetType === "COMMODITY") &&
                     instrumentBadgeLabel
                       ? sentenceCaseFirstTr(instrumentBadgeLabel)
                       : instrumentBadgeLabel;
@@ -218,7 +220,11 @@ export function InvestmentsPositionsTabs({
                     <TableRow key={p.id}>
                       {tabHasTitleAndCode && (
                         <TableCell>
-                          {instrumentBadgeDisplay ? (
+                          {tab === "COMMODITY" &&
+                          (p.assetType === "PLATINUM" ||
+                            p.assetType === "SILVER") ? (
+                            <Badge variant="outline">Gram</Badge>
+                          ) : instrumentBadgeDisplay ? (
                             <Badge variant="outline">
                               {instrumentBadgeDisplay}
                             </Badge>
@@ -234,15 +240,12 @@ export function InvestmentsPositionsTabs({
                           </Badge>
                         </TableCell>
                       )}
-                      {(tab === "SILVER" || tab === "PLATINUM") && (
-                        <TableCell>
-                          <Badge variant="outline">Gram</Badge>
-                        </TableCell>
-                      )}
                       <TableCell className="text-right tabular-nums">
                         {tab === "GOLD"
                           ? formatGoldQuantityCell(p.quantity, p.goldSubtype)
-                          : tab === "SILVER" || tab === "PLATINUM"
+                          : tab === "COMMODITY" &&
+                              (p.assetType === "PLATINUM" ||
+                                p.assetType === "SILVER")
                             ? `${p.quantity.toLocaleString("tr-TR", {
                                 maximumFractionDigits: 4,
                               })}`

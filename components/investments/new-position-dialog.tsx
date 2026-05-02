@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { normalizeUserCurrency } from "@/lib/common/currency";
 import {
   positionFormSchema,
   type PositionFormValues,
@@ -54,17 +55,22 @@ export function NewPositionDialog({
   useEffect(() => {
     if (open) {
       form.setValue("assetType", listTab);
+      form.setValue("avgCostEntryCurrency", normalizeUserCurrency(currency));
       if (listTab === "GOLD") {
         form.setValue("goldSubtype", form.getValues("goldSubtype") ?? "GRAM");
       } else {
         form.setValue("goldSubtype", undefined);
-        if (listTab === "FX" || listTab === "CRYPTO") {
+        if (
+          listTab === "FX" ||
+          listTab === "CRYPTO" ||
+          listTab === "COMMODITY"
+        ) {
           form.setValue("title", "");
           form.setValue("ticker", "");
         }
       }
     }
-  }, [open, listTab, form]);
+  }, [open, listTab, form, currency]);
 
   async function handleSubmit(values: PositionFormValues) {
     await onSubmit(values);
@@ -75,6 +81,7 @@ export function NewPositionDialog({
       ticker: "",
       quantity: 0,
       avgCostPerUnit: 0,
+      avgCostEntryCurrency: normalizeUserCurrency(currency),
       marketPricePerUnit: "",
       note: "",
     });

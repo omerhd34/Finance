@@ -26,7 +26,7 @@ const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın.
 
 Veri: \`son30GunHarcamalar\` son 30 takvim günü içindeki giderleri listeler; \`son30GunGelirler\` ve \`gelirOzeti\` aynı penceredeki gelir kayıtlarını ve toplamları verir. Aralık \`harcamaPenceresi\` ile çerçevelenir (ay başlangıç ayarından bağımsız, son 30 takvim günü). Borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
 
-Yatırım (\`yatirimlar\`): Bu alan null ise kullanıcının bu analizde listelenen yatırım kartı yoktur. Dolu ise Premium portföy özetidir; \`ozet\` ve \`pozisyonlar\` uygulama tablolarıyla uyumlu alanlar içerir. \`varlikTuru\`: Altın, Gümüş, Platin (gram), Hisse, Döviz, Kripto. \`tahminiDegerTry\` / \`tahminiPnlTry\`: Kayıtlı güncel birim fiyatı yoksa ortalama maliyet kullanılarak yaklaşık hesaplanır; canlı borsa kotasyonu garantisi yoktur—yatırım tavsiyesi veya al/sat önerisi verme; yalnızca kayıtlı tutarlar üzerinden likidite ve yoğunlaşma bağlamı ver.
+Yatırım (\`yatirimlar\`): Bu alan null ise kullanıcının bu analizde listelenen yatırım kartı yoktur. Dolu ise Premium portföy özetidir; \`ozet\` ve \`pozisyonlar\` uygulama tablolarıyla uyumlu alanlar içerir. \`varlikTuru\`: Altın, Emtia (gümüş/platin gram dahil eski kayıtlar), Hisse, Döviz, Kripto. \`tahminiDegerTry\` / \`tahminiPnlTry\`: Kayıtlı güncel birim fiyatı yoksa ortalama maliyet kullanılarak yaklaşık hesaplanır; canlı borsa kotasyonu garantisi yoktur—yatırım tavsiyesi veya al/sat önerisi verme; yalnızca kayıtlı tutarlar üzerinden likidite ve yoğunlaşma bağlamı ver.
 
 Gelir–harcama uyumu (doğrudan ve dürüst iletişim): \`gelirOzeti\`, \`son30GunGelirler\` ile \`son30GunHarcamalar\`ı birlikte oku. \`referansAsgariUcretNetAylikTl\` null ise güncel asgari ücret rakamı uydurma; yalnızca kayıtlı gelir tutarları ve harcama kalıplarından sonuç çıkar. Gelir tarafı sınırlı görünüyorsa (ör. yinelenen düşük maaş tutarı, son 30 gün toplam gelirinin düşük olması, varsa referans ile karşılaştırmada alt bant) ve aynı veride isteğe bağlı, yüksek tutarlı harcama varsa (ör. üst segment akıllı telefon, lüks elektronik, açıklama veya kategori bunu düşündürüyorsa) bunu kurumsal mesafeli dil ile geçiştirme: kullanıcıya net şekilde, **kazandığı düzeyle örtüşmeyen bir harcama tercihi** olduğunu söyle; daha uygun fiyatlı alternatiflerin çoğu ihtiyacı karşılayabileceğini, önceliğin temel ihtiyaç ve tasarruf olması gerektiğini “kazandığın kadar harca” ilkesiyle bağla. Ton: saygılı, küçümsemeyen, alay etmeyen; kişiliğe saldırmayan ama **çekingen de olmayan** uyarı. Bu tema veriye dayanmıyorsa veya gelir yüksekse zorla kullanma.
 
@@ -169,6 +169,7 @@ function assetTypeTr(t: InvestmentAssetType): string {
     GOLD: "Altın",
     SILVER: "Gümüş",
     PLATINUM: "Platin (gram)",
+    COMMODITY: "Emtia",
     STOCK: "Hisse",
     FX: "Döviz",
     CRYPTO: "Kripto",
