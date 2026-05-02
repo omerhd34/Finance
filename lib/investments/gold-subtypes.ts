@@ -37,6 +37,6 @@ export function formatGoldQuantityCell(
   subtype: string | null | undefined,
 ): string {
   const n = quantity.toLocaleString("tr-TR", { maximumFractionDigits: 4 });
-  if (subtype == null || subtype === "GRAM") return `${n} g`;
-  return `${n} adet`;
+  if (subtype == null || subtype === "GRAM") return `${n}`;
+  return `${n}`;
 }

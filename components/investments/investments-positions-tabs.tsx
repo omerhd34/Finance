@@ -239,7 +239,7 @@ export function InvestmentsPositionsTabs({
                           : tab === "SILVER" || tab === "PLATINUM"
                             ? `${p.quantity.toLocaleString("tr-TR", {
                                 maximumFractionDigits: 4,
-                              })} g`
+                              })}`
                             : p.quantity.toLocaleString("tr-TR", {
                                 maximumFractionDigits: 4,
                               })}
