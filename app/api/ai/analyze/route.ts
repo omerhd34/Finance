@@ -5,15 +5,28 @@ import {
 } from "@google/generative-ai";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
-import { debt, prisma } from "@/lib/db/prisma";
+import { debt, investmentPosition, prisma } from "@/lib/db/prisma";
+import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
+import {
+  costBasisTry,
+  pnlTry,
+  totalInvestmentPnlTry,
+  valueTry,
+} from "@/lib/investments/investment-position-math";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 import { EXPENSE_CATEGORY_TREE } from "@/lib/domain/categories";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
+import type {
+  InvestmentAssetType,
+  InvestmentPosition,
+} from "@/types/investment";
 
 const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın. Yanıtın Türkçe olacak; dil profesyonel, net ve ölçülü olsun. Aşırı samimiyet, klişe AI ifadeleri ve gereksiz ünlem kullanma (ör. "Hadi birlikte", "size tam destek", "Başarılar dilerim!" gibi boş kapanışlar yerine kısa ve somut bir cümle tercih et).
 
 Veri: \`son30GunHarcamalar\` son 30 takvim günü içindeki giderleri listeler; \`son30GunGelirler\` ve \`gelirOzeti\` aynı penceredeki gelir kayıtlarını ve toplamları verir. Aralık \`harcamaPenceresi\` ile çerçevelenir (ay başlangıç ayarından bağımsız, son 30 takvim günü). Borç/alacak kayıtlarında yon alanı "alacak" veya "borç" olarak gelir; kalanTutar = toplam − ödenen. Rakamları ve kategorileri metinde tutarlı kullan. Metinde RECEIVABLE, PAYABLE gibi İngilizce kodları veya parantez içi İngilizce açıklamalar yazma; yalnızca Türkçe terimleri kullan (ör. "Alacak:", "Borç:").
+
+Yatırım (\`yatirimlar\`): Bu alan null ise kullanıcının bu analizde listelenen yatırım kartı yoktur. Dolu ise Premium portföy özetidir; \`ozet\` ve \`pozisyonlar\` uygulama tablolarıyla uyumlu alanlar içerir. \`varlikTuru\`: Altın, Gümüş, Platin (gram), Hisse, Döviz, Kripto. \`tahminiDegerTry\` / \`tahminiPnlTry\`: Kayıtlı güncel birim fiyatı yoksa ortalama maliyet kullanılarak yaklaşık hesaplanır; canlı borsa kotasyonu garantisi yoktur—yatırım tavsiyesi veya al/sat önerisi verme; yalnızca kayıtlı tutarlar üzerinden likidite ve yoğunlaşma bağlamı ver.
 
 Gelir–harcama uyumu (doğrudan ve dürüst iletişim): \`gelirOzeti\`, \`son30GunGelirler\` ile \`son30GunHarcamalar\`ı birlikte oku. \`referansAsgariUcretNetAylikTl\` null ise güncel asgari ücret rakamı uydurma; yalnızca kayıtlı gelir tutarları ve harcama kalıplarından sonuç çıkar. Gelir tarafı sınırlı görünüyorsa (ör. yinelenen düşük maaş tutarı, son 30 gün toplam gelirinin düşük olması, varsa referans ile karşılaştırmada alt bant) ve aynı veride isteğe bağlı, yüksek tutarlı harcama varsa (ör. üst segment akıllı telefon, lüks elektronik, açıklama veya kategori bunu düşündürüyorsa) bunu kurumsal mesafeli dil ile geçiştirme: kullanıcıya net şekilde, **kazandığı düzeyle örtüşmeyen bir harcama tercihi** olduğunu söyle; daha uygun fiyatlı alternatiflerin çoğu ihtiyacı karşılayabileceğini, önceliğin temel ihtiyaç ve tasarruf olması gerektiğini “kazandığın kadar harca” ilkesiyle bağla. Ton: saygılı, küçümsemeyen, alay etmeyen; kişiliğe saldırmayan ama **çekingen de olmayan** uyarı. Bu tema veriye dayanmıyorsa veya gelir yüksekse zorla kullanma.
 
@@ -25,7 +38,7 @@ Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sı
 
 - **Karşılama:** Kullanıcıya doğrudan hitap etmeden, son 30 günlük gelir, gider ve borç/alacak özetini incelediğini kısa ve kurumsal bir dille belirt. Ne kadar detaya ineceğini bu girişte anlatma; en fazla iki cümle.
 
-- **Genel değerlendirme:** \`borcVeAlacaklar.ozet\` ile net pozisyonu (kalan alacak − kalan borç) ve son 30 gün toplam gideri birlikte çerçevele. Gelir özeti varsa gelir ile gider dengesine kısaca değin. Harcamaların hangi geniş alanlarda yoğunlaştığını (birkaç grup veya ana kategori) özetle; gelir düşükken lüks veya isteğe bağlı yüksek harcama örtüşüyorsa yukarıdaki “gelir–harcama uyumu” ilkesine uy. Üç ila altı cümle; spekülasyon yok.
+- **Genel değerlendirme:** \`borcVeAlacaklar.ozet\` ile net pozisyonu (kalan alacak − kalan borç) ve son 30 gün toplam gideri birlikte çerçevele. Gelir özeti varsa gelir ile gider dengesine kısaca değin. \`yatirimlar\` doluysa portföyün tahmini toplam değeri ve varlık türü dağılımına **en fazla bir iki cümle** ile değin (tavsiye yok). Harcamaların hangi geniş alanlarda yoğunlaştığını (birkaç grup veya ana kategori) özetle; gelir düşükken lüks veya isteğe bağlı yüksek harcama örtüşüyorsa yukarıdaki “gelir–harcama uyumu” ilkesine uy. Üç ila altı cümle; spekülasyon yok.
 
 - **En yüksek 5 harcama kategorisi ve yorumu:** Önce tek cümleyle listenin neyi temsil ettiğini belirt. Sonra her kalem için ayrı paragraf: satır başı **Ana kategori – Alt kategori (X TL)** veya alt kategori yoksa **Kategori (X TL)**; altında tutarı destekleyen kısa gözlem (bütçedeki rol, tekrar eden işlem ipucu, açıklama alanıyla örtüşme). En fazla beş kalem; tutarlar JSON’daki işlemlerle uyumlu toplamlar olsun.
 
@@ -105,7 +118,6 @@ type AnalyzePayload = {
     son30GunToplamGelir: number;
     gelirKayitSayisi: number;
   };
-  /** Opsiyonel: .env ile güncellenir; kıyas için büyüklük sırası */
   referansAsgariUcretNetAylikTl: number | null;
   giderKategoriSemasi: typeof EXPENSE_CATEGORY_TREE;
   son30GunHarcamalar: TxPayload;
@@ -118,7 +130,51 @@ type AnalyzePayload = {
       netPozisyon: number;
     };
   };
+  yatirimlar: {
+    aciklama: string;
+    paraBirimi: string;
+    ozet: {
+      pozisyonSayisi: number;
+      toplamMaliyetTry: number;
+      tahminiToplamDegerTry: number;
+      tahminiToplamPnlTry: number;
+    };
+    pozisyonlar: {
+      varlikTuru: string;
+      baslik: string;
+      kod: string | null;
+      altinAltTuru: string | null;
+      miktar: number;
+      birimMaliyetTry: number;
+      kayitliGuncelBirimTry: number | null;
+      maliyetToplamTry: number;
+      tahminiDegerTry: number;
+      tahminiPnlTry: number;
+    }[];
+  } | null;
 };
+
+function ensureIsoDates(p: InvestmentPosition): InvestmentPosition {
+  const c = p.createdAt as unknown;
+  const u = p.updatedAt as unknown;
+  return {
+    ...p,
+    createdAt: typeof c === "string" ? c : (c as Date).toISOString(),
+    updatedAt: typeof u === "string" ? u : (u as Date).toISOString(),
+  };
+}
+
+function assetTypeTr(t: InvestmentAssetType): string {
+  const m: Record<InvestmentAssetType, string> = {
+    GOLD: "Altın",
+    SILVER: "Gümüş",
+    PLATINUM: "Platin (gram)",
+    STOCK: "Hisse",
+    FX: "Döviz",
+    CRYPTO: "Kripto",
+  };
+  return m[t] ?? t;
+}
 
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503]);
 
@@ -249,7 +305,7 @@ export async function POST() {
     await ensurePremiumNotExpired(session.user.id);
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { planTier: true, monthStartDay: true },
+      select: { planTier: true, monthStartDay: true, currency: true },
     });
     if (!dbUser || dbUser.planTier !== "premium") {
       return NextResponse.json(
@@ -300,28 +356,35 @@ export async function POST() {
     const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(
       dbUser.monthStartDay ?? 1,
     );
-    const [transactions, incomeTransactions, debts] = await Promise.all([
-      prisma.transaction.findMany({
-        where: {
-          userId: session.user.id,
-          date: { gte: since },
-          type: "expense",
-        },
-        orderBy: { date: "desc" },
-      }),
-      prisma.transaction.findMany({
-        where: {
-          userId: session.user.id,
-          date: { gte: since },
-          type: "income",
-        },
-        orderBy: { date: "desc" },
-      }),
-      debt.findMany({
-        where: { userId: session.user.id },
-        orderBy: { dueDate: "asc" },
-      }),
-    ]);
+    const [transactions, incomeTransactions, debts, investmentRows] =
+      await Promise.all([
+        prisma.transaction.findMany({
+          where: {
+            userId: session.user.id,
+            date: { gte: since },
+            type: "expense",
+          },
+          orderBy: { date: "desc" },
+        }),
+        prisma.transaction.findMany({
+          where: {
+            userId: session.user.id,
+            date: { gte: since },
+            type: "income",
+          },
+          orderBy: { date: "desc" },
+        }),
+        debt.findMany({
+          where: { userId: session.user.id },
+          orderBy: { dueDate: "asc" },
+        }),
+        investmentPosition.findMany({
+          where: { userId: session.user.id },
+          orderBy: { updatedAt: "desc" },
+        }),
+      ]);
+
+    const investmentPositions = investmentRows.map(ensureIsoDates);
 
     const son30GunHarcamalar: TxPayload = transactions.map(
       (t: Transaction) => ({
@@ -367,6 +430,42 @@ export async function POST() {
       };
     });
 
+    const yatirimlar: AnalyzePayload["yatirimlar"] =
+      investmentPositions.length === 0
+        ? null
+        : {
+            aciklama:
+              "Yatırım menüsündeki pozisyonların özeti. Tahmini değer ve PnL, kayıtlı güncel birim fiyatı veya ortalama maliyet üzerinden yaklaşıktır; canlı kotasyon garantisi yoktur.",
+            paraBirimi: dbUser.currency ?? "TL",
+            ozet: {
+              pozisyonSayisi: investmentPositions.length,
+              toplamMaliyetTry: investmentPositions.reduce(
+                (s, p) => s + costBasisTry(p),
+                0,
+              ),
+              tahminiToplamDegerTry: investmentPositions.reduce(
+                (s, p) => s + valueTry(p),
+                0,
+              ),
+              tahminiToplamPnlTry: totalInvestmentPnlTry(investmentPositions),
+            },
+            pozisyonlar: investmentPositions.map((p) => ({
+              varlikTuru: assetTypeTr(p.assetType),
+              baslik: p.title,
+              kod: p.ticker,
+              altinAltTuru:
+                p.assetType === "GOLD" && p.goldSubtype
+                  ? goldSubtypeLabel(p.goldSubtype)
+                  : null,
+              miktar: p.quantity,
+              birimMaliyetTry: p.avgCostPerUnitTry,
+              kayitliGuncelBirimTry: p.marketPricePerUnitTry,
+              maliyetToplamTry: costBasisTry(p),
+              tahminiDegerTry: valueTry(p),
+              tahminiPnlTry: pnlTry(p),
+            })),
+          };
+
     const payload: AnalyzePayload = {
       kullaniciAyAyarlari,
       harcamaPenceresi: {
@@ -390,6 +489,7 @@ export async function POST() {
           netPozisyon: toplamAlacakKalan - toplamBorcKalan,
         },
       },
+      yatirimlar,
     };
 
     const markdown = await analyzeWithGemini(geminiKey, payload);
