@@ -8,6 +8,8 @@ import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useCurrencySymbols } from "@/hooks/use-currency-symbols";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
+import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
+import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
 import type { GoldSubtype } from "@/lib/gold-subtypes";
 import {
@@ -42,6 +44,8 @@ export function PositionFormFields({
   const goldSubtype = form.watch("goldSubtype");
   const ticker = form.watch("ticker");
   const goldLive = useGoldLivePrices(assetType === "GOLD");
+  const silverLive = useSilverLivePrices(assetType === "SILVER");
+  const platinumLive = usePlatinumLivePrices(assetType === "PLATINUM");
   const stockLive = useStockLiveQuotes(assetType === "STOCK");
   const fxLive = useFxLiveQuotes(assetType === "FX");
   const cryptoLive = useCryptoLiveQuotes(assetType === "CRYPTO");
@@ -60,6 +64,34 @@ export function PositionFormFields({
       form.setValue("marketPricePerUnit", "", { shouldValidate: true });
     }
   }, [assetType, goldSubtype, goldLive.prices, currency, form]);
+
+  useEffect(() => {
+    if (assetType !== "SILVER") return;
+    const liveTry = silverLive.priceTryPerGram;
+    if (typeof liveTry === "number" && liveTry > 0) {
+      const display = tryAmountToDisplay(liveTry, currency);
+      form.setValue("marketPricePerUnit", String(display), {
+        shouldValidate: true,
+        shouldDirty: false,
+      });
+    } else {
+      form.setValue("marketPricePerUnit", "", { shouldValidate: true });
+    }
+  }, [assetType, silverLive.priceTryPerGram, currency, form]);
+
+  useEffect(() => {
+    if (assetType !== "PLATINUM") return;
+    const liveTry = platinumLive.priceTryPerGram;
+    if (typeof liveTry === "number" && liveTry > 0) {
+      const display = tryAmountToDisplay(liveTry, currency);
+      form.setValue("marketPricePerUnit", String(display), {
+        shouldValidate: true,
+        shouldDirty: false,
+      });
+    } else {
+      form.setValue("marketPricePerUnit", "", { shouldValidate: true });
+    }
+  }, [assetType, platinumLive.priceTryPerGram, currency, form]);
 
   useEffect(() => {
     if (assetType !== "STOCK") return;
@@ -124,7 +156,9 @@ export function PositionFormFields({
         <Label>Tür</Label>
         <Select
           value={form.watch("assetType")}
-          onValueChange={(v: "GOLD" | "STOCK" | "FX" | "CRYPTO") => {
+          onValueChange={(
+            v: "GOLD" | "SILVER" | "PLATINUM" | "STOCK" | "FX" | "CRYPTO",
+          ) => {
             form.setValue("assetType", v);
             if (v === "GOLD") {
               form.setValue("ticker", "");
@@ -135,6 +169,10 @@ export function PositionFormFields({
             } else {
               form.setValue("goldSubtype", undefined);
               form.setValue("marketPricePerUnit", "");
+              if (v === "SILVER" || v === "PLATINUM") {
+                form.setValue("ticker", "");
+                form.setValue("title", "");
+              }
               if (v === "FX" || v === "CRYPTO") {
                 form.setValue("title", "");
                 form.setValue("ticker", "");
@@ -148,6 +186,12 @@ export function PositionFormFields({
           <SelectContent>
             <SelectItem value="GOLD" className="cursor-pointer">
               Altın
+            </SelectItem>
+            <SelectItem value="SILVER" className="cursor-pointer">
+              Gümüş
+            </SelectItem>
+            <SelectItem value="PLATINUM" className="cursor-pointer">
+              Platin
             </SelectItem>
             <SelectItem value="STOCK" className="cursor-pointer">
               Hisse senedi
@@ -311,11 +355,13 @@ export function PositionFormFields({
         <Label>
           {assetType === "GOLD"
             ? goldMiktarLabel(goldSubtype)
-            : assetType === "FX"
-              ? "Miktar (satın aldığınız döviz tutarı)"
-              : assetType === "CRYPTO"
-                ? "Miktar (coin)"
-                : "Adet (lot)"}
+            : assetType === "SILVER" || assetType === "PLATINUM"
+              ? "Miktar (gram)"
+              : assetType === "FX"
+                ? "Miktar (satın aldığınız döviz tutarı)"
+                : assetType === "CRYPTO"
+                  ? "Miktar (coin)"
+                  : "Adet (lot)"}
         </Label>
         <Input
           type="number"
@@ -353,39 +399,53 @@ export function PositionFormFields({
                       : goldLive.error
                         ? "Fiyat alınamadı"
                         : "Bu tür için kur yok"
-                    : assetType === "STOCK"
-                      ? stockLive.loading
-                        ? "Hisse listesi yükleniyor…"
-                        : stockLive.error
+                    : assetType === "SILVER"
+                      ? silverLive.loading
+                        ? "Canlı fiyat yükleniyor…"
+                        : silverLive.error
                           ? "Fiyat alınamadı"
-                          : !ticker?.trim()
-                            ? "Hisse kodu girin"
-                            : !stockLive.byTicker[ticker.trim().toUpperCase()]
-                              ? "Bu kod listede yok"
-                              : ""
-                      : assetType === "FX"
-                        ? fxLive.loading
-                          ? "Döviz kurları yükleniyor…"
-                          : fxLive.error
+                          : "Gram fiyatı yok"
+                      : assetType === "PLATINUM"
+                        ? platinumLive.loading
+                          ? "Canlı fiyat yükleniyor…"
+                          : platinumLive.error
                             ? "Fiyat alınamadı"
-                            : !ticker?.trim()
-                              ? "Döviz seçin"
-                              : !fxLive.byCode[ticker.trim().toUpperCase()]
-                                ? "Bu döviz için kur yok"
-                                : ""
-                        : assetType === "CRYPTO"
-                          ? cryptoLive.loading
-                            ? "Kripto fiyatları yükleniyor…"
-                            : cryptoLive.error
+                            : "Gram fiyatı yok"
+                        : assetType === "STOCK"
+                          ? stockLive.loading
+                            ? "Hisse listesi yükleniyor…"
+                            : stockLive.error
                               ? "Fiyat alınamadı"
                               : !ticker?.trim()
-                                ? "Kripto seçin"
-                                : !cryptoLive.byTicker[
+                                ? "Hisse kodu girin"
+                                : !stockLive.byTicker[
                                       ticker.trim().toUpperCase()
                                     ]
                                   ? "Bu kod listede yok"
                                   : ""
-                          : ""
+                          : assetType === "FX"
+                            ? fxLive.loading
+                              ? "Döviz kurları yükleniyor…"
+                              : fxLive.error
+                                ? "Fiyat alınamadı"
+                                : !ticker?.trim()
+                                  ? "Döviz seçin"
+                                  : !fxLive.byCode[ticker.trim().toUpperCase()]
+                                    ? "Bu döviz için kur yok"
+                                    : ""
+                            : assetType === "CRYPTO"
+                              ? cryptoLive.loading
+                                ? "Kripto fiyatları yükleniyor…"
+                                : cryptoLive.error
+                                  ? "Fiyat alınamadı"
+                                  : !ticker?.trim()
+                                    ? "Kripto seçin"
+                                    : !cryptoLive.byTicker[
+                                          ticker.trim().toUpperCase()
+                                        ]
+                                      ? "Bu kod listede yok"
+                                      : ""
+                              : ""
                 }
               />
             )}

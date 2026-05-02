@@ -19,6 +19,8 @@ import {
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
+import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
+import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
 import { debtRemaining } from "@/lib/debt-remaining";
 import type { Debt } from "@/types/debt";
@@ -59,17 +61,34 @@ export default function DashboardPage() {
   const [barsChartMonths, setBarsChartMonths] = useState(6);
   const [pieChartMonths, setPieChartMonths] = useState(1);
   const goldLive = useGoldLivePrices(planPremium);
+  const silverLive = useSilverLivePrices(planPremium);
+  const platinumLive = usePlatinumLivePrices(planPremium);
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
   const liveQuotes = useMemo(
     () => ({
       gold: goldLive.prices,
+      silverTryPerGram:
+        typeof silverLive.priceTryPerGram === "number"
+          ? silverLive.priceTryPerGram
+          : undefined,
+      platinumTryPerGram:
+        typeof platinumLive.priceTryPerGram === "number"
+          ? platinumLive.priceTryPerGram
+          : undefined,
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
     }),
-    [goldLive.prices, stockLive.byTicker, fxLive.byCode, cryptoLive.byTicker],
+    [
+      goldLive.prices,
+      silverLive.priceTryPerGram,
+      platinumLive.priceTryPerGram,
+      stockLive.byTicker,
+      fxLive.byCode,
+      cryptoLive.byTicker,
+    ],
   );
 
   const load = useCallback(async () => {
@@ -214,6 +233,16 @@ export default function DashboardPage() {
     [investmentPositions, liveQuotes],
   );
 
+  const silverSummary = useMemo(
+    () => aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes),
+    [investmentPositions, liveQuotes],
+  );
+
+  const platinumSummary = useMemo(
+    () => aggregatePositionsTry(investmentPositions, "PLATINUM", liveQuotes),
+    [investmentPositions, liveQuotes],
+  );
+
   const fxSummary = useMemo(
     () => aggregatePositionsTry(investmentPositions, "FX", liveQuotes),
     [investmentPositions, liveQuotes],
@@ -308,6 +337,8 @@ export default function DashboardPage() {
           fxSummary={fxSummary}
           cryptoSummary={cryptoSummary}
           goldSummary={goldSummary}
+          silverSummary={silverSummary}
+          platinumSummary={platinumSummary}
         />
       ) : null}
 

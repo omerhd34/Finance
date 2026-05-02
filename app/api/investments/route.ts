@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
+import { PLATINUM_INVESTMENT_TITLE } from "@/lib/platinum-investment";
+import { SILVER_INVESTMENT_TITLE } from "@/lib/silver-investment";
 import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
 import { investmentPosition } from "@/lib/prisma";
 import { investmentCreateSchema } from "@/lib/validations";
@@ -60,7 +62,11 @@ export async function POST(req: Request) {
     const title =
       d.assetType === "GOLD"
         ? goldSubtypeLabel(d.goldSubtype!)
-        : (d.title ?? "").trim();
+        : d.assetType === "SILVER"
+          ? SILVER_INVESTMENT_TITLE
+          : d.assetType === "PLATINUM"
+            ? PLATINUM_INVESTMENT_TITLE
+            : (d.title ?? "").trim();
     const row = await investmentPosition.create({
       data: {
         assetType: d.assetType,

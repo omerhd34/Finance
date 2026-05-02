@@ -56,14 +56,22 @@ export function InvestmentsPositionsTabs({
   onEdit,
   onDelete,
 }: Props) {
-  const tableColSpan = tab === "GOLD" ? 7 : 8;
-  const tabHasTitleAndCode = tab !== "GOLD";
+  const compactPreciousTab =
+    tab === "GOLD" || tab === "SILVER" || tab === "PLATINUM";
+  const tableColSpan = compactPreciousTab ? 7 : 8;
+  const tabHasTitleAndCode = !compactPreciousTab;
 
   return (
     <Tabs value={tab} onValueChange={(v) => onTabChange(v as TabValue)}>
       <TabsList>
         <TabsTrigger value="GOLD" className="cursor-pointer">
           Altın
+        </TabsTrigger>
+        <TabsTrigger value="SILVER" className="cursor-pointer">
+          Gümüş
+        </TabsTrigger>
+        <TabsTrigger value="PLATINUM" className="cursor-pointer">
+          Platin
         </TabsTrigger>
         <TabsTrigger value="FX" className="cursor-pointer">
           Döviz
@@ -81,13 +89,17 @@ export function InvestmentsPositionsTabs({
             <CardTitle className="text-base">
               {tab === "GOLD"
                 ? "Altın kayıtları"
-                : tab === "STOCK"
-                  ? "Hisse kayıtları"
-                  : tab === "FX"
-                    ? "Döviz kayıtları"
-                    : tab === "CRYPTO"
-                      ? "Kripto kayıtları"
-                      : "Kayıtlar"}
+                : tab === "SILVER"
+                  ? "Gümüş kayıtları"
+                    : tab === "PLATINUM"
+                      ? "Platin kayıtları"
+                      : tab === "STOCK"
+                        ? "Hisse kayıtları"
+                        : tab === "FX"
+                          ? "Döviz kayıtları"
+                          : tab === "CRYPTO"
+                            ? "Kripto kayıtları"
+                            : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (
@@ -109,6 +121,9 @@ export function InvestmentsPositionsTabs({
                 <TableRow>
                   {tabHasTitleAndCode && <TableHead>Başlık</TableHead>}
                   {tab === "GOLD" && <TableHead>Altın türü</TableHead>}
+                  {(tab === "SILVER" || tab === "PLATINUM") && (
+                    <TableHead>Tür</TableHead>
+                  )}
                   {tabHasTitleAndCode && <TableHead>Kod</TableHead>}
                   <TableHead className="text-right">Miktar</TableHead>
                   <TableHead className="text-right">Alış fiyatı</TableHead>
@@ -138,6 +153,14 @@ export function InvestmentsPositionsTabs({
                     p.assetType === "GOLD" && p.goldSubtype
                       ? liveQuotes?.gold?.[p.goldSubtype]
                       : undefined;
+                  const liveTrySilver =
+                    p.assetType === "SILVER"
+                      ? liveQuotes?.silverTryPerGram
+                      : undefined;
+                  const liveTryPlatinum =
+                    p.assetType === "PLATINUM"
+                      ? liveQuotes?.platinumTryPerGram
+                      : undefined;
                   const liveTryStock =
                     p.assetType === "STOCK" && p.ticker?.trim()
                       ? liveQuotes?.stockByTicker?.[
@@ -157,14 +180,20 @@ export function InvestmentsPositionsTabs({
                   const unitTryDisplay =
                     typeof liveTryGold === "number" && liveTryGold > 0
                       ? liveTryGold
-                      : typeof liveTryStock === "number" && liveTryStock > 0
-                        ? liveTryStock
-                        : typeof liveTryFx === "number" && liveTryFx > 0
-                          ? liveTryFx
-                          : typeof liveTryCrypto === "number" &&
-                              liveTryCrypto > 0
-                            ? liveTryCrypto
-                            : (p.marketPricePerUnitTry ?? undefined);
+                      : typeof liveTrySilver === "number" && liveTrySilver > 0
+                        ? liveTrySilver
+                        : typeof liveTryPlatinum === "number" &&
+                            liveTryPlatinum > 0
+                          ? liveTryPlatinum
+                          : typeof liveTryStock === "number" &&
+                              liveTryStock > 0
+                            ? liveTryStock
+                            : typeof liveTryFx === "number" && liveTryFx > 0
+                              ? liveTryFx
+                              : typeof liveTryCrypto === "number" &&
+                                  liveTryCrypto > 0
+                                ? liveTryCrypto
+                                : (p.marketPricePerUnitTry ?? undefined);
                   return (
                     <TableRow key={p.id}>
                       {tabHasTitleAndCode && (
@@ -175,6 +204,11 @@ export function InvestmentsPositionsTabs({
                           <Badge variant="outline">
                             {goldSubtypeLabel(p.goldSubtype)}
                           </Badge>
+                        </TableCell>
+                      )}
+                      {(tab === "SILVER" || tab === "PLATINUM") && (
+                        <TableCell>
+                          <Badge variant="outline">Gram</Badge>
                         </TableCell>
                       )}
                       {tabHasTitleAndCode && (
@@ -189,9 +223,13 @@ export function InvestmentsPositionsTabs({
                       <TableCell className="text-right tabular-nums">
                         {tab === "GOLD"
                           ? formatGoldQuantityCell(p.quantity, p.goldSubtype)
-                          : p.quantity.toLocaleString("tr-TR", {
-                              maximumFractionDigits: 4,
-                            })}
+                          : tab === "SILVER" || tab === "PLATINUM"
+                            ? `${p.quantity.toLocaleString("tr-TR", {
+                                maximumFractionDigits: 4,
+                              })} g`
+                            : p.quantity.toLocaleString("tr-TR", {
+                                maximumFractionDigits: 4,
+                              })}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="tabular-nums">

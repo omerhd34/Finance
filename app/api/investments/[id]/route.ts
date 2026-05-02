@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { blockIfEmailNotVerified } from "@/lib/require-email-verified";
 import { GOLD_SUBTYPE_VALUES, goldSubtypeLabel } from "@/lib/gold-subtypes";
+import { PLATINUM_INVESTMENT_TITLE } from "@/lib/platinum-investment";
+import { SILVER_INVESTMENT_TITLE } from "@/lib/silver-investment";
 import { isUserPremiumInDb } from "@/lib/is-user-premium-db";
 import { investmentPosition } from "@/lib/prisma";
 import { investmentUpdateSchema } from "@/lib/validations";
@@ -68,11 +70,11 @@ export async function PUT(req: Request, context: RouteContext) {
       );
     }
     const nextGoldSubtype: string | null =
-      nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
-        ? null
-        : ((data.goldSubtype !== undefined
+      nextType === "GOLD"
+        ? ((data.goldSubtype !== undefined
             ? data.goldSubtype
-            : existing.goldSubtype) ?? "GRAM");
+            : existing.goldSubtype) ?? "GRAM")
+        : null;
     if (nextType === "GOLD") {
       const g = nextGoldSubtype;
       if (!g || !(GOLD_SUBTYPE_VALUES as readonly string[]).includes(g)) {
@@ -86,14 +88,18 @@ export async function PUT(req: Request, context: RouteContext) {
       where: { id },
       data: {
         ...(data.assetType !== undefined && { assetType: data.assetType }),
-        ...(nextType === "STOCK" || nextType === "FX" || nextType === "CRYPTO"
-          ? { goldSubtype: null }
-          : { goldSubtype: nextGoldSubtype }),
+        ...(nextType === "GOLD"
+          ? { goldSubtype: nextGoldSubtype }
+          : { goldSubtype: null }),
         ...(nextType === "GOLD"
           ? { title: goldSubtypeLabel(nextGoldSubtype!) }
-          : data.title !== undefined
-            ? { title: data.title.trim() }
-            : {}),
+          : nextType === "SILVER"
+            ? { title: SILVER_INVESTMENT_TITLE }
+            : nextType === "PLATINUM"
+              ? { title: PLATINUM_INVESTMENT_TITLE }
+              : data.title !== undefined
+                ? { title: data.title.trim() }
+                : {}),
         ...(data.ticker !== undefined && { ticker: tickerToSave }),
         ...(data.quantity !== undefined && { quantity: data.quantity }),
         ...(data.avgCostPerUnitTry !== undefined && {

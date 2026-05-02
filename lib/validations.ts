@@ -238,7 +238,14 @@ export const accountDeleteSchema = z.object({
 
 export const investmentCreateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO"]),
+    assetType: z.enum([
+      "GOLD",
+      "SILVER",
+      "PLATINUM",
+      "STOCK",
+      "FX",
+      "CRYPTO",
+    ]),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()
@@ -262,6 +269,13 @@ export const investmentCreateSchema = z
       (d.goldSubtype != null &&
         (GOLD_SUBTYPE_VALUES as readonly string[]).includes(d.goldSubtype)),
     { message: "Altın türü seçin", path: ["goldSubtype"] },
+  )
+  .refine(
+    (d) =>
+      (d.assetType !== "SILVER" && d.assetType !== "PLATINUM") ||
+      d.goldSubtype === undefined ||
+      d.goldSubtype === null,
+    { message: "Bu tür için altın türü kullanılmaz", path: ["goldSubtype"] },
   )
   .refine(
     (d) =>
@@ -296,7 +310,9 @@ export const investmentCreateSchema = z
 
 export const investmentUpdateSchema = z
   .object({
-    assetType: z.enum(["GOLD", "STOCK", "FX", "CRYPTO"]).optional(),
+    assetType: z
+      .enum(["GOLD", "SILVER", "PLATINUM", "STOCK", "FX", "CRYPTO"])
+      .optional(),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()

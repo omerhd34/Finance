@@ -13,6 +13,8 @@ export type LiveCryptoTryMap = Record<string, number>;
 
 export type LiveInvestmentQuotes = {
   gold?: LiveGoldPriceMap;
+  silverTryPerGram?: number;
+  platinumTryPerGram?: number;
   stockByTicker?: LiveStockTryMap;
   fxByCode?: LiveFxTryMap;
   cryptoByTicker?: LiveCryptoTryMap;
@@ -35,6 +37,17 @@ export function effectiveMarketUnitTry(
   if (p.assetType === "GOLD" && p.goldSubtype && live?.gold) {
     const gl = live.gold[p.goldSubtype];
     if (typeof gl === "number" && gl > 0) return gl;
+  }
+  if (p.assetType === "SILVER" && typeof live?.silverTryPerGram === "number") {
+    const s = live.silverTryPerGram;
+    if (s > 0) return s;
+  }
+  if (
+    p.assetType === "PLATINUM" &&
+    typeof live?.platinumTryPerGram === "number"
+  ) {
+    const pt = live.platinumTryPerGram;
+    if (pt > 0) return pt;
   }
   if (p.assetType === "STOCK" && live?.stockByTicker) {
     const k = stockTickerUpper(p.ticker);
@@ -83,6 +96,20 @@ export function hasDisplayableMarketPrice(
   if (p.assetType === "GOLD" && p.goldSubtype && live?.gold) {
     const gl = live.gold[p.goldSubtype];
     if (typeof gl === "number" && gl > 0) return true;
+  }
+  if (
+    p.assetType === "SILVER" &&
+    typeof live?.silverTryPerGram === "number" &&
+    live.silverTryPerGram > 0
+  ) {
+    return true;
+  }
+  if (
+    p.assetType === "PLATINUM" &&
+    typeof live?.platinumTryPerGram === "number" &&
+    live.platinumTryPerGram > 0
+  ) {
+    return true;
   }
   if (p.assetType === "STOCK") {
     const k = stockTickerUpper(p.ticker);

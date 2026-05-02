@@ -8,7 +8,9 @@ import {
   ArrowUpRight,
   Bitcoin,
   Coins,
+  Gem,
   LineChart,
+  Sparkles,
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,7 @@ import {
   type InvestmentAggregate,
 } from "@/components/dashboard/investment-position-stats";
 
-type AssetKey = "STOCK" | "FX" | "CRYPTO" | "GOLD";
+type AssetKey = "STOCK" | "FX" | "CRYPTO" | "GOLD" | "SILVER" | "PLATINUM";
 
 type InvestmentCardConfig = {
   key: AssetKey;
@@ -30,7 +32,14 @@ type InvestmentCardConfig = {
 };
 
 const ORDER_STORAGE_KEY = "iqfinansai-dashboard-investment-order-v1";
-const DEFAULT_ORDER: AssetKey[] = ["STOCK", "FX", "CRYPTO", "GOLD"];
+const DEFAULT_ORDER: AssetKey[] = [
+  "STOCK",
+  "FX",
+  "CRYPTO",
+  "GOLD",
+  "SILVER",
+  "PLATINUM",
+];
 
 function loadSavedOrder(): AssetKey[] {
   if (typeof window === "undefined") return DEFAULT_ORDER;
@@ -41,7 +50,12 @@ function loadSavedOrder(): AssetKey[] {
     if (!Array.isArray(parsed)) return DEFAULT_ORDER;
     const cleaned = parsed.filter(
       (v): v is AssetKey =>
-        v === "STOCK" || v === "FX" || v === "CRYPTO" || v === "GOLD",
+        v === "STOCK" ||
+        v === "FX" ||
+        v === "CRYPTO" ||
+        v === "GOLD" ||
+        v === "SILVER" ||
+        v === "PLATINUM",
     );
     const missing = DEFAULT_ORDER.filter((k) => !cleaned.includes(k));
     const nextOrder = [...cleaned, ...missing];
@@ -60,6 +74,8 @@ type Props = {
   fxSummary: InvestmentAggregate;
   cryptoSummary: InvestmentAggregate;
   goldSummary: InvestmentAggregate;
+  silverSummary: InvestmentAggregate;
+  platinumSummary: InvestmentAggregate;
 };
 
 export function DashboardInvestmentSection({
@@ -69,6 +85,8 @@ export function DashboardInvestmentSection({
   fxSummary,
   cryptoSummary,
   goldSummary,
+  silverSummary,
+  platinumSummary,
 }: Props) {
   const [assetOrder, setAssetOrder] = useState<AssetKey[]>(loadSavedOrder);
 
@@ -126,8 +144,36 @@ export function DashboardInvestmentSection({
           "bg-amber-500/12 text-amber-800 ring-amber-500/25 dark:text-amber-300",
         summary: goldSummary,
       },
+      {
+        key: "SILVER" as const,
+        title: "Gümüş",
+        description:
+          "Gümüş (gram) kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
+        icon: Gem,
+        iconClassName:
+          "bg-slate-500/12 text-slate-700 ring-slate-500/25 dark:text-slate-300",
+        summary: silverSummary,
+      },
+      {
+        key: "PLATINUM" as const,
+        title: "Platin",
+        description:
+          "Platin (gram) kayıtlarınızın toplam maliyet, güncel değer ve tahmini kar/zarar özeti",
+        icon: Sparkles,
+        iconClassName:
+          "bg-indigo-500/12 text-indigo-800 ring-indigo-500/25 dark:text-indigo-300",
+        summary: platinumSummary,
+      },
     ].filter((card) => card.summary.count > 0);
-  }, [planPremium, stockSummary, fxSummary, cryptoSummary, goldSummary]);
+  }, [
+    planPremium,
+    stockSummary,
+    fxSummary,
+    cryptoSummary,
+    goldSummary,
+    silverSummary,
+    platinumSummary,
+  ]);
 
   const orderedCards = useMemo(() => {
     const rank = new Map(assetOrder.map((k, i) => [k, i] as const));

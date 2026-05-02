@@ -4,11 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { displayAmountToTry } from "@/lib/currency";
 import { goldSubtypeLabel } from "@/lib/gold-subtypes";
+import { PLATINUM_INVESTMENT_TITLE } from "@/lib/platinum-investment";
+import { SILVER_INVESTMENT_TITLE } from "@/lib/silver-investment";
 import { parseOptionalUnitPrice } from "@/lib/investment-unit-price";
 import { costBasisTry, valueTry } from "@/lib/investment-position-math";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
+import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
+import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
 import type { PositionFormValues } from "@/lib/investments-schema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -32,7 +36,7 @@ import { LogoLoading } from "@/components/ui/logo-loading";
 import { normalizePlanTier } from "@/lib/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
-  "Hisse, döviz, kripto ve altın kayıtlarını ekleyip düzenlemek veya silmek",
+  "Hisse, döviz, kripto, altın, gümüş ve platin kayıtlarını ekleyip düzenlemek veya silmek",
   "Ortalama maliyet, güncel birim fiyat ve tahmini portföy değeri ile kar / zarar özeti",
   "Kayıt bazında not tutmak ve fiyatları güncel tutmak",
   "Ana panelde yatırım Kar/Zarar kartı ile özetleri birlikte görmek",
@@ -51,6 +55,8 @@ export default function InvestmentsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const goldLive = useGoldLivePrices(planPremium);
+  const silverLive = useSilverLivePrices(planPremium);
+  const platinumLive = usePlatinumLivePrices(planPremium);
   const stockLive = useStockLiveQuotes(planPremium);
   const fxLive = useFxLiveQuotes(planPremium);
   const cryptoLive = useCryptoLiveQuotes(planPremium);
@@ -58,11 +64,26 @@ export default function InvestmentsPage() {
   const liveQuotes = useMemo(
     () => ({
       gold: goldLive.prices,
+      silverTryPerGram:
+        typeof silverLive.priceTryPerGram === "number"
+          ? silverLive.priceTryPerGram
+          : undefined,
+      platinumTryPerGram:
+        typeof platinumLive.priceTryPerGram === "number"
+          ? platinumLive.priceTryPerGram
+          : undefined,
       stockByTicker: stockLive.byTicker,
       fxByCode: fxLive.byCode,
       cryptoByTicker: cryptoLive.byTicker,
     }),
-    [goldLive.prices, stockLive.byTicker, fxLive.byCode, cryptoLive.byTicker],
+    [
+      goldLive.prices,
+      silverLive.priceTryPerGram,
+      platinumLive.priceTryPerGram,
+      stockLive.byTicker,
+      fxLive.byCode,
+      cryptoLive.byTicker,
+    ],
   );
 
   useEffect(() => {
@@ -100,7 +121,11 @@ export default function InvestmentsPage() {
         title:
           values.assetType === "GOLD"
             ? goldSubtypeLabel(values.goldSubtype)
-            : (values.title ?? "").trim(),
+            : values.assetType === "SILVER"
+              ? SILVER_INVESTMENT_TITLE
+              : values.assetType === "PLATINUM"
+                ? PLATINUM_INVESTMENT_TITLE
+                : (values.title ?? "").trim(),
         ticker:
           values.assetType === "STOCK" ||
           values.assetType === "FX" ||
@@ -129,7 +154,11 @@ export default function InvestmentsPage() {
           title:
             values.assetType === "GOLD"
               ? goldSubtypeLabel(values.goldSubtype)
-              : (values.title ?? "").trim(),
+              : values.assetType === "SILVER"
+                ? SILVER_INVESTMENT_TITLE
+                : values.assetType === "PLATINUM"
+                  ? PLATINUM_INVESTMENT_TITLE
+                  : (values.title ?? "").trim(),
           ticker:
             values.assetType === "STOCK" ||
             values.assetType === "FX" ||
@@ -206,6 +235,21 @@ export default function InvestmentsPage() {
             <p className="text-sm text-muted-foreground" role="status">
               Canlı altın fiyatı yüklenemedi ({goldLive.error}). Güncel fiyat
               sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+            </p>
+          )}
+
+          {silverLive.error && tab === "SILVER" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı gümüş fiyatı yüklenemedi ({silverLive.error}). Güncel fiyat
+              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+            </p>
+          )}
+
+          {platinumLive.error && tab === "PLATINUM" && (
+            <p className="text-sm text-muted-foreground" role="status">
+              Canlı platin fiyatı yüklenemedi ({platinumLive.error}). Güncel
+              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+              kullanılır.
             </p>
           )}
 
