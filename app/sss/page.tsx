@@ -137,81 +137,84 @@ export default function SssIndexPage() {
       <LandingHeader />
       <main className="flex-1">
         <section
-          className="border-b border-border/60 px-4 pb-14 pt-24 md:pb-20 md:pt-28"
+          className="border-b border-border/60 pb-14 pt-24 md:pb-20 md:pt-28"
           aria-labelledby="sss-hero-heading"
         >
-          <div className="mx-auto max-w-3xl text-center">
-            <p className={eyebrow}>
-              <CircleHelp
-                className="mr-1.5 inline-block h-3.5 w-3.5 -translate-y-px opacity-90"
-                aria-hidden
-              />
-              Sık sorulan sorular
-            </p>
-            <h1
-              id="sss-hero-heading"
-              className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-tight"
-            >
-              IQfinansAI hakkında{" "}
-              <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-emerald-400 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-emerald-500">
-                merak edilenler
-              </span>
-            </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Hesap, gösterge paneli, işlemler, Premium ve güvenlik gibi
-              başlıklarda kısa soru–cevap rehberleri. Bilgilendirme amaçlıdır;
-              yatırım veya vergi tavsiyesi değildir.
-            </p>
-            <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-2">
-              {categories.map((cat) => (
-                <Badge
-                  key={cat}
-                  variant="secondary"
-                  className="rounded-full border border-border/80 bg-card/90 px-3 py-1 text-[11px] font-semibold text-muted-foreground"
-                >
-                  {cat}
-                </Badge>
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className={eyebrow}>
+                <CircleHelp
+                  className="mr-1.5 inline-block h-3.5 w-3.5 -translate-y-px opacity-90"
+                  aria-hidden
+                />
+                Sık sorulan sorular
+              </p>
+              <h1
+                id="sss-hero-heading"
+                className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-tight"
+              >
+                IQfinansAI hakkında{" "}
+                <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-emerald-400 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-emerald-500">
+                  merak edilenler
+                </span>
+              </h1>
+              <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Hesap, gösterge paneli, işlemler, Premium ve güvenlik gibi
+                başlıklarda kısa soru–cevap rehberleri. Bilgilendirme amaçlıdır;
+                yatırım veya vergi tavsiyesi değildir.
+              </p>
+              <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-2">
+                {categories.map((cat) => (
+                  <Badge
+                    key={cat}
+                    variant="secondary"
+                    className="rounded-full border border-border/80 bg-card/90 px-3 py-1 text-[11px] font-semibold text-muted-foreground"
+                  >
+                    {cat}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 md:py-16" aria-label="SSS konu başlıkları">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto max-w-5xl space-y-8 md:space-y-10">
+              {SSSPosts.map((post) => (
+                <SssWideCard key={post.slug} post={post} />
               ))}
             </div>
           </div>
         </section>
 
         <section
-          className="px-4 py-12 md:py-16"
-          aria-label="SSS konu başlıkları"
-        >
-          <div className="mx-auto max-w-5xl space-y-8 md:space-y-10">
-            {SSSPosts.map((post) => (
-              <SssWideCard key={post.slug} post={post} />
-            ))}
-          </div>
-        </section>
-
-        <section
-          className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent px-4 py-14 md:py-20"
+          className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent py-14 md:py-20"
           aria-labelledby="sss-cta-heading"
         >
-          <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
-            <h2
-              id="sss-cta-heading"
-              className="text-balance text-xl font-bold tracking-tight text-foreground md:text-2xl"
-            >
-              Yanıtları pratiğe dökmek ister misiniz?
-            </h2>
-            <p className="text-pretty text-muted-foreground md:text-lg">
-              Gelir ve giderlerinizi tek panelde toplayın; özetlerle
-              alışkanlıklarınızı net görün.
-            </p>
-            <Button
-              size="lg"
-              asChild
-              className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
-            >
-              <Link href="/kayit">
-                Kayıt ol
-                <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-              </Link>
-            </Button>
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
+              <h2
+                id="sss-cta-heading"
+                className="text-balance text-xl font-bold tracking-tight text-foreground md:text-2xl"
+              >
+                Yanıtları pratiğe dökmek ister misiniz?
+              </h2>
+              <p className="text-pretty text-muted-foreground md:text-lg">
+                Gelir ve giderlerinizi tek panelde toplayın; özetlerle
+                alışkanlıklarınızı net görün.
+              </p>
+              <Button
+                size="lg"
+                asChild
+                className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
+              >
+                <Link href="/kayit">
+                  Kayıt ol
+                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </main>

@@ -60,10 +60,11 @@ export default function DestekPage() {
       <LandingHeader />
       <main className="flex-1">
         <section
-          className="border-b border-border/60 px-4 pb-14 pt-24 md:pb-20 md:pt-28"
+          className="border-b border-border/60 pb-14 pt-24 md:pb-20 md:pt-28"
           aria-labelledby="support-hero-heading"
         >
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto max-w-3xl text-center">
             <p className={eyebrow}>Yardım merkezi</p>
             <h1
               id="support-hero-heading"
@@ -85,14 +86,16 @@ export default function DestekPage() {
               sayfasına göz atın. Aradığınızı bulamazsanız aşağıdaki formdan
               bize yazın.
             </p>
+            </div>
           </div>
         </section>
 
         <section
-          className="border-y border-border/50 bg-muted/30 px-4 py-12 md:py-16"
+          className="border-y border-border/50 bg-muted/30 py-12 md:py-16"
           aria-labelledby="support-contact-heading"
         >
-          <div className="mx-auto max-w-xl text-center">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto max-w-xl text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
               <Mail className="h-6 w-6" aria-hidden />
             </div>
@@ -105,18 +108,20 @@ export default function DestekPage() {
             <p className="mt-2 text-sm text-muted-foreground md:text-base">
               Formu doldurun; mesajınız doğrudan destek gelen kutumuza iletilir.
             </p>
-          </div>
+            </div>
           <SupportContactForm
             inboxConfigured={inboxConfigured}
             className="mx-auto mt-2"
           />
+          </div>
         </section>
 
         <section
-          className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent px-4 py-14 md:py-20"
+          className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent py-14 md:py-20"
           aria-labelledby="support-cta-heading"
         >
-          <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
             <h2
               id="support-cta-heading"
               className="text-balance text-xl font-bold tracking-tight text-foreground md:text-2xl"
@@ -137,6 +142,7 @@ export default function DestekPage() {
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>
             </Button>
+            </div>
           </div>
         </section>
       </main>
