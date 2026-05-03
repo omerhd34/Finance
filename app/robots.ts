@@ -11,6 +11,7 @@ const PRIVATE_PREFIXES = [
   "/ayarlar",
   "/yatirimlar",
   "/yapay-zeka-analizi",
+  "/yapay-zeka-asistani",
   "/tekrarlayanlar",
   "/bildirimler",
 ] as const;
