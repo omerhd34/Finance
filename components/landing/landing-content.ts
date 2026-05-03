@@ -3,73 +3,100 @@ import {
   BarChart3,
   BellRing,
   Bot,
+  FileDown,
   Globe,
   HandCoins,
   ReceiptText,
   PieChart,
+  ScanLine,
   Shield,
   Target,
+  TrendingUp,
 } from "lucide-react";
 
 export type LandingFeatureItem = {
   title: string;
   description: string;
   icon: LucideIcon;
+  premium?: boolean;
 };
 
 export const LANDING_FEATURES: LandingFeatureItem[] = [
   {
-    title: "Gelir-Gider Yönetimi",
+    title: "Gelir-gider yönetimi",
     description:
-      "Tüm finans hareketlerinizi tek panelden kaydedin ve düzenleyin.",
+      "Gelir ve giderleri tarih ve kategoriye göre kaydedin; tekrarlayan ödemeleri tek akıştan yönetin.",
     icon: BarChart3,
   },
   {
-    title: "Akıllı Finans Asistanı",
+    title: "Tasarruf hedefleri",
     description:
-      "Harcamalarınızı yorumlayın, kişisel önerilerle daha iyi kararlar alın.",
-    icon: Bot,
-  },
-  {
-    title: "Tasarruf Hedefleri",
-    description: "Kendinize hedef koyun, ilerlemenizi adım adım takip edin.",
+      "Birikim hedefi oluşturun, hedefe kalan tutarı ve ilerlemeyi net biçimde takip edin.",
     icon: Target,
   },
   {
-    title: "Borç ve Alacak Takibi",
+    title: "Borç ve alacak takibi",
     description:
-      "Alacak ve borç kayıtlarınızı yönetin, ödeme süreçlerini aksatmadan izleyin.",
+      "Borç ve alacak kalemlerini kaydedin; ödemelerle kalan bakiyeyi güncel tutun.",
     icon: HandCoins,
   },
   {
-    title: "Görsel Finans Raporları",
+    title: "Görsel finans raporları",
     description:
-      "Aylık trendleri ve kategori dağılımını anlaşılır grafiklerle inceleyin.",
+      "Seçtiğiniz döneme göre gelir–gider dengesini çubuk ve pasta grafiklerle inceleyin.",
     icon: PieChart,
   },
   {
-    title: "Hazır Kategori Yapısı",
+    title: "Hazır kategori yapısı",
     description:
-      "Gelir ve giderlerinizi pratik kategori yapısıyla kolayca sınıflandırın.",
+      "Geniş gelir ve gider ağacıyla işlemleri hızlıca doğru alt kategoriye atayın.",
     icon: Shield,
   },
   {
-    title: "Çoklu Para Birimi Desteği",
+    title: "Çoklu para birimi",
     description:
-      "TL, USD, EUR ve GBP ile işlem yapın, tercihinizi ayarlardan belirleyin.",
+      "TL, USD, EUR ve GBP ile işlem girin; varsayılan para birimini ayarlardan seçin.",
     icon: Globe,
   },
   {
-    title: "Akıllı Ödeme Hatırlatmaları",
+    title: "Ödeme hatırlatmaları",
     description:
-      "Yaklaşan ödemeleri kaçırmayın; zamanında aksiyon almak için bildirim alın.",
+      "Tekrarlayan ödemeler ve yaklaşan vadeler için uygulama içi bildirim alın.",
     icon: BellRing,
   },
   {
-    title: "Detaylı İşlem Geçmişi",
+    title: "Detaylı işlem geçmişi",
     description:
-      "Tüm finans kayıtlarını tek ekranda filtreleyin ve geçmiş işlemleri hızlıca bulun.",
+      "Tüm kayıtları tek ekranda arayın; tarih, tür ve kategoriye göre daraltın.",
     icon: ReceiptText,
+  },
+  {
+    title: "Yapay zekâ analiz raporu",
+    description:
+      "Kayıtlı verilerinizden tam metin analiz; kategori yorumları, trendler ve tasarruf önerileri.",
+    icon: Bot,
+    premium: true,
+  },
+  {
+    title: "Fiş ve fatura OCR",
+    description:
+      "Görsel yükleyerek tutar, tarih ve kategori alanlarını otomatik doldurun; yeni işlem akışını hızlandırın.",
+    icon: ScanLine,
+    premium: true,
+  },
+  {
+    title: "Yatırım portföyü",
+    description:
+      "Hisse, altın, döviz, kripto ve emtia pozisyonları; canlı kotasyonlarla değer ve kar/zarar özeti. Kayıtlar manueldir.",
+    icon: TrendingUp,
+    premium: true,
+  },
+  {
+    title: "AI raporu PDF indirme",
+    description:
+      "Oluşturulan yapay zekâ analiz raporunu tek tıkla PDF olarak cihazınıza kaydedin; arşiv ve paylaşım için hazır.",
+    icon: FileDown,
+    premium: true,
   },
 ];
 

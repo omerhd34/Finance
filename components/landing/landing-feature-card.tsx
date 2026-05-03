@@ -6,21 +6,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/common/utils";
+
 type Props = {
   title: string;
   description: string;
   icon: LucideIcon;
+  premium?: boolean;
 };
 
-export function LandingFeatureCard({ title, description, icon: Icon }: Props) {
+export function LandingFeatureCard({
+  title,
+  description,
+  icon: Icon,
+  premium,
+}: Props) {
   return (
     <Card
       className={cn(
         "group rounded-2xl border border-border bg-card text-card-foreground shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/25 hover:shadow-lg",
+        premium &&
+          "border-emerald-500/20 ring-1 ring-emerald-500/15 dark:border-emerald-500/25",
       )}
     >
       <CardHeader className="gap-4 p-6 sm:p-7">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500/15 to-emerald-600/5 ring-1 ring-emerald-500/20 transition duration-300 group-hover:scale-105 group-hover:ring-emerald-500/35">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500/15 to-emerald-600/5 ring-1 ring-emerald-500/20 transition duration-300 group-hover:scale-105 group-hover:ring-emerald-500/35">
           <Icon className="h-6 w-6 text-emerald-400" aria-hidden />
         </div>
         <div className="space-y-2">
