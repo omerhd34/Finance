@@ -1,226 +1,150 @@
 "use client";
-import { BrandLockup } from "../branding/brand-lockup";
-import "./landing-hero-isometric.css";
 
-function AiPanel() {
-  const barData = [38, 28, 46, 36, 51, 41, 58, 44, 50, 34, 48];
-  const sparkPoints = barData
-    .map((h, i) => `${215 + i * 16},${146 - h}`)
-    .join(" ");
+import { useMemo } from "react";
+import { Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 
-  return (
-    <g filter="url(#hero-shadow)">
-      <rect
-        x={194}
-        y={44}
-        width={212}
-        height={128}
-        rx={14}
-        fill="url(#hero-glass-bg)"
-        stroke="#10b981"
-        strokeWidth={1.2}
-        strokeOpacity={0.45}
-      />
-      <rect
-        x={194}
-        y={44}
-        width={212}
-        height={128}
-        rx={14}
-        fill="url(#hero-glass-shine)"
-      />
-
-      <rect x={194} y={44} width={212} height={30} rx={14} fill="#0a2b1c" />
-      <rect x={194} y={58} width={212} height={16} fill="#0a2b1c" />
-
-      <rect
-        x={241}
-        y={50}
-        width={118}
-        height={18}
-        rx={5}
-        fill="#064e3b"
-        stroke="#34d399"
-        strokeWidth={0.8}
-        strokeOpacity={0.5}
-      />
-      <foreignObject x={241} y={50} width={118} height={18}>
-        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-md">
-          <div
-            className="pointer-events-none origin-center select-none"
-            style={{ transform: "translateY(0.5px) scale(0.34)" }}
-          >
-            <BrandLockup
-              variant="landing"
-              hideIcon
-              finansClassName="text-emerald-100 dark:text-emerald-100"
-            />
-          </div>
-        </div>
-      </foreignObject>
-
-      <g opacity={0.9}>
-        {barData.map((h, i) => (
-          <rect
-            key={i}
-            x={210 + i * 16}
-            y={146 - h}
-            width={10}
-            height={h}
-            rx={2}
-            fill="url(#hero-bar-grad)"
-            opacity={0.7 + (i % 3) * 0.1}
-          />
-        ))}
-      </g>
-
-      <polyline
-        points={sparkPoints}
-        stroke="#6ee7b7"
-        strokeWidth={1.4}
-        fill="none"
-        opacity={0.7}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <rect x={206} y={152} width={188} height={12} rx={4} fill="#042814" />
-      <g clipPath="url(#hero-status-clip)">
-        <rect
-          x={206}
-          y={152}
-          width={118}
-          height={12}
-          rx={4}
-          fill="url(#hero-ai-core)"
-          opacity={0.95}
-          className="hero-ld"
-        />
-      </g>
-      <circle cx={214} cy={158} r={3} fill="#ecfdf5" className="hero-bl" />
-    </g>
-  );
+function formatTurkishMonthYear(date: Date): string {
+  const raw = new Intl.DateTimeFormat("tr-TR", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
+  return raw.charAt(0).toLocaleUpperCase("tr-TR") + raw.slice(1);
 }
 
-function Defs() {
-  return (
-    <defs>
-      <radialGradient id="hero-bg-glow" cx="50%" cy="50%" r="55%">
-        <stop offset="0%" stopColor="#10b981" stopOpacity={0.22} />
-        <stop offset="60%" stopColor="#059669" stopOpacity={0.06} />
-        <stop offset="100%" stopColor="#000" stopOpacity={0} />
-      </radialGradient>
-      <radialGradient id="hero-floor-glow" cx="50%" cy="100%" r="55%">
-        <stop offset="0%" stopColor="#064e3b" stopOpacity={0.5} />
-        <stop offset="100%" stopColor="#000" stopOpacity={0} />
-      </radialGradient>
+const barHeights = [32, 54, 42, 71, 88, 62];
 
-      <linearGradient id="hero-glass-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#0d2e1f" stopOpacity={0.95} />
-        <stop offset="100%" stopColor="#071a12" stopOpacity={0.98} />
-      </linearGradient>
-      <linearGradient id="hero-glass-shine" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#fff" stopOpacity={0.08} />
-        <stop offset="100%" stopColor="#fff" stopOpacity={0} />
-      </linearGradient>
-      <linearGradient id="hero-bar-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-        <stop offset="0%" stopColor="#065f46" />
-        <stop offset="50%" stopColor="#10b981" />
-        <stop offset="100%" stopColor="#6ee7b7" />
-      </linearGradient>
-      <linearGradient id="hero-ai-core" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#064e3b" />
-        <stop offset="40%" stopColor="#059669" />
-        <stop offset="100%" stopColor="#34d399" />
-      </linearGradient>
-
-      <linearGradient id="hero-spark-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#34d399" stopOpacity="0.35" />
-        <stop offset="70%" stopColor="#059669" stopOpacity="0.12" />
-        <stop offset="100%" stopColor="#022c22" stopOpacity="0.55" />
-      </linearGradient>
-
-      <linearGradient id="hero-gold-face" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#fef9c3" />
-        <stop offset="50%" stopColor="#fcd34d" />
-        <stop offset="100%" stopColor="#b45309" />
-      </linearGradient>
-      <linearGradient id="hero-gold-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#78350f" />
-        <stop offset="100%" stopColor="#451a03" />
-      </linearGradient>
-      <radialGradient id="hero-hex-grad" cx="40%" cy="35%" r="65%">
-        <stop offset="0%" stopColor="#c4b5fd" />
-        <stop offset="50%" stopColor="#7c3aed" />
-        <stop offset="100%" stopColor="#2e1065" />
-      </radialGradient>
-      <linearGradient id="hero-candle-up" x1="0%" y1="100%" x2="0%" y2="0%">
-        <stop offset="0%" stopColor="#065f46" />
-        <stop offset="100%" stopColor="#4ade80" />
-      </linearGradient>
-      <linearGradient id="hero-candle-dn" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#7f1d1d" />
-        <stop offset="100%" stopColor="#fca5a5" />
-      </linearGradient>
-
-      <clipPath id="hero-panel-clip">
-        <rect x={194} y={44} width={212} height={128} rx={14} />
-      </clipPath>
-      <clipPath id="hero-panel-body-clip">
-        <rect x={194} y={74} width={212} height={98} />
-      </clipPath>
-      <clipPath id="hero-status-clip">
-        <rect x={206} y={152} width={188} height={12} rx={4} />
-      </clipPath>
-
-      <filter id="hero-shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow
-          dx={0}
-          dy={8}
-          stdDeviation={10}
-          floodColor="#000"
-          floodOpacity={0.5}
-        />
-      </filter>
-      <filter id="hero-glow-sm" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation={4} result="b" />
-        <feMerge>
-          <feMergeNode in="b" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
-      <filter id="hero-glow-xs" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation={2.5} result="b" />
-        <feMerge>
-          <feMergeNode in="b" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
-      </filter>
-    </defs>
-  );
-}
+const categories = [
+  { label: "Market", pct: 90, val: "₺8.840" },
+  { label: "Ulaşım", pct: 59, val: "₺5.200" },
+  { label: "Yemek", pct: 80, val: "₺7.750" },
+  { label: "Abonelik", pct: 23, val: "₺2.000" },
+];
 
 export function LandingHeroIsometricIllustration() {
+  const monthYearLabel = useMemo(() => formatTurkishMonthYear(new Date()), []);
+
   return (
     <div
-      className="relative mt-5 mx-auto w-full max-w-sm sm:max-w-md lg:mx-0 lg:mt-0 lg:max-w-104"
-      aria-hidden
+      className="flex w-full flex-col gap-2.5"
+      role="img"
+      aria-label="IQfinansAI kişisel finans dashboard önizlemesi"
     >
-      <div
-        className="relative w-full overflow-hidden rounded-xl aspect-3/2"
-        role="img"
-        aria-label="AI-powered finance dashboard with candlestick and area charts, coins, gold and crypto"
-      >
-        <svg
-          viewBox="184 34 232 148"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-full w-full"
-          aria-hidden
-        >
-          <Defs />
-          <AiPanel />
-        </svg>
+      <div className="rounded-2xl border border-white/10 bg-white/4.5 p-4 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-2">
+          <span className="block text-[10px] font-semibold uppercase tracking-widest text-white/40">
+            Aylık harcama
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-400 shrink-0">
+            <TrendingDown
+              className="h-2.5 w-2.5 shrink-0"
+              strokeWidth={2.5}
+              aria-hidden
+            />
+            Geçen aya göre %8 az
+          </span>
+        </div>
+        <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-white">
+          ₺22.840
+        </p>
+        <p className="mt-1 text-xs text-white/40">{monthYearLabel}</p>
+        <div className="mt-3 flex h-12 items-end gap-1" aria-hidden>
+          {barHeights.map((h, i) => (
+            <div
+              key={i}
+              className={`flex-1 rounded-t-sm ${
+                i === barHeights.length - 1
+                  ? "bg-emerald-500"
+                  : "bg-emerald-500/20"
+              }`}
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3 backdrop-blur-md sm:p-3.5">
+          <span className="block text-[9px] font-semibold uppercase tracking-widest text-white/35 mb-1.5 sm:text-[10px]">
+            Birikim hedefi
+          </span>
+          <p className="text-lg font-bold leading-none tracking-tight text-emerald-400 tabular-nums sm:text-xl">
+            %68
+          </p>
+          <div
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
+            aria-hidden
+          >
+            <div className="h-full w-[68%] rounded-full bg-linear-to-r from-emerald-800 to-emerald-400" />
+          </div>
+        </div>
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3 backdrop-blur-md sm:p-3.5">
+          <span className="block text-[9px] font-semibold uppercase tracking-widest text-white/35 mb-1.5 sm:text-[10px]">
+            Kalan borç
+          </span>
+          <p className="text-lg font-bold leading-none tracking-tight text-amber-400 tabular-nums sm:text-xl">
+            ₺4.200
+          </p>
+          <p className="mt-2 text-[10px] text-white/40 sm:text-[11px]">
+            2 taksit kaldı
+          </p>
+        </div>
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3 backdrop-blur-md sm:p-3.5">
+          <span className="block text-[9px] font-semibold uppercase tracking-widest text-white/35 mb-1.5 sm:text-[10px]">
+            Net akış
+          </span>
+          <p className="text-lg font-bold leading-none tracking-tight text-sky-400 tabular-nums sm:text-xl">
+            +₺2.180
+          </p>
+          <p className="mt-2 flex items-center gap-1 text-[10px] text-white/40 sm:text-[11px]">
+            <TrendingUp
+              className="h-3 w-3 shrink-0 text-sky-400/90"
+              strokeWidth={2.25}
+              aria-hidden
+            />
+            Bu ay pozitif
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-white/4.5 p-4 backdrop-blur-md">
+        <span className="block text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-3">
+          Harcama dağılımı
+        </span>
+        <div className="flex flex-col gap-2" aria-hidden>
+          {categories.map(({ label, pct, val }) => (
+            <div key={label} className="flex items-center gap-2">
+              <span className="w-16 shrink-0 text-[11px] text-white/45">
+                {label}
+              </span>
+              <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-emerald-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <span className="w-11 shrink-0 text-right text-[11px] text-white/50">
+                {val}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.07] p-3.5 backdrop-blur-md">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20">
+          <Sparkles
+            className="h-4 w-4 text-emerald-400"
+            strokeWidth={1.8}
+            aria-hidden
+          />
+        </div>
+        <p className="text-[12.5px] leading-relaxed text-white/60">
+          <strong className="font-semibold text-emerald-300">
+            AI önerisi:
+          </strong>{" "}
+          Market harcamaların bu ay %22 arttı. Bütçeni ₺800 sabitlesen hedefe 3
+          ay erken ulaşırsın.
+        </p>
       </div>
     </div>
   );
