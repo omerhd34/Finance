@@ -13,13 +13,13 @@ export const siteMetadata: Metadata = {
     template: "%s | IQfinansAI",
   },
   description:
-    "IQfinansAI: gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri ve içgörüler alın — finansınızı netleştirin.",
+    "IQfinansAI: gelir–gider, kategori bütçesi, borç–alacak ve tekrarlayan ödemeleri tek panelden yönetin; çoklu para birimi ve kur dönüşümü. Premium’da yapay zekâ analizi, fiş/fatura OCR ve yatırım portföyü — finansınızı netleştirin.",
 
   applicationName: "IQfinansAI",
   authors: [
     {
       name: "Ömer Halis Demir",
-      url: "http://omerhalisdemir.com.tr/",
+      url: "https://omerhalisdemir.com.tr/",
     },
   ],
   creator: "Ömer Halis Demir",
@@ -57,9 +57,15 @@ export const siteMetadata: Metadata = {
     "gelir gider tablosu",
     "nakit akışı",
     "çoklu para birimi",
+    "kur dönüşüm",
+    "döviz çevirici",
     "döviz takibi",
+    "kategori bütçesi",
+    "finansal sağlık skoru",
     "portföy takibi",
     "yatırım portföyü",
+    "emtia yatırım",
+    "kripto portföy",
     "finansal rapor",
     "harcama raporu",
     "ev ekonomisi",
@@ -86,7 +92,7 @@ export const siteMetadata: Metadata = {
   openGraph: {
     title: "IQfinansAI | Yapay Zeka Destekli Finans Yönetimi",
     description:
-      "IQfinansAI ile gelir ve giderlerinizi tek panelden yönetin; borç, yatırım ve hedeflerinizi izleyin. Yapay zeka ile harcama özetleri alın.",
+      "Gelir–gider, bütçe ve borç–alacak; çoklu para birimi ve kur dönüşümü. Premium’da yapay zekâ analizi, OCR ve portföy — IQfinansAI.",
     url: siteUrl,
     siteName: "IQfinansAI",
     locale: "tr_TR",
@@ -105,7 +111,7 @@ export const siteMetadata: Metadata = {
     card: "summary_large_image",
     title: "IQfinansAI | Finansınızı Netleştirin",
     description:
-      "Gelir ve giderlerinizi tek panelden yönetin; yapay zeka ile harcama içgörüleri alın.",
+      "Panel, bütçe ve borç–alacak takibi; kur dönüşümü. Premium’da yapay zekâ analizi ve OCR — IQfinansAI.",
     images: ["/FinansIQ-1024.png"],
   },
 
