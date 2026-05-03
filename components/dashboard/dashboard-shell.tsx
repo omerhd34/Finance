@@ -8,13 +8,13 @@ import {
   ArrowRightLeft,
   Bell,
   CalendarClock,
-  ChevronLeft,
-  ChevronRight,
   HandCoins,
   LayoutDashboard,
   LogOut,
   Menu,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   PieChart,
   Settings,
   Sparkles,
@@ -258,11 +258,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               type="button"
               variant="ghost"
               size="icon"
-              className="shrink-0 cursor-pointer"
+              className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted/70 hover:text-foreground"
               onClick={toggleSidebarCollapsed}
               aria-label="Kenar çubuğunu genişlet"
             >
-              <ChevronRight className="h-5 w-5" />
+              <PanelLeftOpen className="h-4 w-4" aria-hidden />
             </Button>
           </div>
         ) : (
@@ -292,11 +292,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="hidden shrink-0 cursor-pointer lg:inline-flex"
+                  className="hidden h-9 w-9 shrink-0 cursor-pointer rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted/70 hover:text-foreground lg:inline-flex"
                   onClick={toggleSidebarCollapsed}
                   aria-label="Kenar çubuğunu daralt"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <PanelLeftClose className="h-4 w-4" aria-hidden />
                 </Button>
               )}
             </div>
