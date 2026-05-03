@@ -1,26 +1,12 @@
 import { NextResponse } from "next/server";
-import {
-  GoogleGenerativeAI,
-  GoogleGenerativeAIFetchError,
-} from "@google/generative-ai";
+import { GoogleGenerativeAIFetchError } from "@google/generative-ai";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
-import { debt, investmentPosition, prisma } from "@/lib/db/prisma";
-import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
-import {
-  costBasisTry,
-  pnlTry,
-  totalInvestmentPnlTry,
-  valueTry,
-} from "@/lib/investments/investment-position-math";
+import { prisma } from "@/lib/db/prisma";
+import { buildFinanceAnalyzePayload } from "@/lib/ai/build-finance-analyze-payload";
+import { generateGeminiText } from "@/lib/ai/gemini-completion";
+import { AI_LONG_REPORT_MAX_PER_DAY } from "@/lib/ai/ai-insights-limits";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
-import { EXPENSE_CATEGORY_TREE } from "@/lib/domain/categories";
-import type { Transaction } from "@prisma/client";
-import type { Debt } from "@/types/debt";
-import type {
-  InvestmentAssetType,
-  InvestmentPosition,
-} from "@/types/investment";
 
 const SYSTEM_PROMPT = `Sen deneyimli bir kişisel finans ve bütçe uzmanısın. Yanıtın Türkçe olacak; dil profesyonel, net ve ölçülü olsun. Aşırı samimiyet, klişe AI ifadeleri ve gereksiz ünlem kullanma (ör. "Hadi birlikte", "size tam destek", "Başarılar dilerim!" gibi boş kapanışlar yerine kısa ve somut bir cümle tercih et).
 
@@ -59,195 +45,6 @@ Yapı ve başlıklar: Yanıtta tam olarak ve yalnızca şu on başlığı bu sı
 Görselleştirme: Piksel tabanlı grafik, görsel dosya veya harici görsel link üretemezsin. Karşılaştırmayı net göstermek için uygun yerlerde GitHub-Flavor Markdown tablo kullan: \`| sütun | sütun |\` satırları ve ayırıcı \`|---|---|\` ile yaz; boşlukla hizalı sahte tablo üretme (uygulama tabloyu biçimlendiremez). Örnek sütunlar: Kategori–Alt kategori | Tutar TL | Toplam gider içinde %; rakamlar JSON ile tutarlı olsun.
 
 Biçim: Yalnızca Markdown; paragraflar arasında boş satır; listeler için - veya numaralı madde. Abartılı emoji kullanma. Parantez içinde İngilizce veri şeması kodu (RECEIVABLE, PAYABLE vb.) yazma.`;
-
-type TxPayload = {
-  tarih: string;
-  kategori: string;
-  altKategori: string | null;
-  tutar: unknown;
-  aciklama: string | null;
-}[];
-
-type GelirPayload = {
-  tarih: string;
-  kategori: string;
-  tutar: unknown;
-  aciklama: string | null;
-}[];
-
-type DebtLine = {
-  yon: "alacak" | "borç";
-  karsiTaraf: string;
-  toplamTutar: number;
-  odenen: number;
-  kalanTutar: number;
-  vade: string | null;
-  not: string | null;
-};
-
-function resolveReferansAsgariUcretNetAylik(): number | null {
-  const raw = process.env.AI_ANALYZE_NET_ASGARI_UCRET_REFERANS_TRY?.trim();
-  if (!raw) return null;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? n : null;
-}
-
-function kullaniciAyAyarlariForPayload(ayBaslangicGunu: number): {
-  ayBaslangicGunu: number;
-  butceDonemiNotu: string;
-} {
-  const d = Math.min(28, Math.max(1, Math.trunc(ayBaslangicGunu)));
-  if (d === 1) {
-    return {
-      ayBaslangicGunu: d,
-      butceDonemiNotu:
-        "Kullanıcı standart takvim ayını kullanıyor: bir bütçe dönemi, her takvim ayının 1'i ile son günü arasıdır.",
-    };
-  }
-  const sonGun = d - 1;
-  return {
-    ayBaslangicGunu: d,
-    butceDonemiNotu: `Kullanıcı uygulama ayarlarında her ayın ${d}. gününü ay başlangıcı olarak seçmiş. Bir bütçe dönemi, bir ayın ${d}. günü başlayıp bir sonraki ayın ${sonGun}. gününün sonuna kadar sürer (ör.: başlangıç 15 ise 15 Ocak–14 Şubat tek dönem). “Bu ay” ve “gelecek ay” önerilerinde takvim ayının 1'ini değil bu kesiti esas al.`,
-  };
-}
-
-type AnalyzePayload = {
-  kullaniciAyAyarlari: ReturnType<typeof kullaniciAyAyarlariForPayload>;
-  harcamaPenceresi: { baslangic: string; bitis: string; not: string };
-  gelirOzeti: {
-    son30GunToplamGelir: number;
-    gelirKayitSayisi: number;
-  };
-  referansAsgariUcretNetAylikTl: number | null;
-  giderKategoriSemasi: typeof EXPENSE_CATEGORY_TREE;
-  son30GunHarcamalar: TxPayload;
-  son30GunGelirler: GelirPayload;
-  borcVeAlacaklar: {
-    kayitlar: DebtLine[];
-    ozet: {
-      toplamAlacakKalan: number;
-      toplamBorcKalan: number;
-      netPozisyon: number;
-    };
-  };
-  yatirimlar: {
-    aciklama: string;
-    paraBirimi: string;
-    ozet: {
-      pozisyonSayisi: number;
-      toplamMaliyetTry: number;
-      tahminiToplamDegerTry: number;
-      tahminiToplamPnlTry: number;
-    };
-    pozisyonlar: {
-      varlikTuru: string;
-      baslik: string;
-      kod: string | null;
-      altinAltTuru: string | null;
-      miktar: number;
-      birimMaliyetTry: number;
-      kayitliGuncelBirimTry: number | null;
-      maliyetToplamTry: number;
-      tahminiDegerTry: number;
-      tahminiPnlTry: number;
-    }[];
-  } | null;
-};
-
-function ensureIsoDates(p: InvestmentPosition): InvestmentPosition {
-  const c = p.createdAt as unknown;
-  const u = p.updatedAt as unknown;
-  return {
-    ...p,
-    createdAt: typeof c === "string" ? c : (c as Date).toISOString(),
-    updatedAt: typeof u === "string" ? u : (u as Date).toISOString(),
-  };
-}
-
-function assetTypeTr(t: InvestmentAssetType): string {
-  const m: Record<InvestmentAssetType, string> = {
-    GOLD: "Altın",
-    SILVER: "Gümüş",
-    PLATINUM: "Platin (gram)",
-    COMMODITY: "Emtia",
-    STOCK: "Hisse",
-    FX: "Döviz",
-    CRYPTO: "Kripto",
-  };
-  return m[t] ?? t;
-}
-
-const RETRYABLE_STATUSES = new Set([429, 500, 502, 503]);
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isRetryableGeminiError(e: unknown): boolean {
-  if (e instanceof GoogleGenerativeAIFetchError) {
-    const s = e.status;
-    return s != null && RETRYABLE_STATUSES.has(s);
-  }
-  const msg = e instanceof Error ? e.message : String(e);
-  return (
-    msg.includes("503") ||
-    msg.includes("502") ||
-    msg.includes("429") ||
-    msg.includes("500") ||
-    msg.includes("Service Unavailable") ||
-    msg.includes("RESOURCE_EXHAUSTED")
-  );
-}
-
-function resolveModelChain(): string[] {
-  const primary = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-  const fromEnv = process.env.GEMINI_MODEL_FALLBACKS?.split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const defaults = ["gemini-2.0-flash", "gemini-1.5-flash"];
-  const fallbacks = fromEnv?.length ? fromEnv : defaults;
-  const chain = [primary, ...fallbacks.filter((m) => m !== primary)];
-  return [...new Set(chain)];
-}
-
-async function analyzeWithGemini(
-  apiKey: string,
-  payload: AnalyzePayload,
-): Promise<string> {
-  const userContent = `Finans analizi için veri (JSON):\n${JSON.stringify(payload, null, 2)}`;
-  const models = resolveModelChain();
-  const maxAttemptsPerModel = 3;
-  const baseDelayMs = 1200;
-  let lastError: unknown;
-
-  for (const modelName of models) {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction: SYSTEM_PROMPT,
-    });
-
-    for (let attempt = 0; attempt < maxAttemptsPerModel; attempt++) {
-      try {
-        const result = await model.generateContent(userContent);
-        const text = result.response.text();
-        return text.trim() || "Yanıt oluşturulamadı.";
-      } catch (e) {
-        lastError = e;
-        if (!isRetryableGeminiError(e)) {
-          throw e;
-        }
-        if (attempt < maxAttemptsPerModel - 1) {
-          await sleep(baseDelayMs * 2 ** attempt);
-          continue;
-        }
-        break;
-      }
-    }
-  }
-
-  throw lastError ?? new Error("Gemini yanıt veremedi.");
-}
 
 export async function GET() {
   try {
@@ -306,7 +103,7 @@ export async function POST() {
     await ensurePremiumNotExpired(session.user.id);
     const dbUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { planTier: true, monthStartDay: true, currency: true },
+      select: { planTier: true },
     });
     if (!dbUser || dbUser.planTier !== "premium") {
       return NextResponse.json(
@@ -331,11 +128,10 @@ export async function POST() {
         },
       },
     });
-    if (todayAnalysisCount >= 3) {
+    if (todayAnalysisCount >= AI_LONG_REPORT_MAX_PER_DAY) {
       return NextResponse.json(
         {
-          error:
-            "Günlük AI analiz limitine ulaştınız (3/3). Yeni analiz için yarını bekleyin.",
+          error: `Günlük AI analiz limitine ulaştınız (${AI_LONG_REPORT_MAX_PER_DAY}/${AI_LONG_REPORT_MAX_PER_DAY}). Yeni analiz için yarını bekleyin.`,
         },
         { status: 429 },
       );
@@ -351,149 +147,17 @@ export async function POST() {
         { status: 503 },
       );
     }
+
     const analizAnı = new Date();
-    const since = new Date(analizAnı);
-    since.setDate(since.getDate() - 30);
-    const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(
-      dbUser.monthStartDay ?? 1,
-    );
-    const [transactions, incomeTransactions, debts, investmentRows] =
-      await Promise.all([
-        prisma.transaction.findMany({
-          where: {
-            userId: session.user.id,
-            date: { gte: since },
-            type: "expense",
-          },
-          orderBy: { date: "desc" },
-        }),
-        prisma.transaction.findMany({
-          where: {
-            userId: session.user.id,
-            date: { gte: since },
-            type: "income",
-          },
-          orderBy: { date: "desc" },
-        }),
-        debt.findMany({
-          where: { userId: session.user.id },
-          orderBy: { dueDate: "asc" },
-        }),
-        investmentPosition.findMany({
-          where: { userId: session.user.id },
-          orderBy: { updatedAt: "desc" },
-        }),
-      ]);
-
-    const investmentPositions = investmentRows.map(ensureIsoDates);
-
-    const son30GunHarcamalar: TxPayload = transactions.map(
-      (t: Transaction) => ({
-        tarih: t.date.toISOString(),
-        kategori: t.category,
-        altKategori: t.subcategory ?? null,
-        tutar: t.amount,
-        aciklama: t.description,
-      }),
-    );
-
-    const son30GunGelirler: GelirPayload = incomeTransactions.map(
-      (t: Transaction) => ({
-        tarih: t.date.toISOString(),
-        kategori: t.category,
-        tutar: t.amount,
-        aciklama: t.description,
-      }),
-    );
-    const son30GunToplamGelir = incomeTransactions.reduce(
-      (s, t) => s + t.amount,
-      0,
-    );
-
-    let toplamAlacakKalan = 0;
-    let toplamBorcKalan = 0;
-    const kayitlar: DebtLine[] = debts.map((d: Debt) => {
-      const kalan = Math.max(0, d.totalAmount - d.paidAmount);
-      if (d.direction === "RECEIVABLE") toplamAlacakKalan += kalan;
-      else toplamBorcKalan += kalan;
-      const vadeRaw = d.dueDate;
-      return {
-        yon: d.direction === "RECEIVABLE" ? "alacak" : "borç",
-        karsiTaraf: d.counterparty,
-        toplamTutar: d.totalAmount,
-        odenen: d.paidAmount,
-        kalanTutar: kalan,
-        vade:
-          vadeRaw != null
-            ? new Date(vadeRaw as string | Date).toISOString()
-            : null,
-        not: d.note,
-      };
+    const payload = await buildFinanceAnalyzePayload(session.user.id, {
+      referenceTime: analizAnı,
     });
-
-    const yatirimlar: AnalyzePayload["yatirimlar"] =
-      investmentPositions.length === 0
-        ? null
-        : {
-            aciklama:
-              "Yatırım menüsündeki pozisyonların özeti. Tahmini değer ve PnL, kayıtlı güncel birim fiyatı veya ortalama maliyet üzerinden yaklaşıktır; canlı kotasyon garantisi yoktur.",
-            paraBirimi: dbUser.currency ?? "TL",
-            ozet: {
-              pozisyonSayisi: investmentPositions.length,
-              toplamMaliyetTry: investmentPositions.reduce(
-                (s, p) => s + costBasisTry(p),
-                0,
-              ),
-              tahminiToplamDegerTry: investmentPositions.reduce(
-                (s, p) => s + valueTry(p),
-                0,
-              ),
-              tahminiToplamPnlTry: totalInvestmentPnlTry(investmentPositions),
-            },
-            pozisyonlar: investmentPositions.map((p) => ({
-              varlikTuru: assetTypeTr(p.assetType),
-              baslik: p.title,
-              kod: p.ticker,
-              altinAltTuru:
-                p.assetType === "GOLD" && p.goldSubtype
-                  ? goldSubtypeLabel(p.goldSubtype)
-                  : null,
-              miktar: p.quantity,
-              birimMaliyetTry: p.avgCostPerUnitTry,
-              kayitliGuncelBirimTry: p.marketPricePerUnitTry,
-              maliyetToplamTry: costBasisTry(p),
-              tahminiDegerTry: valueTry(p),
-              tahminiPnlTry: pnlTry(p),
-            })),
-          };
-
-    const payload: AnalyzePayload = {
-      kullaniciAyAyarlari,
-      harcamaPenceresi: {
-        baslangic: since.toISOString(),
-        bitis: analizAnı.toISOString(),
-        not: "İşlem tarihine göre son 30 takvim günü (ay başlangıç ayarından bağımsız pencere).",
-      },
-      gelirOzeti: {
-        son30GunToplamGelir,
-        gelirKayitSayisi: incomeTransactions.length,
-      },
-      referansAsgariUcretNetAylikTl: resolveReferansAsgariUcretNetAylik(),
-      giderKategoriSemasi: EXPENSE_CATEGORY_TREE,
-      son30GunHarcamalar,
-      son30GunGelirler,
-      borcVeAlacaklar: {
-        kayitlar,
-        ozet: {
-          toplamAlacakKalan,
-          toplamBorcKalan,
-          netPozisyon: toplamAlacakKalan - toplamBorcKalan,
-        },
-      },
-      yatirimlar,
-    };
-
-    const markdown = await analyzeWithGemini(geminiKey, payload);
+    const userContent = `Finans analizi için veri (JSON):\n${JSON.stringify(payload, null, 2)}`;
+    const markdown = await generateGeminiText({
+      apiKey: geminiKey,
+      systemInstruction: SYSTEM_PROMPT,
+      userText: userContent,
+    });
 
     await prisma.aiFinanceAnalysis.create({
       data: { userId: session.user.id, markdown },

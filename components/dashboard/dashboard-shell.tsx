@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageCircle,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -26,6 +27,7 @@ import {
 import { useTheme } from "@wrksz/themes/client";
 import { apiClient } from "@/lib/client/api-client";
 import { normalizeUserCurrency } from "@/lib/common/currency";
+import { hrefToAiAssistantPage } from "@/lib/ai/ai-insights-tabs";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
@@ -89,7 +91,12 @@ const nav = [
   { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
   { href: "/kur-donusum", label: "Kur Dönüşüm", icon: ArrowRightLeft },
   { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
-  { href: "/yapay-zeka-analizi", label: "AI Analiz", icon: Sparkles },
+  { href: "/yapay-zeka-analizi", label: "IQfinansAI Analiz", icon: Sparkles },
+  {
+    href: "/yapay-zeka-asistani",
+    label: "IQfinansAI Asistanı",
+    icon: MessageCircle,
+  },
   { href: "/bildirimler", label: "Bildirimler", icon: Bell },
 ];
 
@@ -101,7 +108,8 @@ const titles: Record<string, string> = {
   "/borc-ve-alacak": "Borç ve Alacak",
   "/yatirimlar": "Yatırım",
   "/kur-donusum": "Kur Dönüşüm",
-  "/yapay-zeka-analizi": "AI Analiz",
+  "/yapay-zeka-analizi": "IQfinansAI Analiz",
+  "/yapay-zeka-asistani": "IQfinansAI Asistanı",
   "/bildirimler": "Bildirimler",
   "/ayarlar": "Ayarlar",
   "/profil": "Profil",
@@ -535,6 +543,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <h1 className="truncate text-lg font-semibold">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="cursor-pointer text-muted-foreground hover:text-foreground"
+              asChild
+              title="IQfinansAI Asistanı"
+            >
+              <Link
+                href={hrefToAiAssistantPage()}
+                aria-label="IQfinansAI Asistanına git"
+              >
+                <MessageCircle className="h-5 w-5" aria-hidden />
+              </Link>
+            </Button>
             <NotificationsPopover />
             <Button
               type="button"

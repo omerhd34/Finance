@@ -23,12 +23,12 @@ export function AiInsightsRunControls({
   const isLimitError = (error ?? "").includes("3/3");
   return (
     <>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {!hasResult ? (
           <Button
             onClick={onRun}
             disabled={disabled}
-            className="cursor-pointer"
+            className="h-9 shrink-0 cursor-pointer"
           >
             {loading ? "Analiz ediliyor..." : "Analiz Başlat"}
           </Button>
@@ -37,7 +37,7 @@ export function AiInsightsRunControls({
             variant="outline"
             onClick={onRun}
             disabled={disabled}
-            className="cursor-pointer"
+            className="h-9 shrink-0 cursor-pointer"
           >
             {loading ? "Analiz ediliyor..." : "Yeniden Analiz Et"}
           </Button>

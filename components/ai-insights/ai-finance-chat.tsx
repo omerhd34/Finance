@@ -1,0 +1,223 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Copy, MessageCircle, Send } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import { apiClient } from "@/lib/client/api-client";
+import { AI_ASSISTANT_MAX_MESSAGES_PER_DAY } from "@/lib/ai/ai-insights-limits";
+import { messageFromAiAnalyzeError } from "@/lib/ai/ai-insights-errors";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { AiChatHistoryDialog } from "@/components/ai-insights/ai-chat-history-dialog";
+import { VoiceToTextButton } from "@/components/ai-insights/voice-to-text-button";
+import { cn } from "@/lib/common/utils";
+
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
+type Props = {
+  showIntroCard?: boolean;
+};
+
+export function AiFinanceChat({ showIntroCard = true }: Props) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [digestLoading, setDigestLoading] = useState(false);
+  const [digestCopied, setDigestCopied] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  const send = useCallback(async () => {
+    const q = input.trim();
+    if (!q || loading) return;
+    setInput("");
+    setError(null);
+    const prev = messages;
+    const snapshot: ChatMessage[] = [...prev, { role: "user", content: q }];
+    setMessages(snapshot);
+    setLoading(true);
+    try {
+      const { data } = await apiClient.post<{ reply: string }>("/api/ai/chat", {
+        messages: snapshot,
+      });
+      setMessages([...snapshot, { role: "assistant", content: data.reply }]);
+    } catch (err) {
+      setError(messageFromAiAnalyzeError(err));
+      setMessages(prev);
+    } finally {
+      setLoading(false);
+    }
+  }, [input, loading, messages]);
+
+  async function copyMessagingDigest() {
+    setDigestLoading(true);
+    setDigestCopied(false);
+    try {
+      const { data } = await apiClient.get<{ text: string }>(
+        "/api/ai/messaging-summary",
+      );
+      await navigator.clipboard.writeText(data.text);
+      setDigestCopied(true);
+      window.setTimeout(() => setDigestCopied(false), 2500);
+    } catch {
+      setError("Özet panoya kopyalanamadı.");
+    } finally {
+      setDigestLoading(false);
+    }
+  }
+
+  const digestButton = (
+    <Button
+      type="button"
+      variant="outline"
+      className="h-9 shrink-0 cursor-pointer gap-2"
+      disabled={digestLoading}
+      onClick={() => void copyMessagingDigest()}
+    >
+      <Copy className="size-4" aria-hidden />
+      {digestCopied ? "Kopyalandı" : "Özeti kopyala"}
+    </Button>
+  );
+
+  const historyDialog = (
+    <AiChatHistoryDialog
+      disabled={loading || digestLoading}
+      onSelect={({ userMessage, assistantReply }) => {
+        setMessages([
+          { role: "user", content: userMessage },
+          { role: "assistant", content: assistantReply },
+        ]);
+        setError(null);
+      }}
+    />
+  );
+
+  return (
+    <div className="space-y-4">
+      {showIntroCard ? (
+        <div className="rounded-2xl border border-border/80 bg-card/40 p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12">
+                <MessageCircle className="h-5 w-5 text-primary" aria-hidden />
+              </div>
+              <div className="min-w-0 space-y-1">
+                <h3 className="text-base font-semibold">IQfinansAI Asistanı</h3>
+                <p className="text-sm text-muted-foreground">
+                  Son kayıtlarınıza göre soru sorun. Her yanıtta veriler
+                  sunucuda yenilenir. Günde en fazla{" "}
+                  {AI_ASSISTANT_MAX_MESSAGES_PER_DAY} mesaj sorulabilir.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {historyDialog}
+              {digestButton}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {historyDialog}
+          {digestButton}
+        </div>
+      )}
+
+      <div className="flex max-h-[min(520px,70vh)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm">
+        <div className="min-h-[220px] flex-1 space-y-4 overflow-y-auto p-4 md:p-5">
+          {messages.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Aşağıdan bir soru yazın veya mikrofonla konuşun. Sohbet bu oturum
+              için tarayıcınızda tutulur; sayfayı yenilerseniz sıfırlanır.
+            </p>
+          ) : null}
+          {messages.map((m, i) => (
+            <div
+              key={`${i}-${m.role}`}
+              className={cn(
+                "flex",
+                m.role === "user" ? "justify-end" : "justify-start",
+              )}
+            >
+              <div
+                className={cn(
+                  "max-w-[min(100%,34rem)] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                  m.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-muted/40",
+                )}
+              >
+                {m.role === "assistant" ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-headings:my-2">
+                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                      {m.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                )}
+              </div>
+            </div>
+          ))}
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Yanıt hazırlanıyor…</p>
+          ) : null}
+          <div ref={bottomRef} />
+        </div>
+
+        <div className="border-t border-border bg-card/30 p-3 md:p-4">
+          {error ? (
+            <p className="mb-2 text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <div className="flex gap-2">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void send();
+                }
+              }}
+              placeholder="Örneğin: Son dönemde en çok hangi kategoriye harcadım?"
+              rows={2}
+              className="min-h-[72px] flex-1 resize-none"
+              disabled={loading}
+              maxLength={1500}
+            />
+            <div className="flex shrink-0 flex-col gap-2">
+              <VoiceToTextButton
+                append
+                currentText={input}
+                onTranscript={setInput}
+                disabled={loading}
+                className="cursor-pointer"
+              />
+              <Button
+                type="button"
+                size="icon"
+                className="cursor-pointer"
+                disabled={loading || !input.trim()}
+                onClick={() => void send()}
+                aria-label="Gönder"
+              >
+                <Send className="size-4" />
+              </Button>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Enter gönderir; Shift+Enter satır ekler.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

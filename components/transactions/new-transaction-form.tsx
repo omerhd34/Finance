@@ -43,6 +43,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus, ScanLine, Trash2 } from "lucide-react";
+import { VoiceToTextButton } from "@/components/ai-insights/voice-to-text-button";
 
 const singleTransactionFormSchema = transactionBodyFieldsSchema
   .omit({ date: true, type: true })
@@ -541,12 +542,25 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
 
           <div className="space-y-2">
             <Label htmlFor="nt-desc-split">Ortak açıklama (isteğe bağlı)</Label>
-            <Textarea
-              id="nt-desc-split"
-              {...register("description")}
-              rows={2}
-              placeholder="Tüm satırlara eklenecek kısa not"
-            />
+            <div className="flex items-start gap-2">
+              <Textarea
+                id="nt-desc-split"
+                {...register("description")}
+                rows={2}
+                className="min-h-[72px] flex-1"
+                placeholder="Tüm satırlara eklenecek kısa not"
+              />
+              {planPremium ? (
+                <VoiceToTextButton
+                  append
+                  currentText={watch("description") ?? ""}
+                  onTranscript={(t) =>
+                    setValue("description", t, { shouldValidate: true })
+                  }
+                  aria-label="Ortak açıklamayı sesle yaz"
+                />
+              ) : null}
+            </div>
           </div>
         </>
       ) : (
@@ -604,7 +618,24 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
 
           <div className="space-y-2">
             <Label htmlFor="nt-desc">Açıklama (isteğe bağlı)</Label>
-            <Textarea id="nt-desc" {...register("description")} rows={3} />
+            <div className="flex items-start gap-2">
+              <Textarea
+                id="nt-desc"
+                {...register("description")}
+                rows={3}
+                className="min-h-[88px] flex-1"
+              />
+              {planPremium ? (
+                <VoiceToTextButton
+                  append
+                  currentText={watch("description") ?? ""}
+                  onTranscript={(t) =>
+                    setValue("description", t, { shouldValidate: true })
+                  }
+                  aria-label="Açıklamayı sesle yaz"
+                />
+              ) : null}
+            </div>
           </div>
         </>
       )}

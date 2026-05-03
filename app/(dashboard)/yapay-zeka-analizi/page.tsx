@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { apiClient } from "@/lib/client/api-client";
 import { downloadAiInsightsPdf } from "@/lib/ai/ai-insights-export";
 import { sectionsFromMarkdown } from "@/lib/ai/ai-insights-parse";
 import { messageFromAiAnalyzeError } from "@/lib/ai/ai-insights-errors";
+import { AI_ASSISTANT_PAGE_PATH } from "@/lib/ai/ai-insights-tabs";
+import { AiAnalizHero } from "@/components/ai-insights/ai-insights-hero";
 import { AiInsightsExportDropdown } from "@/components/ai-insights/ai-insights-export-dropdown";
-import { AiInsightsHero } from "@/components/ai-insights/ai-insights-hero";
 import { AiInsightsHistoryDialog } from "@/components/ai-insights/ai-insights-history-dialog";
 import { AiInsightsRunControls } from "@/components/ai-insights/ai-insights-run-controls";
 import { AiInsightsLoadingSkeleton } from "@/components/ai-insights/ai-insights-loading-skeleton";
@@ -16,7 +18,18 @@ import { AiInsightsSections } from "@/components/ai-insights/ai-insights-section
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
-export default function AiInsightsPage() {
+function LegacyAssistantTabRedirect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("tab") === "sohbet") {
+      router.replace(AI_ASSISTANT_PAGE_PATH);
+    }
+  }, [router, searchParams]);
+  return null;
+}
+
+function AiAnalizPage() {
   const { data: session } = useSession();
   const planPremium = normalizePlanTier(session?.user?.planTier) === "premium";
 
@@ -61,11 +74,13 @@ export default function AiInsightsPage() {
       "Kayıtlı borç ve alacaklarınızın aynı raporda özetlenmesi ve ödeme / tahsilat önceliği önerileri",
       "Somut tasarruf maddeleri ve bir sonraki ay için bütçe çerçevesi metni",
       "Tek tıkla yeni analiz; sonuçlar başlıklar ve paragraflar halinde Markdown olarak sunulur.",
+      "Ayrı menüden IQfinansAI Asistanı ile kayıtlarınıza göre soru–cevap ve Özeti kopyala ile panoya kısa finans özeti",
+      "Yeni işlem formunda Premium ile sesli açıklama (tarayıcı destekliyse)",
     ];
 
     return (
       <div className="space-y-6">
-        <AiInsightsHero />
+        <AiAnalizHero />
         <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
           <p className="text-sm font-semibold text-foreground">
             Premium ile neler kazanırsınız?
@@ -82,14 +97,14 @@ export default function AiInsightsPage() {
             ))}
           </ul>
         </div>
-        <PremiumPlanNotice title="AI Analiz Premium plandadır." />
+        <PremiumPlanNotice title="IQfinansAI Analiz Premium plandadır." />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <AiInsightsHero />
+      <AiAnalizHero />
 
       <AiInsightsRunControls
         hasResult={markdown != null}
@@ -122,5 +137,16 @@ export default function AiInsightsPage() {
         <AiInsightsSections sections={sections} />
       ) : null}
     </div>
+  );
+}
+
+export default function AiAnalizPageWithLegacyRedirect() {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <LegacyAssistantTabRedirect />
+      </Suspense>
+      <AiAnalizPage />
+    </>
   );
 }

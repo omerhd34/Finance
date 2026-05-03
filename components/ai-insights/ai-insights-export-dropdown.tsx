@@ -16,12 +16,12 @@ export function AiInsightsExportDropdown({
     <Button
       variant="outline"
       disabled={exporting !== null}
-      className="cursor-pointer"
+      className="h-9 shrink-0 cursor-pointer"
       onClick={() => {
         void onExportPdf();
       }}
     >
-      <FileText className="h-4 w-4" />
+      <FileText className="h-4 w-4 shrink-0" aria-hidden />
       {exporting !== null ? "İndiriliyor..." : "PDF Olarak Dışa Aktar"}
     </Button>
   );

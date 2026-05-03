@@ -140,6 +140,16 @@ export const emailVerificationToken: EmailVerificationTokenDelegate = (
   }
 ).emailVerificationToken;
 
+type AiFinanceChatTurnDelegate = {
+  findMany(args?: object): Promise<unknown>;
+  create(args: { data: object }): Promise<unknown>;
+  deleteMany(args: { where: object }): Promise<{ count: number }>;
+};
+
+export const aiFinanceChatTurn: AiFinanceChatTurnDelegate = (
+  prisma as unknown as { aiFinanceChatTurn: AiFinanceChatTurnDelegate }
+).aiFinanceChatTurn;
+
 type CategoryBudgetRow = {
   id: string;
   userId: string;

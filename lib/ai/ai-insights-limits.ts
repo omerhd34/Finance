@@ -1,0 +1,3 @@
+export const AI_LONG_REPORT_MAX_PER_DAY = 3;
+export const AI_ASSISTANT_MAX_MESSAGES_PER_DAY = 10;
+export const AI_ASSISTANT_STORED_QA_COUNT = 10;

@@ -24,7 +24,6 @@ function normalizeRecurringLabel(s: string | null | undefined): string {
   return (s ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
-/** `[Tekrarlayan] …` sonrası kullanıcı metni; biçim farklarını tolere etmek için. */
 function extractTekrarlayanSuffix(
   description: string | null | undefined,
 ): string | null {
