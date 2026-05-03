@@ -10,6 +10,7 @@ import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/common/utils";
+import { BrandLockup } from "../branding/brand-lockup";
 
 const BACK_TO_TOP_REVEAL_AFTER_PX = 72;
 
@@ -104,20 +105,7 @@ export function LandingFooter() {
       <div className="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 md:pt-16">
         <div className="grid w-full grid-cols-1 gap-12 sm:gap-x-10 lg:grid-cols-5 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div className="min-w-0 lg:col-span-2 lg:pt-0.5">
-            <Link
-              href="/"
-              className="group inline-flex items-baseline text-2xl font-bold leading-none tracking-tight transition-colors duration-300 sm:text-[1.65rem]"
-            >
-              <span className="bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-emerald-500 group-hover:to-teal-400 dark:from-emerald-400 dark:to-teal-300 dark:group-hover:from-emerald-300 dark:group-hover:to-emerald-200">
-                IQ
-              </span>
-              <span className="text-foreground transition-colors duration-300 group-hover:text-emerald-950 dark:text-foreground dark:group-hover:text-white">
-                finans
-              </span>
-              <span className="ml-2 rounded-md border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 text-[0.52em] font-extrabold uppercase tracking-[0.2em] text-emerald-700 shadow-sm transition-all duration-300 group-hover:border-emerald-500/60 group-hover:bg-emerald-500/15 group-hover:text-emerald-950 sm:text-[0.5em] dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-300 dark:shadow-[0_0_12px_rgba(52,211,153,0.08)] dark:group-hover:border-emerald-400/50 dark:group-hover:bg-emerald-400/15 dark:group-hover:text-emerald-50 dark:group-hover:shadow-[0_0_14px_rgba(52,211,153,0.25)]">
-                AI
-              </span>
-            </Link>
+            <BrandLockup variant="landing" />
             <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:max-w-lg lg:max-w-none">
               Gelir ve giderlerinizi tek yerden yönetin; bütçe, borç ve
               hedeflerinizi izleyin. Yapay zekâ destekli özetlerle finansal

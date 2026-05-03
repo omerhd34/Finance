@@ -29,7 +29,7 @@ export function LogoLoading({
           aria-hidden
         />
         <div className="relative flex flex-col items-center gap-4 rounded-[calc(var(--radius-2xl)-1px)] border border-border/70 bg-card/90 px-6 py-5 shadow-sm">
-          <BrandLockup variant="landing" hideIcon />
+          <BrandLockup variant="landing" />
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -249,18 +248,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <Link
               href="/gosterge-paneli"
               onClick={() => setOpen(false)}
-              className="overflow-hidden rounded-xl ring-1 ring-emerald-500/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Ana panele git"
               title="Ana panel"
             >
-              <Image
-                src="/FinansIQ-192.png"
-                alt="IQfinansAI logosu"
-                width={36}
-                height={36}
-                className="h-9 w-9 object-cover"
-                priority
-              />
+              <BrandLockup variant="sidebar" collapsed />
             </Link>
             <Button
               type="button"
@@ -274,38 +266,40 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
         ) : (
-          <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-3">
+          <div className="relative flex h-14 shrink-0 items-center justify-center border-b border-border px-3">
             <Link
               href="/gosterge-paneli"
               onClick={() => setOpen(false)}
-              className="flex min-w-0 flex-1 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex max-w-[calc(100%-2.75rem)] min-w-0 cursor-pointer items-center rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Ana panele git"
               title="Ana panel"
             >
-              <BrandLockup variant="sidebar" className="min-w-0 w-full" />
+              <BrandLockup variant="sidebar" className="min-w-0" />
             </Link>
-            {isMobile ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 cursor-pointer"
-                onClick={() => setOpen(false)}
-                aria-label="Kapat"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="hidden shrink-0 cursor-pointer lg:inline-flex"
-                onClick={toggleSidebarCollapsed}
-                aria-label="Kenar çubuğunu daralt"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            )}
+            <div className="absolute inset-e-1 top-1/2 flex -translate-y-1/2 items-center sm:inset-e-2">
+              {isMobile ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 cursor-pointer"
+                  onClick={() => setOpen(false)}
+                  aria-label="Kapat"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="hidden shrink-0 cursor-pointer lg:inline-flex"
+                  onClick={toggleSidebarCollapsed}
+                  aria-label="Kenar çubuğunu daralt"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
           </div>
         )}
         <nav
