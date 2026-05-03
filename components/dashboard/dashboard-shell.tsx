@@ -484,7 +484,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <Button
                 type="button"
                 variant="outline"
-                className="mt-2 w-full cursor-pointer justify-start gap-3 rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
+                className="mt-2 w-full cursor-pointer justify-center gap-3 rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
                 onClick={() => void signOut({ callbackUrl: "/" })}
               >
                 <LogOut className="h-4 w-4 shrink-0 -scale-x-100" aria-hidden />
