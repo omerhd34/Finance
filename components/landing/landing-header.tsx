@@ -5,9 +5,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LogIn, Moon, Sun } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
-import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/branding/brand-lockup";
-
+import { Button } from "@/components/ui/button";
 export function LandingHeader() {
   const { setTheme, resolvedTheme } = useTheme();
   const [themeReady, setThemeReady] = useState(false);
@@ -31,8 +30,8 @@ export function LandingHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-border/60 bg-slate-100/95 backdrop-blur-xl dark:bg-[#050507]/95">
-      <div className="mx-auto flex flex-col sm:flex-row max-w-7xl items-center justify-between">
-        <div className="flex w-full items-center justify-between h-14 sm:h-16 px-3 sm:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-7xl flex-col items-center justify-between sm:h-16 sm:flex-row">
+        <div className="flex h-full w-full items-center justify-between">
           <Link
             href="/"
             className="group flex items-center gap-2.5 text-lg sm:text-xl font-semibold tracking-tight text-foreground shrink-0"

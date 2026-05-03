@@ -102,7 +102,7 @@ export function LandingFooter() {
 
   return (
     <footer className="relative border-t border-border/60 bg-slate-100/95 text-muted-foreground backdrop-blur-xl dark:bg-[#050507]/95">
-      <div className="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 md:pt-16">
+      <div className="mx-auto w-full max-w-7xl pb-10 pt-14 md:pt-16">
         <div className="grid w-full grid-cols-1 gap-12 sm:gap-x-10 lg:grid-cols-5 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div className="min-w-0 lg:col-span-2 lg:pt-0.5">
             <BrandLockup variant="landing" />

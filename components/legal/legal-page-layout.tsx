@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
-
 type Props = {
   title: string;
   description?: string;
@@ -13,8 +12,8 @@ export function LegalPageLayout({ title, description, children }: Props) {
   return (
     <LandingPageShell>
       <LandingHeader />
-      <main className="flex-1 border-b border-slate-300/90 px-4 pb-20 pt-24 dark:border-white/10 md:pt-28">
-        <article className="mx-auto max-w-7xl">
+      <main className="flex-1 border-b border-slate-300/90 pb-20 pt-24 dark:border-white/10 md:pt-28">
+        <article className="mx-auto w-full max-w-7xl">
           <header className="mb-10 border-b border-slate-300 pb-8 dark:border-white/15">
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {title}
