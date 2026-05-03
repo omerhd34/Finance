@@ -18,7 +18,7 @@ export const SSSPosts: sssPost[] = [
     slug: "ayarlar-profil-ve-bildirimler",
     title: "Ayarlar, profil ve bildirimler IQfinansAI'de nasıl yönetilir?",
     description:
-      "Profil’de para birimi ve kimlik bilgisi; Ayarlar’da e‑posta/plan/silme; Bildirimler’de uygulama içi uyarı akışı.",
+      "Profil’de para birimi ve kimlik bilgisi; Ayarlar’da e‑posta, Shopier ile plan yükseltme ve hesap silme; Bildirimler’de uygulama içi uyarı akışı.",
     readingMinutes: 6,
     category: "Hesabım",
     cardPreview: "Tercihler ve bildirim merkezi",
@@ -27,14 +27,14 @@ export const SSSPosts: sssPost[] = [
         question: "Ayarlar sayfasında neleri düzenleyebilirim?",
         answer: [
           "Bildirimler bölümünde genel e-posta gönderimini “E-posta bildirimleri” anahtarı ile yönetirsiniz; bütçe uyarıları uygulama içinde her zaman görünür. Tek bir harcama kategorisi için e-postayı kapatmak isterseniz, bunu Bütçeler sayfasındaki ilgili bütçe düzeninden yapabilirsiniz.",
-          "Plan bölümünde ücretsiz ve Premium planları, güncel aylık ücret ve iki plan arasındaki özellik farklarını görürsünüz. Premium’a geçmek için “Shopier ile öde” ile güvenli ödemeye gidersiniz; her başarılı ödeme, ödeme anından itibaren 30 gün Premium erişimi verir.",
+          "Plan bölümünde ücretsiz ve Premium planları, güncel aylık ücret ve iki plan arasındaki özellik farklarını görürsünüz. Premium’a geçmek için “Shopier ile öde” ile Shopier ödeme sayfasına gidersiniz (çoğu tarayıcıda yeni sekmede açılır); ödeme onaylandığında planınız otomatik güncellenmeye çalışılır. Her başarılı ödeme, ödeme anından itibaren 30 gün Premium erişimi verir; süre dolduğunda hesap ücretsiz plana döner, yenilediğinizde tekrar Premium olursunuz.",
           "Sayfanın altındaki “Tehlikeli bölge” ile hesabınızı kalıcı olarak silebilirsiniz; onay için tam olarak SİL yazmanız gerekir ve bu işlem geri alınamaz.",
         ],
       },
       {
         question: "Profil sayfasında neleri düzenleyebilirim?",
         answer: [
-          "Üye Profili kartında profil fotoğrafınızı yükleyebilir veya kaldırabilirsiniz (JPEG, PNG veya WebP; en fazla 5 MB). Ad ve soyad ile isteğe bağlı meslek, şehir ve ülke alanlarını güncelleyebilirsiniz; kayıtlı e-postanız güvenlik nedeniyle salt okunur olarak görüntülenir.",
+          "Üye Profili kartında profil fotoğrafınızı yükleyebilir veya kaldırabilirsiniz (JPEG, PNG veya WebP; en fazla 5 MB). Ad ve soyad ile isteğe bağlı meslek, şehir ve ülke alanlarını güncelleyebilirsiniz; kayıtlı e-postanız güvenlik nedeniyle salt okunur olarak görüntülenir. Üzerinizdeki plan rozeti, hızlı erişim için Ayarlar’daki Plan bölümüne bağlanır.",
           "Özet ve dönüşümler için ana para biriminizi seçebilir; ay içinde raporların hangi güne göre hizalanacağını belirlemek için ay başlangıç gününü ayarlayabilirsiniz. Üyelik tarihiniz bilgi amaçlı gösterilir.",
           "Henüz doğrulanmamış bir e-postanız varsa, sayfanın altında “E-posta doğrulaması” bölümünü görürsünüz; buradan doğrulama e-postası isteyebilirsiniz. Adresinizi doğruladığınızda bu bölüm otomatik olarak kaybolur.",
         ],
@@ -87,7 +87,7 @@ export const SSSPosts: sssPost[] = [
     slug: "gosterge-paneli-tek-bakista",
     title: "Gösterge panelinde neleri tek bakışta görebilirim?",
     description:
-      "Üst özet kartları, gelir–gider grafikleri, tekrarlayan işlemler, borç/alacak özeti, yatırım özeti ve son işlemler.",
+      "Üst özet kartları, gelir–gider grafikleri, tekrarlayan işlemler, borç/alacak özeti, Premium’da yatırım özeti ve son işlemler; hızlı kur çevirisi için Kur Dönüşüm menüsü.",
     readingMinutes: 9,
     category: "Gösterge paneli",
     cardPreview: "Özet göstergeler, grafikler ve modül kısayolları",
@@ -96,13 +96,13 @@ export const SSSPosts: sssPost[] = [
         question: "Gösterge paneli IQfinansAI'de hangi rolü üstlenir?",
         answer: [
           "Sol menüdeki Ana Panel, oturum açınca gördüğünüz ana özet ekranıdır: bu ayın gelir ve gider toplamları, net bakiye, borç/alacak özeti ve finansal sağlık skoru gibi göstergeler tek sayfada bir araya gelir.",
-          "Ücretsiz hesaplarda listenin üstünde Premium’a geçişi anlatan kısa bir tanıtım alanı bulunabilir. Alt sıralarda çubuk ve pasta grafikler, tekrarlayan işlemler özeti, borç ve alacaklar kartı ve en altta son işlemler tablosu yer alır; Premium üyelerde ek olarak yatırım varlıklarına göre özet kartları gösterilir. Detaylı düzenleme için İşlemler, Tekrarlayan, Bütçeler veya ilgili menü kalemlerine geçebilirsiniz.",
+          "Ücretsiz hesaplarda listenin üstünde Premium’a geçişi anlatan kısa bir tanıtım alanı bulunabilir. Alt sıralarda çubuk ve pasta grafikler, tekrarlayan işlemler özeti, borç ve alacaklar kartı ve en altta son işlemler tablosu yer alır; Premium üyelerde ek olarak yatırım varlıklarına göre özet kartları gösterilir. Referans kurla tutar çevirmek için menüdeki Kur Dönüşüm sayfasını kullanabilirsiniz. Detaylı düzenleme için İşlemler, Tekrarlayan, Bütçeler veya ilgili menü kalemlerine geçebilirsiniz.",
         ],
       },
       {
         question: "Üstteki özet kartlarında neler görünür?",
         answer: [
-          "Ay içindeki toplam gelir, toplam gider ve net bakiye, Profil’de seçtiğiniz ana para birimiyle gösterilir. Borç ve alacak kayıtlarınızdan hesaplanan borç/alacak net tutarı ve gelir–gider dengenize göre üretilen finansal sağlık skoru (yüzde ve kısa bir yorum satırı) yer alır.",
+          "Ay içindeki toplam gelir, toplam gider ve net bakiye, Profil’de seçtiğiniz ana para birimiyle gösterilir. Borç ve alacak kayıtlarınızdan hesaplanan borç/alacak net tutarı ve gelir–gider dengenize göre üretilen finansal sağlık skoru (yüzde ve kısa bir yorum satırı) yer alır; Premium’da bu skor hesaplanırken portföy kar/zararı da dikkate alınır, ücretsiz planda yatırım bileşeni nötr tutulur.",
           "Premium planda portföyünüze göre hesaplanan yatırım kar/zarar özeti de üstteki özet kartları arasında ayrı bir kart olarak görünür; ücretsiz planda bu kart bulunmaz.",
         ],
       },
@@ -125,14 +125,14 @@ export const SSSPosts: sssPost[] = [
         question: "Paneldeki veriler ne sıklıkla güncellenir?",
         answer: [
           "İşlem, borç ve tekrarlayan kayıtlarınıza dayanan tüm özetler, kayıt ekleyip güncelledikçe otomatik hesaplanır; paneli yenilediğinizde veya tekrar ziyaret ettiğinizde bu veriler sunucudan yeniden çekilir. Sayfa her açıldığında vadesi gelmiş tekrarlayan işlemler işlenmeye çalışılır.",
-          "Premium yatırım kartlarında kullanılan hisse, altın, döviz ve kripto fiyatları harici kaynaklardan gelir ve performans için sunucu tarafında kısa süreli (tipik olarak birkaç dakikalık) önbelleğe alınabilir; yatırım özeti ücretsiz planda zaten gösterilmez.",
+          "Premium yatırım kartlarında kullanılan hisse, altın, döviz, emtia ve kripto fiyatları harici kaynaklardan gelir ve performans için sunucu tarafında kısa süreli (tipik olarak birkaç dakikalık) önbelleğe alınabilir; yatırım özeti ücretsiz planda gösterilmez.",
         ],
       },
       {
         question: "Ücretsiz ve Premium kullanıcılar için panelde fark var mı?",
         answer: [
           "Ücretsiz kullanıcılar ana gelir–gider özetleri, finansal sağlık skoru kartı, grafikler, tekrarlayan ve borç/alacak bloklarını tam kullanır; listenin başında Premium tanıtımı görebilirler. Yatırım özeti ve yatırım kar/zarar kartları yalnızca Premium üyelikte yer alır.",
-          "Yapay zekâ ile tam analiz raporu ve Yeni işlem ekranında fiş/fatura görüntüsünden alan doldurma Premium ile açılır; ücretsiz planda AI Analiz sayfasına gidip tanıtımı görebilir, analizi çalıştırmak için yükseltme yapabilirsiniz.",
+          "Yapay zekâ ile tam analiz raporu (çalıştırma, PDF indirme ve geçmiş kayıtlara dönme) ile Yeni işlem ekranında fiş/fatura görüntüsünden alan doldurma Premium ile açılır; ücretsiz planda AI Analiz sayfasında özellikler anlatılır, rapor üretimi kapalıdır.",
         ],
       },
       {
@@ -148,7 +148,7 @@ export const SSSPosts: sssPost[] = [
     slug: "yatirimlar-ekrani-portfoy",
     title: "Yatırımlar ekranında portföy takibi nasıl yapılır?",
     description:
-      "Premium’da hisse, döviz, altın ve kripto pozisyonları; canlı fiyatlarla tahmini değer ve kar/zarar.",
+      "Premium’da hisse, döviz, altın, emtia ve kripto pozisyonları; canlı fiyatlarla tahmini değer ve kar/zarar.",
     readingMinutes: 8,
     category: "Yatırımlar",
     cardPreview: "Premium portföy ve canlı fiyatlar",
@@ -156,7 +156,7 @@ export const SSSPosts: sssPost[] = [
       {
         question: "Yatırım pozisyonlarını kimler kaydedebilir?",
         answer: [
-          "Hisse, döviz, altın ve kripto pozisyonlarını ekleyip düzenlemek, silmek ve canlı fiyatlarla tahmini portföy değeri görmek Premium üyelikle açılır. Ücretsiz planda Yatırım menüsüne girdiğinizde özellik tanıtımı ve yükseltme bilgisi görürsünüz; aracı kurum hesabınızla otomatik senkronizasyon sunulmaz.",
+          "Hisse, döviz, altın, emtia (örneğin gümüş/platin türevleri) ve kripto pozisyonlarını ekleyip düzenlemek, silmek ve canlı fiyatlarla tahmini portföy değeri görmek Premium üyelikle açılır. Ücretsiz planda Yatırım menüsüne girdiğinizde özellik tanıtımı ve yükseltme bilgisi görürsünüz; aracı kurum hesabınızla otomatik senkronizasyon sunulmaz.",
         ],
       },
       {
@@ -168,7 +168,7 @@ export const SSSPosts: sssPost[] = [
       {
         question: "Piyasa verileri ne sıklıkla yenilenir?",
         answer: [
-          "Hisse, altın, döviz ve kripto kotasyonları sunucu tarafında tipik olarak birkaç dakikalık önbellekle yenilenir; sayfayı yenilediğinizde veya modüle her döndüğünüzde güncel veri istenir. Kesin işlem kararı için fiyatı mutlaka kendi aracı kurum veya resmi kaynağınızdan doğrulayın.",
+          "Hisse, altın, döviz, emtia ve kripto kotasyonları sunucu tarafında tipik olarak birkaç dakikalık önbellekle yenilenir; sayfayı yenilediğinizde veya modüle her döndüğünüzde güncel veri istenir. Kesin işlem kararı için fiyatı mutlaka kendi aracı kurum veya resmi kaynağınızdan doğrulayın.",
         ],
       },
       {
@@ -219,7 +219,7 @@ export const SSSPosts: sssPost[] = [
     slug: "yapay-zeka-analizi-ve-premium",
     title: "Yapay zekâ analizi ve Premium: Fiş tarama ile neler mümkün?",
     description:
-      "Yapay zekâ destekli analiz sayfası, Premium fiş/fatura tarama ve ücretsiz plan farkı.",
+      "Yapay zekâ destekli analiz sayfası, PDF dışa aktarma, Premium fiş/fatura tarama ve ücretsiz plan farkı.",
     readingMinutes: 8,
     category: "Premium",
     cardPreview: "YZ içgörü ve fiş tarama",
@@ -228,6 +228,7 @@ export const SSSPosts: sssPost[] = [
         question: "IQfinansAI'deki yapay zekâ analizi tam olarak ne yapar?",
         answer: [
           "Uygulama içindeki Yapay zekâ analizi; kayıtlı harcama ve gelir verilerinizden hareketle kişiselleştirilmiş özetler, trendler ve tasarruf veya düzen önerileri sunar. Amaç harcama alışkanlıklarınızı anlamanız ve bütçe disiplinini güçlendirmenizdir.",
+          "Premium’da oluşturduğunuz raporu PDF olarak indirebilir ve geçmiş çalıştırmalardan birini yeniden açmak için geçmiş penceresini kullanabilirsiniz.",
         ],
       },
       {
@@ -245,8 +246,8 @@ export const SSSPosts: sssPost[] = [
       {
         question: "Ücretsiz plan ile Premium arasındaki başlıca fark nedir?",
         answer: [
-          "Ücretsiz planda Ana Panel, işlemler (manuel kayıt), tekrarlayan ödemeler, kategori bütçeleri, borç–alacak takibi ve çoklu para birimi (Profil’den TL/USD/EUR/GBP) kullanılır; Ana Panelde özet finansal sağlık skoru da görünür.",
-          "Premium ile fiş/fatura görüntüsünden işlem alanlarını doldurma (Yeni işlem), yapay zekâ analizi raporunun tam çalıştırılması, yatırım portföy takibi ve canlı fiyatlarla kar/zarar özeti açılır; güncel paket tutarı ve Shopier ile ödeme için Ayarlar’daki Plan bölümüne bakabilirsiniz.",
+          "Ücretsiz planda Ana Panel, işlemler (manuel kayıt), tekrarlayan ödemeler, kategori bütçeleri, borç–alacak takibi, Kur Dönüşüm ekranı ve çoklu para birimi (Profil’den TL/USD/EUR/GBP) kullanılır; Ana Panelde özet finansal sağlık skoru da görünür. AI Analiz bu planda çalıştırılamaz (sayfada tanıtım metni bulunur).",
+          "Premium ile fiş/fatura görüntüsünden işlem alanlarını doldurma (Yeni işlem), yapay zekâ analizi raporunun çalıştırılması, PDF indirme, geçmiş analizlere erişim, yatırım portföy takibi ve canlı fiyatlarla kar/zarar özeti açılır; güncel paket tutarı ve Shopier ile ödeme için Ayarlar’daki Plan bölümüne bakabilirsiniz.",
         ],
       },
     ],
@@ -264,7 +265,7 @@ export const SSSPosts: sssPost[] = [
       {
         question: "Ayrı bir “tasarruf hedefi” sayfası var mı?",
         answer: [
-          "Uygulamada veri modeli düzeyinde ayrı bir birikim hedefi kaydı tutulmaz; disiplini Bütçeler menüsündeki kategori bazlı aylık üst limitler ve Ana Panel’deki net bakiye ile sağlarsınız. “Harcamayı şu kadarın altında tutma” hedefinizi pratikte kategori bütçesi ve grafiklerle takip edersiniz.",
+          "Tanıtım dilinde geçen “tasarruf hedefi” veya “hedef oluşturma” ifadesi, ayrı bir hedef kaydı yerine pratikte Bütçeler menüsündeki kategori bazlı aylık üst limitler, Ana Panel’deki net bakiye ve grafiklerle disiplin kurmanızı ifade eder. Ayrı bir “hedefler” pano ekranı şu an menüde yoktur; birikim yolunuzu bu araçlarla izlersiniz.",
         ],
       },
       {
@@ -307,6 +308,7 @@ export const SSSPosts: sssPost[] = [
         question: "Farklı para birimleriyle işlem ekleyebilir miyim?",
         answer: [
           "Evet. IQfinansAI, TL, ABD doları (USD), euro (EUR) ve sterlin (GBP) ile işlem kaydını destekler. Ana para biriminizi Profil sayfasından seçersiniz; özetlerde tutarlar bu tercihe göre gösterilir ve kayıtlar dahili olarak TL ile tutulur.",
+          "İşlem dışında hızlı kur çevirisi için menüdeki Kur Dönüşüm sayfasını kullanabilirsiniz; canlı döviz kurları (veya yüklenemezse yedek kurlar) ile kaynak ve hedef para birimleri arasında tutar hesaplarsınız.",
         ],
       },
       {
@@ -318,7 +320,7 @@ export const SSSPosts: sssPost[] = [
       {
         question: "Yatırım araçlarımdaki fiyatlar ne sıklıkla güncellenir?",
         answer: [
-          "Canlı kotasyonlar Premium yatırım modülünde kullanılır; sunucu tarafında tipik olarak birkaç dakikalık önbellekle yenilenir. Ücretsiz planda portföy ekranı yükseltme bilgisi gösterir. Gösterilen değerler bilgilendirme amaçlıdır; işlem kararı için kendi aracı kurum verinizi kullanın.",
+          "Canlı kotasyonlar Premium yatırım modülünde kullanılır; sunucu tarafında tipik olarak birkaç dakikalık önbellekle yenilenir. Ücretsiz planda Yatırım ekranı yükseltme bilgisi gösterir. Gösterilen değerler bilgilendirme amaçlıdır; işlem kararı için kendi aracı kurum verinizi kullanın.",
         ],
       },
     ],
