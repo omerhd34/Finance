@@ -39,7 +39,7 @@ export function LandingHeader() {
             <BrandLockup variant="landing" />
           </Link>
           <nav
-            className="flex items-center gap-1 sm:gap-3"
+            className="flex items-center gap-2.25 sm:gap-3"
             aria-label="Giriş navigasyonu"
           >
             <Button
