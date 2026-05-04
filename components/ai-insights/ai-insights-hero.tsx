@@ -91,7 +91,7 @@ export function AiAssistantHero() {
               <span className="font-semibold text-foreground/90">
                 Özeti kopyala
               </span>{" "}
-              ile kısa finans özetini panoya alabilirsiniz;{" "}
+              ile kısa finans özetini kopyalayabilirsiniz;{" "}
               <span className="font-medium text-foreground/85">
                 Son {AI_ASSISTANT_STORED_QA_COUNT} Soru
               </span>{" "}
