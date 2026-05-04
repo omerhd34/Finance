@@ -31,6 +31,25 @@ import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 const PREMIUM_LANDING_PERKS =
   LANDING_PLANS.find((p) => p.id === "premium")?.perks ?? [];
 
+function formatPremiumUntilTr(iso: string | null): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const datePart = new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Istanbul",
+  }).format(d);
+  const timePart = new Intl.DateTimeFormat("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Europe/Istanbul",
+  }).format(d);
+  return `${datePart} - ${timePart}`;
+}
+
 type DeleteFormValues = z.input<typeof accountDeleteSchema>;
 
 type ProfilePatchResponse = {
@@ -45,6 +64,7 @@ type ProfilePatchResponse = {
   image: string | null;
   notificationsEnabled: boolean;
   planTier: string;
+  premiumUntil: string | null;
 };
 
 type LatestShopierOrder = {
@@ -68,11 +88,14 @@ export default function SettingsPage() {
   const [latestOrder, setLatestOrder] = useState<LatestShopierOrder | null>(
     null,
   );
+  const [premiumUntilIso, setPremiumUntilIso] = useState<string | null>(null);
   const [awaitingCheckoutCompletion, setAwaitingCheckoutCompletion] =
     useState(false);
   const checkoutWindowRef = useRef<Window | null>(null);
   const checkoutWindowWatchRef = useRef<number | null>(null);
   const currentPlan = normalizePlanTier(session?.user?.planTier);
+  const premiumEndFormatted =
+    currentPlan === "premium" ? formatPremiumUntilTr(premiumUntilIso) : null;
 
   const deleteForm = useForm<DeleteFormValues>({
     resolver: zodResolver(accountDeleteSchema),
@@ -107,6 +130,29 @@ export default function SettingsPage() {
       window.clearInterval(timer);
     };
   }, [session?.user?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPremiumUntil() {
+      if (!session?.user?.id) {
+        setPremiumUntilIso(null);
+        return;
+      }
+      try {
+        const { data } = await apiClient.get<{
+          premiumUntil: string | null;
+        }>("/api/user/profile");
+        const raw = data.premiumUntil;
+        if (!cancelled) setPremiumUntilIso(raw ?? null);
+      } catch {
+        if (!cancelled) setPremiumUntilIso(null);
+      }
+    }
+    void loadPremiumUntil();
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id, currentPlan, latestOrder?.status]);
 
   useEffect(() => {
     if (latestOrder?.status !== "PAID") return;
@@ -438,13 +484,17 @@ export default function SettingsPage() {
                     onClick={() => void openPremiumCheckout()}
                     className="w-full cursor-pointer rounded-full bg-emerald-500 font-semibold text-black shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 dark:text-white"
                   >
-                    <span className="inline-flex items-center justify-center gap-2">
-                      <CreditCard className="h-4 w-4" aria-hidden />
-                      {currentPlan === "premium"
-                        ? "Premium aktif"
-                        : checkoutBusy
-                          ? "Ödeme sayfası hazırlanıyor…"
-                          : "Shopier ile öde"}
+                    <span className="inline-flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:gap-2">
+                      <span className="inline-flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 shrink-0" aria-hidden />
+                        {currentPlan === "premium"
+                          ? premiumEndFormatted
+                            ? `${premiumEndFormatted}'de sona erecektir.`
+                            : "Premium bitiş tarihi yükleniyor..."
+                          : checkoutBusy
+                            ? "Ödeme sayfası hazırlanıyor…"
+                            : "Shopier ile öde"}
+                      </span>
                     </span>
                   </Button>
                 </div>
