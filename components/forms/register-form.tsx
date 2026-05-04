@@ -25,7 +25,6 @@ import { apiClient } from "@/lib/client/api-client";
 export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -37,7 +36,6 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -47,7 +45,6 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
         name: data.name,
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword,
       });
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data) {
@@ -62,12 +59,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
           !Array.isArray(data.error)
         ) {
           const fe = data.error as Record<string, string[] | undefined>;
-          const keys = [
-            "name",
-            "email",
-            "password",
-            "confirmPassword",
-          ] as const;
+          const keys = ["name", "email", "password"] as const;
           let anyField = false;
           for (const key of keys) {
             const first = fe[key]?.[0];
@@ -223,53 +215,6 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 title={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder=" "
-                className={`peer h-12 pr-10 ${
-                  errors.confirmPassword
-                    ? "border-destructive focus-visible:ring-destructive"
-                    : ""
-                }`}
-                {...register("confirmPassword")}
-              />
-              <Label
-                htmlFor="confirmPassword"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
-                  errors.confirmPassword
-                    ? "text-destructive peer-focus:text-destructive"
-                    : "text-muted-foreground peer-focus:text-primary"
-                }`}
-              >
-                Şifre tekrar
-              </Label>
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition hover:text-foreground cursor-pointer"
-                aria-label={
-                  showConfirmPassword
-                    ? "Şifre tekrarını gizle"
-                    : "Şifre tekrarını göster"
-                }
-                title={
-                  showConfirmPassword
-                    ? "Şifre tekrarını gizle"
-                    : "Şifre tekrarını göster"
-                }
-              >
-                {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" />
                 ) : (
                   <Eye className="h-4 w-4" />
