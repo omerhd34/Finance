@@ -243,6 +243,10 @@ export const EXPENSE_CATEGORY_TREE = [
     group: "Finans",
     categories: [
       {
+        category: "Borç",
+        subcategories: ["Kişi borcu ödemesi", "Diğer"],
+      },
+      {
         category: "Kredi & Kart",
         subcategories: [
           "Kredi kartı",
@@ -383,6 +387,7 @@ export const INCOME_CATEGORIES = [
   "Freelance",
   "Yatırım",
   "Kira Geliri",
+  "Alacak",
   "Diğer",
 ] as const;
 
