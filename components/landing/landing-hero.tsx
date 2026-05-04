@@ -27,7 +27,8 @@ export function LandingHero() {
           alt="Kişisel finans, bütçe ve harcama yönetimi — IQfinansAI arka plan görseli"
           fill
           priority
-          quality={88}
+          fetchPriority="high"
+          quality={75}
           className="object-cover object-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
           sizes="100vw"
         />
