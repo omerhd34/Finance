@@ -30,6 +30,7 @@ type JwtProfileRow = {
   notificationsEnabled: boolean;
   image: string | null;
   planTier: string;
+  premiumUntil: Date | null;
   emailVerified: Date | null;
 };
 
@@ -44,6 +45,7 @@ const jwtProfileSelect = {
   notificationsEnabled: true,
   image: true,
   planTier: true,
+  premiumUntil: true,
   emailVerified: true,
 } as const satisfies Record<keyof JwtProfileRow, true>;
 
@@ -126,6 +128,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
           token.picture = pictureForJwt(dbUser.image);
           token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
+          token.premiumUntil = dbUser.premiumUntil?.toISOString() ?? null;
           token.isEmailVerified = Boolean(dbUser.emailVerified);
         }
       }
@@ -169,6 +172,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.notificationsEnabled = dbUser.notificationsEnabled ?? true;
             token.picture = pictureForJwt(dbUser.image);
             token.planTier = dbUser.planTier === "premium" ? "premium" : "free";
+            token.premiumUntil = dbUser.premiumUntil?.toISOString() ?? null;
             token.isEmailVerified = Boolean(dbUser.emailVerified);
           }
         }
@@ -262,6 +266,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           (token as { planTier?: string }).planTier === "premium"
             ? "premium"
             : "free";
+        session.user.premiumUntil =
+          (token as { premiumUntil?: string | null }).premiumUntil ?? null;
         session.user.isEmailVerified = Boolean(
           (token as { isEmailVerified?: boolean }).isEmailVerified,
         );
