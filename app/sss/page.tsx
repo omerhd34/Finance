@@ -207,7 +207,7 @@ export default function SssIndexPage() {
               <Button
                 size="lg"
                 asChild
-                className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
+                className="rounded-full bg-emerald-700 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-600 hover:shadow-lg dark:shadow-emerald-900/50"
               >
                 <Link href="/kayit">
                   Kayıt ol

@@ -79,7 +79,7 @@ export function LandingHeader() {
             <Button
               asChild
               size="sm"
-              className="h-8 shrink-0 rounded-full bg-emerald-500 px-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-500 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-400 dark:hover:text-white"
+              className="h-8 shrink-0 rounded-full bg-emerald-700 px-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-900/50 sm:h-9 sm:px-5 sm:text-sm dark:bg-emerald-700 dark:text-white dark:shadow-emerald-950/50 dark:hover:bg-emerald-600 dark:hover:text-white"
             >
               <Link href="/kayit">Kayıt ol</Link>
             </Button>

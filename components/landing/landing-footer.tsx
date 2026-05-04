@@ -48,7 +48,7 @@ function FooterBackToTop() {
       type="button"
       aria-label="Yukarı çık"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-10 right-4 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-xl md:right-8"
+      className="fixed bottom-10 right-4 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-emerald-700 text-white shadow-lg shadow-emerald-900/40 transition hover:bg-emerald-600 hover:shadow-xl md:right-8"
     >
       <ChevronUp className="h-5 w-5" strokeWidth={2.5} />
     </button>,
