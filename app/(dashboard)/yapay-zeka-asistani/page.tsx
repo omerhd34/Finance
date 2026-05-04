@@ -13,7 +13,7 @@ export default function YapayZekaAsistaniPage() {
 
   if (!planPremium) {
     const perks = [
-      "Son kayıtlarınıza göre Türkçe soru–cevap; her yanıtta veriler sunucuda yenilenir",
+      "İstediğiniz konuda Türkçe soru–cevap; finans sorularında her yanıtta veriler sunucuda yenilenir",
       "Özeti kopyala ile kayıtlara dayalı kısa metni panoya aktarma",
       "Tarayıcı destekliyse sesli soru girişi (Yeni işlem ekranında da geçerli)",
     ];
@@ -45,7 +45,7 @@ export default function YapayZekaAsistaniPage() {
   return (
     <div className="space-y-8">
       <AiAssistantHero />
-      <AiFinanceChat showIntroCard={false} />
+      <AiFinanceChat />
     </div>
   );
 }

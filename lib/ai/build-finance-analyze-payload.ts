@@ -39,7 +39,55 @@ export type FinanceDebtLine = {
   not: string | null;
 };
 
+function formatZamanYerelTr(d: Date): string {
+  return new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(d);
+}
+
+function formatOptionalZamanYerelTr(d: Date | null | undefined): string | null {
+  if (d == null) return null;
+  return formatZamanYerelTr(d);
+}
+
 export type FinanceAnalyzePayload = {
+  uygulamaHesabi: {
+    hesapOlusturmaZamaniUtc: string;
+    hesapOlusturmaYerelTr: string;
+    not: string;
+  };
+  kullaniciProfili: {
+    ad: string | null;
+    meslek: string | null;
+    sehir: string | null;
+    ulke: string | null;
+    kayitliEposta: string;
+    ePostaDogrulandi: boolean;
+    telefon: string | null;
+    paraBirimi: string;
+    bildirimlerAcik: boolean;
+    plan: string;
+    ayBaslangicGunu: number;
+    premiumErisimBitisZamaniUtc: string | null;
+    premiumErisimBitisYerelTr: string | null;
+    not: string;
+  };
+  shopierOdemeKayitlari: {
+    kayitlar: {
+      siparisKodu: string;
+      durum: string;
+      tutarTry: number | null;
+      odemeZamaniUtc: string | null;
+      odemeYerelTr: string | null;
+      planHakkiVerilmeZamaniUtc: string | null;
+      planHakkiVerilmeYerelTr: string | null;
+      siparisOlusturmaZamaniUtc: string;
+      siparisOlusturmaYerelTr: string;
+    }[];
+    not: string;
+  };
   kullaniciAyAyarlari: {
     ayBaslangicGunu: number;
     butceDonemiNotu: string;
@@ -147,45 +195,109 @@ export async function buildFinanceAnalyzePayload(
   const since = new Date(analizAnı);
   since.setDate(since.getDate() - 30);
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { monthStartDay: true, currency: true },
-  });
+  const [
+    dbUser,
+    transactions,
+    incomeTransactions,
+    debts,
+    investmentRows,
+    shopierRows,
+  ] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        monthStartDay: true,
+        currency: true,
+        createdAt: true,
+        name: true,
+        profession: true,
+        city: true,
+        country: true,
+        email: true,
+        emailVerified: true,
+        phone: true,
+        notificationsEnabled: true,
+        planTier: true,
+        premiumUntil: true,
+      },
+    }),
+    prisma.transaction.findMany({
+      where: {
+        userId,
+        date: { gte: since },
+        type: "expense",
+      },
+      orderBy: { date: "desc" },
+    }),
+    prisma.transaction.findMany({
+      where: {
+        userId,
+        date: { gte: since },
+        type: "income",
+      },
+      orderBy: { date: "desc" },
+    }),
+    debt.findMany({
+      where: { userId },
+      orderBy: { dueDate: "asc" },
+    }),
+    investmentPosition.findMany({
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.shopierOrder.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      select: {
+        orderCode: true,
+        status: true,
+        amountTry: true,
+        paidAt: true,
+        planGrantedAt: true,
+        createdAt: true,
+      },
+    }),
+  ]);
   if (!dbUser) {
     throw new Error("Kullanıcı bulunamadı.");
   }
 
-  const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(
-    dbUser.monthStartDay ?? 1,
-  );
+  const ayGun = dbUser.monthStartDay ?? 1;
+  const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(ayGun);
 
-  const [transactions, incomeTransactions, debts, investmentRows] =
-    await Promise.all([
-      prisma.transaction.findMany({
-        where: {
-          userId,
-          date: { gte: since },
-          type: "expense",
-        },
-        orderBy: { date: "desc" },
-      }),
-      prisma.transaction.findMany({
-        where: {
-          userId,
-          date: { gte: since },
-          type: "income",
-        },
-        orderBy: { date: "desc" },
-      }),
-      debt.findMany({
-        where: { userId },
-        orderBy: { dueDate: "asc" },
-      }),
-      investmentPosition.findMany({
-        where: { userId },
-        orderBy: { updatedAt: "desc" },
-      }),
-    ]);
+  const kullaniciProfili: FinanceAnalyzePayload["kullaniciProfili"] = {
+    ad: dbUser.name,
+    meslek: dbUser.profession,
+    sehir: dbUser.city,
+    ulke: dbUser.country,
+    kayitliEposta: dbUser.email,
+    ePostaDogrulandi: dbUser.emailVerified != null,
+    telefon: dbUser.phone,
+    paraBirimi: dbUser.currency ?? "TL",
+    bildirimlerAcik: dbUser.notificationsEnabled,
+    plan: dbUser.planTier,
+    ayBaslangicGunu: ayGun,
+    premiumErisimBitisZamaniUtc: dbUser.premiumUntil?.toISOString() ?? null,
+    premiumErisimBitisYerelTr: formatOptionalZamanYerelTr(dbUser.premiumUntil),
+    not: "Kullanıcının IQfinans profil kaydıdır (şifre ve profil resmi JSON’da yoktur). `plan` güncel plan seviyesidir (ör. free, premium). `premiumErisimBitisZamaniUtc` Premium erişiminin bittiği anı gösterir; `plan` free iken geçmişten kalan bir tarih olabilir. “Ödeme ne zaman / son ödeme / premium ne zaman bitiyor?” sorularında bu alanlarla birlikte `shopierOdemeKayitlari` kayıtlarına bakın. Tarih ve saat kullanıcıya aktarırken yerel alanları (`*YerelTr`) tercih edin.",
+  };
+
+  const shopierOdemeKayitlari: FinanceAnalyzePayload["shopierOdemeKayitlari"] =
+    {
+      kayitlar: shopierRows.map((o) => ({
+        siparisKodu: o.orderCode,
+        durum: o.status,
+        tutarTry: o.amountTry,
+        odemeZamaniUtc: o.paidAt?.toISOString() ?? null,
+        odemeYerelTr: formatOptionalZamanYerelTr(o.paidAt),
+        planHakkiVerilmeZamaniUtc: o.planGrantedAt?.toISOString() ?? null,
+        planHakkiVerilmeYerelTr: formatOptionalZamanYerelTr(o.planGrantedAt),
+        siparisOlusturmaZamaniUtc: o.createdAt.toISOString(),
+        siparisOlusturmaYerelTr: formatZamanYerelTr(o.createdAt),
+      })),
+      not: "Shopier üzerinden oluşturulan ödeme kayıtları (en yeniden eskiye). Başarılı ödemelerde genelde `odemeZamaniUtc` / `odemeYerelTr` doludur; Premium’un hesaba işlendiği an `planHakkiVerilmeZamaniUtc` ile gösterilebilir. `durum` örneğin PENDING veya PAID olabilir; kesin anlamı üretimdeki akışa bağlıdır.",
+    };
 
   const investmentPositions = investmentRows.map(ensureIsoDates);
 
@@ -284,6 +396,13 @@ export async function buildFinanceAnalyzePayload(
         };
 
   return {
+    uygulamaHesabi: {
+      hesapOlusturmaZamaniUtc: dbUser.createdAt.toISOString(),
+      hesapOlusturmaYerelTr: formatZamanYerelTr(dbUser.createdAt),
+      not: "Bu zaman damgası IQfinans’ta kullanıcı hesabınızın ilk oluşturulduğu andır. “Uygulamayı ne zamandır kullanıyorum / ne zaman kayıt oldum?” gibi sorularda yanıtı buna dayandırın; gerçek kullanım süresi ile kayıt süresi aynı olmayabilir ancak elimizdeki tek kesin kayıt budur. `hesapOlusturmaYerelTr` Türkiye saatidir (tarih ve saat-dakika).",
+    },
+    kullaniciProfili,
+    shopierOdemeKayitlari,
     kullaniciAyAyarlari,
     harcamaPenceresi: {
       baslangic: since.toISOString(),

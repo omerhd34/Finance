@@ -1,12 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Copy, MessageCircle, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { apiClient } from "@/lib/client/api-client";
-import { AI_ASSISTANT_MAX_MESSAGES_PER_DAY } from "@/lib/ai/ai-insights-limits";
 import { messageFromAiAnalyzeError } from "@/lib/ai/ai-insights-errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,18 +16,14 @@ import { cn } from "@/lib/common/utils";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
-type Props = {
-  showIntroCard?: boolean;
-};
-
-export function AiFinanceChat({ showIntroCard = true }: Props) {
+export function AiFinanceChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [digestLoading, setDigestLoading] = useState(false);
-  const [digestCopied, setDigestCopied] = useState(false);
-  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
+  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(
+    null,
+  );
   const [usageLoading, setUsageLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -85,39 +80,9 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
     }
   }, [input, loading, messages]);
 
-  async function copyMessagingDigest() {
-    setDigestLoading(true);
-    setDigestCopied(false);
-    try {
-      const { data } = await apiClient.get<{ text: string }>(
-        "/api/ai/messaging-summary",
-      );
-      await navigator.clipboard.writeText(data.text);
-      setDigestCopied(true);
-      window.setTimeout(() => setDigestCopied(false), 2500);
-    } catch {
-      setError("Özet panoya kopyalanamadı.");
-    } finally {
-      setDigestLoading(false);
-    }
-  }
-
-  const digestButton = (
-    <Button
-      type="button"
-      variant="outline"
-      className="h-9 shrink-0 cursor-pointer gap-2"
-      disabled={digestLoading}
-      onClick={() => void copyMessagingDigest()}
-    >
-      <Copy className="size-4" aria-hidden />
-      {digestCopied ? "Kopyalandı" : "Özeti kopyala"}
-    </Button>
-  );
-
   const historyDialog = (
     <AiChatHistoryDialog
-      disabled={loading || digestLoading}
+      disabled={loading}
       onSelect={({ userMessage, assistantReply }) => {
         setMessages([
           { role: "user", content: userMessage },
@@ -130,51 +95,22 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
 
   return (
     <div className="space-y-4">
-      {showIntroCard ? (
-        <div className="rounded-2xl border border-border/80 bg-card/40 p-4 shadow-sm md:p-5">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12">
-                <MessageCircle className="h-5 w-5 text-primary" aria-hidden />
-              </div>
-              <div className="min-w-0 space-y-1">
-                <h3 className="text-base font-semibold">IQfinansAI Asistanı</h3>
-                <p className="text-sm text-muted-foreground">
-                  Son kayıtlarınıza göre soru sorun. Her yanıtta veriler
-                  sunucuda yenilenir. Günde en fazla{" "}
-                  {AI_ASSISTANT_MAX_MESSAGES_PER_DAY} mesaj sorulabilir.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {historyDialog}
-              {digestButton}
-              <AiRemainingUsageChip
-                mode="questions"
-                remaining={remainingQuestions}
-                loading={usageLoading}
-              />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-center gap-2">
-          {historyDialog}
-          {digestButton}
-          <AiRemainingUsageChip
-            mode="questions"
-            remaining={remainingQuestions}
-            loading={usageLoading}
-          />
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {historyDialog}
+        <AiRemainingUsageChip
+          mode="questions"
+          remaining={remainingQuestions}
+          loading={usageLoading}
+        />
+      </div>
 
       <div className="flex max-h-[min(520px,70vh)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm">
         <div className="min-h-[220px] flex-1 space-y-4 overflow-y-auto p-4 md:p-5">
           {messages.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Aşağıdan bir soru yazın veya mikrofonla konuşun. Sohbet bu oturum
-              için tarayıcınızda tutulur; sayfayı yenilerseniz sıfırlanır.
+              Aşağıdan istediğiniz soruyu yazın veya mikrofonla konuşun. Sohbet
+              bu oturum için tarayıcınızda tutulur; sayfayı yenilerseniz
+              sıfırlanır.
             </p>
           ) : null}
           {messages.map((m, i) => (
@@ -227,7 +163,7 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
                   void send();
                 }
               }}
-              placeholder="Örneğin: Son dönemde en çok hangi kategoriye harcadım?"
+              placeholder="Örneğin: Bu ay en çok hangi kategoriye harcadım? veya günlük bir soru…"
               rows={2}
               className="min-h-[72px] flex-1 resize-none"
               disabled={loading}

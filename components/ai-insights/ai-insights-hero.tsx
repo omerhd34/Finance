@@ -79,8 +79,9 @@ export function AiAssistantHero() {
           </h2>
           <div className="space-y-3 text-sm leading-relaxed text-muted-foreground text-pretty md:text-base">
             <p>
-              Kayıtlı verilerinize göre serbest sorular sorarsınız; her cevapta
-              sunucu güncel işlem ve borç/alacak özetinizi yeniden yükler.
+              Finans ve kayıtlarınızla ilgili sorularınızda her cevapta sunucu
+              güncel işlem ve borç/alacak özetinizi yeniden yükler; ayrıca
+              istediğiniz diğer konularda da sohbet edebilirsiniz.
             </p>
             <p>
               Günde en fazla{" "}

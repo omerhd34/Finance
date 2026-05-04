@@ -9,6 +9,7 @@ import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurri
 import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
+import { AiMessagingDigestCopyButton } from "@/components/ai-insights/ai-messaging-digest-copy-button";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
 import { LogoLoading } from "@/components/ui/logo-loading";
 import { apiClient } from "@/lib/client/api-client";
@@ -61,6 +62,7 @@ export default function DashboardPage() {
   const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
   const [barsChartMonths, setBarsChartMonths] = useState(6);
   const [pieChartMonths, setPieChartMonths] = useState(1);
+  const [digestCopyError, setDigestCopyError] = useState<string | null>(null);
   const goldLive = useGoldLivePrices(planPremium);
   const silverLive = useSilverLivePrices(planPremium);
   const platinumLive = usePlatinumLivePrices(planPremium);
@@ -258,11 +260,7 @@ export default function DashboardPage() {
       "PLATINUM",
       liveQuotes,
     );
-    const ag = aggregatePositionsTry(
-      investmentPositions,
-      "SILVER",
-      liveQuotes,
-    );
+    const ag = aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes);
     return {
       count: c.count + pt.count + ag.count,
       costTry: c.costTry + pt.costTry + ag.costTry,
@@ -363,6 +361,27 @@ export default function DashboardPage() {
         transactions={stats.recent}
         currency={currency}
       />
+
+      <section
+        className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-muted/25 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+        aria-label="Finans özeti — panoya kopyala"
+      >
+        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Güncel işlemleriniz ile borç ve alacak özetinizi tek tıkla panoya
+          kopyalayın; raporda kullanın, not olarak saklayın veya paylaşın.
+        </p>
+        <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+          <AiMessagingDigestCopyButton
+            className="w-full sm:w-auto"
+            onCopyError={setDigestCopyError}
+          />
+          {digestCopyError ? (
+            <p className="text-sm text-destructive sm:text-end" role="alert">
+              {digestCopyError}
+            </p>
+          ) : null}
+        </div>
+      </section>
     </div>
   );
 }
