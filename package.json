@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "browserslist": [
-    "chrome >= 92",
-    "edge >= 92",
-    "firefox >= 90",
-    "safari >= 15.4",
-    "ios >= 15.4"
+    "Chrome >= 107",
+    "Edge >= 107",
+    "Firefox >= 104",
+    "Safari >= 16",
+    "iOS >= 16",
+    "not dead"
   ],
   "scripts": {
     "dev": "next dev --webpack",

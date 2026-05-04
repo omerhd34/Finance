@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
     return [{ source: "/favicon.ico", destination: "/FinansIQ-192.png" }];
   },
   images: {
-    qualities: [75, 88],
+    qualities: [65, 75, 88],
     remotePatterns: [
       {
         protocol: "https",

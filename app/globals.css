@@ -117,8 +117,10 @@ body {
   }
 }
 
-.animate-hero-bg-pan {
-  animation: hero-bg-pan 28s ease-in-out infinite alternate;
+@media (min-width: 1024px) {
+  .animate-hero-bg-pan {
+    animation: hero-bg-pan 28s ease-in-out infinite alternate;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

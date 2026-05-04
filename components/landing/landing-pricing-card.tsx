@@ -31,7 +31,7 @@ export function LandingPricingCard({ plan }: Props) {
 
   const ctaClass =
     plan.ctaVariant === "primary"
-      ? "bg-emerald-500 text-black shadow-md shadow-emerald-900/40 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-900/50 dark:text-white"
+      ? "bg-emerald-700 text-white shadow-md shadow-emerald-900/40 transition hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-900/50"
       : "bg-foreground text-background transition hover:opacity-90";
 
   return (

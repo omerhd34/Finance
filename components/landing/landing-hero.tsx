@@ -1,8 +1,16 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
-import { LandingHeroIsometricIllustration } from "@/components/landing/landing-hero-isometric";
 import { Button } from "@/components/ui/button";
+
+const LandingHeroIsometricIllustration = dynamic(
+  () =>
+    import("@/components/landing/landing-hero-isometric").then(
+      (m) => m.LandingHeroIsometricIllustration,
+    ),
+  { loading: () => null },
+);
 
 const trustItems = [
   "Güvenli giriş",
@@ -28,7 +36,7 @@ export function LandingHero() {
           fill
           priority
           fetchPriority="high"
-          quality={75}
+          quality={65}
           className="object-cover object-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
           sizes="100vw"
         />
@@ -76,7 +84,7 @@ export function LandingHero() {
               <Button
                 size="lg"
                 asChild
-                className="group h-12 w-full rounded-full bg-emerald-500 px-8 text-base font-semibold text-white shadow-lg shadow-emerald-950/45 transition hover:bg-emerald-400 hover:shadow-xl hover:shadow-emerald-950/50 sm:w-auto"
+                className="group h-12 w-full rounded-full bg-emerald-700 px-8 text-base font-semibold text-white shadow-lg shadow-emerald-950/45 transition hover:bg-emerald-600 hover:shadow-xl hover:shadow-emerald-950/50 sm:w-auto"
               >
                 <Link href="/kayit">Kayıt ol</Link>
               </Button>
