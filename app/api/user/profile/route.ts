@@ -18,6 +18,7 @@ const profileSelectFields = {
   image: true,
   notificationsEnabled: true,
   planTier: true,
+  premiumUntil: true,
 } as const;
 
 export async function GET() {
