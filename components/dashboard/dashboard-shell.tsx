@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  MessageCircle,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -33,6 +32,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { NotificationsPopover } from "@/components/notifications/notifications-popover";
 import { BrandLockup } from "@/components/branding/brand-lockup";
+import { IQfinansAiAssistantIcon } from "@/components/branding/iqfinans-ai-assistant-icon";
 import { cn, currencySymbolLabel } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -95,10 +95,16 @@ const nav = [
   {
     href: "/yapay-zeka-asistani",
     label: "IQfinansAI Asistanı",
-    icon: MessageCircle,
+    icon: IQfinansAiAssistantIcon,
   },
   { href: "/bildirimler", label: "Bildirimler", icon: Bell },
 ];
+
+const premiumNavHrefs = new Set([
+  "/yatirimlar",
+  "/yapay-zeka-analizi",
+  "/yapay-zeka-asistani",
+]);
 
 const titles: Record<string, string> = {
   "/gosterge-paneli": "Ana Panel",
@@ -318,6 +324,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         >
           {nav.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
+            const isPremium = premiumNavHrefs.has(href);
             return (
               <Link
                 key={href}
@@ -328,11 +335,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   "flex items-center rounded-lg text-sm font-medium transition-colors",
                   collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
                   active
-                    ? "bg-primary/15 text-primary relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-r-full before:bg-primary"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                    ? isPremium
+                      ? "relative border border-rose-300 bg-rose-200/90 text-rose-800 shadow-[0_0_0_1px_rgba(244,63,94,0.18)] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-r-full before:bg-rose-600 dark:border-rose-400/45 dark:bg-rose-700/28 dark:text-rose-50 dark:shadow-[0_0_0_1px_rgba(251,113,133,0.15)] dark:before:bg-rose-200"
+                      : "bg-primary/15 text-primary relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-r-full before:bg-primary"
+                    : isPremium
+                      ? "border border-rose-300/90 bg-rose-100/85 text-rose-700 hover:border-rose-400 hover:bg-rose-200/85 hover:text-rose-800 dark:border-rose-500/30 dark:bg-rose-900/28 dark:text-rose-100 dark:hover:border-rose-400/50 dark:hover:bg-rose-800/35 dark:hover:text-rose-50"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <span className="grid h-5 w-5 shrink-0 place-items-center">
+                  <Icon
+                    className={cn(
+                      "h-4 w-4",
+                      href === "/yapay-zeka-asistani" && "scale-110",
+                    )}
+                  />
+                </span>
                 {!collapsed && label}
               </Link>
             );
@@ -546,7 +564,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               size="icon"
-              className="cursor-pointer text-muted-foreground hover:text-foreground"
+              className="cursor-pointer text-rose-700 hover:bg-rose-200/85 hover:text-rose-800 dark:text-rose-200 dark:hover:bg-rose-500/22 dark:hover:text-rose-100"
               asChild
               title="IQfinansAI Asistanı"
             >
@@ -554,7 +572,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 href={hrefToAiAssistantPage()}
                 aria-label="IQfinansAI Asistanına git"
               >
-                <MessageCircle className="h-5 w-5" aria-hidden />
+                <IQfinansAiAssistantIcon
+                  className="h-6 w-6 scale-[1.22]"
+                  aria-hidden
+                />
               </Link>
             </Button>
             <NotificationsPopover />
