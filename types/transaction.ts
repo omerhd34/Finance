@@ -9,5 +9,6 @@ export type Transaction = {
   userId: string;
   recurringRuleId?: string | null;
   recurringSlotKey?: string | null;
+  debtId?: string | null;
   createdAt: string;
 };

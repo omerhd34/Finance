@@ -5,7 +5,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tryAmountToDisplay } from "@/lib/common/currency";
-import { editDebtSchema, type NewDebtFormValues } from "@/lib/debts/debts-schema";
+import {
+  editDebtSchema,
+  type NewDebtFormValues,
+} from "@/lib/debts/debts-schema";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";

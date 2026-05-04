@@ -21,6 +21,8 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPay: (amountDisplay: number) => Promise<void>;
+  receivableIncomeHint?: boolean;
+  payableExpenseHint?: boolean;
 };
 
 export function PayDebtDialog({ open, onOpenChange, onPay }: Props) {

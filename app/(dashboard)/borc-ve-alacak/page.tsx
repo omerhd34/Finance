@@ -9,6 +9,7 @@ import {
   addDebt,
   deleteDebt,
   fetchDebts,
+  recordDebtPayment,
   updateDebt,
 } from "@/store/slices/debtsSlice";
 import { DebtsPageHeader } from "@/components/debts/debts-page-header";
@@ -89,13 +90,12 @@ export default function DebtsPage() {
     const d = items.find((x) => x.id === payingId);
     if (!d) return;
     const addTry = displayAmountToTry(amountDisplay, currency);
-    const nextPaid = Math.min(d.totalAmount, d.paidAmount + addTry);
     await dispatch(
-      updateDebt({
+      recordDebtPayment({
         id: payingId,
-        body: { paidAmount: nextPaid },
+        amountTry: addTry,
       }),
-    );
+    ).unwrap();
     setPayingId(null);
     void dispatch(fetchDebts());
   }
@@ -143,6 +143,12 @@ export default function DebtsPage() {
         open={!!payingId}
         onOpenChange={(o) => !o && setPayingId(null)}
         onPay={onPaySubmit}
+        receivableIncomeHint={
+          items.find((x) => x.id === payingId)?.direction === "RECEIVABLE"
+        }
+        payableExpenseHint={
+          items.find((x) => x.id === payingId)?.direction === "PAYABLE"
+        }
       />
 
       <EditDebtDialog

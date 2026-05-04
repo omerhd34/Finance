@@ -115,9 +115,12 @@ model Transaction {
   recurringRuleId   String?
   recurringRule     RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
   recurringSlotKey  String?        @unique
+  debtId            String?
+  debt              Debt?          @relation(fields: [debtId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
 
   @@index([userId, date])
+  @@index([debtId])
 }
 
 model RecurringRule {
@@ -187,16 +190,17 @@ model BudgetAlertLog {
 }
 
 model Debt {
-  id            String    @id @default(cuid())
-  direction     String
-  counterparty  String
-  totalAmount   Float
-  paidAmount    Float     @default(0)
-  dueDate       DateTime?
-  note          String?   @db.Text
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt     DateTime  @default(now())
+  id                 String        @id @default(cuid())
+  direction          String
+  counterparty       String
+  totalAmount        Float
+  paidAmount         Float         @default(0)
+  dueDate            DateTime?
+  note               String?       @db.Text
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receivableIncomes  Transaction[]
+  createdAt          DateTime      @default(now())
 
   @@index([userId, direction])
 }
