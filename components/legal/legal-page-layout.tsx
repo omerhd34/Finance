@@ -9,6 +9,9 @@ type Props = {
 };
 
 export function LegalPageLayout({ title, description, children }: Props) {
+  const lastUpdated = new Date();
+  lastUpdated.setDate(lastUpdated.getDate() - 1);
+
   return (
     <LandingPageShell>
       <LandingHeader />
@@ -29,7 +32,7 @@ export function LegalPageLayout({ title, description, children }: Props) {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
-              }).format(new Date())}
+              }).format(lastUpdated)}
             </p>
           </header>
           <div className="legal-doc space-y-8 text-[15px] leading-relaxed text-muted-foreground md:text-base [&_h2]:mt-10 [&_h2]:scroll-mt-24 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:first:mt-0 [&_li]:mt-1.5 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:text-pretty [&_strong]:font-semibold [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
