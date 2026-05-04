@@ -160,3 +160,55 @@ export function getLandingPremiumPriceTry(): number {
   const p = LANDING_PLANS.find((x) => x.id === "premium");
   return p?.priceAmountTry ?? 150;
 }
+
+export type LandingTestimonial = {
+  id: string;
+  quote: string;
+  attribution: string;
+  context: string;
+};
+
+export const LANDING_TESTIMONIALS: LandingTestimonial[] = [
+  {
+    id: "1",
+    quote:
+      "Harcamalarım dağınık notlarda kayboluyordu; kategoriler ve grafiklerle ay içinde paranın nereye aktığını ilk kez net gördüm. Her şeyin tek ekranda toplanması işimi ciddi anlamda kolaylaştırdı.",
+    attribution: "Cemil Y.",
+    context: "Ücretsiz plan",
+  },
+  {
+    id: "2",
+    quote:
+      "Tekrarlayan faturalar ve borç taksitlerini ayrı takip edebilmek iyi oldu; hangi tarihte neyin çıkacağını önden görünce sürpriz ödemeler azaldı, bütçeyi planlamak daha rahat hissettiriyor.",
+    attribution: "Halil K.",
+    context: "Ücretsiz plan",
+  },
+  {
+    id: "3",
+    quote:
+      "Ay başında hedef belirleyip giderleri ona göre izlemek eskiden zordu; şimdi limitlere yaklaştığımda fark ediyorum ve gereksiz harcamayı durdurmak daha kolay geliyor.",
+    attribution: "Zeynep D.",
+    context: "Ücretsiz plan",
+  },
+  {
+    id: "4",
+    quote:
+      "Uzun işlem listesini satır satır taramak yerine AI özetinin ana noktaları çıkarması zaman kazandırdı; ay sonunda nerede sıkıştığımı daha çabuk anlayabiliyorum.",
+    attribution: "Erdal Ö.",
+    context: "Premium plan",
+  },
+  {
+    id: "5",
+    quote:
+      "AI analiz raporunu PDF indirip eşimle masada konuşabilmek iyi oldu; sayılar aynı kaynaktan gelince tartışma yerine çözüm üretmeye zaman kalıyor.",
+    attribution: "Melih A.",
+    context: "Premium plan",
+  },
+  {
+    id: "6",
+    quote:
+      "Telefondan hızlı giriş yapabilmek işimi kurtardı; fiş çekince hemen kaydedince ay sonunda eksik satır kalmıyor, manuel toplama derdi bitti.",
+    attribution: "Oğuzhan Ş.",
+    context: "Premium plan",
+  },
+];

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -25,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/common/utils";
+import { SITE_FOUNDER } from "@/lib/site/founder";
 import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
@@ -278,6 +280,73 @@ export default function HakkimizdaPage() {
         </section>
 
         <section
+          className="border-b border-slate-200/45 bg-linear-to-b from-slate-50 via-white to-slate-50 py-16 dark:border-zinc-800/45 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 md:py-24"
+          aria-labelledby="about-founder-heading"
+        >
+          <div className="mx-auto w-full max-w-5xl px-4 xl:px-0">
+            <div className="relative overflow-hidden rounded-3xl border border-emerald-500/15 bg-card/90 p-8 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.18)] ring-1 ring-emerald-500/10 backdrop-blur-sm dark:border-emerald-400/10 dark:bg-zinc-900/70 dark:shadow-black/40 dark:ring-white/5 md:p-10 lg:p-12">
+              <div
+                className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/15"
+                aria-hidden
+              />
+              <div className="relative flex flex-col items-center gap-10 md:flex-row md:items-center md:gap-14 lg:gap-16">
+                {SITE_FOUNDER.photoSrc ? (
+                  <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-emerald-950/25 ring-2 ring-emerald-500/20 md:h-48 md:w-48">
+                    <Image
+                      src={SITE_FOUNDER.photoSrc}
+                      alt={
+                        SITE_FOUNDER.displayName.trim()
+                          ? `${SITE_FOUNDER.displayName.trim()} — kurucu fotoğrafı`
+                          : "Kurucu fotoğrafı"
+                      }
+                      fill
+                      className="object-cover object-top"
+                      sizes="(max-width: 768px) 160px, 192px"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="flex h-40 w-40 shrink-0 items-center justify-center rounded-2xl border border-emerald-500/25 bg-linear-to-br from-emerald-600/30 to-emerald-950/50 text-3xl font-bold tracking-tight text-emerald-50 shadow-2xl ring-2 ring-emerald-500/25 md:h-48 md:w-48 md:text-4xl"
+                    aria-hidden
+                  >
+                    {SITE_FOUNDER.initials}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1 text-center md:text-left">
+                  <div className="inline-flex flex-col items-center md:items-start">
+                    <p className={eyebrow}>Kurucu & Geliştirici</p>
+                    <span
+                      className="mt-4 inline-block h-1 w-35 rounded-full bg-linear-to-r from-emerald-500 to-emerald-400"
+                      aria-hidden
+                    />
+                  </div>
+                  <blockquote
+                    id="about-founder-heading"
+                    className="mt-8 border-l-[3px] border-emerald-500/50 pl-5 text-pretty text-base font-light italic leading-[1.75] text-muted-foreground md:border-l-4 md:pl-6 md:text-lg md:leading-relaxed"
+                  >
+                    &ldquo;{SITE_FOUNDER.quote}&rdquo;
+                  </blockquote>
+                  <div className="mt-8 space-y-2">
+                    <Link
+                      href={SITE_FOUNDER.personalSiteUrl}
+                      prefetch={false}
+                      className="inline-block text-xl font-semibold tracking-tight text-emerald-600 underline-offset-[6px] transition hover:underline dark:text-emerald-400"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      {SITE_FOUNDER.displayName}
+                    </Link>
+                    <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground md:text-xs">
+                      {SITE_FOUNDER.credentials}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
           className={`${aboutSectionBase} py-16 md:py-24`}
           aria-labelledby="about-mission-heading"
         >
@@ -457,63 +526,27 @@ export default function HakkimizdaPage() {
               </h2>
               <div className="mt-6 space-y-5 text-pretty text-muted-foreground md:text-lg md:leading-relaxed">
                 <p>
-                  Arayüzü{" "}
-                  <span className="font-semibold text-foreground">Next.js</span>{" "}
-                  ve{" "}
-                  <span className="font-semibold text-foreground">React</span>{" "}
-                  üzerine kurdum; sunucu tarafında{" "}
-                  <span className="font-semibold text-foreground">Node.js</span>
-                  , kalıcı veriyi{" "}
-                  <span className="font-semibold text-foreground">Prisma</span>{" "}
-                  ve{" "}
-                  <span className="font-semibold text-foreground">MySQL</span>{" "}
-                  ile yönetiyorum; veritabanı ve ilişkili servisleri{" "}
-                  <span className="font-semibold text-foreground">Railway</span>{" "}
-                  ile barındırıyorum. Üretimde{" "}
-                  <span className="font-semibold text-foreground">Vercel</span>{" "}
-                  ile derleyip yayımlıyorum.
+                  Finans verisi taşıyan bir üründe, hangi katmanların bir arada
+                  çalıştığını gizlemek yerine{" "}
+                  <span className="font-semibold text-foreground">
+                    açıkça paylaşmayı
+                  </span>{" "}
+                  doğru buluyorum: böylece hem güven hem de &quot;bu sistem
+                  sürdürülebilir mi?&quot; sorusuna net bir çerçeve çiziliyor.
                 </p>
                 <p>
-                  Premium ödemeler{" "}
-                  <Link
-                    href="https://www.shopier.com/iqfinansai/46432141"
-                    prefetch={false}
-                    className="font-semibold text-foreground underline-offset-4 transition-colors hover:text-emerald-600 hover:underline dark:hover:text-emerald-400"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Shopier
-                  </Link>{" "}
-                  üzerinden gerçekleşiyor; canlı kur, kripto ve emtia fiyatları
-                  anlık olarak sisteme aktarılıyor.{" "}
-                  <span className="font-semibold text-foreground">SEO</span> ve
-                  arama görünürlüğünü{" "}
+                  Aşağıdaki kartlarda araçları{" "}
                   <span className="font-semibold text-foreground">
-                    Google Search Console
-                  </span>
-                  , ziyaretleri{" "}
-                  <span className="font-semibold text-foreground">
-                    Google Analytics
+                    tek tek sıralamak
                   </span>{" "}
-                  ile ölçüyorum. Tanıtım için reklamları{" "}
+                  yerine, ön uçtan veri tabanına, ödemeden piyasa beslemesine
+                  kadar{" "}
                   <span className="font-semibold text-foreground">
-                    Meta Ads Manager
+                    hangi işin nerede çözüldüğünü
                   </span>{" "}
-                  üzerinden{" "}
-                  <span className="font-semibold text-foreground">
-                    Instagram
-                  </span>
-                  ’da yürüttüm. Alan adını{" "}
-                  <Link
-                    href="https://www.ixirhost.com/"
-                    prefetch={false}
-                    className="font-semibold text-foreground underline-offset-4 transition-colors hover:text-emerald-600 hover:underline dark:hover:text-emerald-400"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    ixirhost
-                  </Link>{" "}
-                  üzerinden tutuyorum.
+                  grupladım. Merak ettiğiniz bir satır olursa ilgili karttan
+                  gidebilir; burada amaç liste atmak değil, mimariyi anlaşılır
+                  kılmak.
                 </p>
               </div>
             </div>
@@ -559,45 +592,6 @@ export default function HakkimizdaPage() {
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-
-        <section
-          className={`${aboutSectionBase} border-b-slate-300/55 py-20 dark:border-b-white/10 md:py-24`}
-          aria-labelledby="about-team-heading"
-        >
-          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
-            <div className="mx-auto max-w-4xl text-center">
-              <h2
-                id="about-team-heading"
-                className="text-2xl font-bold tracking-tight text-foreground md:text-3xl"
-              >
-                Geliştirici Notu
-              </h2>
-              <div className="mt-8 flex justify-center">
-                <div className="h-1 w-12 rounded-full bg-emerald-500" />
-              </div>
-              <p className="mt-8 text-pretty text-muted-foreground leading-relaxed md:text-lg italic">
-                &quot;Finansal bağımsızlık sadece ne kadar kazandığınızla değil,
-                sahip olduklarınızı ne kadar iyi yönettiğinizle ilgilidir.
-                IQfinansAI&apos;yi bu yönetimi herkes için adil ve erişilebilir
-                kılmak için inşa ediyorum.&quot;
-              </p>
-              <p className="mt-6 text-foreground font-medium">
-                <Link
-                  href="http://omerhalisdemir.com.tr/"
-                  prefetch={false}
-                  className="text-emerald-600 underline-offset-4 transition hover:underline dark:text-emerald-400"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Ömer Halis Demir
-                </Link>
-                <span className="block text-xs text-muted-foreground mt-1 uppercase tracking-widest font-normal">
-                  Full Stack Developer & Elektrik Elektronik Mühendisi
-                </span>
-              </p>
-            </div>
           </div>
         </section>
       </main>

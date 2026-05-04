@@ -2,6 +2,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
+import { LandingHeroTrust } from "@/components/landing/landing-hero-trust";
 import { Button } from "@/components/ui/button";
 
 const LandingHeroIsometricIllustration = dynamic(
@@ -104,6 +105,8 @@ export function LandingHero() {
                 <ArrowUpRight className="h-3.5 w-3.5 opacity-70 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
               </Link>
             </div>
+
+            <LandingHeroTrust />
           </div>
 
           <div className="hidden w-full min-w-0 xl:block xl:w-[480px] 2xl:w-[540px] xl:shrink-0">

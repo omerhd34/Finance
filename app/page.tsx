@@ -4,6 +4,7 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
 import { LandingPricingSection } from "@/components/landing/landing-pricing-section";
+import { LandingTestimonialsSection } from "@/components/landing/landing-testimonials-section";
 import { LandingJsonLd } from "@/components/seo/landing-json-ld";
 
 export default function LandingPage() {
@@ -13,6 +14,7 @@ export default function LandingPage() {
       <LandingHeader />
       <main className="flex-1">
         <LandingHero />
+        <LandingTestimonialsSection />
         <LandingFeaturesSection />
         <LandingPricingSection />
       </main>
