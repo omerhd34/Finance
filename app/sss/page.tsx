@@ -140,7 +140,7 @@ export default function SssIndexPage() {
           className="border-b border-border/60 pb-14 pt-24 md:pb-20 md:pt-28"
           aria-labelledby="sss-hero-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-3xl text-center">
               <p className={eyebrow}>
                 <CircleHelp
@@ -179,7 +179,7 @@ export default function SssIndexPage() {
         </section>
 
         <section className="py-12 md:py-16" aria-label="SSS konu başlıkları">
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-5xl space-y-8 md:space-y-10">
               {SSSPosts.map((post) => (
                 <SssWideCard key={post.slug} post={post} />
@@ -192,7 +192,7 @@ export default function SssIndexPage() {
           className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent py-14 md:py-20"
           aria-labelledby="sss-cta-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
               <h2
                 id="sss-cta-heading"

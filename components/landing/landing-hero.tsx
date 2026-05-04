@@ -9,7 +9,7 @@ const trustItems = [
   "Canlı işlem takibi",
   "AI finans özeti",
   "Borç, bütçe ve hedefler",
-  "Kur, yatırım ve aylık özet",
+  "Kur, yatırım ve özet",
 ];
 
 export function LandingHero() {
@@ -39,7 +39,7 @@ export function LandingHero() {
         <div className="absolute -right-[15%] bottom-0 h-[min(45vw,360px)] w-[min(45vw,360px)] rounded-full bg-teal-400/10 blur-[90px]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 xl:px-0">
         <div className="flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-12 2xl:gap-20">
           <div className="flex-1 text-center xl:text-left">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-white/90 px-3.5 py-1 text-[10px] font-semibold tracking-wide text-emerald-800 shadow-md shadow-black/10 ring-1 ring-emerald-500/25 backdrop-blur-md dark:border-emerald-400/35 dark:bg-emerald-950/40 dark:text-emerald-100 dark:ring-emerald-400/20 md:text-xs">

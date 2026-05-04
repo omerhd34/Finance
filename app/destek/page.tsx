@@ -63,29 +63,29 @@ export default function DestekPage() {
           className="border-b border-border/60 pb-14 pt-24 md:pb-20 md:pt-28"
           aria-labelledby="support-hero-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-3xl text-center">
-            <p className={eyebrow}>Yardım merkezi</p>
-            <h1
-              id="support-hero-heading"
-              className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-tight"
-            >
-              Sorularınıza{" "}
-              <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-emerald-400 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-emerald-500">
-                hızlı yanıt
-              </span>
-            </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Ürünle ilgili ayrıntılı soru ve yanıtlar için{" "}
-              <Link
-                href="/sss"
-                className="font-medium text-emerald-600 underline underline-offset-4 hover:text-emerald-500 dark:text-emerald-400"
+              <p className={eyebrow}>Yardım merkezi</p>
+              <h1
+                id="support-hero-heading"
+                className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl md:leading-tight"
               >
-                SSS
-              </Link>{" "}
-              sayfasına göz atın. Aradığınızı bulamazsanız aşağıdaki formdan
-              bize yazın.
-            </p>
+                Sorularınıza{" "}
+                <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-emerald-400 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-400 dark:to-emerald-500">
+                  hızlı yanıt
+                </span>
+              </h1>
+              <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Ürünle ilgili ayrıntılı soru ve yanıtlar için{" "}
+                <Link
+                  href="/sss"
+                  className="font-medium text-emerald-600 underline underline-offset-4 hover:text-emerald-500 dark:text-emerald-400"
+                >
+                  SSS
+                </Link>{" "}
+                sayfasına göz atın. Aradığınızı bulamazsanız aşağıdaki formdan
+                bize yazın.
+              </p>
             </div>
           </div>
         </section>
@@ -96,23 +96,24 @@ export default function DestekPage() {
         >
           <div className="mx-auto w-full max-w-7xl">
             <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-              <Mail className="h-6 w-6" aria-hidden />
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <Mail className="h-6 w-6" aria-hidden />
+              </div>
+              <h2
+                id="support-contact-heading"
+                className="mt-4 text-xl font-bold tracking-tight text-foreground md:text-2xl"
+              >
+                Bize yazın
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground md:text-base">
+                Formu doldurun; mesajınız doğrudan destek gelen kutumuza
+                iletilir.
+              </p>
             </div>
-            <h2
-              id="support-contact-heading"
-              className="mt-4 text-xl font-bold tracking-tight text-foreground md:text-2xl"
-            >
-              Bize yazın
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground md:text-base">
-              Formu doldurun; mesajınız doğrudan destek gelen kutumuza iletilir.
-            </p>
-            </div>
-          <SupportContactForm
-            inboxConfigured={inboxConfigured}
-            className="mx-auto mt-2"
-          />
+            <SupportContactForm
+              inboxConfigured={inboxConfigured}
+              className="mx-auto mt-2"
+            />
           </div>
         </section>
 
@@ -122,26 +123,26 @@ export default function DestekPage() {
         >
           <div className="mx-auto w-full max-w-7xl">
             <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
-            <h2
-              id="support-cta-heading"
-              className="text-balance text-xl font-bold tracking-tight text-foreground md:text-2xl"
-            >
-              Henüz hesabınız yok mu?
-            </h2>
-            <p className="text-pretty text-muted-foreground md:text-lg">
-              Dakikalar içinde kayıt olun; bütçe ve harcamalarınızı düzenlemeye
-              başlayın.
-            </p>
-            <Button
-              size="lg"
-              asChild
-              className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
-            >
-              <Link href="/kayit">
-                Kayıt ol
-                <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-              </Link>
-            </Button>
+              <h2
+                id="support-cta-heading"
+                className="text-balance text-xl font-bold tracking-tight text-foreground md:text-2xl"
+              >
+                Henüz hesabınız yok mu?
+              </h2>
+              <p className="text-pretty text-muted-foreground md:text-lg">
+                Dakikalar içinde kayıt olun; bütçe ve harcamalarınızı
+                düzenlemeye başlayın.
+              </p>
+              <Button
+                size="lg"
+                asChild
+                className="rounded-full bg-emerald-500 px-8 font-semibold text-white shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 hover:shadow-lg dark:shadow-emerald-900/50"
+              >
+                <Link href="/kayit">
+                  Kayıt ol
+                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

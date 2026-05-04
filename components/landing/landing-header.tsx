@@ -30,7 +30,7 @@ export function LandingHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-border/60 bg-slate-100/95 backdrop-blur-xl dark:bg-[#050507]/95">
-      <div className="mx-auto flex h-14 w-full max-w-7xl flex-col items-center justify-between sm:h-16 sm:flex-row">
+      <div className="mx-auto flex h-14 w-full max-w-7xl px-4 xl:px-0 flex-col items-center justify-between sm:h-16 sm:flex-row">
         <div className="flex h-full w-full items-center justify-between">
           <Link
             href="/"

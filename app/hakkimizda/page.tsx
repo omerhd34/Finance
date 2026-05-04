@@ -254,7 +254,7 @@ export default function HakkimizdaPage() {
           className={`${aboutSectionBase} pb-16 pt-24 md:pb-20 md:pt-28`}
           aria-labelledby="about-hero-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-3xl text-center">
               <p className={eyebrow}>Vizyonum</p>
               <h1
@@ -281,7 +281,7 @@ export default function HakkimizdaPage() {
           className={`${aboutSectionBase} py-16 md:py-24`}
           aria-labelledby="about-mission-heading"
         >
-          <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
+          <div className="mx-auto grid w-full max-w-7xl px-4 xl:px-0 gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
             <div>
               <h2
                 id="about-mission-heading"
@@ -356,7 +356,7 @@ export default function HakkimizdaPage() {
           className={`${aboutSectionBase} py-16 md:py-24`}
           aria-labelledby="about-values-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-2xl text-center">
               <p className={eyebrow}>Değerlerim</p>
               <h2
@@ -395,7 +395,7 @@ export default function HakkimizdaPage() {
           className={`${aboutSectionBase} py-16 md:py-20`}
           aria-labelledby="about-cta-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-3xl border border-emerald-500/20 bg-linear-to-b from-card/80 to-card/40 px-6 py-12 text-center shadow-2xl backdrop-blur-md md:px-16 md:py-16">
               <h2
                 id="about-cta-heading"
@@ -440,7 +440,7 @@ export default function HakkimizdaPage() {
             aria-hidden="true"
           />
 
-          <div className="mx-auto w-full max-w-7xl relative z-10">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0 relative z-10">
             <div className="mx-auto max-w-6xl text-center">
               <p className={eyebrow}>
                 <Code2
@@ -566,7 +566,7 @@ export default function HakkimizdaPage() {
           className={`${aboutSectionBase} border-b-slate-300/55 py-20 dark:border-b-white/10 md:py-24`}
           aria-labelledby="about-team-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-4xl text-center">
               <h2
                 id="about-team-heading"

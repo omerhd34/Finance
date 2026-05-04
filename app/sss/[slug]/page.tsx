@@ -84,7 +84,7 @@ export default async function SssTopicPage({ params }: Props) {
       />
       <LandingHeader />
       <main className="flex-1 border-b border-slate-300/90 pb-20 pt-24 dark:border-white/10 md:pt-28">
-        <div className="mx-auto w-full max-w-7xl">
+        <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
           <article className="mx-auto max-w-5xl">
           <nav aria-label="SSS içi gezinme">
             <Button
