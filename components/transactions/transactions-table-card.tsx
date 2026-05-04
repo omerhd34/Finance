@@ -16,6 +16,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { LoadingMessage } from "@/components/ui/loading-message";
+import { isDebtMirrorTransaction } from "@/lib/transactions/debt-mirror-transaction";
+import {
+  RECURRING_DESC_PREFIX,
+  TransactionDescriptionText,
+} from "@/components/transactions/transaction-description-text";
 import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
@@ -73,7 +78,7 @@ export function TransactionsTableCard({
                 </TableHead>
                 <TableHead>Kategori</TableHead>
                 <TableHead>Açıklama</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="text-right pr-8 sm:pr-12">
                   <button
                     type="button"
                     onClick={onAmountSortToggle}
@@ -83,7 +88,7 @@ export function TransactionsTableCard({
                     Tutar
                   </button>
                 </TableHead>
-                <TableHead>Tür</TableHead>
+                <TableHead className="pl-4 sm:pl-8">Tür</TableHead>
                 <TableHead className="text-right">İşlemler</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,22 +121,28 @@ export function TransactionsTableCard({
                     const isRecurringTransaction =
                       Boolean(t.recurringRuleId) ||
                       Boolean(t.recurringSlotKey) ||
-                      t.description?.startsWith("[Tekrarlayan]") === true;
+                      t.description?.startsWith(RECURRING_DESC_PREFIX) ===
+                        true;
+                    const isDebtRow = isDebtMirrorTransaction(t);
+                    const hideEdit = isRecurringTransaction || isDebtRow;
+                    const hideDelete = isDebtRow || isRecurringTransaction;
+                    const noActionButtons = hideEdit && hideDelete;
 
                     return (
                       <TableRow
                         key={t.id}
-                        className={
-                          isRecurringTransaction
-                            ? "[&>td]:bg-emerald-500/10 hover:[&>td]:bg-emerald-500/15 "
-                            : "hover:bg-primary/3 transition-colors duration-150"
-                        }
+                        className={cn(
+                          "transition-colors duration-150",
+                          t.type === "income"
+                            ? "[&>td]:bg-emerald-50/90 hover:[&>td]:bg-emerald-100 dark:[&>td]:bg-emerald-950/50 dark:hover:[&>td]:bg-emerald-950/65"
+                            : "[&>td]:bg-red-50/90 hover:[&>td]:bg-red-100 dark:[&>td]:bg-red-950/50 dark:hover:[&>td]:bg-red-950/65",
+                        )}
                       >
                         <TableCell>{formatDateShort(t.date)}</TableCell>
                         <TableCell>
                           <Link
                             href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
-                            className="text-primary underline-offset-4 hover:underline"
+                            className="text-foreground underline-offset-4 decoration-muted-foreground/50 hover:underline hover:text-foreground hover:decoration-foreground/40"
                           >
                             {formatExpenseCategoryLabel(
                               t.category,
@@ -139,40 +150,57 @@ export function TransactionsTableCard({
                             )}
                           </Link>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate">
-                          {t.description ?? "—"}
+                        <TableCell className="max-w-[200px]">
+                          <span className="block truncate">
+                            <TransactionDescriptionText
+                              description={t.description}
+                            />
+                          </span>
                         </TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">
+                        <TableCell className="text-right font-medium tabular-nums pr-8 sm:pr-12">
                           {formatMoneyAmount(t.amount, currency)}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="pl-4 sm:pl-8">
                           <Badge
                             variant={t.type === "income" ? "income" : "expense"}
                           >
                             {t.type === "income" ? "Gelir" : "Gider"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          {!isRecurringTransaction ? (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label="Düzenle"
-                              onClick={() => onEdit(t)}
-                              className="cursor-pointer"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          ) : null}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive cursor-pointer"
-                            aria-label="Sil"
-                            onClick={() => onDelete(t)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <TableCell className="text-right align-middle">
+                          <div className="inline-flex min-h-9 items-center justify-end gap-0.5">
+                            {!hideEdit ? (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Düzenle"
+                                onClick={() => onEdit(t)}
+                                className="cursor-pointer"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            ) : null}
+                            {!hideDelete ? (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive cursor-pointer"
+                                aria-label="Sil"
+                                onClick={() => onDelete(t)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            ) : null}
+                            {noActionButtons ? (
+                              <span
+                                className="inline-flex items-center"
+                                aria-hidden
+                              >
+                                <span className="size-9 shrink-0" />
+                                <span className="size-9 shrink-0" />
+                              </span>
+                            ) : null}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );

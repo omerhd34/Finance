@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Transaction } from "@/types/transaction";
+import { TransactionDescriptionText } from "@/components/transactions/transaction-description-text";
 import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
 import { formatDateShort, formatMoneyAmount } from "@/lib/common/utils";
 
@@ -85,8 +86,10 @@ export function DashboardRecentTransactionsCard({
                   <TableCell>
                     {formatExpenseCategoryLabel(t.category, t.subcategory)}
                   </TableCell>
-                  <TableCell className="max-w-[140px] truncate">
-                    {t.description ?? "—"}
+                  <TableCell className="max-w-[140px]">
+                    <span className="block truncate">
+                      <TransactionDescriptionText description={t.description} />
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Badge variant={t.type === "income" ? "income" : "expense"}>
