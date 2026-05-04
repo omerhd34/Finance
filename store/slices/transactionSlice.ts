@@ -47,7 +47,7 @@ const initialState: TransactionState = {
   filters: initialFilters,
   total: 0,
   page: 1,
-  pageSize: 10,
+  pageSize: 5,
 };
 
 function buildQuery(

@@ -31,7 +31,7 @@ export async function GET(req: Request) {
     const page = Math.max(1, Number(searchParams.get("page") ?? "1"));
     const pageSize = Math.min(
       100,
-      Math.max(1, Number(searchParams.get("pageSize") ?? "10")),
+      Math.max(1, Number(searchParams.get("pageSize") ?? "5")),
     );
     const limit = searchParams.get("limit");
 
@@ -114,7 +114,9 @@ export async function POST(req: Request) {
       parsed.data;
     const sub =
       type === "expense"
-        ? (subcategory?.trim() ? subcategory.trim() : null)
+        ? subcategory?.trim()
+          ? subcategory.trim()
+          : null
         : null;
     const tx = await prisma.transaction.create({
       data: {
