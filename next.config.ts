@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   experimental: {
     inlineCss: true,
+    optimizePackageImports: ["lucide-react"],
   },
   async redirects() {
     return [

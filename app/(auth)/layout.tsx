@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { AuthSessionProvider } from "@/components/auth-session-provider";
 import { auth } from "@/lib/auth/auth";
 
 export const metadata: Metadata = {
@@ -19,5 +20,5 @@ export default async function AuthGroupLayout({
   if (session?.user) {
     redirect("/gosterge-paneli");
   }
-  return <>{children}</>;
+  return <AuthSessionProvider>{children}</AuthSessionProvider>;
 }

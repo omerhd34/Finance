@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@wrksz/themes/next";
-import { Providers } from "@/components/providers";
 import { siteMetadata } from "@/lib/site/metadata";
 import Script from "next/script";
 
@@ -53,7 +52,7 @@ export default function RootLayout({
           enableSystem={false}
           themes={["light", "dark"]}
         >
-          <Providers>{children}</Providers>
+          {children}
         </ThemeProvider>
       </body>
     </html>
