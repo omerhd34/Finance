@@ -14,6 +14,7 @@ import { AiInsightsExportDropdown } from "@/components/ai-insights/ai-insights-e
 import { AiInsightsHistoryDialog } from "@/components/ai-insights/ai-insights-history-dialog";
 import { AiInsightsRunControls } from "@/components/ai-insights/ai-insights-run-controls";
 import { AiInsightsLoadingSkeleton } from "@/components/ai-insights/ai-insights-loading-skeleton";
+import { AiRemainingUsageChip } from "@/components/ai-insights/ai-remaining-usage-chip";
 import { AiInsightsSections } from "@/components/ai-insights/ai-insights-sections";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
@@ -37,6 +38,32 @@ function AiAnalizPage() {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState<"pdf" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [remainingAnalyses, setRemainingAnalyses] = useState<number | null>(null);
+  const [usageLoading, setUsageLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadUsage() {
+      setUsageLoading(true);
+      try {
+        const { data } = await apiClient.get<{
+          remainingQuestions: number;
+          remainingAnalyses: number;
+        }>("/api/ai/usage");
+        if (!mounted) return;
+        setRemainingAnalyses(data.remainingAnalyses);
+      } catch {
+        if (!mounted) return;
+        setRemainingAnalyses(0);
+      } finally {
+        if (mounted) setUsageLoading(false);
+      }
+    }
+    void loadUsage();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   async function run() {
     setLoading(true);
@@ -46,6 +73,9 @@ function AiAnalizPage() {
         "/api/ai/analyze",
       );
       setMarkdown(data.markdown);
+      setRemainingAnalyses((prev) =>
+        prev == null ? prev : Math.max(0, prev - 1),
+      );
     } catch (err) {
       setError(messageFromAiAnalyzeError(err));
     } finally {
@@ -126,6 +156,11 @@ function AiAnalizPage() {
                 setMarkdown(md);
                 setError(null);
               }}
+            />
+            <AiRemainingUsageChip
+              mode="analyses"
+              remaining={remainingAnalyses}
+              loading={usageLoading}
             />
           </>
         }

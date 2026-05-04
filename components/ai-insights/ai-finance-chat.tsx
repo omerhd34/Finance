@@ -11,6 +11,7 @@ import { messageFromAiAnalyzeError } from "@/lib/ai/ai-insights-errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AiChatHistoryDialog } from "@/components/ai-insights/ai-chat-history-dialog";
+import { AiRemainingUsageChip } from "@/components/ai-insights/ai-remaining-usage-chip";
 import { VoiceToTextButton } from "@/components/ai-insights/voice-to-text-button";
 import { cn } from "@/lib/common/utils";
 
@@ -27,11 +28,37 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [digestLoading, setDigestLoading] = useState(false);
   const [digestCopied, setDigestCopied] = useState(false);
+  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
+  const [usageLoading, setUsageLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadUsage() {
+      setUsageLoading(true);
+      try {
+        const { data } = await apiClient.get<{
+          remainingQuestions: number;
+          remainingAnalyses: number;
+        }>("/api/ai/usage");
+        if (!mounted) return;
+        setRemainingQuestions(data.remainingQuestions);
+      } catch {
+        if (!mounted) return;
+        setRemainingQuestions(0);
+      } finally {
+        if (mounted) setUsageLoading(false);
+      }
+    }
+    void loadUsage();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const send = useCallback(async () => {
     const q = input.trim();
@@ -47,6 +74,9 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
         messages: snapshot,
       });
       setMessages([...snapshot, { role: "assistant", content: data.reply }]);
+      setRemainingQuestions((prev) =>
+        prev == null ? prev : Math.max(0, prev - 1),
+      );
     } catch (err) {
       setError(messageFromAiAnalyzeError(err));
       setMessages(prev);
@@ -116,16 +146,26 @@ export function AiFinanceChat({ showIntroCard = true }: Props) {
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {historyDialog}
               {digestButton}
+              <AiRemainingUsageChip
+                mode="questions"
+                remaining={remainingQuestions}
+                loading={usageLoading}
+              />
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {historyDialog}
           {digestButton}
+          <AiRemainingUsageChip
+            mode="questions"
+            remaining={remainingQuestions}
+            loading={usageLoading}
+          />
         </div>
       )}
 
