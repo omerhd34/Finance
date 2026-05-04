@@ -57,10 +57,10 @@ export function LandingHero() {
 
             <h1
               id="landing-hero-heading"
-              className="mt-6 text-balance text-4xl font-bold tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl md:leading-[1.08]"
+              className="isolate mt-6 text-balance text-4xl font-bold leading-[1.12] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)] sm:text-5xl sm:leading-[1.1] md:text-6xl md:leading-[1.08]"
             >
               Finansını{" "}
-              <span className="bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-400 bg-clip-text text-transparent">
+              <span className="inline-block transform-gpu bg-linear-to-r from-emerald-200 via-emerald-300 to-emerald-400 bg-clip-text text-transparent [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
                 akıllıca
               </span>{" "}
               yönet

@@ -8,6 +8,9 @@ import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
@@ -29,7 +32,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body
+        className={`${geistSans.className} min-h-full flex flex-col bg-background text-foreground`}
+      >
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-X6CFQR7EP5`}
           strategy="lazyOnload"
