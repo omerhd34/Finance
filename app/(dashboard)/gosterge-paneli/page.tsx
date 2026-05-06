@@ -216,6 +216,49 @@ export default function DashboardPage() {
     [investmentPositions, liveQuotes],
   );
 
+  const investmentPnlBreakdown = useMemo(() => {
+    const gold = aggregatePositionsTry(investmentPositions, "GOLD", liveQuotes);
+    const fx = aggregatePositionsTry(investmentPositions, "FX", liveQuotes);
+    const stock = aggregatePositionsTry(
+      investmentPositions,
+      "STOCK",
+      liveQuotes,
+    );
+    const crypto = aggregatePositionsTry(
+      investmentPositions,
+      "CRYPTO",
+      liveQuotes,
+    );
+    const c = aggregatePositionsTry(
+      investmentPositions,
+      "COMMODITY",
+      liveQuotes,
+    );
+    const pt = aggregatePositionsTry(
+      investmentPositions,
+      "PLATINUM",
+      liveQuotes,
+    );
+    const ag = aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes);
+    const commodityCount = c.count + pt.count + ag.count;
+    const commodityPnl = c.pnlTry + pt.pnlTry + ag.pnlTry;
+
+    const entries: { label: string; pnlTry: number; count: number }[] = [
+      { label: "Altın", pnlTry: gold.pnlTry, count: gold.count },
+      { label: "Döviz", pnlTry: fx.pnlTry, count: fx.count },
+      { label: "Hisse senedi", pnlTry: stock.pnlTry, count: stock.count },
+      { label: "Emtia", pnlTry: commodityPnl, count: commodityCount },
+      { label: "Kripto", pnlTry: crypto.pnlTry, count: crypto.count },
+    ];
+
+    return entries
+      .filter((e) => e.count > 0)
+      .map(({ label, pnlTry }) => ({
+        label,
+        pnlTry,
+      }));
+  }, [investmentPositions, liveQuotes]);
+
   const financialHealth = useMemo(
     () =>
       computeFinancialHealthScore({
@@ -228,46 +271,6 @@ export default function DashboardPage() {
       }),
     [stats, debtTotals, planPremium, investmentPnl],
   );
-
-  const stockSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "STOCK", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
-  const goldSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "GOLD", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
-  const fxSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "FX", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
-  const cryptoSummary = useMemo(
-    () => aggregatePositionsTry(investmentPositions, "CRYPTO", liveQuotes),
-    [investmentPositions, liveQuotes],
-  );
-
-  const commoditySummary = useMemo(() => {
-    const c = aggregatePositionsTry(
-      investmentPositions,
-      "COMMODITY",
-      liveQuotes,
-    );
-    const pt = aggregatePositionsTry(
-      investmentPositions,
-      "PLATINUM",
-      liveQuotes,
-    );
-    const ag = aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes);
-    return {
-      count: c.count + pt.count + ag.count,
-      costTry: c.costTry + pt.costTry + ag.costTry,
-      valueTry: c.valueTry + pt.valueTry + ag.valueTry,
-      pnlTry: c.pnlTry + pt.pnlTry + ag.pnlTry,
-    };
-  }, [investmentPositions, liveQuotes]);
 
   const upcomingRecurring = useMemo(() => {
     return [...recurringRules]
@@ -345,15 +348,11 @@ export default function DashboardPage() {
         />
       ) : null}
 
-      {planPremium ? (
+      {planPremium && investmentPositions.length > 0 ? (
         <DashboardInvestmentSection
-          planPremium={planPremium}
           currency={currency}
-          stockSummary={stockSummary}
-          fxSummary={fxSummary}
-          cryptoSummary={cryptoSummary}
-          commoditySummary={commoditySummary}
-          goldSummary={goldSummary}
+          totalPnlTry={investmentPnl}
+          breakdown={investmentPnlBreakdown}
         />
       ) : null}
 
