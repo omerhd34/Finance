@@ -9,7 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import type { CategorySlice, MonthlyBarRow } from "@/lib/dashboard/dashboard-stats";
+import type {
+  CategorySlice,
+  MonthlyBarRow,
+} from "@/lib/dashboard/dashboard-stats";
 
 type Props = {
   bars: MonthlyBarRow[];
@@ -37,7 +40,7 @@ export function DashboardChartsSection({
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card className="overflow-hidden">
+      <Card>
         <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
           <div className="flex min-w-0 gap-3.5">
             <div
