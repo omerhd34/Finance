@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpRight,
   Bitcoin,
   Coins,
+  ExternalLink,
   LineChart,
   Package,
   Wallet,
@@ -30,7 +28,6 @@ type InvestmentCardConfig = {
   summary: InvestmentAggregate;
 };
 
-const ORDER_STORAGE_KEY = "iqfinansai-dashboard-investment-order-v1";
 const DEFAULT_ORDER: AssetKey[] = [
   "GOLD",
   "FX",
@@ -38,40 +35,6 @@ const DEFAULT_ORDER: AssetKey[] = [
   "COMMODITY",
   "CRYPTO",
 ];
-
-function loadSavedOrder(): AssetKey[] {
-  if (typeof window === "undefined") return DEFAULT_ORDER;
-  try {
-    const raw = window.localStorage.getItem(ORDER_STORAGE_KEY);
-    if (!raw) return DEFAULT_ORDER;
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return DEFAULT_ORDER;
-    const normalized = parsed.map((v: unknown) =>
-      v === "PLATINUM" || v === "SILVER" ? "COMMODITY" : v,
-    );
-    const cleaned = normalized.filter(
-      (v): v is AssetKey =>
-        v === "STOCK" ||
-        v === "FX" ||
-        v === "CRYPTO" ||
-        v === "GOLD" ||
-        v === "COMMODITY",
-    );
-    const seen = new Set<AssetKey>();
-    const unique = cleaned.filter((k) => {
-      if (seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    });
-    const missing = DEFAULT_ORDER.filter((k) => !unique.includes(k));
-    const nextOrder = [...unique, ...missing];
-    return nextOrder.length === DEFAULT_ORDER.length
-      ? nextOrder
-      : DEFAULT_ORDER;
-  } catch {
-    return DEFAULT_ORDER;
-  }
-}
 
 type Props = {
   planPremium: boolean;
@@ -92,19 +55,6 @@ export function DashboardInvestmentSection({
   commoditySummary,
   goldSummary,
 }: Props) {
-  const [assetOrder, setAssetOrder] = useState<AssetKey[]>(loadSavedOrder);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        ORDER_STORAGE_KEY,
-        JSON.stringify(assetOrder),
-      );
-    } catch {
-      /* ignore */
-    }
-  }, [assetOrder]);
-
   const visibleCards = useMemo<InvestmentCardConfig[]>(() => {
     if (!planPremium) return [];
     return [
@@ -169,42 +119,16 @@ export function DashboardInvestmentSection({
   ]);
 
   const orderedCards = useMemo(() => {
-    const rank = new Map(assetOrder.map((k, i) => [k, i] as const));
+    const rank = new Map(DEFAULT_ORDER.map((k, i) => [k, i] as const));
     return [...visibleCards].sort(
       (a, b) => (rank.get(a.key) ?? 999) - (rank.get(b.key) ?? 999),
     );
-  }, [visibleCards, assetOrder]);
+  }, [visibleCards]);
 
   const visibleCardCount = orderedCards.length;
 
   if (!planPremium || visibleCardCount === 0) {
     return null;
-  }
-
-  function moveCard(cardKey: AssetKey, direction: -1 | 1) {
-    const visibleKeys = orderedCards.map((c) => c.key);
-    const currentVisibleIndex = visibleKeys.indexOf(cardKey);
-    const targetVisibleIndex = currentVisibleIndex + direction;
-    if (
-      currentVisibleIndex < 0 ||
-      targetVisibleIndex < 0 ||
-      targetVisibleIndex >= visibleKeys.length
-    ) {
-      return;
-    }
-
-    const targetKey = visibleKeys[targetVisibleIndex];
-    setAssetOrder((prev) => {
-      const next = [...prev];
-      const sourceIndex = next.indexOf(cardKey);
-      const targetIndex = next.indexOf(targetKey);
-      if (sourceIndex < 0 || targetIndex < 0) return prev;
-      [next[sourceIndex], next[targetIndex]] = [
-        next[targetIndex],
-        next[sourceIndex],
-      ];
-      return next;
-    });
   }
 
   return (
@@ -213,10 +137,8 @@ export function DashboardInvestmentSection({
         visibleCardCount === 1 ? "grid-cols-1" : "sm:grid-cols-2"
       } lg:gap-8`}
     >
-      {orderedCards.map((card, idx) => {
+      {orderedCards.map((card) => {
         const Icon = card.icon;
-        const canMoveUp = idx > 0;
-        const canMoveDown = idx < orderedCards.length - 1;
 
         return (
           <Card
@@ -237,34 +159,6 @@ export function DashboardInvestmentSection({
                   </h3>
                 </div>
                 <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
-                  {visibleCardCount > 1 ? (
-                    <>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => moveCard(card.key, -1)}
-                        disabled={!canMoveUp}
-                        aria-label={`${card.title} kartını sola taşı`}
-                        title="Sola taşı"
-                      >
-                        <ArrowUp className="h-4 w-4" aria-hidden />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => moveCard(card.key, 1)}
-                        disabled={!canMoveDown}
-                        aria-label={`${card.title} kartını sağa taşı`}
-                        title="Sağa taşı"
-                      >
-                        <ArrowDown className="h-4 w-4" aria-hidden />
-                      </Button>
-                    </>
-                  ) : null}
                   <Button
                     variant="outline"
                     size="sm"
@@ -276,7 +170,7 @@ export function DashboardInvestmentSection({
                       className="w-full justify-center gap-1.5 sm:w-auto"
                     >
                       Yatırımlar
-                      <ArrowUpRight
+                      <ExternalLink
                         className="h-3.5 w-3.5 opacity-70"
                         aria-hidden
                       />
