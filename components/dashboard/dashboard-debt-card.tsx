@@ -50,10 +50,13 @@ export function DashboardDebtCard({
         <Button
           variant="outline"
           size="sm"
-          className="shrink-0 gap-1.5"
+          className="w-full shrink-0 gap-1.5 sm:w-auto"
           asChild
         >
-          <Link href="/borc-ve-alacak">
+          <Link
+            href="/borc-ve-alacak"
+            className="flex w-full items-center justify-center gap-1.5 sm:inline-flex sm:w-auto"
+          >
             Tümünü gör
             <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
           </Link>
