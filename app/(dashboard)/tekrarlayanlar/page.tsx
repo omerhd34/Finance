@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { displayAmountToTry, type UserDisplayCurrency } from "@/lib/common/currency";
+import {
+  displayAmountToTry,
+  type UserDisplayCurrency,
+} from "@/lib/common/currency";
 import { formValueToExpenseSubcategory } from "@/lib/domain/categories";
 import { isRecurringReminderDue } from "@/lib/recurring/recurring-reminder";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
@@ -30,16 +33,27 @@ export default function RecurringPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [initialListReady, setInitialListReady] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     void (async () => {
       try {
         await dispatch(processDueRecurring()).unwrap();
       } catch {
         /* ignore */
       }
-      void dispatch(fetchRecurringRules());
+      try {
+        await dispatch(fetchRecurringRules()).unwrap();
+      } catch {
+        /* hata recurring.error üzerinden */
+      } finally {
+        if (!cancelled) setInitialListReady(true);
+      }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [dispatch]);
 
   const dueReminders = useMemo(
@@ -52,7 +66,7 @@ export default function RecurringPage() {
     return items.find((x) => x.id === editingId) ?? null;
   }, [editingId, items]);
 
-  if (loading && items.length === 0) {
+  if (!initialListReady) {
     return <LogoLoading />;
   }
 
