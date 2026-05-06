@@ -51,7 +51,7 @@ function SssWideCard({ post }: { post: sssPost }) {
           </div>
         </div>
         <div
-          className="relative min-h-[140px] border-t border-emerald-500/15 bg-muted/40 md:min-h-0 md:w-[38%] md:border-l md:border-t-0"
+          className="relative hidden min-h-[140px] border-t border-emerald-500/15 bg-muted/40 md:block md:min-h-0 md:w-[38%] md:border-l md:border-t-0"
           aria-hidden
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(16,185,129,0.2),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(45,212,191,0.12),transparent_50%)]" />

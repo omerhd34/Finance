@@ -10,6 +10,7 @@ import type { AppDispatch } from "@/store";
 
 type ProfilePayload = {
   image: string | null;
+  planTier?: string | null;
 };
 
 function buildAuthUserFromSession(session: {
@@ -59,7 +60,7 @@ export function SessionUserSync() {
 
     const base = buildAuthUserFromSession(session);
 
-    if (session.user.image) {
+    if (session.user.image && session.user.planTier) {
       dispatch(setUser(base));
       return;
     }
@@ -74,6 +75,7 @@ export function SessionUserSync() {
           setUser({
             ...base,
             image: data.image ?? null,
+            planTier: normalizePlanTier(data.planTier ?? session.user.planTier),
           }),
         );
       } catch {

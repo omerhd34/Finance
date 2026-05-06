@@ -94,7 +94,7 @@ export default function DestekPage() {
           className="border-y border-border/50 bg-muted/30 py-12 md:py-16"
           aria-labelledby="support-contact-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto max-w-xl text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                 <Mail className="h-6 w-6" aria-hidden />
@@ -112,7 +112,7 @@ export default function DestekPage() {
             </div>
             <SupportContactForm
               inboxConfigured={inboxConfigured}
-              className="mx-auto mt-2"
+              className="mx-auto mt-2 max-w-3xl"
             />
           </div>
         </section>
@@ -121,7 +121,7 @@ export default function DestekPage() {
           className="border-t border-border/60 bg-linear-to-b from-emerald-500/5 to-transparent py-14 md:py-20"
           aria-labelledby="support-cta-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
             <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 rounded-2xl border border-emerald-500/20 bg-card/60 px-6 py-10 text-center shadow-lg backdrop-blur-sm md:px-10 md:py-11">
               <h2
                 id="support-cta-heading"
