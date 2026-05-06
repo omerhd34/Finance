@@ -23,7 +23,7 @@ import { DueRemindersCard } from "@/components/recurring/due-reminders-card";
 import { EditRecurringDialog } from "@/components/recurring/edit-recurring-dialog";
 import { RecurringRulesSection } from "@/components/recurring/recurring-rules-section";
 import { RecurringToolbar } from "@/components/recurring/recurring-toolbar";
-import { LogoLoading } from "@/components/ui/logo-loading";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 
 export default function RecurringPage() {
   const dispatch = useAppDispatch();
@@ -65,10 +65,6 @@ export default function RecurringPage() {
     if (!editingId) return null;
     return items.find((x) => x.id === editingId) ?? null;
   }, [editingId, items]);
-
-  if (!initialListReady) {
-    return <LogoLoading />;
-  }
 
   function buildPayload(
     values: RecurringFormValues,
@@ -152,54 +148,56 @@ export default function RecurringPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <p className="text-sm text-muted-foreground">
-        Kira, abonelik ve maaş gibi düzenli ödemeleri bir kez tanımlayarak
-        kolayca takip edin. Otomatik modda vade günü geldiğinde işlem kaydı
-        sistem tarafından oluşturulur; hatırlatıcı modda ise bildirim alır ve
-        kaydı siz onaylayarak eklersiniz. Tutarı sonradan güncellerseniz,
-        geçmişte oluşmuş kayıtlar değişmez; yeni tutar yalnızca sonraki
-        dönemlerde geçerli olur.
-      </p>
+    <DataLoadingShell ready={initialListReady}>
+      <div className="space-y-8">
+        <p className="text-sm text-muted-foreground">
+          Kira, abonelik ve maaş gibi düzenli ödemeleri bir kez tanımlayarak
+          kolayca takip edin. Otomatik modda vade günü geldiğinde işlem kaydı
+          sistem tarafından oluşturulur; hatırlatıcı modda ise bildirim alır ve
+          kaydı siz onaylayarak eklersiniz. Tutarı sonradan güncellerseniz,
+          geçmişte oluşmuş kayıtlar değişmez; yeni tutar yalnızca sonraki
+          dönemlerde geçerli olur.
+        </p>
 
-      <DueRemindersCard
-        items={dueReminders}
-        currency={currency}
-        actionId={actionId}
-        onFulfill={onFulfill}
-        onSkip={onSkip}
-      />
+        <DueRemindersCard
+          items={dueReminders}
+          currency={currency}
+          actionId={actionId}
+          onFulfill={onFulfill}
+          onSkip={onSkip}
+        />
 
-      <RecurringToolbar
-        count={items.length}
-        newOpen={newOpen}
-        onNewOpenChange={setNewOpen}
-        onCreate={onCreate}
-      />
+        <RecurringToolbar
+          count={items.length}
+          newOpen={newOpen}
+          onNewOpenChange={setNewOpen}
+          onCreate={onCreate}
+        />
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <RecurringRulesSection
-        items={items}
-        loading={loading}
-        currency={currency}
-        onEdit={setEditingId}
-        onDelete={setDeletingId}
-      />
+        <RecurringRulesSection
+          items={items}
+          loading={loading}
+          currency={currency}
+          onEdit={setEditingId}
+          onDelete={setDeletingId}
+        />
 
-      <EditRecurringDialog
-        rule={editingResolved}
-        open={Boolean(editingId)}
-        onOpenChange={(o) => !o && setEditingId(null)}
-        currency={currency}
-        onSave={onEditSave}
-      />
+        <EditRecurringDialog
+          rule={editingResolved}
+          open={Boolean(editingId)}
+          onOpenChange={(o) => !o && setEditingId(null)}
+          currency={currency}
+          onSave={onEditSave}
+        />
 
-      <DeleteRecurringDialog
-        open={Boolean(deletingId)}
-        onOpenChange={(o) => !o && setDeletingId(null)}
-        onConfirm={() => void onDelete()}
-      />
-    </div>
+        <DeleteRecurringDialog
+          open={Boolean(deletingId)}
+          onOpenChange={(o) => !o && setDeletingId(null)}
+          onConfirm={() => void onDelete()}
+        />
+      </div>
+    </DataLoadingShell>
   );
 }

@@ -42,6 +42,7 @@ import { TransactionsChartsSection } from "@/components/transactions/transaction
 import { TransactionsFiltersCard } from "@/components/transactions/transactions-filters-card";
 import { TransactionsPageHeader } from "@/components/transactions/transactions-page-header";
 import { TransactionsTableCard } from "@/components/transactions/transactions-table-card";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 import { LogoLoading } from "@/components/ui/logo-loading";
 
 function TransactionsPageContent() {
@@ -141,13 +142,13 @@ function TransactionsPageContent() {
       let createdFromRecurring = 0;
       try {
         createdFromRecurring = await dispatch(processDueRecurring()).unwrap();
-      } catch {
-      }
+      } catch {}
       if (createdFromRecurring === 0) {
         try {
-          await dispatch(fetchTransactions({ filters, page, pageSize })).unwrap();
-        } catch {
-        }
+          await dispatch(
+            fetchTransactions({ filters, page, pageSize }),
+          ).unwrap();
+        } catch {}
       }
       if (!cancelled) setInitialTableHydrated(true);
     })();
@@ -238,91 +239,88 @@ function TransactionsPageContent() {
     void loadChartTransactions();
   }
 
-  const showFullPageLoader =
-    chartLoading || !initialTableHydrated;
-
-  if (showFullPageLoader) {
-    return <LogoLoading />;
-  }
+  const pageDataReady = !chartLoading && initialTableHydrated;
 
   return (
-    <div className="space-y-6">
-      <TransactionsPageHeader
-        exporting={exporting}
-        onExportCsv={exportCsv}
-        onExportPdf={exportPdf}
-        newTransactionOpen={newTransactionOpen}
-        onNewTransactionOpenChange={setNewTransactionOpen}
-        onTransactionCreated={afterTransactionCreated}
-      />
+    <DataLoadingShell ready={pageDataReady}>
+      <div className="space-y-6">
+        <TransactionsPageHeader
+          exporting={exporting}
+          onExportCsv={exportCsv}
+          onExportPdf={exportPdf}
+          newTransactionOpen={newTransactionOpen}
+          onNewTransactionOpenChange={setNewTransactionOpen}
+          onTransactionCreated={afterTransactionCreated}
+        />
 
-      <TransactionsFiltersCard
-        filters={filters}
-        onFiltersChange={(patch) => dispatch(setFilters(patch))}
-        onClearFilters={() =>
-          dispatch(
-            setFilters({
-              type: "",
-              category: "",
-              dateFrom: "",
-              dateTo: "",
-              search: "",
-            }),
-          )
-        }
-      />
+        <TransactionsFiltersCard
+          filters={filters}
+          onFiltersChange={(patch) => dispatch(setFilters(patch))}
+          onClearFilters={() =>
+            dispatch(
+              setFilters({
+                type: "",
+                category: "",
+                dateFrom: "",
+                dateTo: "",
+                search: "",
+              }),
+            )
+          }
+        />
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <TransactionsTableCard
-        items={sortedDisplayItems}
-        loading={loading}
-        currency={currency}
-        dateSortOrder={dateSortOrder}
-        onDateSortToggle={() => {
-          setAmountSortOrder(null);
-          setDateSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
-        }}
-        amountSortOrder={amountSortOrder}
-        onAmountSortToggle={() => {
-          setDateSortOrder(null);
-          setAmountSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
-        }}
-        total={total}
-        page={page}
-        totalPages={totalPages}
-        onPrevPage={() => dispatch(setPage(page - 1))}
-        onNextPage={() => dispatch(setPage(page + 1))}
-        onEdit={setEditing}
-        onDelete={setDeleting}
-      />
+        <TransactionsTableCard
+          items={sortedDisplayItems}
+          loading={loading}
+          currency={currency}
+          dateSortOrder={dateSortOrder}
+          onDateSortToggle={() => {
+            setAmountSortOrder(null);
+            setDateSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+          }}
+          amountSortOrder={amountSortOrder}
+          onAmountSortToggle={() => {
+            setDateSortOrder(null);
+            setAmountSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+          }}
+          total={total}
+          page={page}
+          totalPages={totalPages}
+          onPrevPage={() => dispatch(setPage(page - 1))}
+          onNextPage={() => dispatch(setPage(page + 1))}
+          onEdit={setEditing}
+          onDelete={setDeleting}
+        />
 
-      <TransactionsChartsSection
-        bars={transactionsChartBars}
-        pie={transactionsChartPie}
-        barsMonths={barsChartMonths}
-        pieMonths={pieChartMonths}
-        barsRangeLabel={barsRangeLabel}
-        pieRangeLabel={pieRangeLabel}
-        onBarsMonthsChange={setBarsChartMonths}
-        onPieMonthsChange={setPieChartMonths}
-        loading={chartLoading}
-      />
+        <TransactionsChartsSection
+          bars={transactionsChartBars}
+          pie={transactionsChartPie}
+          barsMonths={barsChartMonths}
+          pieMonths={pieChartMonths}
+          barsRangeLabel={barsRangeLabel}
+          pieRangeLabel={pieRangeLabel}
+          onBarsMonthsChange={setBarsChartMonths}
+          onPieMonthsChange={setPieChartMonths}
+          loading={chartLoading}
+        />
 
-      <EditTransactionDialog
-        transaction={editing}
-        open={Boolean(editing)}
-        onOpenChange={(o) => !o && setEditing(null)}
-        currency={currency}
-        onSave={saveEdit}
-      />
+        <EditTransactionDialog
+          transaction={editing}
+          open={Boolean(editing)}
+          onOpenChange={(o) => !o && setEditing(null)}
+          currency={currency}
+          onSave={saveEdit}
+        />
 
-      <DeleteTransactionDialog
-        open={Boolean(deleting)}
-        onOpenChange={(o) => !o && setDeleting(null)}
-        onConfirm={() => void confirmDelete()}
-      />
-    </div>
+        <DeleteTransactionDialog
+          open={Boolean(deleting)}
+          onOpenChange={(o) => !o && setDeleting(null)}
+          onConfirm={() => void confirmDelete()}
+        />
+      </div>
+    </DataLoadingShell>
   );
 }
 

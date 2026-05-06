@@ -12,7 +12,7 @@ import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-inv
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { AiMessagingDigestCopyButton } from "@/components/ai-insights/ai-messaging-digest-copy-button";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
-import { LogoLoading } from "@/components/ui/logo-loading";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 import { apiClient } from "@/lib/client/api-client";
 import {
   aggregatePositionsTry,
@@ -293,10 +293,6 @@ export default function DashboardPage() {
     [recurringRules],
   );
 
-  if (loading) {
-    return <LogoLoading />;
-  }
-
   if (error) {
     return (
       <p className="text-destructive">
@@ -309,80 +305,82 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {!planPremium ? <DashboardPremiumPromo /> : null}
+    <DataLoadingShell ready={!loading}>
+      <div className="space-y-8">
+        {!planPremium ? <DashboardPremiumPromo /> : null}
 
-      <DashboardKpiSection
-        currency={currency}
-        totalIncome={stats.totalIncome}
-        totalExpense={stats.totalExpense}
-        net={stats.net}
-        financialHealth={financialHealth}
-        debtNetBalance={
-          debtTotals ? debtTotals.receivable - debtTotals.payable : undefined
-        }
-        investmentPnl={planPremium ? investmentPnl : undefined}
-      />
+        <DashboardKpiSection
+          currency={currency}
+          totalIncome={stats.totalIncome}
+          totalExpense={stats.totalExpense}
+          net={stats.net}
+          financialHealth={financialHealth}
+          debtNetBalance={
+            debtTotals ? debtTotals.receivable - debtTotals.payable : undefined
+          }
+          investmentPnl={planPremium ? investmentPnl : undefined}
+        />
 
-      <DashboardChartsSection
-        bars={stats.bars}
-        pie={stats.pie}
-        barsMonths={barsChartMonths}
-        pieMonths={pieChartMonths}
-        barsRangeLabel={barsRangeLabel}
-        pieRangeLabel={pieRangeLabel}
-        onBarsMonthsChange={setBarsChartMonths}
-        onPieMonthsChange={setPieChartMonths}
-      />
+        <DashboardChartsSection
+          bars={stats.bars}
+          pie={stats.pie}
+          barsMonths={barsChartMonths}
+          pieMonths={pieChartMonths}
+          barsRangeLabel={barsRangeLabel}
+          pieRangeLabel={pieRangeLabel}
+          onBarsMonthsChange={setBarsChartMonths}
+          onPieMonthsChange={setPieChartMonths}
+        />
 
-      <DashboardRecurringCard
-        activeRecurringCount={activeRecurringCount}
-        upcomingRecurring={upcomingRecurring}
-        currency={currency}
-      />
-
-      {debtTotals ? (
-        <DashboardDebtCard
-          items={debts}
-          receivable={debtTotals.receivable}
-          payable={debtTotals.payable}
+        <DashboardRecurringCard
+          activeRecurringCount={activeRecurringCount}
+          upcomingRecurring={upcomingRecurring}
           currency={currency}
         />
-      ) : null}
 
-      {planPremium && investmentPositions.length > 0 ? (
-        <DashboardInvestmentSection
-          currency={currency}
-          totalPnlTry={investmentPnl}
-          breakdown={investmentPnlBreakdown}
-        />
-      ) : null}
-
-      <DashboardRecentTransactionsCard
-        transactions={stats.recent}
-        currency={currency}
-      />
-
-      <section
-        className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-muted/25 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-        aria-label="Finans özeti — panoya kopyala"
-      >
-        <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Güncel işlemleriniz ile borç ve alacak özetinizi tek tıkla panoya
-          kopyalayın; raporda kullanın, not olarak saklayın veya paylaşın.
-        </p>
-        <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-          <AiMessagingDigestCopyButton
-            className="w-full sm:w-auto"
-            onCopyError={setDigestCopyError}
+        {debtTotals ? (
+          <DashboardDebtCard
+            items={debts}
+            receivable={debtTotals.receivable}
+            payable={debtTotals.payable}
+            currency={currency}
           />
-          {digestCopyError ? (
-            <p className="text-sm text-destructive sm:text-end" role="alert">
-              {digestCopyError}
-            </p>
-          ) : null}
-        </div>
-      </section>
-    </div>
+        ) : null}
+
+        {planPremium && investmentPositions.length > 0 ? (
+          <DashboardInvestmentSection
+            currency={currency}
+            totalPnlTry={investmentPnl}
+            breakdown={investmentPnlBreakdown}
+          />
+        ) : null}
+
+        <DashboardRecentTransactionsCard
+          transactions={stats.recent}
+          currency={currency}
+        />
+
+        <section
+          className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-muted/25 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+          aria-label="Finans özeti — panoya kopyala"
+        >
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Güncel işlemleriniz ile borç ve alacak özetinizi tek tıkla panoya
+            kopyalayın; raporda kullanın, not olarak saklayın veya paylaşın.
+          </p>
+          <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+            <AiMessagingDigestCopyButton
+              className="w-full sm:w-auto"
+              onCopyError={setDigestCopyError}
+            />
+            {digestCopyError ? (
+              <p className="text-sm text-destructive sm:text-end" role="alert">
+                {digestCopyError}
+              </p>
+            ) : null}
+          </div>
+        </section>
+      </div>
+    </DataLoadingShell>
   );
 }
