@@ -2,6 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
@@ -43,11 +44,12 @@ import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
+  const { data: session } = useSession();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const monthStartDay = useAppSelector((s) => s.auth.user?.monthStartDay ?? 1);
+  const reduxPlanTier = useAppSelector((s) => s.auth.user?.planTier);
   const planPremium =
-    normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
-    "premium";
+    normalizePlanTier(reduxPlanTier ?? session?.user?.planTier) === "premium";
   const [items, setItems] = useState<Transaction[]>([]);
   const [investmentPositions, setInvestmentPositions] = useState<
     InvestmentPosition[]

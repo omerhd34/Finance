@@ -60,10 +60,13 @@ export function SessionUserSync() {
 
     const base = buildAuthUserFromSession(session);
 
-    if (session.user.image && session.user.planTier) {
+    const hasProfileImage = Boolean(session.user.image?.trim());
+    if (hasProfileImage) {
       dispatch(setUser(base));
       return;
     }
+
+    dispatch(setUser(base));
 
     let cancelled = false;
     void (async () => {
