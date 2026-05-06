@@ -35,9 +35,6 @@ export function DashboardChartsSection({
   onBarsMonthsChange,
   onPieMonthsChange,
 }: Props) {
-  const barsPeriodTitle = `Son ${barsMonths} ay`;
-  const piePeriodTitle = `Son ${pieMonths} ay`;
-
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
@@ -51,11 +48,11 @@ export function DashboardChartsSection({
             </div>
             <div className="min-w-0 space-y-1.5 pt-0.5">
               <h3 className="text-lg font-semibold leading-tight tracking-tight">
-                {barsPeriodTitle} — Gelir, Gider ve Tasarruf Oranı
+                Gelir, Gider ve Tasarruf Oranı
               </h3>
               <p className="text-sm leading-snug text-muted-foreground">
                 {barsRangeLabel} döneminin aylık gelir-gider trendi ve tasarruf
-                oranı (%)
+                oranı
               </p>
             </div>
           </div>
@@ -92,7 +89,7 @@ export function DashboardChartsSection({
             </div>
             <div className="min-w-0 space-y-1.5 pt-0.5">
               <h3 className="text-lg font-semibold leading-tight tracking-tight">
-                {piePeriodTitle} — Kategori Giderleri
+                Kategori Giderleri
               </h3>
               <p className="text-sm leading-snug text-muted-foreground">
                 {pieRangeLabel} döneminde giderlerin kategori bazında toplam
