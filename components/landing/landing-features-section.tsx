@@ -25,7 +25,7 @@ export function LandingFeaturesSection() {
             Finansını tek uygulamada topla
           </h2>
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
-            Günlük finansın büyük kısmı ücretsiz planda;{" "}
+            Günlük finans işlerinizin çoğu ücretsiz planda;{" "}
             <span className="font-medium text-foreground">
               yapay zekâ analizi, fiş tarama
             </span>{" "}
@@ -68,9 +68,10 @@ export function LandingFeaturesSection() {
                 Premium ile gelişmiş katman
               </h3>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-                Ücretli abonelikle tam metin AI raporu ve PDF indirme, görselden
-                işlem (OCR) ile canlı fiyatlı yatırım portföyü kullanıma açılır;
-                ücretsiz özellikleriniz aynen devam eder.
+                Premium ile yapay zekâ analiz raporu (tam metin, PDF indirme),
+                fiş ve fatura OCR ile canlı kotasyonlu yatırım portföyü tam
+                kapsamda açılır; ücretsiz plandaki özellikleriniz aynen devam
+                eder.
               </p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 lg:gap-6">
