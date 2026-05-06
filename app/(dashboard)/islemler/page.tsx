@@ -1,6 +1,13 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import type { Transaction } from "@/types/transaction";
 import type { TransactionEditFormValues } from "@/lib/schemas/validations";
@@ -59,6 +66,7 @@ function TransactionsPageContent() {
   const [chartItems, setChartItems] = useState<Transaction[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
   const [newTransactionOpen, setNewTransactionOpen] = useState(false);
+  const [initialTableHydrated, setInitialTableHydrated] = useState(false);
 
   const loadChartTransactions = useCallback(async () => {
     setChartLoading(true);
@@ -110,18 +118,7 @@ function TransactionsPageContent() {
     return formatPeriodRangeLabel(start, end);
   }, [pieChartMonths, chartNow, monthStartDay]);
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        await dispatch(processDueRecurring()).unwrap();
-      } catch {
-        /* process-due isteğe bağlı; hata olsa da listeyi yükleyelim */
-      }
-      await dispatch(fetchTransactions({ filters, page, pageSize }));
-    })();
-  }, [dispatch, filters, page, pageSize]);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     const patch: Partial<TransactionFilters> = {};
     const cat = searchParams.get("category");
     if (cat !== null) patch.category = cat;
@@ -137,6 +134,27 @@ function TransactionsPageContent() {
       dispatch(setFilters(patch));
     }
   }, [searchParams, dispatch]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      let createdFromRecurring = 0;
+      try {
+        createdFromRecurring = await dispatch(processDueRecurring()).unwrap();
+      } catch {
+      }
+      if (createdFromRecurring === 0) {
+        try {
+          await dispatch(fetchTransactions({ filters, page, pageSize })).unwrap();
+        } catch {
+        }
+      }
+      if (!cancelled) setInitialTableHydrated(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, filters, page, pageSize]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -221,7 +239,7 @@ function TransactionsPageContent() {
   }
 
   const showFullPageLoader =
-    chartLoading || (loading && items.length === 0);
+    chartLoading || !initialTableHydrated;
 
   if (showFullPageLoader) {
     return <LogoLoading />;
