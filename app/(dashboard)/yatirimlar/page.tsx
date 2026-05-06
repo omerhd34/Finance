@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
-import { displayAmountToTry, normalizeUserCurrency } from "@/lib/common/currency";
+import {
+  displayAmountToTry,
+  normalizeUserCurrency,
+} from "@/lib/common/currency";
 import { goldSubtypeLabel } from "@/lib/investments/gold-subtypes";
 import { PLATINUM_INVESTMENT_TITLE } from "@/lib/investments/platinum-investment";
 import { SILVER_INVESTMENT_TITLE } from "@/lib/investments/silver-investment";
@@ -37,7 +40,7 @@ import { InvestmentsPortfolioCharts } from "@/components/investments/investments
 import { InvestmentsPositionsTabs } from "@/components/investments/investments-positions-tabs";
 import { InvestmentsSummaryCards } from "@/components/investments/investments-summary-cards";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
-import { LogoLoading } from "@/components/ui/logo-loading";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
@@ -162,7 +165,9 @@ export default function InvestmentsPage() {
             ? displayAmountToTry(
                 m,
                 values.assetType === "COMMODITY"
-                  ? normalizeUserCurrency(values.avgCostEntryCurrency ?? currency)
+                  ? normalizeUserCurrency(
+                      values.avgCostEntryCurrency ?? currency,
+                    )
                   : normalizeUserCurrency(currency),
               )
             : null,
@@ -231,147 +236,147 @@ export default function InvestmentsPage() {
     void dispatch(fetchInvestments());
   }
 
-  if (authLoading || (planPremium && loading)) {
-    return <LogoLoading />;
-  }
+  const pageDataReady = !authLoading && !(planPremium && loading);
 
   return (
-    <div className="space-y-6">
-      {!planPremium ? (
-        <>
-          <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
-            <p className="text-sm font-semibold text-foreground">
-              Premium ile neler kazanırsınız?
-            </p>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-              {PREMIUM_INVESTMENT_PERKS.map((line) => (
-                <li key={line} className="flex gap-3">
-                  <Check
-                    className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
-                    aria-hidden
-                  />
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
-        </>
-      ) : null}
+    <DataLoadingShell ready={pageDataReady}>
+      <div className="space-y-6">
+        {!planPremium ? (
+          <>
+            <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">
+                Premium ile neler kazanırsınız?
+              </p>
+              <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                {PREMIUM_INVESTMENT_PERKS.map((line) => (
+                  <li key={line} className="flex gap-3">
+                    <Check
+                      className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                      aria-hidden
+                    />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <PremiumPlanNotice title="Yatırım takibi Premium plandadır." />
+          </>
+        ) : null}
 
-      {planPremium ? (
-        <>
-          <InvestmentsPageHeader
-            newOpen={newOpen}
-            onNewOpenChange={setNewOpen}
-            listTab={tab}
-            currency={currency}
-            onCreate={onCreate}
-          />
+        {planPremium ? (
+          <>
+            <InvestmentsPageHeader
+              newOpen={newOpen}
+              onNewOpenChange={setNewOpen}
+              listTab={tab}
+              currency={currency}
+              onCreate={onCreate}
+            />
 
-          {error && (
-            <p className="text-sm text-destructive" role="alert">
-              {error}
-            </p>
-          )}
-
-          {goldLive.error && tab === "GOLD" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı altın fiyatı yüklenemedi ({goldLive.error}). Güncel fiyat
-              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
-            </p>
-          )}
-
-          {silverLive.error &&
-            tab === "COMMODITY" &&
-            items.some((p) => p.assetType === "SILVER") && (
-              <p className="text-sm text-muted-foreground" role="status">
-                Eski gümüş (gram) kayıtları için canlı fiyat yüklenemedi (
-                {silverLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
-                değerler veya alış fiyatı kullanılır.
+            {error && (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
               </p>
             )}
 
-          {platinumLive.error &&
-            tab === "COMMODITY" &&
-            items.some((p) => p.assetType === "PLATINUM") && (
+            {goldLive.error && tab === "GOLD" && (
               <p className="text-sm text-muted-foreground" role="status">
-                Eski platin (gram) kayıtları için canlı fiyat yüklenemedi (
-                {platinumLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
-                değerler veya alış fiyatı kullanılır.
+                Canlı altın fiyatı yüklenemedi ({goldLive.error}). Güncel fiyat
+                sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
               </p>
             )}
 
-          {stockLive.error && tab === "STOCK" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı hisse fiyatları yüklenemedi ({stockLive.error}). Güncel
-              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
-              kullanılır.
-            </p>
-          )}
+            {silverLive.error &&
+              tab === "COMMODITY" &&
+              items.some((p) => p.assetType === "SILVER") && (
+                <p className="text-sm text-muted-foreground" role="status">
+                  Eski gümüş (gram) kayıtları için canlı fiyat yüklenemedi (
+                  {silverLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
+                  değerler veya alış fiyatı kullanılır.
+                </p>
+              )}
 
-          {fxLive.error && tab === "FX" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı döviz kurları yüklenemedi ({fxLive.error}). Güncel fiyat
-              sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
-            </p>
-          )}
+            {platinumLive.error &&
+              tab === "COMMODITY" &&
+              items.some((p) => p.assetType === "PLATINUM") && (
+                <p className="text-sm text-muted-foreground" role="status">
+                  Eski platin (gram) kayıtları için canlı fiyat yüklenemedi (
+                  {platinumLive.error}). Güncel fiyat sütununda yalnızca kayıtlı
+                  değerler veya alış fiyatı kullanılır.
+                </p>
+              )}
 
-          {cryptoLive.error && tab === "CRYPTO" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı kripto fiyatları yüklenemedi ({cryptoLive.error}). Güncel
-              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
-              kullanılır.
-            </p>
-          )}
+            {stockLive.error && tab === "STOCK" && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Canlı hisse fiyatları yüklenemedi ({stockLive.error}). Güncel
+                fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+                kullanılır.
+              </p>
+            )}
 
-          {commodityLive.error && tab === "COMMODITY" && (
-            <p className="text-sm text-muted-foreground" role="status">
-              Canlı emtia fiyatları yüklenemedi ({commodityLive.error}). Güncel
-              fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
-              kullanılır.
-            </p>
-          )}
+            {fxLive.error && tab === "FX" && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Canlı döviz kurları yüklenemedi ({fxLive.error}). Güncel fiyat
+                sütununda yalnızca kayıtlı değerler veya alış fiyatı kullanılır.
+              </p>
+            )}
 
-          <InvestmentsSummaryCards
-            totalCost={totals.cost}
-            totalValue={totals.val}
-            pnl={totals.pnl}
-            currency={currency}
-          />
+            {cryptoLive.error && tab === "CRYPTO" && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Canlı kripto fiyatları yüklenemedi ({cryptoLive.error}). Güncel
+                fiyat sütununda yalnızca kayıtlı değerler veya alış fiyatı
+                kullanılır.
+              </p>
+            )}
 
-          <InvestmentsPositionsTabs
-            tab={tab}
-            onTabChange={setTab}
-            items={filtered}
-            loading={loading}
-            currency={currency}
-            liveQuotes={liveQuotes}
-            onEdit={setEditing}
-            onDelete={setDeletingId}
-          />
+            {commodityLive.error && tab === "COMMODITY" && (
+              <p className="text-sm text-muted-foreground" role="status">
+                Canlı emtia fiyatları yüklenemedi ({commodityLive.error}).
+                Güncel fiyat sütununda yalnızca kayıtlı değerler veya alış
+                fiyatı kullanılır.
+              </p>
+            )}
 
-          <InvestmentsPortfolioCharts
-            items={items}
-            liveQuotes={liveQuotes}
-            currency={currency}
-          />
+            <InvestmentsSummaryCards
+              totalCost={totals.cost}
+              totalValue={totals.val}
+              pnl={totals.pnl}
+              currency={currency}
+            />
 
-          <EditPositionDialog
-            position={editingResolved}
-            open={!!editing}
-            onOpenChange={(o) => !o && setEditing(null)}
-            currency={currency}
-            onSave={onEditSave}
-          />
+            <InvestmentsPositionsTabs
+              tab={tab}
+              onTabChange={setTab}
+              items={filtered}
+              loading={loading}
+              currency={currency}
+              liveQuotes={liveQuotes}
+              onEdit={setEditing}
+              onDelete={setDeletingId}
+            />
 
-          <DeleteInvestmentDialog
-            open={!!deletingId}
-            onOpenChange={(o) => !o && setDeletingId(null)}
-            onConfirm={() => void onConfirmDelete()}
-          />
-        </>
-      ) : null}
-    </div>
+            <InvestmentsPortfolioCharts
+              items={items}
+              liveQuotes={liveQuotes}
+              currency={currency}
+            />
+
+            <EditPositionDialog
+              position={editingResolved}
+              open={!!editing}
+              onOpenChange={(o) => !o && setEditing(null)}
+              currency={currency}
+              onSave={onEditSave}
+            />
+
+            <DeleteInvestmentDialog
+              open={!!deletingId}
+              onOpenChange={(o) => !o && setDeletingId(null)}
+              onConfirm={() => void onConfirmDelete()}
+            />
+          </>
+        ) : null}
+      </div>
+    </DataLoadingShell>
   );
 }

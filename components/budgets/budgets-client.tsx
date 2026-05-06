@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/common/utils";
-import { LogoLoading } from "@/components/ui/logo-loading";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 
 export type CategoryBudgetRow = {
   id: string;
@@ -168,8 +168,8 @@ export function BudgetsClient({ currency }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      {!loading ? (
+    <DataLoadingShell ready={!loading}>
+      <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-muted-foreground">
@@ -186,290 +186,286 @@ export function BudgetsClient({ currency }: Props) {
             Yeni bütçe
           </Button>
         </div>
-      ) : null}
 
-      {listError && (
-        <p className="text-sm text-destructive" role="alert">
-          {listError}
-        </p>
-      )}
-      {loading ? (
-        <LogoLoading />
-      ) : (
-        <>
-          {items.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              Henüz bütçe yok. Örneğin Market harcamaları için aylık bir limit
-              ekleyebilirsiniz.
-            </p>
-          )}
-
-          <ul className="grid gap-4 md:grid-cols-2">
-            {items.map((b) => {
-              const pct = Math.min(
-                100,
-                b.monthlyLimit > 0
-                  ? (b.spentThisMonth / b.monthlyLimit) * 100
-                  : 0,
-              );
-              const warnAt = b.alertThresholdPercent;
-              const overLimit = b.spentThisMonth >= b.monthlyLimit;
-              const near =
-                !overLimit && pct >= warnAt - 0.0001 && b.monthlyLimit > 0;
-              return (
-                <li
-                  key={b.id}
-                  className="rounded-xl border border-border bg-card p-4 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{b.category}</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {b.monthKey} dönemi
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                        title="Düzenle"
-                        onClick={() => openEdit(b)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer text-destructive"
-                        title="Sil"
-                        onClick={() => setDeletingId(b.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Harcama</span>
-                      <span>
-                        {formatMoneyAmount(b.spentThisMonth, currency)} /{" "}
-                        {formatMoneyAmount(b.monthlyLimit, currency)}
-                      </span>
-                    </div>
-                    <Progress
-                      value={pct}
-                      indicatorClassName={cn(
-                        overLimit
-                          ? "bg-destructive"
-                          : near
-                            ? "bg-amber-500"
-                            : undefined,
-                      )}
-                    />
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-                      <span>
-                        Uyarı eşiği: %{Math.round(b.alertThresholdPercent)}
-                      </span>
-                      <span
-                        title={
-                          b.emailAlertsEnabled && !globalEmailNotificationsOn
-                            ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
-                            : undefined
-                        }
-                      >
-                        E-posta:{" "}
-                        {globalEmailNotificationsOn && b.emailAlertsEnabled
-                          ? "Açık"
-                          : "Kapalı"}
-                      </span>
-                    </div>
-                    <Link
-                      href={`/islemler?category=${encodeURIComponent(b.category)}&type=expense`}
-                      className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
-                    >
-                      Bu kategorideki işlemler
-                    </Link>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
-
-      <Dialog
-        open={formOpen}
-        onOpenChange={(open) => {
-          setFormOpen(open);
-          if (!open) clearFormErrors();
-        }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Bütçeyi düzenle" : "Yeni kategori bütçesi"}
-            </DialogTitle>
-          </DialogHeader>
-          {saveError && (
-            <p className="text-sm text-destructive" role="alert">
-              {saveError}
-            </p>
-          )}
-          <div className="grid gap-4 py-2">
-            <div className="grid gap-2">
-              <Label htmlFor="budget-cat">Kategori</Label>
-              <Select
-                value={category}
-                onValueChange={setCategory}
-                disabled={!!editing}
-              >
-                <SelectTrigger id="budget-cat" className="cursor-pointer">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EXPENSE_CATEGORY_TREE.map((g, i) => (
-                    <SelectGroup key={g.group}>
-                      <SelectLabel
-                        className={expenseCategorySelectGroupLabelClassName(i)}
-                      >
-                        {g.group}
-                      </SelectLabel>
-                      {g.categories.map((row) => (
-                        <SelectItem
-                          key={row.category}
-                          value={row.category}
-                          className="cursor-pointer"
-                        >
-                          {row.category}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  ))}
-                </SelectContent>
-              </Select>
-              {editing && (
-                <p className="text-xs text-muted-foreground">
-                  Kategori düzenlemede değiştirmek için kaydı silip yeniden
-                  oluşturun.
-                </p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="budget-limit">Aylık limit</Label>
-              <Input
-                id="budget-limit"
-                inputMode="decimal"
-                value={monthlyLimit}
-                onChange={(e) => {
-                  setMonthlyLimit(e.target.value);
-                  setMonthlyLimitError(null);
-                  setSaveError(null);
-                }}
-                placeholder="5000"
-                aria-invalid={monthlyLimitError ? true : undefined}
-                className={cn(
-                  monthlyLimitError &&
-                    "border-destructive focus-visible:ring-destructive/40",
-                )}
-              />
-              {monthlyLimitError && (
-                <p className="text-sm text-destructive" role="alert">
-                  {monthlyLimitError}
-                </p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="budget-th">Uyarı eşiği (%)</Label>
-              <Input
-                id="budget-th"
-                inputMode="numeric"
-                value={threshold}
-                onChange={(e) => {
-                  setThreshold(e.target.value);
-                  setThresholdError(null);
-                  setSaveError(null);
-                }}
-                placeholder="80"
-                aria-invalid={thresholdError ? true : undefined}
-                className={cn(
-                  thresholdError &&
-                    "border-destructive focus-visible:ring-destructive/40",
-                )}
-              />
-              {thresholdError && (
-                <p className="text-sm text-destructive" role="alert">
-                  {thresholdError}
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Harcama limitin bu yüzdesine ulaşınca bildirim gönderilir.
-              </p>
-            </div>
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="size-4 rounded border border-input"
-                checked={emailAlerts}
-                onChange={(e) => setEmailAlerts(e.target.checked)}
-              />
-              E-posta ile de bildir.
-            </label>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              className="cursor-pointer"
-              onClick={() => setFormOpen(false)}
-            >
-              Vazgeç
-            </Button>
-            <Button
-              type="button"
-              className="cursor-pointer"
-              disabled={saving}
-              onClick={() => void onSave()}
-            >
-              {saving ? "Kaydediliyor..." : "Kaydet"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={!!deletingId}
-        onOpenChange={(o) => !o && setDeletingId(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Bütçeyi sil</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Bu kategori bütçesini silmek istediğinize emin misiniz?
+        {listError && (
+          <p className="text-sm text-destructive" role="alert">
+            {listError}
           </p>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={() => setDeletingId(null)}
-            >
-              Vazgeç
-            </Button>
-            <Button
-              variant="destructive"
-              className="cursor-pointer"
-              onClick={() => void onConfirmDelete()}
-            >
-              Sil
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        )}
+        {items.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Henüz bütçe yok. Örneğin Market harcamaları için aylık bir limit
+            ekleyebilirsiniz.
+          </p>
+        )}
+
+        <ul className="grid gap-4 md:grid-cols-2">
+          {items.map((b) => {
+            const pct = Math.min(
+              100,
+              b.monthlyLimit > 0
+                ? (b.spentThisMonth / b.monthlyLimit) * 100
+                : 0,
+            );
+            const warnAt = b.alertThresholdPercent;
+            const overLimit = b.spentThisMonth >= b.monthlyLimit;
+            const near =
+              !overLimit && pct >= warnAt - 0.0001 && b.monthlyLimit > 0;
+            return (
+              <li
+                key={b.id}
+                className="rounded-xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">{b.category}</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {b.monthKey} dönemi
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="cursor-pointer"
+                      title="Düzenle"
+                      onClick={() => openEdit(b)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="cursor-pointer text-destructive"
+                      title="Sil"
+                      onClick={() => setDeletingId(b.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Harcama</span>
+                    <span>
+                      {formatMoneyAmount(b.spentThisMonth, currency)} /{" "}
+                      {formatMoneyAmount(b.monthlyLimit, currency)}
+                    </span>
+                  </div>
+                  <Progress
+                    value={pct}
+                    indicatorClassName={cn(
+                      overLimit
+                        ? "bg-destructive"
+                        : near
+                          ? "bg-amber-500"
+                          : undefined,
+                    )}
+                  />
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span>
+                      Uyarı eşiği: %{Math.round(b.alertThresholdPercent)}
+                    </span>
+                    <span
+                      title={
+                        b.emailAlertsEnabled && !globalEmailNotificationsOn
+                          ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
+                          : undefined
+                      }
+                    >
+                      E-posta:{" "}
+                      {globalEmailNotificationsOn && b.emailAlertsEnabled
+                        ? "Açık"
+                        : "Kapalı"}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/islemler?category=${encodeURIComponent(b.category)}&type=expense`}
+                    className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    Bu kategorideki işlemler
+                  </Link>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        <Dialog
+          open={formOpen}
+          onOpenChange={(open) => {
+            setFormOpen(open);
+            if (!open) clearFormErrors();
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {editing ? "Bütçeyi düzenle" : "Yeni kategori bütçesi"}
+              </DialogTitle>
+            </DialogHeader>
+            {saveError && (
+              <p className="text-sm text-destructive" role="alert">
+                {saveError}
+              </p>
+            )}
+            <div className="grid gap-4 py-2">
+              <div className="grid gap-2">
+                <Label htmlFor="budget-cat">Kategori</Label>
+                <Select
+                  value={category}
+                  onValueChange={setCategory}
+                  disabled={!!editing}
+                >
+                  <SelectTrigger id="budget-cat" className="cursor-pointer">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EXPENSE_CATEGORY_TREE.map((g, i) => (
+                      <SelectGroup key={g.group}>
+                        <SelectLabel
+                          className={expenseCategorySelectGroupLabelClassName(
+                            i,
+                          )}
+                        >
+                          {g.group}
+                        </SelectLabel>
+                        {g.categories.map((row) => (
+                          <SelectItem
+                            key={row.category}
+                            value={row.category}
+                            className="cursor-pointer"
+                          >
+                            {row.category}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {editing && (
+                  <p className="text-xs text-muted-foreground">
+                    Kategori düzenlemede değiştirmek için kaydı silip yeniden
+                    oluşturun.
+                  </p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="budget-limit">Aylık limit</Label>
+                <Input
+                  id="budget-limit"
+                  inputMode="decimal"
+                  value={monthlyLimit}
+                  onChange={(e) => {
+                    setMonthlyLimit(e.target.value);
+                    setMonthlyLimitError(null);
+                    setSaveError(null);
+                  }}
+                  placeholder="5000"
+                  aria-invalid={monthlyLimitError ? true : undefined}
+                  className={cn(
+                    monthlyLimitError &&
+                      "border-destructive focus-visible:ring-destructive/40",
+                  )}
+                />
+                {monthlyLimitError && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {monthlyLimitError}
+                  </p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="budget-th">Uyarı eşiği (%)</Label>
+                <Input
+                  id="budget-th"
+                  inputMode="numeric"
+                  value={threshold}
+                  onChange={(e) => {
+                    setThreshold(e.target.value);
+                    setThresholdError(null);
+                    setSaveError(null);
+                  }}
+                  placeholder="80"
+                  aria-invalid={thresholdError ? true : undefined}
+                  className={cn(
+                    thresholdError &&
+                      "border-destructive focus-visible:ring-destructive/40",
+                  )}
+                />
+                {thresholdError && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {thresholdError}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Harcama limitin bu yüzdesine ulaşınca bildirim gönderilir.
+                </p>
+              </div>
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="size-4 rounded border border-input"
+                  checked={emailAlerts}
+                  onChange={(e) => setEmailAlerts(e.target.checked)}
+                />
+                E-posta ile de bildir.
+              </label>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                className="cursor-pointer"
+                onClick={() => setFormOpen(false)}
+              >
+                Vazgeç
+              </Button>
+              <Button
+                type="button"
+                className="cursor-pointer"
+                disabled={saving}
+                onClick={() => void onSave()}
+              >
+                {saving ? "Kaydediliyor..." : "Kaydet"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={!!deletingId}
+          onOpenChange={(o) => !o && setDeletingId(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Bütçeyi sil</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Bu kategori bütçesini silmek istediğinize emin misiniz?
+            </p>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                onClick={() => setDeletingId(null)}
+              >
+                Vazgeç
+              </Button>
+              <Button
+                variant="destructive"
+                className="cursor-pointer"
+                onClick={() => void onConfirmDelete()}
+              >
+                Sil
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </DataLoadingShell>
   );
 }

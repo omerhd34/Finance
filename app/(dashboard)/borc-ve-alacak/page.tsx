@@ -18,7 +18,7 @@ import { DebtsList } from "@/components/debts/debts-list";
 import { EditDebtDialog } from "@/components/debts/edit-debt-dialog";
 import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
 import { DeleteDebtDialog } from "@/components/debts/delete-debt-dialog";
-import { LogoLoading } from "@/components/ui/logo-loading";
+import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 
 export default function DebtsPage() {
   const dispatch = useAppDispatch();
@@ -29,9 +29,22 @@ export default function DebtsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [initialDebtsReady, setInitialDebtsReady] = useState(false);
 
   useEffect(() => {
-    void dispatch(fetchDebts());
+    let cancelled = false;
+    void (async () => {
+      try {
+        await dispatch(fetchDebts()).unwrap();
+      } catch {
+        /* hata debts.error üzerinden */
+      } finally {
+        if (!cancelled) setInitialDebtsReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [dispatch]);
 
   const filtered = useMemo(
@@ -109,61 +122,59 @@ export default function DebtsPage() {
 
   const editingDebt = items.find((x) => x.id === editingId);
 
-  if (loading) {
-    return <LogoLoading />;
-  }
-
   return (
-    <div className="space-y-6">
-      <DebtsPageHeader
-        newOpen={newOpen}
-        onNewOpenChange={setNewOpen}
-        onCreate={onCreate}
-      />
+    <DataLoadingShell ready={initialDebtsReady}>
+      <div className="space-y-6">
+        <DebtsPageHeader
+          newOpen={newOpen}
+          onNewOpenChange={setNewOpen}
+          onCreate={onCreate}
+        />
 
-      <DebtsSummaryCards
-        totalReceivable={totals.recv}
-        totalPayable={totals.pay}
-        currency={currency}
-      />
+        <DebtsSummaryCards
+          totalReceivable={totals.recv}
+          totalPayable={totals.pay}
+          currency={currency}
+        />
 
-      {error && <p className="text-destructive">{error}</p>}
-      <DebtsList
-        tab={tab}
-        onTabChange={setTab}
-        items={filtered}
-        loading={loading}
-        currency={currency}
-        onPay={setPayingId}
-        onEdit={setEditingId}
-        onDelete={setDeletingId}
-      />
+        {error && <p className="text-destructive">{error}</p>}
+        <DebtsList
+          tab={tab}
+          onTabChange={setTab}
+          items={filtered}
+          loading={loading}
+          currency={currency}
+          onPay={setPayingId}
+          onEdit={setEditingId}
+          onDelete={setDeletingId}
+        />
 
-      <PayDebtDialog
-        open={!!payingId}
-        onOpenChange={(o) => !o && setPayingId(null)}
-        onPay={onPaySubmit}
-        receivableIncomeHint={
-          items.find((x) => x.id === payingId)?.direction === "RECEIVABLE"
-        }
-        payableExpenseHint={
-          items.find((x) => x.id === payingId)?.direction === "PAYABLE"
-        }
-      />
+        <PayDebtDialog
+          open={!!payingId}
+          onOpenChange={(o) => !o && setPayingId(null)}
+          onPay={onPaySubmit}
+          receivableIncomeHint={
+            items.find((x) => x.id === payingId)?.direction === "RECEIVABLE"
+          }
+          payableExpenseHint={
+            items.find((x) => x.id === payingId)?.direction === "PAYABLE"
+          }
+        />
 
-      <EditDebtDialog
-        debt={editingDebt}
-        open={!!editingId}
-        onOpenChange={(o) => !o && setEditingId(null)}
-        currency={currency}
-        onSave={onEditSave}
-      />
+        <EditDebtDialog
+          debt={editingDebt}
+          open={!!editingId}
+          onOpenChange={(o) => !o && setEditingId(null)}
+          currency={currency}
+          onSave={onEditSave}
+        />
 
-      <DeleteDebtDialog
-        open={!!deletingId}
-        onOpenChange={(o) => !o && setDeletingId(null)}
-        onConfirm={() => void onConfirmDelete()}
-      />
-    </div>
+        <DeleteDebtDialog
+          open={!!deletingId}
+          onOpenChange={(o) => !o && setDeletingId(null)}
+          onConfirm={() => void onConfirmDelete()}
+        />
+      </div>
+    </DataLoadingShell>
   );
 }
