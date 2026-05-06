@@ -5,6 +5,6 @@ export const RECURRING_FREQUENCY_LABEL: Record<string, string> = {
 };
 
 export const RECURRING_MODE_LABEL: Record<string, string> = {
-  AUTO: "Otomatik kayıt",
+  AUTO: "Otomatik",
   REMINDER: "Hatırlatıcı",
 };
