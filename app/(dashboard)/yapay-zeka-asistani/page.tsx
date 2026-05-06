@@ -14,7 +14,6 @@ export default function YapayZekaAsistaniPage() {
   if (!planPremium) {
     const perks = [
       "İstediğiniz konuda Türkçe soru–cevap; finans sorularında her yanıtta veriler sunucuda yenilenir",
-      "Özeti kopyala ile kayıtlara dayalı kısa metni panoya aktarma",
       "Tarayıcı destekliyse sesli soru girişi (Yeni işlem ekranında da geçerli)",
     ];
 

@@ -88,11 +88,7 @@ export function AiAssistantHero() {
               <span className="font-medium text-foreground/85">
                 {AI_ASSISTANT_MAX_MESSAGES_PER_DAY}
               </span>{" "}
-              mesaj gönderebilirsiniz. Aynı ekrandan{" "}
-              <span className="font-semibold text-foreground/90">
-                Özeti kopyala
-              </span>{" "}
-              ile kısa finans özetini kopyalayabilirsiniz;{" "}
+              mesaj gönderebilirsiniz.{" "}
               <span className="font-medium text-foreground/85">
                 Son {AI_ASSISTANT_STORED_QA_COUNT} Soru
               </span>{" "}

@@ -38,7 +38,9 @@ function AiAnalizPage() {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState<"pdf" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [remainingAnalyses, setRemainingAnalyses] = useState<number | null>(null);
+  const [remainingAnalyses, setRemainingAnalyses] = useState<number | null>(
+    null,
+  );
   const [usageLoading, setUsageLoading] = useState(true);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ function AiAnalizPage() {
       "Kayıtlı borç ve alacaklarınızın aynı raporda özetlenmesi ve ödeme / tahsilat önceliği önerileri",
       "Somut tasarruf maddeleri ve bir sonraki ay için bütçe çerçevesi metni",
       "Tek tıkla yeni analiz; sonuçlar başlıklar ve paragraflar halinde Markdown olarak sunulur.",
-      "Ayrı menüden IQfinansAI Asistanı ile serbest soru–cevap (finans sorularında kayıtlarınıza dayanır) ve Özeti kopyala ile panoya kısa finans özeti",
+      "Ayrı menüden IQfinansAI Asistanı ile serbest soru–cevap (finans sorularında kayıtlarınıza dayanır)",
       "Yeni işlem formunda Premium ile sesli açıklama (tarayıcı destekliyse)",
     ];
 
