@@ -108,7 +108,7 @@ export function KullanimKosullariContent() {
       <p>
         Platformu kullanmaktan dilediğiniz zaman vazgeçebilir ve{" "}
         <strong>
-          <Link href="/ayarlar">Ayarlar &gt; Hesabı Sil</Link>
+          <Link href="/profil">Profil &gt; Tehlikeli bölge</Link>
         </strong>{" "}
         menüsü üzerinden ilişiğinizi tamamen kesebilirsiniz. Hesabınızı
         sildiğinizde, yasal olarak saklanması zorunlu olan fatura ve işlem

@@ -1,12 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium/premium-price";
 import { cn } from "@/lib/common/utils";
 
 export function DashboardPremiumPromo() {
+  const { data: session } = useSession();
+  const planHref = session?.user?.id
+    ? `/profil/${session.user.id}#plan`
+    : "/profil";
+
   return (
     <section
       aria-label="Premium üyelik tanıtımı"
@@ -55,7 +61,7 @@ export function DashboardPremiumPromo() {
         asChild
         className="h-11 w-full shrink-0 rounded-full bg-emerald-500 px-6 text-base font-semibold text-black shadow-md shadow-emerald-900/35 transition hover:bg-emerald-400 hover:shadow-lg dark:text-white sm:w-auto sm:self-center"
       >
-        <Link href="/ayarlar">Premium satın al</Link>
+        <Link href={planHref}>Premium satın al</Link>
       </Button>
     </section>
   );

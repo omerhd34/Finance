@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/common/utils";
 
 type Props = {
@@ -9,6 +10,11 @@ type Props = {
 };
 
 export function PremiumPlanNotice({ title, className }: Props) {
+  const { data: session } = useSession();
+  const planHref = session?.user?.id
+    ? `/profil/${session.user.id}#plan`
+    : "/profil";
+
   return (
     <div
       className={cn(
@@ -22,10 +28,10 @@ export function PremiumPlanNotice({ title, className }: Props) {
         Ücretsiz planda bu özellik kapalıdır. Kullanmak için{" "}
         <strong>Premium</strong> satın alın. Ödeme ve plan yükseltmesi için{" "}
         <Link
-          href="/ayarlar"
+          href={planHref}
           className="font-semibold underline underline-offset-2 hover:opacity-100"
         >
-          Ayarlar
+          Profil
         </Link>{" "}
         sayfasına gidin.
       </p>

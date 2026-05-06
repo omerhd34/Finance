@@ -33,6 +33,11 @@ const nextConfig: NextConfig = {
         destination: "/islemler",
         permanent: true,
       },
+      {
+        source: "/ayarlar",
+        destination: "/profil",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

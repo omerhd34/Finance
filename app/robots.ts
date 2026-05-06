@@ -8,7 +8,7 @@ const PRIVATE_PREFIXES = [
   "/butceler",
   "/hedefler",
   "/islemler",
-  "/ayarlar",
+  "/profil",
   "/yatirimlar",
   "/yapay-zeka-analizi",
   "/yapay-zeka-asistani",

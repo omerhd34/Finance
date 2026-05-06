@@ -273,7 +273,7 @@ export function BudgetsClient({ currency }: Props) {
                     <span
                       title={
                         b.emailAlertsEnabled && !globalEmailNotificationsOn
-                          ? "Genel e-posta bildirimleri ayarlarda kapalı; bu kategori için e-posta gönderilmez."
+                          ? "Genel e-posta bildirimleri kapalıdır, bu kategori için e-posta gönderilmez."
                           : undefined
                       }
                     >

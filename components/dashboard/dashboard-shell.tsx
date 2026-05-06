@@ -16,7 +16,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PieChart,
-  Settings,
   Sparkles,
   Sun,
   TrendingUp,
@@ -117,7 +116,6 @@ const titles: Record<string, string> = {
   "/yapay-zeka-analizi": "IQfinansAI Analiz",
   "/yapay-zeka-asistani": "IQfinansAI Asistanı",
   "/bildirimler": "Bildirimler",
-  "/ayarlar": "Ayarlar",
   "/profil": "Profil",
 };
 
@@ -404,19 +402,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link
-              href="/ayarlar"
-              onClick={() => setOpen(false)}
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-lg bg-muted/25 transition-colors hover:bg-muted/40",
-                pathname === "/ayarlar" || pathname.startsWith("/ayarlar/")
-                  ? "text-primary"
-                  : "text-muted-foreground",
-              )}
-              title="Ayarlar"
-            >
-              <Settings className="h-4 w-4" />
-            </Link>
-            <Link
               href={profileHref}
               onClick={() => setOpen(false)}
               className="flex justify-center rounded-lg bg-muted/30 p-1.5"
@@ -470,21 +455,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   </SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="border-t border-border p-3">
-              <Link
-                href="/ayarlar"
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  pathname === "/ayarlar" || pathname.startsWith("/ayarlar/")
-                    ? "bg-primary/15 text-primary"
-                    : "bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                )}
-              >
-                <Settings className="h-4 w-4 shrink-0" />
-                Ayarlar
-              </Link>
             </div>
             <div className="border-t border-border p-3">
               <Link
