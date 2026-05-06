@@ -60,63 +60,73 @@ export function DashboardRecentTransactionsCard({
         </Button>
       </div>
       <div className="p-4 sm:p-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tarih</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Açıklama</TableHead>
-              <TableHead>Tür</TableHead>
-              <TableHead className="text-right">
-                <div className="flex items-center justify-end gap-2">Tutar</div>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="text-center text-muted-foreground"
-                >
-                  Henüz işlem yok.
-                </TableCell>
-              </TableRow>
-            ) : (
-              transactions.map((t) => (
-                <TableRow key={t.id}>
-                  <TableCell>{formatDateShort(t.date)}</TableCell>
-                  <TableCell>
-                    {formatExpenseCategoryLabel(t.category, t.subcategory)}
-                  </TableCell>
-                  <TableCell className="max-w-[140px]">
-                    <span className="block truncate">
-                      <TransactionDescriptionText description={t.description} />
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={t.type === "income" ? "income" : "expense"}>
-                      {t.type === "income" ? "Gelir" : "Gider"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {t.type === "income" ? (
-                      <span className="inline-flex items-center text-emerald-500">
-                        <ArrowUpRight className="mr-1 h-4 w-4" />
-                        {formatMoneyAmount(t.amount, currency)}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-red-500">
-                        <ArrowDownRight className="mr-1 h-4 w-4" />
-                        {formatMoneyAmount(t.amount, currency)}
-                      </span>
-                    )}
-                  </TableCell>
+        <div className="-mx-1 overflow-x-auto sm:mx-0">
+          <div className="min-w-[640px] px-1 sm:min-w-0 sm:px-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tarih</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Açıklama</TableHead>
+                  <TableHead>Tür</TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      Tutar
+                    </div>
+                  </TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {transactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-muted-foreground"
+                    >
+                      Henüz işlem yok.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  transactions.map((t) => (
+                    <TableRow key={t.id}>
+                      <TableCell>{formatDateShort(t.date)}</TableCell>
+                      <TableCell>
+                        {formatExpenseCategoryLabel(t.category, t.subcategory)}
+                      </TableCell>
+                      <TableCell className="max-w-[140px]">
+                        <span className="block truncate">
+                          <TransactionDescriptionText
+                            description={t.description}
+                          />
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={t.type === "income" ? "income" : "expense"}
+                        >
+                          {t.type === "income" ? "Gelir" : "Gider"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {t.type === "income" ? (
+                          <span className="inline-flex items-center text-emerald-500">
+                            <ArrowUpRight className="mr-1 h-4 w-4" />
+                            {formatMoneyAmount(t.amount, currency)}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center text-red-500">
+                            <ArrowDownRight className="mr-1 h-4 w-4" />
+                            {formatMoneyAmount(t.amount, currency)}
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
     </Card>
   );
