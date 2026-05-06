@@ -223,70 +223,70 @@ export function DashboardInvestmentSection({
             key={card.key}
             className="min-w-0 overflow-hidden border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10"
           >
-            <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-              <div className="flex min-w-0 gap-3.5">
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${card.iconClassName}`}
-                  aria-hidden
-                >
-                  <Icon className="h-5 w-5" strokeWidth={2} />
-                </div>
-                <div className="min-w-0 space-y-1.5 pt-0.5">
-                  <h3 className="text-lg font-semibold leading-tight tracking-tight">
+            <div className="space-y-1 border-b border-border bg-muted/30 px-5 py-5 sm:px-6 sm:py-6">
+              <div className="grid w-full min-w-0 grid-cols-1 gap-y-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:gap-x-3.5 sm:gap-y-0">
+                <div className="flex min-w-0 items-center gap-3.5 sm:contents">
+                  <div
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${card.iconClassName}`}
+                    aria-hidden
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2} />
+                  </div>
+                  <h3 className="min-w-0 flex-1 text-lg font-semibold leading-tight tracking-tight sm:min-w-0">
                     {card.title}
                   </h3>
-                  <p className="text-sm leading-snug text-muted-foreground">
-                    {card.description}
-                  </p>
+                </div>
+                <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:w-auto sm:flex-nowrap">
+                  {visibleCardCount > 1 ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => moveCard(card.key, -1)}
+                        disabled={!canMoveUp}
+                        aria-label={`${card.title} kartını sola taşı`}
+                        title="Sola taşı"
+                      >
+                        <ArrowUp className="h-4 w-4" aria-hidden />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => moveCard(card.key, 1)}
+                        disabled={!canMoveDown}
+                        aria-label={`${card.title} kartını sağa taşı`}
+                        title="Sağa taşı"
+                      >
+                        <ArrowDown className="h-4 w-4" aria-hidden />
+                      </Button>
+                    </>
+                  ) : null}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-1.5 sm:w-auto"
+                    asChild
+                  >
+                    <Link
+                      href="/yatirimlar"
+                      className="w-full justify-center gap-1.5 sm:w-auto"
+                    >
+                      Yatırımlar
+                      <ArrowUpRight
+                        className="h-3.5 w-3.5 opacity-70"
+                        aria-hidden
+                      />
+                    </Link>
+                  </Button>
                 </div>
               </div>
-              <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap sm:items-start">
-                {visibleCardCount > 1 ? (
-                  <>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => moveCard(card.key, -1)}
-                      disabled={!canMoveUp}
-                      aria-label={`${card.title} kartını sola taşı`}
-                      title="Sola taşı"
-                    >
-                      <ArrowUp className="h-4 w-4" aria-hidden />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => moveCard(card.key, 1)}
-                      disabled={!canMoveDown}
-                      aria-label={`${card.title} kartını sağa taşı`}
-                      title="Sağa taşı"
-                    >
-                      <ArrowDown className="h-4 w-4" aria-hidden />
-                    </Button>
-                  </>
-                ) : null}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1.5 sm:w-auto"
-                  asChild
-                >
-                  <Link
-                    href="/yatirimlar"
-                    className="w-full justify-center gap-1.5 sm:w-auto"
-                  >
-                    Yatırımlar
-                    <ArrowUpRight
-                      className="h-3.5 w-3.5 opacity-70"
-                      aria-hidden
-                    />
-                  </Link>
-                </Button>
-              </div>
+              <p className="min-w-0 pl-14.5 text-sm leading-snug text-muted-foreground">
+                {card.description}
+              </p>
             </div>
             <div className="min-w-0 p-4 sm:p-6">
               <InvestmentPositionStats

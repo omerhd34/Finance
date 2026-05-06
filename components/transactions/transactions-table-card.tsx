@@ -121,8 +121,7 @@ export function TransactionsTableCard({
                     const isRecurringTransaction =
                       Boolean(t.recurringRuleId) ||
                       Boolean(t.recurringSlotKey) ||
-                      t.description?.startsWith(RECURRING_DESC_PREFIX) ===
-                        true;
+                      t.description?.startsWith(RECURRING_DESC_PREFIX) === true;
                     const isDebtRow = isDebtMirrorTransaction(t);
                     const hideEdit = isRecurringTransaction || isDebtRow;
                     const hideDelete = isDebtRow || isRecurringTransaction;
