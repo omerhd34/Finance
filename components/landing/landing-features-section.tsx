@@ -27,7 +27,7 @@ export function LandingFeaturesSection() {
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
             Günlük finans işlerinizin çoğu ücretsiz planda;{" "}
             <span className="font-medium text-foreground">
-              AI analiz ve AI asistanı, fiş tarama
+              AI analiz ve AI asistanı ile mesajlaşma, fiş tarama
             </span>{" "}
             ve{" "}
             <span className="font-medium text-foreground">yatırım takibi</span>{" "}
@@ -68,10 +68,10 @@ export function LandingFeaturesSection() {
                 Premium ile AI analiz ve asistan
               </h3>
               <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-                Premium ile AI analiz raporu ve AI asistanı (tam metin, PDF
-                indirme), fiş-fatura OCR ve canlı kotasyonlu yatırım portföyü
-                tam kapsamda açılır; ücretsiz plandaki özellikleriniz aynen
-                devam eder.
+                Premium ile AI analiz raporu ve AI asistanı ile mesajlaşma (tam
+                metin, PDF indirme), fiş-fatura OCR ve canlı kotasyonlu yatırım
+                portföyü tam kapsamda açılır; ücretsiz plandaki özellikleriniz
+                aynen devam eder.
               </p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 lg:gap-6">

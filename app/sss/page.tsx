@@ -74,7 +74,7 @@ function SssWideCard({ post }: { post: sssPost }) {
 export const metadata: Metadata = {
   title: "SSS",
   description:
-    "IQfinansAI sık sorulan sorular: hesap, panel, bütçe, Premium ve güvenlik konularında yanıtlar.",
+    "IQfinansAI sık sorulan sorular: hesap, panel, bütçe, AI asistanla mesajlaşma, Premium ve güvenlik konularında yanıtlar.",
   alternates: {
     canonical: "/sss",
     languages: { "tr-TR": "/sss" },
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SSS | IQfinansAI",
     description:
-      "Ürün kullanımı, bütçe, borç ve Premium özellikleri hakkında sorular ve yanıtlar.",
+      "Ürün kullanımı, AI asistanla mesajlaşma, bütçe, borç ve Premium özellikleri hakkında sorular ve yanıtlar.",
     url: `${siteUrl}/sss`,
     type: "website",
     locale: "tr_TR",
@@ -159,9 +159,9 @@ export default function SssIndexPage() {
                 </span>
               </h1>
               <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Hesap, gösterge paneli, işlemler, Premium ve güvenlik gibi
-                başlıklarda kısa soru–cevap rehberleri. Bilgilendirme amaçlıdır;
-                yatırım veya vergi tavsiyesi değildir.
+                Hesap, gösterge paneli, işlemler, AI asistanla mesajlaşma,
+                Premium ve güvenlik gibi başlıklarda kısa soru–cevap rehberleri.
+                Bilgilendirme amaçlıdır; yatırım veya vergi tavsiyesi değildir.
               </p>
               <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-2">
                 {categories.map((cat) => (

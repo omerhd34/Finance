@@ -217,18 +217,19 @@ export const SSSPosts: sssPost[] = [
   },
   {
     slug: "yapay-zeka-analizi-ve-premium",
-    title: "Yapay zekâ analizi ve Premium: Fiş tarama ile neler mümkün?",
+    title:
+      "Yapay zekâ analizi, AI asistanla mesajlaşma ve Premium: Neler mümkün?",
     description:
-      "Yapay zekâ destekli analiz sayfası, PDF dışa aktarma, Premium fiş/fatura tarama ve ücretsiz plan farkı.",
+      "Yapay zekâ destekli analiz, AI asistanı ile mesajlaşma, PDF dışa aktarma, Premium fiş/fatura tarama ve ücretsiz plan farkı.",
     readingMinutes: 8,
     category: "Premium",
-    cardPreview: "YZ içgörü ve fiş tarama",
+    cardPreview: "AI içgörü ve fiş tarama",
     qa: [
       {
         question: "IQfinansAI'deki yapay zekâ analizi tam olarak ne yapar?",
         answer: [
           "Uygulama içindeki Yapay zekâ analizi; kayıtlı harcama ve gelir verilerinizden hareketle kişiselleştirilmiş özetler, trendler ve tasarruf veya düzen önerileri sunar. Amaç harcama alışkanlıklarınızı anlamanız ve bütçe disiplinini güçlendirmenizdir.",
-          "Premium’da oluşturduğunuz raporu PDF olarak indirebilir ve geçmiş çalıştırmalardan birini yeniden açmak için geçmiş penceresini kullanabilirsiniz.",
+          "Premium’da AI asistanıyla mesajlaşarak rapordaki noktaları soru-cevap akışında detaylandırabilir, oluşturduğunuz raporu PDF olarak indirebilir ve geçmiş çalıştırmalardan birini yeniden açmak için geçmiş penceresini kullanabilirsiniz.",
         ],
       },
       {
@@ -247,7 +248,7 @@ export const SSSPosts: sssPost[] = [
         question: "Ücretsiz plan ile Premium arasındaki başlıca fark nedir?",
         answer: [
           "Ücretsiz planda Ana Panel, işlemler (manuel kayıt), tekrarlayan ödemeler, kategori bütçeleri, borç–alacak takibi, Kur Dönüşüm ekranı ve çoklu para birimi (Profil’den TL/USD/EUR/GBP) kullanılır; Ana Panelde özet finansal sağlık skoru da görünür. AI Analiz bu planda çalıştırılamaz (sayfada tanıtım metni bulunur).",
-          "Premium ile fiş/fatura görüntüsünden işlem alanlarını doldurma (Yeni işlem), yapay zekâ analizi raporunun çalıştırılması, PDF indirme, geçmiş analizlere erişim, yatırım portföy takibi ve canlı fiyatlarla kar/zarar özeti açılır; güncel paket tutarı ve Shopier ile ödeme için Ayarlar’daki Plan bölümüne bakabilirsiniz.",
+          "Premium ile fiş/fatura görüntüsünden işlem alanlarını doldurma (Yeni işlem), yapay zekâ analizi raporunun çalıştırılması, AI asistanla mesajlaşma, PDF indirme, geçmiş analizlere erişim, yatırım portföy takibi ve canlı fiyatlarla kar/zarar özeti açılır; güncel paket tutarı ve Shopier ile ödeme için Ayarlar’daki Plan bölümüne bakabilirsiniz.",
         ],
       },
     ],

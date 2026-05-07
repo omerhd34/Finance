@@ -135,19 +135,19 @@ export const LANDING_PLANS: LandingPlan[] = [
   {
     id: "premium",
     title: "Premium",
-    subtitle: "AI analizi, OCR, bütçe ve yatırım portföyü tek abonelikte",
+    subtitle:
+      "AI analiz, AI asistanla mesajlaşma, OCR ve yatırım portföyü tek abonelikte",
     priceAmountTry: 150,
     priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
       "Fiş ve fatura görsellerinden OCR ile tutar, tarih ve kategori çıkarımı",
-      "Yapay zekâ (AI) gelir–gider analizi: kişiselleştirilmiş yorumlar ve gelişim önerileri",
+      "AI analiz ve AI asistanıyla mesajlaşma: gelir-gider verilerinize göre kişiselleştirilmiş yorumlar, soruya göre yönlendirme ve gelişim önerileri",
       "Finansal sağlık skoru; Premium’da portföy kar/zararı da skora dahil edilir",
       "Yapay zekâ raporunda gelecek dönem bütçe çerçevesi ve tasarruf önerileri",
       "Yapay zekâ analizinde harcama kalıpları ve trend yorumları",
       "Yatırım portföyü: hisse senedi, altın, döviz, kripto ve emtia pozisyonları",
       "Canlı kotasyonlarla pozisyon ve toplam portföy değeri; kar & zarar özeti",
-      "Yeni özelliklere öncelikli erişim",
     ],
     ctaLabel: "Listeye katıl",
     ctaHref: "/kayit",
