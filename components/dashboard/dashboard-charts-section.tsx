@@ -36,10 +36,10 @@ export function DashboardChartsSection({
   onPieMonthsChange,
 }: Props) {
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
+    <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+      <Card className="min-w-0">
         <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-          <div className="flex min-w-0 gap-3.5">
+          <div className="flex min-w-0 flex-1 gap-3.5">
             <div
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
               aria-hidden
@@ -56,7 +56,7 @@ export function DashboardChartsSection({
               </p>
             </div>
           </div>
-          <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+          <div className="w-full shrink-0 sm:max-w-[200px] sm:ml-auto">
             <Select
               value={String(barsMonths)}
               onValueChange={(v) => onBarsMonthsChange(Number(v))}
@@ -78,9 +78,9 @@ export function DashboardChartsSection({
           <MonthlyBarChart data={bars} />
         </div>
       </Card>
-      <Card className="overflow-hidden">
+      <Card className="min-w-0 overflow-hidden">
         <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-          <div className="flex min-w-0 gap-3.5">
+          <div className="flex min-w-0 flex-1 gap-3.5">
             <div
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
               aria-hidden
@@ -97,7 +97,7 @@ export function DashboardChartsSection({
               </p>
             </div>
           </div>
-          <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+          <div className="w-full shrink-0 sm:max-w-[200px] sm:ml-auto">
             <Select
               value={String(pieMonths)}
               onValueChange={(v) => onPieMonthsChange(Number(v))}

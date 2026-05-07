@@ -1,132 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import {
-  ArrowRightLeft,
-  Bell,
-  CalendarClock,
-  HandCoins,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Moon,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PieChart,
-  Sparkles,
-  Sun,
-  TrendingUp,
-  Wallet,
-  X,
-} from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useTheme } from "@wrksz/themes/client";
 import { apiClient } from "@/lib/client/api-client";
 import { normalizeUserCurrency } from "@/lib/common/currency";
-import { hrefToAiAssistantPage } from "@/lib/ai/ai-insights-tabs";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
-import { NotificationsPopover } from "@/components/notifications/notifications-popover";
-import { BrandLockup } from "@/components/branding/brand-lockup";
-import { IQfinansAiAssistantIcon } from "@/components/branding/iqfinans-ai-assistant-icon";
-import { cn, currencySymbolLabel } from "@/lib/common/utils";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+import { DashboardShellHeader } from "@/components/dashboard/dashboard-shell-header";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const SIDEBAR_COLLAPSED_KEY = "iqfinansai-sidebar-collapsed";
-
-type ProfilePatchResponse = {
-  name: string | null;
-  profession: string | null;
-  city: string | null;
-  country: string | null;
-  monthStartDay: number;
-  email: string;
-  phone: string | null;
-  currency: string;
-  image: string | null;
-  notificationsEnabled: boolean;
-  planTier: string;
-};
-
-function profileInitials(
-  name: string | null | undefined,
-  email: string,
-): string {
-  const n = name?.trim();
-  if (n) {
-    const parts = n.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
-    }
-    return n.slice(0, 2).toUpperCase();
-  }
-  return email.slice(0, 2).toUpperCase();
-}
-
-const nav = [
-  { href: "/gosterge-paneli", label: "Ana Panel", icon: LayoutDashboard },
-  { href: "/islemler", label: "İşlemler", icon: Wallet },
-  { href: "/tekrarlayanlar", label: "Tekrarlayan", icon: CalendarClock },
-  { href: "/butceler", label: "Bütçeler", icon: PieChart },
-  { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
-  { href: "/kur-donusum", label: "Kur Dönüşüm", icon: ArrowRightLeft },
-  { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
-  { href: "/yapay-zeka-analizi", label: "IQfinansAI Analiz", icon: Sparkles },
-  {
-    href: "/yapay-zeka-asistani",
-    label: "IQfinansAI Asistanı",
-    icon: IQfinansAiAssistantIcon,
-  },
-  { href: "/bildirimler", label: "Bildirimler", icon: Bell },
-];
-
-const premiumNavHrefs = new Set([
-  "/yatirimlar",
-  "/yapay-zeka-analizi",
-  "/yapay-zeka-asistani",
-]);
-
-const titles: Record<string, string> = {
-  "/gosterge-paneli": "Ana Panel",
-  "/islemler": "İşlemler",
-  "/tekrarlayanlar": "Tekrarlayan işlemler",
-  "/butceler": "Kategori bütçeleri",
-  "/borc-ve-alacak": "Borç ve Alacak",
-  "/yatirimlar": "Yatırım",
-  "/kur-donusum": "Kur Dönüşüm",
-  "/yapay-zeka-analizi": "IQfinansAI Analiz",
-  "/yapay-zeka-asistani": "IQfinansAI Asistanı",
-  "/bildirimler": "Bildirimler",
-  "/profil": "Profil",
-};
-
-function titleForPath(path: string): string {
-  if (titles[path]) return titles[path];
-  const prefix = Object.keys(titles)
-    .filter((k) => k !== "/gosterge-paneli")
-    .sort((a, b) => b.length - a.length)
-    .find((k) => path.startsWith(k));
-  return prefix ? (titles[prefix] ?? "IQfinansAI") : "IQfinansAI";
-}
+  DASHBOARD_PAGE_PAD_X,
+  DASHBOARD_PAGE_PAD_Y,
+  profileInitials,
+  SIDEBAR_COLLAPSED_KEY,
+  type ProfilePatchResponse,
+} from "@/components/dashboard/dashboard-shell-constants";
+import { cn } from "@/lib/common/utils";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -147,7 +39,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [themeReady, setThemeReady] = useState(false);
   const [currencySaving, setCurrencySaving] = useState(false);
-  const title = titleForPath(pathname);
   const currency = normalizeUserCurrency(
     authUser?.currency ?? session?.user?.currency ?? "TL",
   );
@@ -252,340 +143,75 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function renderSidebar(collapsed: boolean, isMobile: boolean = false) {
-    return (
-      <>
-        {collapsed ? (
-          <div className="flex shrink-0 flex-col items-center gap-2 border-b border-border py-3">
-            <Link
-              href="/gosterge-paneli"
-              onClick={() => setOpen(false)}
-              className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Ana panele git"
-              title="Ana panel"
-            >
-              <BrandLockup variant="sidebar" collapsed />
-            </Link>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted/70 hover:text-foreground"
-              onClick={toggleSidebarCollapsed}
-              aria-label="Kenar çubuğunu genişlet"
-            >
-              <PanelLeftOpen className="h-4 w-4" aria-hidden />
-            </Button>
-          </div>
-        ) : (
-          <div className="relative flex h-14 shrink-0 items-center justify-center border-b border-border px-3">
-            <Link
-              href="/gosterge-paneli"
-              onClick={() => setOpen(false)}
-              className="inline-flex max-w-[calc(100%-2.75rem)] min-w-0 cursor-pointer items-center rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Ana panele git"
-              title="Ana panel"
-            >
-              <BrandLockup variant="sidebar" className="min-w-0" />
-            </Link>
-            <div className="absolute inset-e-1 top-1/2 flex -translate-y-1/2 items-center sm:inset-e-2">
-              {isMobile ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 cursor-pointer"
-                  onClick={() => setOpen(false)}
-                  aria-label="Kapat"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="hidden h-9 w-9 shrink-0 cursor-pointer rounded-lg border border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted/70 hover:text-foreground lg:inline-flex"
-                  onClick={toggleSidebarCollapsed}
-                  aria-label="Kenar çubuğunu daralt"
-                >
-                  <PanelLeftClose className="h-4 w-4" aria-hidden />
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
-        <nav
-          className={cn(
-            "flex flex-1 flex-col gap-1",
-            collapsed ? "p-2" : "p-3",
-          )}
-        >
-          {nav.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href || pathname.startsWith(`${href}/`);
-            const isPremium = premiumNavHrefs.has(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                title={collapsed ? label : undefined}
-                className={cn(
-                  "flex items-center rounded-lg text-sm font-medium transition-colors",
-                  collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
-                  active
-                    ? isPremium
-                      ? "relative border border-rose-300 bg-rose-200/90 text-rose-800 shadow-[0_0_0_1px_rgba(244,63,94,0.18)] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-r-full before:bg-rose-600 dark:border-rose-400/45 dark:bg-rose-700/28 dark:text-rose-50 dark:shadow-[0_0_0_1px_rgba(251,113,133,0.15)] dark:before:bg-rose-200"
-                      : "bg-primary/15 text-primary relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-5 before:w-1 before:rounded-r-full before:bg-primary"
-                    : isPremium
-                      ? "border border-rose-300/90 bg-rose-100/85 text-rose-700 hover:border-rose-400 hover:bg-rose-200/85 hover:text-rose-800 dark:border-rose-500/30 dark:bg-rose-900/28 dark:text-rose-100 dark:hover:border-rose-400/50 dark:hover:bg-rose-800/35 dark:hover:text-rose-50"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                )}
-              >
-                <span className="grid h-5 w-5 shrink-0 place-items-center">
-                  <Icon
-                    className={cn(
-                      "h-4 w-4",
-                      href === "/yapay-zeka-asistani" && "scale-110",
-                    )}
-                  />
-                </span>
-                {!collapsed && label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="mt-auto" />
-        {collapsed ? (
-          <div className="flex flex-col items-center gap-2 border-t border-border p-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  disabled={currencySaving || !session?.user}
-                  className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border-border/80 bg-muted/25 shadow-none"
-                  title={`Para birimi: ${currency}`}
-                  aria-label="Para birimi seç"
-                >
-                  <span className="text-xs font-semibold tabular-nums">
-                    {currencySymbolLabel(currency)}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-44"
-                align={isMobile ? "start" : "center"}
-                side={isMobile ? "bottom" : "right"}
-                sideOffset={6}
-              >
-                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                  Para birimi
-                </DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={currency}
-                  onValueChange={(v) => void onSidebarCurrencyChange(v)}
-                >
-                  <DropdownMenuRadioItem value="TL" className="cursor-pointer">
-                    TL (₺)
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="USD" className="cursor-pointer">
-                    USD ($)
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="EUR" className="cursor-pointer">
-                    EUR (€)
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="GBP" className="cursor-pointer">
-                    GBP (£)
-                  </DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href={profileHref}
-              onClick={() => setOpen(false)}
-              className="flex justify-center rounded-lg bg-muted/30 p-1.5"
-              title="Profil"
-            >
-              <Avatar className="h-7 w-7">
-                <AvatarImage src={sidebarAvatarSrc} alt="" />
-                <AvatarFallback className="bg-primary/20 text-primary">
-                  {sidebarFallbackInitials}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              title="Çıkış yap"
-              aria-label="Çıkış yap"
-              onClick={() => void signOut({ callbackUrl: "/" })}
-              className="h-9 w-9 cursor-pointer rounded-lg border-destructive/25 bg-destructive/6 text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4 -scale-x-100" aria-hidden />
-            </Button>
-          </div>
-        ) : (
-          <>
-            <div className="border-t border-border p-3">
-              <Select
-                value={currency}
-                disabled={currencySaving || !session?.user}
-                onValueChange={(v) => void onSidebarCurrencyChange(v)}
-              >
-                <SelectTrigger
-                  className="h-9 w-full cursor-pointer rounded-lg border-border/80 bg-muted/30 shadow-none"
-                  aria-label="Para birimi"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent position="popper" sideOffset={4}>
-                  <SelectItem value="TL" className="cursor-pointer">
-                    TL (₺)
-                  </SelectItem>
-                  <SelectItem value="USD" className="cursor-pointer">
-                    USD ($)
-                  </SelectItem>
-                  <SelectItem value="EUR" className="cursor-pointer">
-                    EUR (€)
-                  </SelectItem>
-                  <SelectItem value="GBP" className="cursor-pointer">
-                    GBP (£)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="border-t border-border p-3">
-              <Link
-                href={profileHref}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2 transition-colors hover:bg-muted/50"
-              >
-                <Avatar className="h-7 w-7">
-                  <AvatarImage src={sidebarAvatarSrc} alt="" />
-                  <AvatarFallback className="bg-primary/20 text-primary">
-                    {sidebarFallbackInitials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {session?.user?.name ?? "Kullanıcı"}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {session?.user?.email}
-                  </p>
-                </div>
-              </Link>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-2 w-full cursor-pointer justify-center gap-3 rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
-                onClick={() => void signOut({ callbackUrl: "/" })}
-              >
-                <LogOut className="h-4 w-4 shrink-0 -scale-x-100" aria-hidden />
-                Çıkış yap
-              </Button>
-            </div>
-          </>
-        )}
-      </>
-    );
-  }
+  const sidebarProps = {
+    pathname,
+    onMobileNavigate: () => setOpen(false),
+    onToggleCollapsed: toggleSidebarCollapsed,
+    currency,
+    currencySaving,
+    profileHref,
+    sidebarAvatarSrc,
+    sidebarFallbackInitials,
+    userDisplayName: session?.user?.name ?? "Kullanıcı",
+    userEmail: session?.user?.email,
+    sessionUserPresent: !!session?.user,
+    onCurrencyChange: onSidebarCurrencyChange,
+  };
 
   return (
-    <div className="flex h-dvh min-h-0 overflow-hidden bg-background">
-      <aside
-        className={cn(
-          "hidden h-full min-h-0 shrink-0 flex-col overflow-y-auto border-r border-border bg-sidebar lg:flex",
-          sidebarCollapsed ? "w-18" : "w-64",
-        )}
-      >
-        {renderSidebar(sidebarCollapsed)}
-      </aside>
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/60"
-            aria-label="Menüyü kapat"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute left-0 top-0 flex h-full w-72 flex-col border-r border-border bg-sidebar shadow-xl">
-            {renderSidebar(false, true)}
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-background">
+      <DashboardShellHeader
+        menuOpen={open}
+        onMenuToggle={() => setOpen((prev) => !prev)}
+        themeReady={themeReady}
+        themeResolved={themeResolved}
+        resolvedTheme={resolvedTheme}
+        onToggleTheme={toggleTheme}
+      />
+      <div className="relative flex min-h-0 min-w-0 flex-1">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div className="flex min-h-full min-w-0 flex-row items-stretch">
+              <aside
+                dir="ltr"
+                className={cn(
+                  "sticky top-0 hidden h-[calc(100dvh-3.5rem)] shrink-0 self-start flex-col overflow-y-auto border-r border-border bg-sidebar lg:flex",
+                  sidebarCollapsed ? "w-18" : "w-64",
+                )}
+              >
+                <DashboardSidebar
+                  collapsed={sidebarCollapsed}
+                  {...sidebarProps}
+                />
+              </aside>
+              <main
+                className={cn(
+                  "min-w-0 flex-1 bg-background",
+                  DASHBOARD_PAGE_PAD_X,
+                  DASHBOARD_PAGE_PAD_Y,
+                )}
+              >
+                {children}
+              </main>
+            </div>
           </div>
         </div>
-      )}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="z-40 flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-          <div className="flex min-w-0 items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="cursor-pointer lg:hidden"
-              onClick={() => setOpen(true)}
-              aria-label="Menü"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <h1 className="truncate text-lg font-semibold">{title}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="cursor-pointer text-rose-700 hover:bg-rose-200/85 hover:text-rose-800 dark:text-rose-200 dark:hover:bg-rose-500/22 dark:hover:text-rose-100"
-              asChild
-              title="IQfinansAI Asistanı"
-            >
-              <Link
-                href={hrefToAiAssistantPage()}
-                aria-label="IQfinansAI Asistanına git"
-              >
-                <IQfinansAiAssistantIcon
-                  className="h-6 w-6 scale-[1.22]"
-                  aria-hidden
-                />
-              </Link>
-            </Button>
-            <NotificationsPopover />
-            <Button
+        {open && (
+          <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">
+            <button
               type="button"
-              variant="ghost"
-              size="icon"
-              disabled={!themeReady}
-              className="cursor-pointer"
-              aria-label={
-                themeResolved
-                  ? resolvedTheme === "dark"
-                    ? "Açık temaya geç"
-                    : "Koyu temaya geç"
-                  : "Tema"
-              }
-              title={
-                themeResolved
-                  ? resolvedTheme === "dark"
-                    ? "Açık temaya geç"
-                    : "Koyu temaya geç"
-                  : "Tema"
-              }
-              onClick={toggleTheme}
+              className="absolute inset-0 bg-black/60"
+              aria-label="Menüyü kapat"
+              onClick={() => setOpen(false)}
+            />
+            <div
+              dir="ltr"
+              className="absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col border-r border-border bg-sidebar shadow-xl"
             >
-              {themeResolved ? (
-                resolvedTheme === "dark" ? (
-                  <Sun className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <Moon className="h-5 w-5 text-muted-foreground " />
-                )
-              ) : (
-                <Moon className="h-5 w-5 text-muted-foreground opacity-60" />
-              )}
-            </Button>
+              <DashboardSidebar collapsed={false} isMobile {...sidebarProps} />
+            </div>
           </div>
-        </header>
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background p-4 md:p-6">
-          {children}
-        </main>
+        )}
       </div>
     </div>
   );
