@@ -13,7 +13,7 @@ import {
   type SupportContactClientInput,
 } from "@/lib/schemas/validations";
 import { cn } from "@/lib/common/utils";
-import { fireGoogleAdsQuoteRequestConversion } from "@/lib/analytics/google-ads-conversion";
+import { fireGoogleAdsPurchaseConversion } from "@/lib/analytics/google-ads-conversion";
 
 type Props = {
   inboxConfigured: boolean;
@@ -90,7 +90,7 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
         message: "",
         _contact_hp: "",
       });
-      fireGoogleAdsQuoteRequestConversion();
+      fireGoogleAdsPurchaseConversion();
       setSent(true);
     } catch {
       setError("root", {
