@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import Link from "next/link";
@@ -36,11 +37,7 @@ type Props = {
   ) => Promise<void>;
 };
 
-export function NewRecurringDialog({
-  open,
-  onOpenChange,
-  onSubmit,
-}: Props) {
+export function NewRecurringDialog({ open, onOpenChange, onSubmit }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const displayCurrency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
