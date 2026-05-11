@@ -69,7 +69,7 @@ export function DashboardChartsSection({
                 <SelectItem value="3">Son 3 ay</SelectItem>
                 <SelectItem value="6">Son 6 ay</SelectItem>
                 <SelectItem value="9">Son 9 ay</SelectItem>
-                <SelectItem value="12">Son 12 ay</SelectItem>
+                <SelectItem value="12">Son yıl</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -111,7 +111,7 @@ export function DashboardChartsSection({
                 <SelectItem value="3">Son 3 ay</SelectItem>
                 <SelectItem value="6">Son 6 ay</SelectItem>
                 <SelectItem value="9">Son 9 ay</SelectItem>
-                <SelectItem value="12">Son 12 ay</SelectItem>
+                <SelectItem value="12">Son yıl</SelectItem>
               </SelectContent>
             </Select>
           </div>
