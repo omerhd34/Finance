@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
 import { Button } from "@/components/ui/button";
 
 type AdminSection = "uyeler" | "abonelikler";
@@ -28,6 +29,7 @@ export function AdminSharedHeader({ active }: { active: AdminSection }) {
           >
             <Link href="/admin/abonelikler">Abonelikler</Link>
           </Button>
+          <AdminLogoutButton />
         </div>
       </div>
     </div>

@@ -35,7 +35,7 @@ import {
   getPremiumPlanAmountTry,
 } from "@/lib/premium/shopier";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 function formatDate(value: Date | null): string {
   if (!value) return "-";
@@ -298,7 +298,7 @@ export default async function AdminAboneliklerPage({
           </Table>
         </CardContent>
       </Card>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-center gap-2">
         {currentPage <= 1 ? (
           <Button variant="outline" size="icon" disabled>
             <ChevronLeft className="h-4 w-4" />
