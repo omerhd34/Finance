@@ -364,7 +364,7 @@ export default function DashboardPage() {
           className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-muted/25 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
           aria-label="Finans özeti — panoya kopyala"
         >
-          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+          <p className="max-w-full text-sm leading-relaxed text-muted-foreground">
             Güncel işlemleriniz ile borç ve alacak özetinizi tek tıkla panoya
             kopyalayın; raporda kullanın, not olarak saklayın veya paylaşın.
           </p>
