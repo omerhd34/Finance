@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowUpRight, LineChart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LineChart } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { DashboardSectionActionLink } from "@/components/dashboard/dashboard-section-action-link";
+import { DashboardSectionHeader } from "@/components/dashboard/dashboard-section-header";
 import { cn, formatMoneyAmount } from "@/lib/common/utils";
 
 export type InvestmentPnlBreakdownRow = {
@@ -47,38 +47,15 @@ export function DashboardInvestmentSection({
 }: Props) {
   return (
     <Card className="min-w-0 overflow-hidden border-border/50 bg-linear-to-br from-card via-card to-muted/15 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
-      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-        <div className="flex min-w-0 gap-3.5">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
-            aria-hidden
-          >
-            <LineChart className="h-5 w-5" strokeWidth={2} />
-          </div>
-          <div className="min-w-0 space-y-1.5 pt-0.5">
-            <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold leading-tight tracking-tight">
-              <span>Yatırım özeti</span>
-            </h3>
-            <p className="text-sm leading-snug text-muted-foreground">
-              Pozisyon türlerine göre tahmini kar/zarar dağılımı
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full shrink-0 gap-1.5 sm:w-auto"
-          asChild
-        >
-          <Link
-            href="/yatirimlar"
-            className="flex w-full items-center justify-center gap-1.5 sm:inline-flex sm:w-auto"
-          >
-            Yatırımlar
-            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-          </Link>
-        </Button>
-      </div>
+      <DashboardSectionHeader
+        icon={LineChart}
+        iconStrokeWidth={2}
+        title="Yatırım özeti"
+        description="Pozisyon türlerine göre tahmini kar/zarar dağılımı"
+        action={
+          <DashboardSectionActionLink href="/yatirimlar" label="Yatırımlar" />
+        }
+      />
       <div className="min-w-0 p-4 sm:p-6">
         <div className="min-w-0 overflow-hidden rounded-xl border border-border/50 bg-muted/10 p-4 shadow-sm ring-1 ring-black/4 dark:bg-muted/5 dark:ring-white/6 sm:p-5">
           <ul className="flex flex-col gap-2">

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DashboardSectionActionLink } from "@/components/dashboard/dashboard-section-action-link";
+import { DashboardSectionHeader } from "@/components/dashboard/dashboard-section-header";
 import {
   Table,
   TableBody,
@@ -27,38 +27,12 @@ export function DashboardRecentTransactionsCard({
 }: Props) {
   return (
     <Card className="overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-        <div className="flex min-w-0 gap-3.5">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
-            aria-hidden
-          >
-            <History className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 space-y-1.5 pt-0.5">
-            <h3 className="text-lg font-semibold leading-tight tracking-tight">
-              Son işlemler
-            </h3>
-            <p className="text-sm leading-snug text-muted-foreground">
-              En son 5 işlem
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full shrink-0 gap-1.5 sm:w-auto"
-          asChild
-        >
-          <Link
-            href="/islemler"
-            className="flex w-full items-center justify-center gap-1.5 sm:inline-flex sm:w-auto"
-          >
-            Tümünü gör
-            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-          </Link>
-        </Button>
-      </div>
+      <DashboardSectionHeader
+        icon={History}
+        title="Son işlemler"
+        description="En son 5 işlem"
+        action={<DashboardSectionActionLink href="/islemler" label="Tümünü gör" />}
+      />
       <div className="p-4 sm:p-6">
         <div className="-mx-1 overflow-x-auto sm:mx-0">
           <div className="min-w-[640px] px-1 sm:min-w-0 sm:px-0">
@@ -93,7 +67,7 @@ export function DashboardRecentTransactionsCard({
                       <TableCell>
                         {formatExpenseCategoryLabel(t.category, t.subcategory)}
                       </TableCell>
-                      <TableCell className="max-w-[140px]">
+                      <TableCell>
                         <span className="block truncate">
                           <TransactionDescriptionText
                             description={t.description}

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowUpRight, CalendarClock, Repeat2 } from "lucide-react";
+import { CalendarClock, Repeat2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DashboardSectionActionLink } from "@/components/dashboard/dashboard-section-action-link";
+import { DashboardSectionHeader } from "@/components/dashboard/dashboard-section-header";
 import {
   RECURRING_FREQUENCY_LABEL,
   RECURRING_MODE_LABEL,
@@ -24,37 +25,16 @@ export function DashboardRecurringCard({
 }: Props) {
   return (
     <Card className="min-w-0 overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-        <div className="flex min-w-0 flex-1 gap-3.5">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
-            aria-hidden
-          >
-            <CalendarClock className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 space-y-1.5 pt-0.5">
-            <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold leading-tight tracking-tight">
-              <span>Tekrarlayan işlemler</span>
-            </h3>
-            <p className="text-sm leading-snug text-muted-foreground">
-              {activeRecurringCount === 0
-                ? "Aktif tekrarlayan kural yok"
-                : `${activeRecurringCount} aktif kural`}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="shrink-0 gap-1.5"
-          asChild
-        >
-          <Link href="/tekrarlayanlar" className="gap-1.5">
-            Tümünü gör
-            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-          </Link>
-        </Button>
-      </div>
+      <DashboardSectionHeader
+        icon={CalendarClock}
+        title="Tekrarlayan işlemler"
+        description={
+          activeRecurringCount === 0
+            ? "Aktif tekrarlayan kural yok"
+            : `${activeRecurringCount} aktif kural`
+        }
+        action={<DashboardSectionActionLink href="/tekrarlayanlar" label="Tümünü gör" />}
+      />
       <div className="p-4 sm:p-6">
         {upcomingRecurring.length === 0 ? (
           <p className="text-sm text-muted-foreground">

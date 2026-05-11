@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { ArrowUpRight, HandCoins } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { HandCoins } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { DashboardSectionActionLink } from "@/components/dashboard/dashboard-section-action-link";
+import { DashboardSectionHeader } from "@/components/dashboard/dashboard-section-header";
 import { debtRemaining } from "@/lib/debts/debt-remaining";
 import type { Debt } from "@/types/debt";
 import { formatMoneyAmount } from "@/lib/common/utils";
@@ -30,38 +30,12 @@ export function DashboardDebtCard({
 
   return (
     <Card className="overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
-        <div className="flex min-w-0 gap-3.5">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15"
-            aria-hidden
-          >
-            <HandCoins className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 space-y-1.5 pt-0.5">
-            <h3 className="flex flex-wrap items-center gap-2 text-lg font-semibold leading-tight tracking-tight">
-              <span>Borç ve Alacaklar</span>
-            </h3>
-            <p className="text-sm leading-snug text-muted-foreground">
-              Bana borçlu olanlar ve benim borçlarım
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full shrink-0 gap-1.5 sm:w-auto"
-          asChild
-        >
-          <Link
-            href="/borc-ve-alacak"
-            className="flex w-full items-center justify-center gap-1.5 sm:inline-flex sm:w-auto"
-          >
-            Tümünü gör
-            <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden />
-          </Link>
-        </Button>
-      </div>
+      <DashboardSectionHeader
+        icon={HandCoins}
+        title="Borç ve Alacaklar"
+        description="Bana borçlu olanlar ve benim borçlarım"
+        action={<DashboardSectionActionLink href="/borc-ve-alacak" label="Tümünü gör" />}
+      />
 
       <div className="grid gap-3 p-4 sm:grid-cols-2 sm:gap-4 sm:p-6">
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] px-4 py-4 sm:px-5 sm:py-5">
