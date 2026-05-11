@@ -62,8 +62,8 @@ function TransactionsPageContent() {
   const [amountSortOrder, setAmountSortOrder] = useState<"desc" | "asc" | null>(
     null,
   );
-  const [barsChartMonths, setBarsChartMonths] = useState(3);
-  const [pieChartMonths, setPieChartMonths] = useState(3);
+  const [barsChartMonths, setBarsChartMonths] = useState(12);
+  const [pieChartMonths, setPieChartMonths] = useState(1);
   const [chartItems, setChartItems] = useState<Transaction[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
   const [newTransactionOpen, setNewTransactionOpen] = useState(false);
