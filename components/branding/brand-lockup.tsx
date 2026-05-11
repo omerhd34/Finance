@@ -51,7 +51,7 @@ export function BrandLockup({
     return (
       <div
         className={cn(
-          "group relative flex h-11 w-11 shrink-0 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-linear-to-br from-emerald-800 via-emerald-950 to-[#021510] shadow-[0_2px_10px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-lime-400/30 hover:shadow-[0_0_15px_rgba(163,230,53,0.2)]",
+          "group relative flex h-11 w-11 shrink-0 cursor-pointer select-none flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-linear-to-br from-emerald-800 via-emerald-950 to-[#021510] shadow-[0_2px_10px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-lime-400/30 hover:shadow-[0_0_15px_rgba(163,230,53,0.2)]",
           className,
         )}
         aria-hidden
@@ -72,7 +72,13 @@ export function BrandLockup({
     );
   }
   return (
-    <div className={cn("flex min-w-0 items-center", styles.wrapper, className)}>
+    <div
+      className={cn(
+        "flex min-w-0 items-center select-none",
+        styles.wrapper,
+        className,
+      )}
+    >
       <div className={styles.textWrap}>
         <span className={styles.iq}>IQ</span>
         <span className={cn(styles.finans, finansClassName)}>finans</span>
