@@ -2,29 +2,61 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import {
+  DollarSign,
+  Euro,
+  LogOut,
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PoundSterling,
+  Sun,
+  TurkishLira,
+} from "lucide-react";
 import {
   dashboardNav,
   premiumNavHrefs,
 } from "@/components/dashboard/dashboard-shell-constants";
-import { cn, currencySymbolLabel } from "@/lib/common/utils";
+import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useNotificationUnreadCount } from "@/hooks/use-notification-unread-count";
+
+const CURRENCY_CYCLE = ["TL", "EUR", "USD", "GBP"] as const;
+
+const SIDEBAR_CURRENCY_LABELS: Record<string, string> = {
+  TL: "Türk Lirası",
+  EUR: "Euro",
+  USD: "ABD Doları",
+  GBP: "İngiliz Sterlini",
+};
+
+function sidebarCurrencyLabel(code: string): string {
+  return SIDEBAR_CURRENCY_LABELS[code] ?? code;
+}
+
+function SidebarCurrencyIcon({ currency }: { currency: string }) {
+  const Icon =
+    currency === "EUR"
+      ? Euro
+      : currency === "USD"
+        ? DollarSign
+        : currency === "GBP"
+          ? PoundSterling
+          : TurkishLira;
+
+  return (
+    <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+  );
+}
+
+function nextCurrencyInCycle(current: string): string {
+  const index = CURRENCY_CYCLE.indexOf(
+    current as (typeof CURRENCY_CYCLE)[number],
+  );
+  const nextIndex = index === -1 ? 0 : (index + 1) % CURRENCY_CYCLE.length;
+  return CURRENCY_CYCLE[nextIndex];
+}
 
 export type DashboardSidebarProps = {
   collapsed: boolean;
@@ -41,6 +73,10 @@ export type DashboardSidebarProps = {
   userEmail: string | null | undefined;
   sessionUserPresent: boolean;
   onCurrencyChange: (next: string) => void;
+  themeReady: boolean;
+  themeResolved: boolean;
+  resolvedTheme: string | undefined;
+  onToggleTheme: () => void;
 };
 
 export function DashboardSidebar({
@@ -58,14 +94,44 @@ export function DashboardSidebar({
   userEmail,
   sessionUserPresent,
   onCurrencyChange,
+  themeReady,
+  themeResolved,
+  resolvedTheme,
+  onToggleTheme,
 }: DashboardSidebarProps) {
+  const themeLabel = themeResolved
+    ? resolvedTheme === "dark"
+      ? "Açık temaya geç"
+      : "Koyu temaya geç"
+    : "Tema";
+  const { unreadCount } = useNotificationUnreadCount();
+
+  const cycleCurrency = () => {
+    if (currencySaving || !sessionUserPresent) return;
+    void onCurrencyChange(nextCurrencyInCycle(currency));
+  };
+
+  const notificationBadge = (placement: "collapsed" | "expanded") =>
+    unreadCount > 0 ? (
+      <span
+        className={cn(
+          "flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground",
+          placement === "collapsed"
+            ? "absolute -right-0.5 -top-0.5"
+            : "ml-auto",
+        )}
+      >
+        {unreadCount > 99 ? "99+" : unreadCount}
+      </span>
+    ) : null;
+
   return (
-    <>
+    <div className="flex min-h-full flex-col">
       {!isMobile && (
         <div
           className={cn(
-            "flex shrink-0 items-center border-b border-border",
-            collapsed ? "justify-center px-2 py-2" : "px-3 py-2",
+            "flex h-14 shrink-0 items-center border-b border-border",
+            collapsed ? "justify-center px-2" : "p-3 pt-2",
           )}
         >
           <Button
@@ -76,7 +142,7 @@ export function DashboardSidebar({
               "shrink-0 cursor-pointer rounded-lg text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground",
               collapsed
                 ? "h-9 w-9 [&_svg]:size-5"
-                : "h-9 w-full justify-start gap-3 px-3 text-sm font-medium",
+                : "h-9 w-full justify-start px-3 py-2",
             )}
             onClick={onToggleCollapsed}
             aria-label={
@@ -86,28 +152,26 @@ export function DashboardSidebar({
               collapsed ? "Kenar çubuğunu genişlet" : "Kenar çubuğunu daralt"
             }
           >
-            {collapsed ? (
-              <PanelLeftOpen className="h-5 w-5" aria-hidden />
-            ) : (
-              <>
-                <span className="grid h-5 w-5 shrink-0 place-items-center">
-                  <PanelLeftClose className="h-4 w-4" aria-hidden />
-                </span>
-                <span>Daralt</span>
-              </>
-            )}
+            <span className="grid h-5 w-5 shrink-0 place-items-center">
+              {collapsed ? (
+                <PanelLeftOpen className="h-4 w-4" aria-hidden />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" aria-hidden />
+              )}
+            </span>
           </Button>
         </div>
       )}
       <nav
         className={cn(
-          "flex flex-1 flex-col gap-1",
+          "flex min-h-0 flex-1 flex-col gap-1",
           collapsed ? "p-2 pt-1" : "p-3 pt-2",
         )}
       >
         {dashboardNav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           const isPremium = premiumNavHrefs.has(href);
+
           return (
             <Link
               key={href}
@@ -126,120 +190,150 @@ export function DashboardSidebar({
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
-              <span className="grid h-5 w-5 shrink-0 place-items-center">
+              <span
+                className={cn(
+                  "grid h-5 w-5 shrink-0 place-items-center",
+                  href === "/bildirimler" &&
+                    collapsed &&
+                    unreadCount > 0 &&
+                    "relative",
+                )}
+              >
                 <Icon
                   className={cn(
                     "h-4 w-4",
                     href === "/yapay-zeka-asistani" && "scale-110",
                   )}
                 />
+                {href === "/bildirimler" &&
+                  collapsed &&
+                  notificationBadge("collapsed")}
               </span>
               {!collapsed && label}
+              {href === "/bildirimler" &&
+                !collapsed &&
+                notificationBadge("expanded")}
             </Link>
           );
         })}
       </nav>
       <div className="mt-auto" />
       {collapsed ? (
-        <div className="flex flex-col items-center gap-2 border-t border-border p-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                disabled={currencySaving || !sessionUserPresent}
-                className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border-border/80 bg-muted/25 shadow-none"
-                title={`Para birimi: ${currency}`}
-                aria-label="Para birimi seç"
-              >
-                <span className="text-xs font-semibold tabular-nums">
-                  {currencySymbolLabel(currency)}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-44"
-              align={isMobile ? "start" : "center"}
-              side={isMobile ? "bottom" : "right"}
-              sideOffset={6}
+        <>
+          <div className="border-t border-border p-2">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={!themeReady}
+              className="h-9 w-full cursor-pointer justify-center rounded-lg border border-border/80 bg-muted/25 px-2 py-2.5 text-sm font-medium text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground"
+              aria-label={themeLabel}
+              title={themeLabel}
+              onClick={onToggleTheme}
             >
-              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                Para birimi
-              </DropdownMenuLabel>
-              <DropdownMenuRadioGroup
-                value={currency}
-                onValueChange={(v) => void onCurrencyChange(v)}
-              >
-                <DropdownMenuRadioItem value="TL" className="cursor-pointer">
-                  TL (₺)
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="USD" className="cursor-pointer">
-                  USD ($)
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="EUR" className="cursor-pointer">
-                  EUR (€)
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="GBP" className="cursor-pointer">
-                  GBP (£)
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Link
-            href={profileHref}
-            onClick={onMobileNavigate}
-            className="flex justify-center rounded-lg bg-muted/30 p-1.5"
-            title="Profil"
-          >
-            <Avatar className="h-7 w-7">
-              <AvatarImage src={sidebarAvatarSrc} alt="" />
-              <AvatarFallback className="bg-primary/20 text-primary">
-                {sidebarFallbackInitials}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            title="Çıkış yap"
-            aria-label="Çıkış yap"
-            onClick={() => void signOut({ callbackUrl: "/" })}
-            className="h-9 w-9 cursor-pointer rounded-lg border-destructive/25 bg-destructive/6 text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
-          >
-            <LogOut className="h-4 w-4 -scale-x-100" aria-hidden />
-          </Button>
-        </div>
+              {themeResolved ? (
+                resolvedTheme === "dark" ? (
+                  <Sun className="h-4 w-4 text-muted-foreground" aria-hidden />
+                ) : (
+                  <Moon className="h-4 w-4 text-muted-foreground" aria-hidden />
+                )
+              ) : (
+                <Moon
+                  className="h-4 w-4 text-muted-foreground opacity-60"
+                  aria-hidden
+                />
+              )}
+            </Button>
+          </div>
+          <div className="border-t border-border p-2">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={currencySaving || !sessionUserPresent}
+              className="h-9 w-full cursor-pointer justify-center rounded-lg border border-border/80 bg-muted/25 px-2 py-2.5 text-sm font-medium text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground"
+              title={sidebarCurrencyLabel(currency)}
+              aria-label={`Para birimi: ${sidebarCurrencyLabel(currency)}`}
+              onClick={cycleCurrency}
+            >
+              <SidebarCurrencyIcon currency={currency} />
+            </Button>
+          </div>
+          <div className="border-t border-border p-2">
+            <Link
+              href={profileHref}
+              onClick={onMobileNavigate}
+              title="Profil"
+              className="block h-9 w-full overflow-hidden rounded-lg border border-border/80 bg-muted/25 shadow-none transition-opacity hover:opacity-95"
+            >
+              <Avatar className="h-full w-full rounded-lg">
+                <AvatarImage src={sidebarAvatarSrc} alt="" />
+                <AvatarFallback className="rounded-lg bg-primary/20 text-primary">
+                  {sidebarFallbackInitials}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
+          <div className="border-t border-border p-2">
+            <Button
+              type="button"
+              variant="ghost"
+              title="Çıkış yap"
+              aria-label="Çıkış yap"
+              onClick={() => void signOut({ callbackUrl: "/" })}
+              className="h-9 w-full cursor-pointer justify-center rounded-lg border border-destructive/25 bg-destructive/6 px-2 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4 -scale-x-100" aria-hidden />
+            </Button>
+          </div>
+        </>
       ) : (
         <>
           <div className="border-t border-border p-3">
-            <Select
-              value={currency}
-              disabled={currencySaving || !sessionUserPresent}
-              onValueChange={(v) => void onCurrencyChange(v)}
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={!themeReady}
+              className="h-9 w-full cursor-pointer justify-start gap-3 rounded-lg px-3 text-sm font-medium text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground"
+              aria-label={themeLabel}
+              title={themeLabel}
+              onClick={onToggleTheme}
             >
-              <SelectTrigger
-                className="h-9 w-full cursor-pointer rounded-lg border-border/80 bg-muted/30 shadow-none"
-                aria-label="Para birimi"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent position="popper" sideOffset={4}>
-                <SelectItem value="TL" className="cursor-pointer">
-                  TL (₺)
-                </SelectItem>
-                <SelectItem value="USD" className="cursor-pointer">
-                  USD ($)
-                </SelectItem>
-                <SelectItem value="EUR" className="cursor-pointer">
-                  EUR (€)
-                </SelectItem>
-                <SelectItem value="GBP" className="cursor-pointer">
-                  GBP (£)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              <span className="grid h-5 w-5 shrink-0 place-items-center">
+                {themeResolved ? (
+                  resolvedTheme === "dark" ? (
+                    <Sun className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <Moon className="h-4 w-4" aria-hidden />
+                  )
+                ) : (
+                  <Moon className="h-4 w-4 opacity-60" aria-hidden />
+                )}
+              </span>
+              <span>
+                {themeResolved
+                  ? resolvedTheme === "dark"
+                    ? "Açık tema"
+                    : "Koyu tema"
+                  : "Tema"}
+              </span>
+            </Button>
+          </div>
+          <div className="border-t border-border p-3">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={currencySaving || !sessionUserPresent}
+              className="h-9 w-full cursor-pointer items-center justify-start gap-3 rounded-lg px-3 text-sm font-medium text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground"
+              aria-label={`Para birimi: ${sidebarCurrencyLabel(currency)}`}
+              title={sidebarCurrencyLabel(currency)}
+              onClick={cycleCurrency}
+            >
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
+                <SidebarCurrencyIcon currency={currency} />
+              </span>
+              <span className="flex h-5 items-center leading-none">
+                {sidebarCurrencyLabel(currency)}
+              </span>
+            </Button>
           </div>
           <div className="border-t border-border p-3">
             <Link
@@ -277,6 +371,6 @@ export function DashboardSidebar({
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

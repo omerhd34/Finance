@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { PieLabelRenderProps } from "recharts";
 import type { CategorySlice } from "@/lib/dashboard/dashboard-stats";
-import { formatMoney } from "@/lib/common/utils";
+import { cn, formatMoney } from "@/lib/common/utils";
 import { useAppSelector } from "@/store/hooks";
 
 const SLICE_COLORS = [
@@ -54,7 +54,15 @@ function CategoryLabel(props: PieLabelRenderProps) {
   );
 }
 
-export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
+type CategoryPieChartProps = {
+  data: CategorySlice[];
+  chartClassName?: string;
+};
+
+export function CategoryPieChart({
+  data,
+  chartClassName,
+}: CategoryPieChartProps) {
   const router = useRouter();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [mounted, setMounted] = useState(false);
@@ -77,9 +85,19 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const chartHeightClass = cn(
+    "relative h-[300px] w-full md:h-[380px]",
+    chartClassName,
+  );
+
   if (data.length === 0)
     return (
-      <div className="flex h-[300px] flex-col items-center justify-center gap-2 px-4 text-center text-sm text-muted-foreground">
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center gap-2 px-4 text-center text-sm text-muted-foreground",
+          chartHeightClass,
+        )}
+      >
         <p>Kayıt yok.</p>
         <Link
           href="/islemler"
@@ -90,12 +108,14 @@ export function CategoryPieChart({ data }: { data: CategorySlice[] }) {
       </div>
     );
   if (!mounted)
-    return <div className="h-[400px] w-full bg-muted/20 rounded-lg" />;
+    return (
+      <div className={cn("w-full rounded-lg bg-muted/20", chartHeightClass)} />
+    );
 
   return (
     <div className="flex flex-col items-center w-full">
       <div
-        className="relative h-[300px] md:h-[380px] w-full"
+        className={chartHeightClass}
         onMouseDownCapture={(e) => e.preventDefault()}
       >
         <ResponsiveContainer width="100%" height="100%">

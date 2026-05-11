@@ -10,7 +10,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import type { CategorySlice, MonthlyBarRow } from "@/lib/dashboard/dashboard-stats";
+import type {
+  CategorySlice,
+  MonthlyBarRow,
+} from "@/lib/dashboard/dashboard-stats";
 
 type Props = {
   bars: MonthlyBarRow[];
@@ -46,14 +49,15 @@ export function TransactionsChartsSection({
   onPieMonthsChange,
   loading = false,
 }: Props) {
-  const barsPeriodTitle = `Son ${barsMonths} ay`;
-  const piePeriodTitle = `Son ${pieMonths} ay`;
+  const barsPeriodTitle =
+    barsMonths === 12 ? "Son yıl" : `Son ${barsMonths} ay`;
+  const piePeriodTitle = pieMonths === 12 ? "Son yıl" : `Son ${pieMonths} ay`;
   const monthlyTrendDescription = `${barsRangeLabel} döneminin aylık gelir-gider trendi ve tasarruf oranı (%)`;
   const categoryDescription = `${pieRangeLabel} döneminde giderlerin kategori bazında toplam dağılımı`;
 
   if (loading) {
     return (
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6">
         <Card className="overflow-hidden">
           <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
             <div className="flex min-w-0 gap-3.5">
@@ -67,7 +71,7 @@ export function TransactionsChartsSection({
                 </p>
               </div>
             </div>
-            <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+            <div className="w-full max-w-[152px] shrink-0 sm:ml-auto">
               <Select
                 value={String(barsMonths)}
                 onValueChange={(v) => onBarsMonthsChange(Number(v))}
@@ -80,7 +84,7 @@ export function TransactionsChartsSection({
                   <SelectItem value="3">Son 3 ay</SelectItem>
                   <SelectItem value="6">Son 6 ay</SelectItem>
                   <SelectItem value="9">Son 9 ay</SelectItem>
-                  <SelectItem value="12">Son 12 ay</SelectItem>
+                  <SelectItem value="12">Son yıl</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -102,7 +106,7 @@ export function TransactionsChartsSection({
                 </p>
               </div>
             </div>
-            <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+            <div className="w-full max-w-[152px] shrink-0 sm:ml-auto">
               <Select
                 value={String(pieMonths)}
                 onValueChange={(v) => onPieMonthsChange(Number(v))}
@@ -116,13 +120,13 @@ export function TransactionsChartsSection({
                   <SelectItem value="3">Son 3 ay</SelectItem>
                   <SelectItem value="6">Son 6 ay</SelectItem>
                   <SelectItem value="9">Son 9 ay</SelectItem>
-                  <SelectItem value="12">Son 12 ay</SelectItem>
+                  <SelectItem value="12">Son yıl</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="p-4 sm:p-6">
-            <div className="h-[300px] w-full animate-pulse rounded-lg bg-muted/25" />
+            <div className="h-[360px] w-full animate-pulse rounded-lg bg-muted/25 md:h-[440px]" />
           </div>
         </Card>
       </div>
@@ -130,7 +134,7 @@ export function TransactionsChartsSection({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6">
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-4 border-b border-border bg-muted/30 px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
           <div className="flex min-w-0 gap-3.5">
@@ -144,7 +148,7 @@ export function TransactionsChartsSection({
               </p>
             </div>
           </div>
-          <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+          <div className="w-full max-w-[152px] shrink-0 sm:ml-auto">
             <Select
               value={String(barsMonths)}
               onValueChange={(v) => onBarsMonthsChange(Number(v))}
@@ -157,7 +161,7 @@ export function TransactionsChartsSection({
                 <SelectItem value="3">Son 3 ay</SelectItem>
                 <SelectItem value="6">Son 6 ay</SelectItem>
                 <SelectItem value="9">Son 9 ay</SelectItem>
-                <SelectItem value="12">Son 12 ay</SelectItem>
+                <SelectItem value="12">Son yıl</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -179,7 +183,7 @@ export function TransactionsChartsSection({
               </p>
             </div>
           </div>
-          <div className="w-full max-w-[200px] shrink-0 sm:ml-auto">
+          <div className="w-full max-w-[152px] shrink-0 sm:ml-auto">
             <Select
               value={String(pieMonths)}
               onValueChange={(v) => onPieMonthsChange(Number(v))}
@@ -193,13 +197,16 @@ export function TransactionsChartsSection({
                 <SelectItem value="3">Son 3 ay</SelectItem>
                 <SelectItem value="6">Son 6 ay</SelectItem>
                 <SelectItem value="9">Son 9 ay</SelectItem>
-                <SelectItem value="12">Son 12 ay</SelectItem>
+                <SelectItem value="12">Son yıl</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         <div className="p-4 sm:p-6">
-          <CategoryPieChart data={pie} />
+          <CategoryPieChart
+            data={pie}
+            chartClassName="h-[360px] md:h-[440px]"
+          />
         </div>
       </Card>
     </div>

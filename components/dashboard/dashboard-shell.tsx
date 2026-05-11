@@ -156,46 +156,37 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     userEmail: session?.user?.email,
     sessionUserPresent: !!session?.user,
     onCurrencyChange: onSidebarCurrencyChange,
+    themeReady,
+    themeResolved,
+    resolvedTheme,
+    onToggleTheme: toggleTheme,
   };
 
   return (
-    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-background">
-      <DashboardShellHeader
-        menuOpen={open}
-        onMenuToggle={() => setOpen((prev) => !prev)}
-        themeReady={themeReady}
-        themeResolved={themeResolved}
-        resolvedTheme={resolvedTheme}
-        onToggleTheme={toggleTheme}
-      />
-      <div className="relative flex min-h-0 min-w-0 flex-1">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            <div className="flex min-h-full min-w-0 flex-row items-stretch">
-              <aside
-                dir="ltr"
-                className={cn(
-                  "sticky top-0 hidden h-[calc(100dvh-3.5rem)] shrink-0 self-start flex-col overflow-y-auto border-r border-border bg-sidebar lg:flex",
-                  sidebarCollapsed ? "w-18" : "w-64",
-                )}
-              >
-                <DashboardSidebar
-                  collapsed={sidebarCollapsed}
-                  {...sidebarProps}
-                />
-              </aside>
-              <main
-                className={cn(
-                  "min-w-0 flex-1 bg-background",
-                  DASHBOARD_PAGE_PAD_X,
-                  DASHBOARD_PAGE_PAD_Y,
-                )}
-              >
-                {children}
-              </main>
-            </div>
-          </div>
-        </div>
+    <div className="flex h-dvh min-h-0 overflow-hidden bg-background">
+      <aside
+        dir="ltr"
+        className={cn(
+          "hidden h-dvh min-h-0 shrink-0 flex-col overflow-y-auto overscroll-contain border-r border-border bg-sidebar lg:flex lg:flex-col",
+          sidebarCollapsed ? "w-18" : "w-64",
+        )}
+      >
+        <DashboardSidebar collapsed={sidebarCollapsed} {...sidebarProps} />
+      </aside>
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <DashboardShellHeader
+          menuOpen={open}
+          onMenuToggle={() => setOpen((prev) => !prev)}
+        />
+        <main
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto overscroll-contain bg-background",
+            DASHBOARD_PAGE_PAD_X,
+            DASHBOARD_PAGE_PAD_Y,
+          )}
+        >
+          {children}
+        </main>
         {open && (
           <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">
             <button

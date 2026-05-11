@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Moon, Sun } from "lucide-react";
-import { hrefToAiAssistantPage } from "@/lib/ai/ai-insights-tabs";
-import { NotificationsPopover } from "@/components/notifications/notifications-popover";
+import { Menu } from "lucide-react";
 import { BrandLockup } from "@/components/branding/brand-lockup";
-import { IQfinansAiAssistantIcon } from "@/components/branding/iqfinans-ai-assistant-icon";
 import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { DASHBOARD_PAGE_PAD_X } from "@/components/dashboard/dashboard-shell-constants";
@@ -13,19 +10,11 @@ import { DASHBOARD_PAGE_PAD_X } from "@/components/dashboard/dashboard-shell-con
 export type DashboardShellHeaderProps = {
   menuOpen: boolean;
   onMenuToggle: () => void;
-  themeReady: boolean;
-  themeResolved: boolean;
-  resolvedTheme: string | undefined;
-  onToggleTheme: () => void;
 };
 
 export function DashboardShellHeader({
   menuOpen,
   onMenuToggle,
-  themeReady,
-  themeResolved,
-  resolvedTheme,
-  onToggleTheme,
 }: DashboardShellHeaderProps) {
   return (
     <header className="relative z-40 flex h-14 shrink-0 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
@@ -66,60 +55,6 @@ export function DashboardShellHeader({
               )}
             />
           </Link>
-        </div>
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-1 sm:gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 cursor-pointer text-rose-700 hover:bg-rose-200/85 hover:text-rose-800 sm:h-10 sm:w-10 dark:text-rose-200 dark:hover:bg-rose-500/22 dark:hover:text-rose-100"
-            asChild
-            title="IQfinansAI Asistanı"
-          >
-            <Link
-              href={hrefToAiAssistantPage()}
-              aria-label="IQfinansAI Asistanına git"
-            >
-              <IQfinansAiAssistantIcon
-                className="h-5 w-5 scale-110 sm:h-6 sm:w-6 sm:scale-[1.22]"
-                aria-hidden
-              />
-            </Link>
-          </Button>
-          <div className="[&_button]:h-8 [&_button]:w-8 sm:[&_button]:h-10 sm:[&_button]:w-10">
-            <NotificationsPopover />
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={!themeReady}
-            className="h-8 w-8 cursor-pointer sm:h-10 sm:w-10"
-            aria-label={
-              themeResolved
-                ? resolvedTheme === "dark"
-                  ? "Açık temaya geç"
-                  : "Koyu temaya geç"
-                : "Tema"
-            }
-            title={
-              themeResolved
-                ? resolvedTheme === "dark"
-                  ? "Açık temaya geç"
-                  : "Koyu temaya geç"
-                : "Tema"
-            }
-            onClick={onToggleTheme}
-          >
-            {themeResolved ? (
-              resolvedTheme === "dark" ? (
-                <Sun className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <Moon className="h-5 w-5 text-muted-foreground " />
-              )
-            ) : (
-              <Moon className="h-5 w-5 text-muted-foreground opacity-60" />
-            )}
-          </Button>
         </div>
       </div>
     </header>

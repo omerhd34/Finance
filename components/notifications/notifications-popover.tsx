@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { Bell, X } from "lucide-react";
 import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
+import { useNotificationUnreadCount } from "@/hooks/use-notification-unread-count";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -24,22 +24,11 @@ type NotificationItem = {
 };
 
 export function NotificationsPopover() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  const refreshUnread = useCallback(async () => {
-    try {
-      const { data } = await apiClient.get<{ unreadCount: number }>(
-        "/api/notifications?countOnly=1",
-      );
-      setUnreadCount(data.unreadCount);
-    } catch {
-      /* sessiz */
-    }
-  }, []);
+  const { unreadCount, refreshUnread, setUnreadCount } =
+    useNotificationUnreadCount();
 
   const loadList = useCallback(async () => {
     setLoading(true);
@@ -55,33 +44,7 @@ export function NotificationsPopover() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    void refreshUnread();
-    const t = window.setInterval(() => void refreshUnread(), 15000);
-    return () => window.clearInterval(t);
-  }, [refreshUnread]);
-
-  useEffect(() => {
-    void refreshUnread();
-  }, [pathname, refreshUnread]);
-
-  useEffect(() => {
-    const onFocus = () => void refreshUnread();
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") void refreshUnread();
-    };
-    const onRefreshEvent = () => void refreshUnread();
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("notifications:refresh", onRefreshEvent);
-    return () => {
-      window.removeEventListener("focus", onFocus);
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("notifications:refresh", onRefreshEvent);
-    };
-  }, [refreshUnread]);
+  }, [setUnreadCount]);
 
   useEffect(() => {
     if (open) void loadList();
@@ -126,6 +89,10 @@ export function NotificationsPopover() {
     }
   }
 
+  const closePopover = () => {
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -148,7 +115,7 @@ export function NotificationsPopover() {
           <Link
             href="/bildirimler"
             className="text-sm font-medium hover:text-primary"
-            onClick={() => setOpen(false)}
+            onClick={closePopover}
           >
             Bildirimler
           </Link>
@@ -238,7 +205,7 @@ export function NotificationsPopover() {
                   <Link
                     href="/bildirimler"
                     className="text-xs font-medium text-primary hover:underline"
-                    onClick={() => setOpen(false)}
+                    onClick={closePopover}
                   >
                     Tüm bildirimleri gör
                   </Link>
