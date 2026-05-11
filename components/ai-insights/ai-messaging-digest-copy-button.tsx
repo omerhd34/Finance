@@ -38,7 +38,7 @@ export function AiMessagingDigestCopyButton({
     }
   }
 
-  const label = digestCopied ? "Kopyalandı" : "Özeti kopyala";
+  const label = digestCopied ? "Kopyalandı" : "Kopyala";
 
   if (compact) {
     return (
