@@ -4,9 +4,9 @@ import {
   BellRing,
   Bot,
   FileDown,
+  MessageSquare,
   Globe,
   HandCoins,
-  ReceiptText,
   PieChart,
   ScanLine,
   Shield,
@@ -65,16 +65,17 @@ export const LANDING_FEATURES: LandingFeatureItem[] = [
     icon: BellRing,
   },
   {
-    title: "Detaylı işlem geçmişi",
-    description:
-      "Tüm kayıtları tek ekranda arayın; tarih, tür ve kategoriye göre daraltın.",
-    icon: ReceiptText,
-  },
-  {
     title: "Yapay zekâ analiz raporu",
     description:
       "Kayıtlı verilerinizden tam metin analiz; kategori yorumları, trendler ve tasarruf önerileri.",
     icon: Bot,
+    premium: true,
+  },
+  {
+    title: "Yapay zekâ asistanı",
+    description:
+      "Gelir-gider verilerinize göre soru sorun; kişiselleştirilmiş yorumlar, yönlendirme ve gelişim önerileri alın.",
+    icon: MessageSquare,
     premium: true,
   },
   {
@@ -105,13 +106,7 @@ export type LandingPlan = {
   title: string;
   subtitle: string;
   priceAmountTry: number;
-  priceSuffix?: string;
-  priceNote?: string;
   perks: string[];
-  ctaLabel: string;
-  ctaHref: string;
-  highlighted?: boolean;
-  ctaVariant: "primary" | "muted";
 };
 
 export const LANDING_PLANS: LandingPlan[] = [
@@ -120,7 +115,6 @@ export const LANDING_PLANS: LandingPlan[] = [
     title: "Ücretsiz",
     subtitle: "Panelden bütçeye kadar geniş özellik seti",
     priceAmountTry: 0,
-    priceSuffix: "/ay",
     perks: [
       "Gelir-gider paneli, işlem kaydı ve tekrarlayan ödemeler",
       "Hedef oluşturma, bütçe planlama ve kategori grafikleri",
@@ -128,9 +122,6 @@ export const LANDING_PLANS: LandingPlan[] = [
       "Çoklu para birimi desteği",
       "Anlık kur dönüşümü",
     ],
-    ctaLabel: "Başla",
-    ctaHref: "/kayit",
-    ctaVariant: "muted",
   },
   {
     id: "premium",
@@ -138,7 +129,6 @@ export const LANDING_PLANS: LandingPlan[] = [
     subtitle:
       "AI analiz, AI asistanla mesajlaşma, OCR ve yatırım portföyü tek abonelikte",
     priceAmountTry: 150,
-    priceSuffix: "/ay",
     perks: [
       "Ücretsiz plandaki her şey",
       "Fiş ve fatura görsellerinden OCR ile tutar, tarih ve kategori çıkarımı",
@@ -149,10 +139,6 @@ export const LANDING_PLANS: LandingPlan[] = [
       "Yatırım portföyü: hisse senedi, altın, döviz, kripto ve emtia pozisyonları",
       "Canlı kotasyonlarla pozisyon ve toplam portföy değeri; kar & zarar özeti",
     ],
-    ctaLabel: "Listeye katıl",
-    ctaHref: "/kayit",
-    highlighted: true,
-    ctaVariant: "primary",
   },
 ];
 
