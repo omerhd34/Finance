@@ -18,7 +18,10 @@ export function LandingTestimonialsSection() {
             id="landing-testimonials-heading"
             className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
           >
-            Gerçek kullanıcı sesleri
+            Gerçek{" "}
+            <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-200 dark:to-teal-300">
+              kullanıcı sesleri
+            </span>
           </h2>
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
             Kullanıcılarımızdan gelen geri bildirimlerden örnekler. İsterseniz

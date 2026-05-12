@@ -18,7 +18,11 @@ export function LandingFeaturesSection() {
             id="landing-features-heading"
             className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
           >
-            Ücretsiz ve Premium&apos;da neler var?
+            Ücretsiz ve{" "}
+            <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-200 dark:to-teal-300">
+              Premium
+            </span>
+            &apos;da neler var?
           </h2>
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
             Ücretsiz ve Premium planını yan yana karşılaştırın. Aylık ücret ve
