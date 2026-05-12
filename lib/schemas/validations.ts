@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { refineIncomeExpenseSubcategory } from "@/lib/domain/categories";
+import { refineManualTransactionCategoryBlocked } from "@/lib/debts/debt-expense-description";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/investments/gold-subtypes";
 
 export const loginSchema = z.object({
@@ -62,9 +63,13 @@ export const transactionBodyFieldsSchema = z.object({
   date: z.coerce.date(),
 });
 
-export const transactionCreateSchema = transactionBodyFieldsSchema.superRefine(
-  (data, ctx) => refineIncomeExpenseSubcategory(data, ctx, "subcategory"),
-);
+export const transactionCreateSchema = transactionBodyFieldsSchema
+  .superRefine((data, ctx) =>
+    refineIncomeExpenseSubcategory(data, ctx, "subcategory"),
+  )
+  .superRefine((data, ctx) =>
+    refineManualTransactionCategoryBlocked(data, ctx, "category"),
+  );
 
 export const transactionBatchCreateSchema = z.object({
   items: z
@@ -90,6 +95,9 @@ export const transactionEditFormSchema = transactionBodyFieldsSchema
       ctx,
       "subcategory",
     ),
+  )
+  .superRefine((data, ctx) =>
+    refineManualTransactionCategoryBlocked(data, ctx, "category"),
   );
 
 export type TransactionEditFormValues = z.infer<

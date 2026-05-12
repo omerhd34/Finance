@@ -6,13 +6,13 @@ import { useFieldArray, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { EmailVerificationRequiredError } from "@/lib/email/email-verification-client";
+import { transactionBodyFieldsSchema } from "@/lib/schemas/validations";
 import {
-  transactionBodyFieldsSchema,
-} from "@/lib/schemas/validations";
-import {
-  EXPENSE_CATEGORIES,
+  DEBT_EXPENSE_CATEGORY,
   EXPENSE_SUBCATEGORY_NONE,
-  INCOME_CATEGORIES,
+  MANUAL_EXPENSE_CATEGORIES,
+  MANUAL_INCOME_CATEGORIES,
+  RECEIVABLE_INCOME_CATEGORY,
   expenseSubcategoryToFormValue,
   formValueToExpenseSubcategory,
 } from "@/lib/domain/categories";
@@ -45,6 +45,14 @@ import {
 import { Plus, ScanLine, Trash2 } from "lucide-react";
 import { VoiceToTextButton } from "@/components/ai-insights/voice-to-text-button";
 
+function combineLineDescription(
+  common: string | undefined,
+  lineNote: string | undefined,
+): string | undefined {
+  const parts = [common?.trim(), lineNote?.trim()].filter(Boolean);
+  return parts.length ? parts.join(" — ") : undefined;
+}
+
 const singleTransactionFormSchema = transactionBodyFieldsSchema
   .omit({ date: true, type: true })
   .extend({
@@ -73,12 +81,16 @@ export type NewTransactionFormValues = z.infer<
   lines: z.infer<typeof splitExpenseFormSchema>["lines"];
 };
 
-function combineLineDescription(
-  common: string | undefined,
-  lineNote: string | undefined,
-): string | undefined {
-  const parts = [common?.trim(), lineNote?.trim()].filter(Boolean);
-  return parts.length ? parts.join(" — ") : undefined;
+function manualExpenseCategory(category: string): string {
+  return category === DEBT_EXPENSE_CATEGORY
+    ? MANUAL_EXPENSE_CATEGORIES[0]
+    : category;
+}
+
+function manualIncomeCategory(category: string): string {
+  return category === RECEIVABLE_INCOME_CATEGORY
+    ? MANUAL_INCOME_CATEGORIES[0]
+    : category;
 }
 
 type Props = {
@@ -124,14 +136,14 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     resolver: dynamicResolver,
     defaultValues: {
       amount: 0,
-      category: EXPENSE_CATEGORIES[0],
+      category: MANUAL_EXPENSE_CATEGORIES[0],
       subcategory: EXPENSE_SUBCATEGORY_NONE,
       description: "",
       date: new Date().toISOString().slice(0, 10),
       lines: [
         {
           amount: 0,
-          category: EXPENSE_CATEGORIES[0],
+          category: MANUAL_EXPENSE_CATEGORIES[0],
           subcategory: EXPENSE_SUBCATEGORY_NONE,
           note: "",
         },
@@ -145,7 +157,9 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
   });
 
   const categories =
-    typeTab === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+    typeTab === "expense"
+      ? MANUAL_EXPENSE_CATEGORIES
+      : MANUAL_INCOME_CATEGORIES;
 
   async function handleReceiptFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -200,7 +214,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
           [
             {
               amount: tryAmountToDisplay(row.amountTry, currency),
-              category: row.category,
+              category: manualExpenseCategory(row.category),
               subcategory: expenseSubcategoryToFormValue(row.subcategory),
               note: row.description ?? "",
             },
@@ -209,7 +223,13 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         );
         setValue("description", "", { shouldValidate: true });
       } else {
-        setValue("category", row.category, { shouldValidate: true });
+        setValue(
+          "category",
+          row.type === "expense"
+            ? manualExpenseCategory(row.category)
+            : manualIncomeCategory(row.category),
+          { shouldValidate: true },
+        );
         setValue(
           "subcategory",
           expenseSubcategoryToFormValue(row.subcategory),
@@ -260,14 +280,14 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       window.dispatchEvent(new Event("notifications:refresh"));
       reset({
         amount: 0,
-        category: EXPENSE_CATEGORIES[0],
+        category: MANUAL_EXPENSE_CATEGORIES[0],
         subcategory: EXPENSE_SUBCATEGORY_NONE,
         description: "",
         date: new Date().toISOString().slice(0, 10),
         lines: [
           {
             amount: 0,
-            category: EXPENSE_CATEGORIES[0],
+            category: MANUAL_EXPENSE_CATEGORIES[0],
             subcategory: EXPENSE_SUBCATEGORY_NONE,
             note: "",
           },
@@ -372,7 +392,9 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
           if (t === "income") setSplitExpense(false);
           setValue(
             "category",
-            t === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0],
+            t === "expense"
+              ? MANUAL_EXPENSE_CATEGORIES[0]
+              : MANUAL_INCOME_CATEGORIES[0],
           );
           setValue("subcategory", EXPENSE_SUBCATEGORY_NONE);
         }}
@@ -402,7 +424,8 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                   [
                     {
                       amount: getValues("amount") || 0,
-                      category: getValues("category") || EXPENSE_CATEGORIES[0],
+                      category:
+                        getValues("category") || MANUAL_EXPENSE_CATEGORIES[0],
                       subcategory:
                         getValues("subcategory") ?? EXPENSE_SUBCATEGORY_NONE,
                       note: "",
@@ -486,6 +509,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                     watch(`lines.${index}.subcategory`) ??
                     EXPENSE_SUBCATEGORY_NONE
                   }
+                  excludedCategories={[DEBT_EXPENSE_CATEGORY]}
                   onCategoryChange={(v) =>
                     setValue(`lines.${index}.category`, v, {
                       shouldValidate: true,
@@ -511,6 +535,11 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                     placeholder="örn. Depo, kart ödemesi"
                     {...register(`lines.${index}.note`)}
                   />
+                  {errors.lines?.[index]?.note ? (
+                    <p className="text-sm text-destructive">
+                      {errors.lines[index]?.note?.message}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ))}
@@ -522,7 +551,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
               onClick={() =>
                 append({
                   amount: 0,
-                  category: EXPENSE_CATEGORIES[0],
+                  category: MANUAL_EXPENSE_CATEGORIES[0],
                   subcategory: EXPENSE_SUBCATEGORY_NONE,
                   note: "",
                 })
@@ -584,9 +613,8 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
           {typeTab === "expense" ? (
             <ExpenseCategoryPair
               category={watch("category")}
-              subcategory={
-                watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
-              }
+              subcategory={watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE}
+              excludedCategories={[DEBT_EXPENSE_CATEGORY]}
               onCategoryChange={(v) => setValue("category", v)}
               onSubcategoryChange={(v) => setValue("subcategory", v)}
             />
@@ -636,6 +664,11 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
                 />
               ) : null}
             </div>
+            {errors.description ? (
+              <p className="text-sm text-destructive">
+                {errors.description.message}
+              </p>
+            ) : null}
           </div>
         </>
       )}

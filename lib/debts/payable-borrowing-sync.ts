@@ -3,28 +3,41 @@ import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
 
 const EPS = 1e-6;
 
-export async function applyPayablePaidDelta(
+export function formatPayableBorrowingDescription(
+  counterparty: string,
+): string {
+  return `Kimden: ${counterparty}`;
+}
+
+export function isPayableBorrowingIncome(
+  type: string,
+  category: string,
+): boolean {
+  return type === "income" && category === DEBT_EXPENSE_CATEGORY;
+}
+
+export async function applyPayableTotalDelta(
   tx: Prisma.TransactionClient,
   args: {
     userId: string;
     debtId: string;
-    oldPaid: number;
-    newPaid: number;
+    oldTotal: number;
+    newTotal: number;
     counterparty: string;
   },
 ): Promise<void> {
-  const delta = args.newPaid - args.oldPaid;
+  const delta = args.newTotal - args.oldTotal;
   if (Math.abs(delta) < EPS) return;
 
   if (delta > 0) {
     await tx.transaction.create({
       data: {
         userId: args.userId,
-        type: "expense",
+        type: "income",
         amount: delta,
         category: DEBT_EXPENSE_CATEGORY,
         subcategory: null,
-        description: `Kime: ${args.counterparty}`,
+        description: formatPayableBorrowingDescription(args.counterparty),
         date: new Date(),
         debtId: args.debtId,
       },
@@ -37,7 +50,7 @@ export async function applyPayablePaidDelta(
     where: {
       debtId: args.debtId,
       userId: args.userId,
-      type: "expense",
+      type: "income",
     },
     orderBy: [{ date: "desc" }, { createdAt: "desc" }],
   });

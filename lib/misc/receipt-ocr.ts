@@ -4,8 +4,8 @@ import {
 } from "@google/generative-ai";
 import { z } from "zod";
 import {
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
+  MANUAL_EXPENSE_CATEGORIES,
+  MANUAL_INCOME_CATEGORIES,
   isValidExpenseSubcategory,
 } from "@/lib/domain/categories";
 
@@ -63,9 +63,9 @@ Kurallar:
 - subcategory: Yalnızca type expense ise, seçilen gider kategorisine uygun TEK alt kategori (aşağıdaki haritadan); emin değil veya yoksa bu alanı atla veya null bırak.
 - date: Belge tarihi YYYY-MM-DD; okunamıyorsa bugünün tarihini tahmin etme, mümkün olan en iyi tarihi çıkar.
 
-Gider kategorileri (yalnızca bunlardan biri, type expense ise): ${EXPENSE_CATEGORIES.join(", ")}
+Gider kategorileri (yalnızca bunlardan biri, type expense ise): ${MANUAL_EXPENSE_CATEGORIES.join(", ")}
 Alt kategori: Faturada açıkça belli oluyorsa, fiş türüne göre en uygun alt kategoriyi seç; değer, o ana kategori için geçerli alt kategorilerden biriyle TAM eşleşmeli. Geçerli eşleşmeler örnek: "Fatura" + "Elektrik", "Market Alışverişi" + "Süpermarket", "Yemek Alışverişi" + "Restoran / kafe". Emin değilsen subcategory alanını verme.
-Gelir kategorileri (yalnızca bunlardan biri, type income ise): ${INCOME_CATEGORIES.join(", ")}
+Gelir kategorileri (yalnızca bunlardan biri, type income ise): ${MANUAL_INCOME_CATEGORIES.join(", ")}
 
 Yanıtın YALNIZCA tek bir JSON nesnesi olsun; markdown kod çiti veya açıklama metni ekleme.`;
 
@@ -74,7 +74,8 @@ function normalizeCategory(
   category: string,
 ): string {
   const trimmed = category.trim();
-  const allowed = type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  const allowed =
+    type === "expense" ? MANUAL_EXPENSE_CATEGORIES : MANUAL_INCOME_CATEGORIES;
   if ((allowed as readonly string[]).includes(trimmed)) return trimmed;
   return "Diğer";
 }

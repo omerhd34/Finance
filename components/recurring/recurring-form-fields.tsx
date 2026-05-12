@@ -8,9 +8,10 @@ import {
   type UserDisplayCurrency,
 } from "@/lib/common/currency";
 import {
-  EXPENSE_CATEGORIES,
+  DEBT_EXPENSE_CATEGORY,
   EXPENSE_SUBCATEGORY_NONE,
-  INCOME_CATEGORIES,
+  MANUAL_EXPENSE_CATEGORIES,
+  MANUAL_INCOME_CATEGORIES,
 } from "@/lib/domain/categories";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
@@ -28,7 +29,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function categoriesFor(t: "income" | "expense") {
-  return t === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  return t === "expense" ? MANUAL_EXPENSE_CATEGORIES : MANUAL_INCOME_CATEGORIES;
 }
 
 type Props = {
@@ -55,7 +56,9 @@ export function RecurringFormFields({
           form.setValue("type", t);
           form.setValue(
             "category",
-            t === "expense" ? EXPENSE_CATEGORIES[0] : INCOME_CATEGORIES[0],
+            t === "expense"
+              ? MANUAL_EXPENSE_CATEGORIES[0]
+              : MANUAL_INCOME_CATEGORIES[0],
           );
           form.setValue("subcategory", EXPENSE_SUBCATEGORY_NONE);
         }}
@@ -155,9 +158,8 @@ export function RecurringFormFields({
       {typeTab === "expense" ? (
         <ExpenseCategoryPair
           category={form.watch("category")}
-          subcategory={
-            form.watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
-          }
+          subcategory={form.watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE}
+          excludedCategories={[DEBT_EXPENSE_CATEGORY]}
           onCategoryChange={(v) => form.setValue("category", v)}
           onSubcategoryChange={(v) => form.setValue("subcategory", v)}
         />

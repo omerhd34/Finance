@@ -20,6 +20,7 @@ type Props = {
   debt: Debt;
   currency: string;
   onPay: () => void;
+  onAddPrincipal: () => void;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -28,6 +29,7 @@ export function DebtCard({
   debt: d,
   currency,
   onPay,
+  onAddPrincipal,
   onEdit,
   onDelete,
 }: Props) {
@@ -80,6 +82,14 @@ export function DebtCard({
           className="cursor-pointer"
         >
           Ödeme ekle
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onAddPrincipal}
+          className="cursor-pointer"
+        >
+          Yeni borç ekle
         </Button>
         <Button
           variant="outline"

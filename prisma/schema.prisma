@@ -116,7 +116,7 @@ model Transaction {
   recurringRule     RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
   recurringSlotKey  String?        @unique
   debtId            String?
-  debt              Debt?          @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  debt              Debt?          @relation(fields: [debtId], references: [id], onDelete: SetNull)
   createdAt         DateTime       @default(now())
 
   @@index([userId, date])

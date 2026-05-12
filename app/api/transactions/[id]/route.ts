@@ -4,6 +4,14 @@ import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { prisma } from "@/lib/db/prisma";
 import { transactionCreateSchema } from "@/lib/schemas/validations";
+import {
+  isReceivableLendingExpense,
+  reverseReceivableLendingTransaction,
+} from "@/lib/debts/receivable-lending-sync";
+import {
+  isReceivableCollectionIncome,
+  reverseReceivableCollectionTransaction,
+} from "@/lib/debts/receivable-collection-sync";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -111,7 +119,28 @@ export async function DELETE(_req: Request, context: RouteContext) {
     if (!existing) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
-    await prisma.transaction.delete({ where: { id } });
+    await prisma.$transaction(async (txClient) => {
+      if (
+        existing.debtId &&
+        isReceivableLendingExpense(existing.type, existing.category)
+      ) {
+        await reverseReceivableLendingTransaction(txClient, {
+          userId: session.user.id,
+          debtId: existing.debtId,
+          amount: existing.amount,
+        });
+      } else if (
+        existing.debtId &&
+        isReceivableCollectionIncome(existing.type, existing.category)
+      ) {
+        await reverseReceivableCollectionTransaction(txClient, {
+          userId: session.user.id,
+          debtId: existing.debtId,
+          amount: existing.amount,
+        });
+      }
+      await txClient.transaction.delete({ where: { id } });
+    });
     if (existing.type === "expense") {
       await evaluateCategoryBudgetsForTransactionContext({
         userId: session.user.id,
@@ -121,7 +150,31 @@ export async function DELETE(_req: Request, context: RouteContext) {
       });
     }
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message === "RECEIVABLE_LENDING_TOTAL_BELOW_PAID"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Bu borç verme kaydı silinirse alacak toplamı ödenen tutarın altına düşer.",
+        },
+        { status: 400 },
+      );
+    }
+    if (
+      e instanceof Error &&
+      e.message === "RECEIVABLE_COLLECTION_PAID_BELOW_ZERO"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Bu alacak kaydı silinirse ödenen tutar geçersiz hale gelir.",
+        },
+        { status: 400 },
+      );
+    }
     return NextResponse.json({ error: "Silinemedi" }, { status: 500 });
   }
 }

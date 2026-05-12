@@ -89,6 +89,23 @@ export const recordDebtPayment = createAsyncThunk(
   },
 );
 
+export const recordDebtPrincipalIncrease = createAsyncThunk(
+  "debts/recordPrincipalIncrease",
+  async (arg: { id: string; amountTry: number }, { rejectWithValue }) => {
+    try {
+      const { data } = await apiClient.post<Debt>(
+        `/api/debts/${arg.id}/principal`,
+        { amount: arg.amountTry },
+      );
+      return data;
+    } catch (e: unknown) {
+      return rejectWithValue(
+        parseApiErrorForUser(e, "Toplam borç güncellenemedi"),
+      );
+    }
+  },
+);
+
 export const deleteDebt = createAsyncThunk(
   "debts/delete",
   async (id: string, { rejectWithValue }) => {
@@ -123,6 +140,7 @@ const debtsSlice = createSlice({
       .addCase(addDebt.fulfilled, () => {})
       .addCase(updateDebt.fulfilled, () => {})
       .addCase(recordDebtPayment.fulfilled, () => {})
+      .addCase(recordDebtPrincipalIncrease.fulfilled, () => {})
       .addCase(deleteDebt.fulfilled, () => {});
   },
 });

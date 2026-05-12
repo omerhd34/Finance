@@ -3,6 +3,9 @@ import { cn } from "@/lib/common/utils";
 
 export const EXPENSE_SUBCATEGORY_NONE = "__sub_none__";
 
+export const DEBT_EXPENSE_CATEGORY = "Borç";
+export const RECEIVABLE_INCOME_CATEGORY = "Alacak";
+
 export function refineIncomeExpenseSubcategory<
   T extends {
     type: "income" | "expense";
@@ -244,7 +247,7 @@ export const EXPENSE_CATEGORY_TREE = [
     categories: [
       {
         category: "Borç",
-        subcategories: ["Kişi borcu ödemesi", "Diğer"],
+        subcategories: [],
       },
       {
         category: "Kredi & Kart",
@@ -392,3 +395,11 @@ export const INCOME_CATEGORIES = [
 ] as const;
 
 export type IncomeCategory = (typeof INCOME_CATEGORIES)[number];
+
+export const MANUAL_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
+  (category) => category !== DEBT_EXPENSE_CATEGORY,
+);
+
+export const MANUAL_INCOME_CATEGORIES = INCOME_CATEGORIES.filter(
+  (category) => category !== RECEIVABLE_INCOME_CATEGORY,
+);

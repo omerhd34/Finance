@@ -10,6 +10,7 @@ import {
   deleteDebt,
   fetchDebts,
   recordDebtPayment,
+  recordDebtPrincipalIncrease,
   updateDebt,
 } from "@/store/slices/debtsSlice";
 import { DebtsPageHeader } from "@/components/debts/debts-page-header";
@@ -17,6 +18,7 @@ import { DebtsSummaryCards } from "@/components/debts/debts-summary-cards";
 import { DebtsList } from "@/components/debts/debts-list";
 import { EditDebtDialog } from "@/components/debts/edit-debt-dialog";
 import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
+import { AddDebtPrincipalDialog } from "@/components/debts/add-debt-principal-dialog";
 import { DeleteDebtDialog } from "@/components/debts/delete-debt-dialog";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 
@@ -28,6 +30,9 @@ export default function DebtsPage() {
   const [newOpen, setNewOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [addingPrincipalId, setAddingPrincipalId] = useState<string | null>(
+    null,
+  );
   const [editingId, setEditingId] = useState<string | null>(null);
   const [initialDebtsReady, setInitialDebtsReady] = useState(false);
 
@@ -113,6 +118,19 @@ export default function DebtsPage() {
     void dispatch(fetchDebts());
   }
 
+  async function onPrincipalSubmit(amountDisplay: number) {
+    if (!addingPrincipalId) return;
+    const addTry = displayAmountToTry(amountDisplay, currency);
+    await dispatch(
+      recordDebtPrincipalIncrease({
+        id: addingPrincipalId,
+        amountTry: addTry,
+      }),
+    ).unwrap();
+    setAddingPrincipalId(null);
+    void dispatch(fetchDebts());
+  }
+
   async function onConfirmDelete() {
     if (!deletingId) return;
     await dispatch(deleteDebt(deletingId));
@@ -145,8 +163,15 @@ export default function DebtsPage() {
           loading={loading}
           currency={currency}
           onPay={setPayingId}
+          onAddPrincipal={setAddingPrincipalId}
           onEdit={setEditingId}
           onDelete={setDeletingId}
+        />
+
+        <AddDebtPrincipalDialog
+          open={!!addingPrincipalId}
+          onOpenChange={(o) => !o && setAddingPrincipalId(null)}
+          onSubmit={onPrincipalSubmit}
         />
 
         <PayDebtDialog

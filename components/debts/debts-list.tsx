@@ -11,6 +11,7 @@ type Props = {
   loading: boolean;
   currency: string;
   onPay: (id: string) => void;
+  onAddPrincipal: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 };
@@ -22,6 +23,7 @@ export function DebtsList({
   loading,
   currency,
   onPay,
+  onAddPrincipal,
   onEdit,
   onDelete,
 }: Props) {
@@ -46,6 +48,7 @@ export function DebtsList({
               debt={d}
               currency={currency}
               onPay={() => onPay(d.id)}
+              onAddPrincipal={() => onAddPrincipal(d.id)}
               onEdit={() => onEdit(d.id)}
               onDelete={() => onDelete(d.id)}
             />

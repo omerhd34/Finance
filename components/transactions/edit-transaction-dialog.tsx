@@ -10,9 +10,10 @@ import {
   type TransactionEditFormValues,
 } from "@/lib/schemas/validations";
 import {
+  DEBT_EXPENSE_CATEGORY,
   EXPENSE_SUBCATEGORY_NONE,
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
+  MANUAL_EXPENSE_CATEGORIES,
+  MANUAL_INCOME_CATEGORIES,
   expenseSubcategoryToFormValue,
 } from "@/lib/domain/categories";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
@@ -80,7 +81,9 @@ export function EditTransactionDialog({
   const selectedType = form.watch("type");
   const categories = useMemo(() => {
     const typ = selectedType ?? transaction?.type ?? "expense";
-    return typ === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+    return typ === "expense"
+      ? MANUAL_EXPENSE_CATEGORIES
+      : MANUAL_INCOME_CATEGORIES;
   }, [selectedType, transaction?.type]);
 
   async function handleSubmit(values: TransactionEditFormValues) {
@@ -112,7 +115,9 @@ export function EditTransactionDialog({
                 });
 
                 const nextCategories: readonly string[] =
-                  value === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+                  value === "expense"
+                    ? MANUAL_EXPENSE_CATEGORIES
+                    : MANUAL_INCOME_CATEGORIES;
                 const currentCategory = form.getValues("category");
                 if (!nextCategories.includes(currentCategory)) {
                   form.setValue("category", nextCategories[0], {
@@ -158,6 +163,7 @@ export function EditTransactionDialog({
                 subcategory={
                   form.watch("subcategory") ?? EXPENSE_SUBCATEGORY_NONE
                 }
+                excludedCategories={[DEBT_EXPENSE_CATEGORY]}
                 disabled={isRecurringTransaction}
                 onCategoryChange={(v) => form.setValue("category", v)}
                 onSubcategoryChange={(v) =>

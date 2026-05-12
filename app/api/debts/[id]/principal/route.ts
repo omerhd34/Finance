@@ -5,6 +5,8 @@ import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budge
 import { prisma } from "@/lib/db/prisma";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
 import { payDebtSchema } from "@/lib/debts/debts-schema";
+import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
+import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -34,58 +36,40 @@ export async function POST(req: Request, context: RouteContext) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
 
-    const remaining = existing.totalAmount - existing.paidAmount;
-    const applied = Math.min(parsed.data.amount, remaining);
-    if (applied <= 0) {
-      return NextResponse.json(
-        { error: { amount: ["Kalan tutar yok veya geçersiz tutar"] } },
-        { status: 400 },
-      );
-    }
-
+    const added = parsed.data.amount;
+    const newTotal = existing.totalAmount + added;
     const userId = session.user.id;
-    const paymentDate = new Date();
     const row = await prisma.$transaction(async (tx) => {
       const updated = await tx.debt.update({
         where: { id },
-        data: { paidAmount: existing.paidAmount + applied },
+        data: { totalAmount: newTotal },
       });
       if (existing.direction === "RECEIVABLE") {
-        await tx.transaction.create({
-          data: {
-            userId,
-            type: "income",
-            amount: applied,
-            category: "Alacak",
-            subcategory: null,
-            description: `Kimden: ${existing.counterparty}`,
-            date: paymentDate,
-            debtId: id,
-          },
+        await applyReceivableTotalDelta(tx, {
+          userId,
+          debtId: id,
+          oldTotal: existing.totalAmount,
+          newTotal,
+          counterparty: existing.counterparty,
         });
       } else if (existing.direction === "PAYABLE") {
-        await tx.transaction.create({
-          data: {
-            userId,
-            type: "expense",
-            amount: applied,
-            category: DEBT_EXPENSE_CATEGORY,
-            subcategory: null,
-            description: `Kime: ${existing.counterparty}`,
-            date: paymentDate,
-            debtId: id,
-          },
+        await applyPayableTotalDelta(tx, {
+          userId,
+          debtId: id,
+          oldTotal: existing.totalAmount,
+          newTotal,
+          counterparty: existing.counterparty,
         });
       }
       return updated;
     });
 
-    if (existing.direction === "PAYABLE") {
+    if (existing.direction === "RECEIVABLE") {
       await evaluateCategoryBudgetsForTransactionContext({
         userId,
         type: "expense",
         category: DEBT_EXPENSE_CATEGORY,
-        date: paymentDate,
+        date: new Date(),
       });
     }
 

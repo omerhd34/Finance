@@ -3,11 +3,11 @@ import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { prisma } from "@/lib/db/prisma";
-import {
-  PAYABLE_DEBT_CATEGORY,
-  applyPayablePaidDelta,
-} from "@/lib/debts/payable-expense-sync";
+import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
+import { applyPayablePaidDelta } from "@/lib/debts/payable-expense-sync";
+import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
 import { applyReceivablePaidDelta } from "@/lib/debts/receivable-income-sync";
+import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
 import { clearDebtDueAlertHistoryForDebt } from "@/lib/debts/debt-due-alerts";
 import { debtUpdateSchema } from "@/lib/schemas/validations";
 
@@ -63,6 +63,7 @@ export async function PUT(req: Request, context: RouteContext) {
 
     const userId = session.user.id;
     let payablePaidAdjusted = false;
+    let receivableTotalAdjusted = false;
     const row = await prisma.$transaction(async (tx) => {
       const updated = await tx.debt.update({
         where: { id },
@@ -87,11 +88,17 @@ export async function PUT(req: Request, context: RouteContext) {
         await tx.transaction.deleteMany({
           where: { debtId: id, userId, type: "income" },
         });
+        await tx.transaction.deleteMany({
+          where: { debtId: id, userId, type: "expense" },
+        });
       }
 
       if (existing.direction === "PAYABLE" && nextDirection !== "PAYABLE") {
         await tx.transaction.deleteMany({
           where: { debtId: id, userId, type: "expense" },
+        });
+        await tx.transaction.deleteMany({
+          where: { debtId: id, userId, type: "income" },
         });
       }
 
@@ -109,12 +116,31 @@ export async function PUT(req: Request, context: RouteContext) {
           });
         }
         if (
+          data.totalAmount !== undefined &&
+          nextTotal !== existing.totalAmount
+        ) {
+          receivableTotalAdjusted = true;
+          await applyReceivableTotalDelta(tx, {
+            userId,
+            debtId: id,
+            oldTotal: existing.totalAmount,
+            newTotal: nextTotal,
+            counterparty: nextCounterparty,
+          });
+        }
+        if (
           data.counterparty !== undefined &&
           nextCounterparty !== existing.counterparty
         ) {
           await tx.transaction.updateMany({
             where: { debtId: id, userId, type: "income" },
             data: { description: `Kimden: ${nextCounterparty}` },
+          });
+          await tx.transaction.updateMany({
+            where: { debtId: id, userId, type: "expense" },
+            data: {
+              description: `Kime: ${nextCounterparty}`,
+            },
           });
         }
       }
@@ -131,6 +157,18 @@ export async function PUT(req: Request, context: RouteContext) {
           });
         }
         if (
+          data.totalAmount !== undefined &&
+          nextTotal !== existing.totalAmount
+        ) {
+          await applyPayableTotalDelta(tx, {
+            userId,
+            debtId: id,
+            oldTotal: existing.totalAmount,
+            newTotal: nextTotal,
+            counterparty: nextCounterparty,
+          });
+        }
+        if (
           data.counterparty !== undefined &&
           nextCounterparty !== existing.counterparty
         ) {
@@ -139,9 +177,13 @@ export async function PUT(req: Request, context: RouteContext) {
               debtId: id,
               userId,
               type: "expense",
-              category: PAYABLE_DEBT_CATEGORY,
+              category: DEBT_EXPENSE_CATEGORY,
             },
             data: { description: `Kime: ${nextCounterparty}` },
+          });
+          await tx.transaction.updateMany({
+            where: { debtId: id, userId, type: "income" },
+            data: { description: `Kimden: ${nextCounterparty}` },
           });
         }
       }
@@ -149,11 +191,11 @@ export async function PUT(req: Request, context: RouteContext) {
       return updated;
     });
 
-    if (payablePaidAdjusted) {
+    if (payablePaidAdjusted || receivableTotalAdjusted) {
       await evaluateCategoryBudgetsForTransactionContext({
         userId,
         type: "expense",
-        category: PAYABLE_DEBT_CATEGORY,
+        category: DEBT_EXPENSE_CATEGORY,
         date: new Date(),
       });
     }
