@@ -177,9 +177,62 @@ body {
   );
 }
 
+@keyframes landing-testimonials-marquee-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+@keyframes landing-testimonials-marquee-down {
+  from {
+    transform: translate3d(0, -50%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-landing-testimonials-marquee-up {
+  animation-name: landing-testimonials-marquee-up;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-landing-testimonials-marquee-down {
+  animation-name: landing-testimonials-marquee-down;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.landing-testimonials-mask {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-landing-showcase-marquee-left,
   .animate-landing-showcase-marquee-right {
+    animation: none;
+    transform: none;
+  }
+
+  .animate-landing-testimonials-marquee-up,
+  .animate-landing-testimonials-marquee-down {
     animation: none;
     transform: none;
   }
