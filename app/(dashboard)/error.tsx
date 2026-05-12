@@ -20,7 +20,7 @@ export default function DashboardError({ error, reset }: Props) {
         Bu bölüm yüklenemedi.
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Geçici bir hata olusmus olabilir. Verileri tekrar yüklemeyi deneyin.
+        Geçici bir hata oluşmuş olabilir. Verileri tekrar yüklemeyi deneyin.
       </p>
       <div className="mt-5 flex gap-3">
         <Button onClick={reset} className="cursor-pointer">
@@ -31,7 +31,7 @@ export default function DashboardError({ error, reset }: Props) {
           onClick={() => window.location.assign("/gosterge-paneli")}
           className="cursor-pointer"
         >
-          Dashboard ana sayfasına git.
+          Ana sayfaya git.
         </Button>
       </div>
     </section>
