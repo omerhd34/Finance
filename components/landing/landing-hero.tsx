@@ -1,7 +1,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { ArrowUpRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { LandingHeroTrust } from "@/components/landing/landing-hero-trust";
 import { Button } from "@/components/ui/button";
 
@@ -12,14 +12,6 @@ const LandingHeroIsometricIllustration = dynamic(
     ),
   { loading: () => null },
 );
-
-const trustItems = [
-  "Güvenli giriş",
-  "Canlı işlem takibi",
-  "AI finans özeti",
-  "Borç, bütçe ve hedefler",
-  "Kur, yatırım ve özet",
-];
 
 export function LandingHero() {
   return (
@@ -113,24 +105,6 @@ export function LandingHero() {
             <LandingHeroIsometricIllustration />
           </div>
         </div>
-
-        <ul
-          className="mt-10 grid w-full grid-cols-2 justify-items-center gap-2 text-xs sm:flex sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-3 sm:text-sm md:gap-x-5 md:mt-12 xl:gap-x-6"
-          aria-label="Öne çıkanlar"
-        >
-          {trustItems.map((label) => (
-            <li
-              key={label}
-              className="flex w-full max-w-44 items-center justify-center gap-1 rounded-full border border-white/10 bg-black/35 px-3 py-2 backdrop-blur-md sm:w-auto sm:max-w-none sm:gap-2 sm:bg-black/28 sm:py-1.5"
-            >
-              <ShieldCheck
-                className="hidden h-3.5 w-3.5 shrink-0 text-emerald-400 sm:block"
-                aria-hidden
-              />
-              <span className="whitespace-nowrap text-white/92">{label}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
