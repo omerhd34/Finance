@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
+import Script from "next/script";
+import { cookies } from "next/headers";
 import { auth } from "@/lib/auth/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { Providers } from "@/components/providers";
+import { SIDEBAR_COLLAPSED_KEY } from "@/components/dashboard/dashboard-shell-constants";
+import { parseSidebarCollapsedCookie } from "@/lib/dashboard/sidebar-preference";
+import { sidebarCollapsedBootstrapScript } from "@/lib/dashboard/sidebar-collapsed-bootstrap-script";
 
 export default async function DashboardGroupLayout({
   children,
@@ -12,9 +17,20 @@ export default async function DashboardGroupLayout({
   if (!session?.user) {
     redirect("/giris");
   }
+
+  const cookieStore = await cookies();
+  const initialSidebarCollapsed = parseSidebarCollapsedCookie(
+    cookieStore.get(SIDEBAR_COLLAPSED_KEY)?.value,
+  );
+
   return (
     <Providers>
-      <DashboardShell>{children}</DashboardShell>
+      <Script id="sidebar-collapsed-init" strategy="beforeInteractive">
+        {sidebarCollapsedBootstrapScript()}
+      </Script>
+      <DashboardShell initialSidebarCollapsed={initialSidebarCollapsed}>
+        {children}
+      </DashboardShell>
     </Providers>
   );
 }

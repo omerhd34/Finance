@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTheme } from "@wrksz/themes/client";
@@ -15,12 +15,21 @@ import {
   DASHBOARD_PAGE_PAD_X,
   DASHBOARD_PAGE_PAD_Y,
   profileInitials,
-  SIDEBAR_COLLAPSED_KEY,
   type ProfilePatchResponse,
 } from "@/components/dashboard/dashboard-shell-constants";
 import { cn } from "@/lib/common/utils";
+import {
+  persistSidebarCollapsed,
+  readSidebarCollapsedFromStorage,
+} from "@/lib/dashboard/sidebar-preference";
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  initialSidebarCollapsed = false,
+}: {
+  children: React.ReactNode;
+  initialSidebarCollapsed?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -36,7 +45,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
   const { setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    initialSidebarCollapsed,
+  );
   const [themeReady, setThemeReady] = useState(false);
   const [currencySaving, setCurrencySaving] = useState(false);
   const currency = normalizeUserCurrency(
@@ -59,17 +70,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     setThemeReady(true);
   }, []);
 
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        setSidebarCollapsed(
-          localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "1",
-        );
-      }
-    } catch {
-      /* ignore */
+  useLayoutEffect(() => {
+    const fromStorage = readSidebarCollapsedFromStorage();
+    if (fromStorage === null) {
+      persistSidebarCollapsed(initialSidebarCollapsed);
+      return;
     }
-  }, []);
+
+    setSidebarCollapsed((current) => {
+      if (fromStorage === current) return current;
+      persistSidebarCollapsed(fromStorage);
+      return fromStorage;
+    });
+  }, [initialSidebarCollapsed]);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -87,11 +100,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   function toggleSidebarCollapsed() {
     setSidebarCollapsed((prev) => {
       const next = !prev;
-      try {
-        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, next ? "1" : "0");
-      } catch {
-        /* ignore */
-      }
+      persistSidebarCollapsed(next);
       return next;
     });
   }
@@ -166,6 +175,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-dvh min-h-0 overflow-hidden bg-background">
       <aside
         dir="ltr"
+        data-dashboard-sidebar
         className={cn(
           "hidden h-dvh min-h-0 shrink-0 flex-col overflow-y-auto overscroll-contain border-r border-border bg-sidebar lg:flex lg:flex-col",
           sidebarCollapsed ? "w-18" : "w-64",

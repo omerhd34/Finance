@@ -224,3 +224,9 @@ body {
     transparent
   );
 }
+
+@media (min-width: 1024px) {
+  html[data-sidebar-collapsed="true"] [data-dashboard-sidebar] {
+    width: 4.5rem;
+  }
+}
