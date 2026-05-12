@@ -142,7 +142,7 @@ export function DashboardSidebar({
               "shrink-0 cursor-pointer rounded-lg text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground",
               collapsed
                 ? "h-9 w-9 [&_svg]:size-5"
-                : "h-9 w-full justify-start px-3 py-2",
+                : "h-9 w-auto justify-start px-3 py-2",
             )}
             onClick={onToggleCollapsed}
             aria-label={
