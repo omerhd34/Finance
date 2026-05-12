@@ -1,5 +1,5 @@
 const TRUST_BRAND = "IQfinansAI";
-const TRUST_MEMBER_DISPLAY_BASE = 477;
+const TRUST_MEMBER_DISPLAY_BASE = 525;
 
 export type PublicTrustMemberLineParts = {
   beforeCount: string;
