@@ -14,9 +14,9 @@ export default function LandingPage() {
       <LandingHeader />
       <main className="flex-1">
         <LandingHero />
-        <LandingTestimonialsSection />
         <LandingProductShowcaseSection />
         <LandingFeaturesSection />
+        <LandingTestimonialsSection />
       </main>
       <LandingFooter />
     </LandingPageShell>
