@@ -21,26 +21,59 @@ export function ComparisonRows({
   const positiveItems = positives ?? (positive ? [positive] : []);
   const negativeItems = negatives ?? (negative ? [negative] : []);
 
+  const hasPos = positiveItems.length > 0;
+  const hasNeg = negativeItems.length > 0;
+
+  if (!hasPos && !hasNeg) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col gap-2.5",
-        wide && "md:grid md:grid-cols-2 md:gap-3",
+        "grid min-h-0 w-full grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-border/50 bg-muted/20 ring-1 ring-border/30",
+        wide && "lg:grid-cols-2",
+        hasPos && hasNeg && "lg:grid-cols-2",
         className,
       )}
     >
-      {positiveItems.length > 0 ? (
-        <div className="flex flex-1 flex-col justify-center space-y-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/8 p-3.5">
-          {positiveItems.map((text) => (
-            <ComparisonBox key={text} positive text={text} />
-          ))}
+      {hasPos ? (
+        <div
+          className={cn(
+            "flex min-h-0 flex-col gap-3 border-border/40 p-4 sm:p-5",
+            hasNeg && "border-b lg:border-b-0 lg:border-r",
+            "bg-linear-to-b from-emerald-500/6 to-transparent dark:from-emerald-400/5",
+          )}
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-600/90 dark:text-emerald-400/90">
+            IQfinansAI ile
+          </p>
+          <ul className="flex min-h-0 flex-col gap-3">
+            {positiveItems.map((text) => (
+              <li key={text} className="min-w-0">
+                <ComparisonBox positive text={text} />
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
-      {negativeItems.length > 0 ? (
-        <div className="flex flex-col justify-center space-y-2.5 rounded-xl border border-red-500/20 bg-red-500/6 p-3.5">
-          {negativeItems.map((text) => (
-            <ComparisonBox key={text} positive={false} text={text} />
-          ))}
+      {hasNeg ? (
+        <div
+          className={cn(
+            "flex min-h-0 flex-col gap-3 p-4 sm:p-5",
+            "bg-linear-to-b from-rose-500/4 to-transparent dark:from-rose-400/5",
+          )}
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-600/80 dark:text-rose-400/75">
+            Dağınık süreçte
+          </p>
+          <ul className="flex min-h-0 flex-col gap-3">
+            {negativeItems.map((text) => (
+              <li key={text} className="min-w-0">
+                <ComparisonBox positive={false} text={text} />
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
     </div>

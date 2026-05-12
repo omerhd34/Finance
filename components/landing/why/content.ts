@@ -1,123 +1,78 @@
 export type LandingWhyAccent = "emerald" | "violet" | "amber" | "sky" | "rose";
 
-type LandingWhyCardBase = {
+export type LandingWhyCard = {
   id: string;
   title: string;
   accent: LandingWhyAccent;
-  layout: "tall" | "default" | "wide";
-};
-
-export type LandingWhyHighlightCard = LandingWhyCardBase & {
-  kind: "highlight";
-  positives: readonly string[];
-  negative: string;
-};
-
-export type LandingWhyComparisonCard = LandingWhyCardBase & {
-  kind: "comparison";
   positives: readonly string[];
   negatives: readonly string[];
 };
 
-export type LandingWhySetupCard = LandingWhyCardBase & {
-  kind: "setup";
-  processLabel: string;
-  processValue: string;
-  steps: readonly { label: string; progress: number; done?: boolean }[];
-  positive: string;
-  negative: string;
-};
-
-export type LandingWhyCard =
-  | LandingWhyHighlightCard
-  | LandingWhyComparisonCard
-  | LandingWhySetupCard;
-
 export const LANDING_WHY_CARDS: LandingWhyCard[] = [
   {
     id: "finance-management",
-    kind: "highlight",
-    layout: "tall",
     title: "Finans yönetimi",
     accent: "emerald",
     positives: [
-      "Gelir-gider, tekrarlayan ödemeler, borç–alacak ve grafikler tek panelde toplanır.",
-      "Finansal sağlık skoru, özet kartlar ve görsel raporlarla ay içi durumu takip edersiniz.",
-      "Çoklu para birimi desteği ve anlık kur dönüşümüyle yurt dışı işlemlerinizi zahmetsizce yönetirsiniz.",
+      "Gelir, gider, borç ve çoklu para biriminizi tek panelde birleştirip nakit akışı ve finansal sağlık skoruyla anlık görün.",
     ],
-    negative:
-      "Tablolar, notlar ve ayrı uygulamalar arasında dağınık takip yaparsınız.",
+    negatives: [
+      "Tablolar ve ayrı uygulamalarda dağınık veriyle net bakiye ve riski her seferinde elle birleştirmek zorunda kalırsınız.",
+    ],
   },
   {
     id: "budget-planning",
-    kind: "comparison",
-    layout: "default",
     title: "Bütçe ve planlama",
     accent: "violet",
     positives: [
-      "Tasarruf hedefi, bütçe planı ve ödeme hatırlatmalarını aynı akıştan yönetirsiniz.",
-      "Aylık harcama limitlerini kategoriye göre belirler, aşımlarda anında bildirim alırsınız.",
+      "Kategori limitleri ve tekrarlayan ödemeleri takvim ve bildirimlerle izleyin; planlanan bütçeyi gerçekleşen harcamalarla yan yana kıyaslayın.",
     ],
-    negatives: ["Ay sonu sürprizleri ve parçalı araçlar planınızı dağıtır."],
+    negatives: [
+      "Limitleri zihinde veya notta tutup sürpriz ödemeleri kaçırdığınızda bütçeyi ekran görüntüleriyle yeniden tazelemek zorunda kalırsınız.",
+    ],
   },
   {
     id: "cost-control",
-    kind: "comparison",
-    layout: "default",
     title: "Maliyet kontrolü",
     accent: "amber",
     positives: [
-      "Ücretsiz planda gelir-gider takibinden bütçe yönetimine kadar geniş bir özellik seti sunulur.",
-      "Premium'da AI analiz, fiş OCR ve yatırım portföyü tek üyelikte bir araya gelir.",
+      "Ücretsiz temel araçlarla başlayıp premiumda AI, OCR ve portföyü tek abonelikte toplayarak araç başına maliyeti düşürün.",
     ],
     negatives: [
-      "Birden fazla abonelik ve öngörülemeyen araç maliyetleriyle karşılaşırsınız.",
+      "Grafik, OCR ve portföy için ayrı uygulamalara ödeme yapıp veriyi taşırken hem bütçeyi hem odağı bölersiniz.",
     ],
   },
   {
     id: "transaction-categories",
-    kind: "comparison",
-    layout: "default",
     title: "İşlem kaydı ve kategoriler",
     accent: "rose",
     positives: [
-      "Geniş hazır kategori ağacıyla işlemleri hızlı ve doğru kaydedersiniz.",
-      "Tekrarlayan işlemler otomatik tanınır, her seferinde manuel giriş yapmanıza gerek kalmaz.",
+      "Hazır kategori ağacı, toplu ekstre içe aktarma ve otomatik eşleştirme ile kayıtları tutarlı ve hızlı işleyin.",
     ],
     negatives: [
-      "Her işlemde uzun liste arar ve sınıflandırmayı elle tekrarlarsınız.",
+      "Manuel seçim ve kaydedilmeyen filtreler yüzünden raporlar dağınık kalır; dönem sonunda her şeyi baştan kurarsınız.",
     ],
   },
   {
     id: "ai-automation",
-    kind: "comparison",
-    layout: "tall",
     title: "Yapay zekâ ve otomasyon",
     accent: "sky",
     positives: [
-      "Premium'da AI analiz, asistan ve fiş OCR aynı kayıtlardan çalışır.",
-      "Tam metin analiz, trend yorumları ve kayıtlı veriye göre yanıtlar alırsınız.",
-      "AI analiz raporunu PDF olarak indirip arşivleyebilir veya paylaşabilirsiniz.",
-      "Harcama alışkanlıklarınızı öğrenen sistem, tasarruf fırsatlarını otomatik olarak önerir.",
+      "OCR ile belgeyi taratın, AI özet ve tasarruf önerileri alın; PDF dışa aktarım ve kurallarla bildirimleri otomatikleştirin.",
     ],
     negatives: [
-      "Raporları manuel çıkarır, uzun listeleri gezersiniz ve fişleri elle girersiniz.",
-      "Sorunuza göre kişisel yorum almak yerine genel tavsiyelerle veya harici aramalarla yetinirsiniz.",
+      "Listeleri tek tek okuyup raporu elle yazdığınızda fiş arşivinde boğulur, anomalleri e-posta ile tablolar arasında avlarsınız.",
     ],
   },
   {
     id: "investment-portfolio",
-    kind: "comparison",
-    layout: "wide",
     title: "Yatırım portföyü",
     accent: "emerald",
     positives: [
-      "Premium'da hisse, altın, döviz, kripto ve emtia pozisyonlarını tek portföyde tutarsınız.",
-      "Canlı kotasyonlarla pozisyon değerini ve kar/zarar özetini panelden görürsünüz.",
+      "Hisse, altın, kripto ve dövizi tek portföyde birleştirip güncel fiyatlarla kar/zarar ve riski tek ekrandan izleyin.",
     ],
     negatives: [
-      "Pozisyonları ayrı tablolarda ve elle kur hesaplarıyla takip edersiniz.",
-      "Portföyünüz farklı uygulamalara bölünür, bütüncül bir görünüm elde edemezsiniz.",
+      "Farklı borsa ve uygulamalarda pozisyonları elle topladığınızda toplam getiri ve vergi etkisini kabaca tahmin edersiniz.",
     ],
   },
 ];

@@ -7,40 +7,34 @@ type WhyCardShellProps = {
   card: LandingWhyCard;
   className?: string;
   children: ReactNode;
-  alignContent?: "center" | "start" | "fill";
 };
 
-export function WhyCardShell({
-  card,
-  className,
-  children,
-  alignContent = "center",
-}: WhyCardShellProps) {
+export function WhyCardShell({ card, className, children }: WhyCardShellProps) {
   return (
     <article
       className={cn(
-        "relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm ring-1 ring-border/30",
+        "relative flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-3xl border border-border/50 bg-card/80 p-5 shadow-sm backdrop-blur-sm ring-1 ring-border/25 sm:p-6",
         className,
       )}
     >
       <div
         className={cn(
-          "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full blur-2xl opacity-80",
+          "pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full blur-3xl opacity-50",
           accentBlobs[card.accent],
         )}
         aria-hidden
       />
-      <h3 className="relative z-10 mb-3.5 text-[15px] font-medium tracking-[-0.01em] text-foreground">
-        {card.title}
-      </h3>
       <div
         className={cn(
-          "relative z-10 flex flex-col",
-          alignContent === "fill" && "flex-1",
-          alignContent === "start" && "justify-start",
-          alignContent === "center" && "flex-1 justify-center",
+          "pointer-events-none absolute -bottom-12 left-1/3 h-28 w-28 rounded-full blur-3xl opacity-30",
+          accentBlobs[card.accent],
         )}
-      >
+        aria-hidden
+      />
+      <h3 className="relative z-10 text-base font-semibold tracking-tight text-foreground">
+        {card.title}
+      </h3>
+      <div className="relative z-10 mt-4 flex min-h-0 flex-1 flex-col">
         {children}
       </div>
     </article>
