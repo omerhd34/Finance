@@ -147,6 +147,48 @@ export function getLandingPremiumPriceTry(): number {
   return p?.priceAmountTry ?? 150;
 }
 
+export type LandingShowcaseTile = {
+  title: string;
+  icon: LucideIcon;
+  tone:
+    | "emerald"
+    | "sky"
+    | "rose"
+    | "amber"
+    | "violet"
+    | "cyan"
+    | "orange"
+    | "fuchsia";
+  premium?: boolean;
+};
+
+const showcaseTones: LandingShowcaseTile["tone"][] = [
+  "emerald",
+  "sky",
+  "rose",
+  "amber",
+  "violet",
+  "cyan",
+  "orange",
+  "fuchsia",
+];
+
+export const LANDING_SHOWCASE_TOP_ROW: LandingShowcaseTile[] =
+  LANDING_FEATURES.slice(0, 6).map((feature, index) => ({
+    title: feature.title,
+    icon: feature.icon,
+    tone: showcaseTones[index % showcaseTones.length],
+    premium: feature.premium,
+  }));
+
+export const LANDING_SHOWCASE_BOTTOM_ROW: LandingShowcaseTile[] =
+  LANDING_FEATURES.slice(6).map((feature, index) => ({
+    title: feature.title,
+    icon: feature.icon,
+    tone: showcaseTones[(index + 3) % showcaseTones.length],
+    premium: feature.premium,
+  }));
+
 export type LandingTestimonial = {
   id: string;
   quote: string;

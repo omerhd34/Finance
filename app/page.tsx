@@ -1,4 +1,5 @@
 import { LandingFeaturesSection } from "@/components/landing/landing-features-section";
+import { LandingProductShowcaseSection } from "@/components/landing/landing-product-showcase-section";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingHero } from "@/components/landing/landing-hero";
@@ -14,6 +15,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <LandingHero />
         <LandingTestimonialsSection />
+        <LandingProductShowcaseSection />
         <LandingFeaturesSection />
       </main>
       <LandingFooter />
