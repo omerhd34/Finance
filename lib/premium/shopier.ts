@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium/premium-price";
 
-const DEFAULT_SHOPIER_PREMIUM_URL =
+export const DEFAULT_SHOPIER_PREMIUM_URL =
   "https://www.shopier.com/iqfinansai/46432141";
 
 export const SHOPIER_SUCCESS_STATUSES = new Set([

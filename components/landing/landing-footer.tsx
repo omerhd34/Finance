@@ -10,7 +10,9 @@ import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/common/utils";
+import { DEFAULT_SHOPIER_PREMIUM_URL } from "@/lib/premium/shopier";
 import { BrandLockup } from "../branding/brand-lockup";
+import { ShopierLogo } from "../branding/shopier-logo";
 
 const BACK_TO_TOP_REVEAL_AFTER_PX = 72;
 
@@ -127,6 +129,21 @@ export function LandingFooter() {
             <FooterLink href="/giris">Giriş Yap</FooterLink>
             <FooterLink href="/kayit">Kayıt Ol</FooterLink>
           </FooterColumn>
+        </div>
+
+        <div className="mt-10 flex flex-col items-center gap-3.5 px-2 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/80">
+            GÜVENLİ ÖDEME ALTYAPISI
+          </p>
+          <Link
+            href={DEFAULT_SHOPIER_PREMIUM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Shopier"
+            className="inline-flex items-center text-[#FF5B46] transition-opacity hover:opacity-100 dark:text-white"
+          >
+            <ShopierLogo />
+          </Link>
         </div>
 
         <Separator className="my-10 bg-border/60" />
