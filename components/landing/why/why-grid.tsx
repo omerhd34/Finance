@@ -8,7 +8,7 @@ import { WhyCard } from "@/components/landing/why/why-card";
 
 export function WhyGrid() {
   return (
-    <ul className="mt-14 grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-3 md:items-stretch">
+    <ul className="mt-14 grid w-full grid-cols-1 gap-3 md:grid-cols-3 md:items-stretch *:min-h-0">
       {LANDING_WHY_CARDS.map((card) => {
         if (card.id === "transaction-categories") {
           return null;
@@ -24,7 +24,7 @@ export function WhyGrid() {
           return (
             <li
               key="middle-column"
-              className="grid h-full min-h-0 grid-cols-1 gap-4 md:col-start-2 md:row-span-2 md:row-start-1 md:grid-rows-2"
+              className="grid h-full min-h-0 grid-cols-1 grid-rows-2 gap-3 md:col-start-2 md:row-span-2 md:row-start-1"
             >
               {middleColumnCards.map((middleCard) => (
                 <div

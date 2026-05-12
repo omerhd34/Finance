@@ -24,20 +24,20 @@ export function ComparisonRows({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3",
-        wide && "md:grid md:grid-cols-2 md:gap-4",
+        "flex flex-1 flex-col gap-2.5",
+        wide && "md:grid md:grid-cols-2 md:gap-3",
         className,
       )}
     >
       {positiveItems.length > 0 ? (
-        <div className="space-y-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+        <div className="flex flex-1 flex-col justify-center space-y-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/8 p-3.5">
           {positiveItems.map((text) => (
             <ComparisonBox key={text} positive text={text} />
           ))}
         </div>
       ) : null}
       {negativeItems.length > 0 ? (
-        <div className="space-y-3 rounded-xl border border-red-500/25 bg-red-500/8 p-4">
+        <div className="flex flex-col justify-center space-y-2.5 rounded-xl border border-red-500/20 bg-red-500/6 p-3.5">
           {negativeItems.map((text) => (
             <ComparisonBox key={text} positive={false} text={text} />
           ))}

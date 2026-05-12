@@ -10,11 +10,7 @@ export function WhyComparisonCard({ card }: WhyComparisonCardProps) {
   const isWide = card.layout === "wide";
 
   return (
-    <WhyCardShell
-      card={card}
-      alignContent="start"
-      className={isWide ? "h-auto" : undefined}
-    >
+    <WhyCardShell card={card} alignContent="fill">
       <ComparisonRows
         positives={card.positives}
         negatives={card.negatives}

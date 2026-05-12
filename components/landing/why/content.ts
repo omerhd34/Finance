@@ -9,8 +9,6 @@ type LandingWhyCardBase = {
 
 export type LandingWhyHighlightCard = LandingWhyCardBase & {
   kind: "highlight";
-  efficiencyValue: number;
-  stats: readonly { value: string; label: string }[];
   positives: readonly string[];
   negative: string;
 };
@@ -42,15 +40,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     layout: "tall",
     title: "Finans yönetimi",
     accent: "emerald",
-    efficiencyValue: 100,
-    stats: [
-      { value: "4", label: "Para birimi" },
-      { value: "Anlık", label: "Kur dönüşümü" },
-      { value: "Geniş", label: "Kategori ağacı" },
-    ],
     positives: [
       "Gelir-gider, tekrarlayan ödemeler, borç–alacak ve grafikler tek panelde toplanır.",
       "Finansal sağlık skoru, özet kartlar ve görsel raporlarla ay içi durumu takip edersiniz.",
+      "Çoklu para birimi desteği ve anlık kur dönüşümüyle yurt dışı işlemlerinizi zahmetsizce yönetirsiniz.",
     ],
     negative:
       "Tablolar, notlar ve ayrı uygulamalar arasında dağınık takip yaparsınız.",
@@ -63,6 +56,7 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     accent: "violet",
     positives: [
       "Tasarruf hedefi, bütçe planı ve ödeme hatırlatmalarını aynı akıştan yönetirsiniz.",
+      "Aylık harcama limitlerini kategoriye göre belirler, aşımlarda anında bildirim alırsınız.",
     ],
     negatives: ["Ay sonu sürprizleri ve parçalı araçlar planınızı dağıtır."],
   },
@@ -73,7 +67,8 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Maliyet kontrolü",
     accent: "amber",
     positives: [
-      "Ücretsiz planda panelden bütçeye geniş bir özellik seti sunulur; Premium’da AI, OCR ve portföy tek üyelikte bir araya gelir.",
+      "Ücretsiz planda gelir-gider takibinden bütçe yönetimine kadar geniş bir özellik seti sunulur.",
+      "Premium'da AI analiz, fiş OCR ve yatırım portföyü tek üyelikte bir araya gelir.",
     ],
     negatives: [
       "Birden fazla abonelik ve öngörülemeyen araç maliyetleriyle karşılaşırsınız.",
@@ -87,6 +82,7 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     accent: "rose",
     positives: [
       "Geniş hazır kategori ağacıyla işlemleri hızlı ve doğru kaydedersiniz.",
+      "Tekrarlayan işlemler otomatik tanınır, her seferinde manuel giriş yapmanıza gerek kalmaz.",
     ],
     negatives: [
       "Her işlemde uzun liste arar ve sınıflandırmayı elle tekrarlarsınız.",
@@ -99,9 +95,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Yapay zekâ ve otomasyon",
     accent: "sky",
     positives: [
-      "Premium’da AI analiz, asistan ve fiş OCR aynı kayıtlardan çalışır.",
+      "Premium'da AI analiz, asistan ve fiş OCR aynı kayıtlardan çalışır.",
       "Tam metin analiz, trend yorumları ve kayıtlı veriye göre yanıtlar alırsınız.",
       "AI analiz raporunu PDF olarak indirip arşivleyebilir veya paylaşabilirsiniz.",
+      "Harcama alışkanlıklarınızı öğrenen sistem, tasarruf fırsatlarını otomatik olarak önerir.",
     ],
     negatives: [
       "Raporları manuel çıkarır, uzun listeleri gezersiniz ve fişleri elle girersiniz.",
@@ -115,12 +112,12 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Yatırım portföyü",
     accent: "emerald",
     positives: [
-      "Premium’da hisse, altın, döviz, kripto ve emtia pozisyonlarını tek portföyde tutarsınız.",
+      "Premium'da hisse, altın, döviz, kripto ve emtia pozisyonlarını tek portföyde tutarsınız.",
       "Canlı kotasyonlarla pozisyon değerini ve kar/zarar özetini panelden görürsünüz.",
     ],
     negatives: [
       "Pozisyonları ayrı tablolarda ve elle kur hesaplarıyla takip edersiniz.",
-      "Portföyünüz farklı uygulamalara dağılır ve görünüm dağınık kalır.",
+      "Portföyünüz farklı uygulamalara bölünür, bütüncül bir görünüm elde edemezsiniz.",
     ],
   },
 ];

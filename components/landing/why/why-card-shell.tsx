@@ -19,18 +19,18 @@ export function WhyCardShell({
   return (
     <article
       className={cn(
-        "relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card p-4 shadow-sm ring-1 ring-border/40 sm:p-5",
+        "relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm ring-1 ring-border/30",
         className,
       )}
     >
       <div
         className={cn(
-          "pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl",
+          "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full blur-2xl opacity-80",
           accentBlobs[card.accent],
         )}
         aria-hidden
       />
-      <h3 className="relative z-10 mb-3 text-lg font-semibold tracking-tight text-foreground">
+      <h3 className="relative z-10 mb-3.5 text-[15px] font-medium tracking-[-0.01em] text-foreground">
         {card.title}
       </h3>
       <div
