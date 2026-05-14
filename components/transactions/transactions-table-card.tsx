@@ -129,9 +129,7 @@ export function TransactionsTableCard({
                     const isBorcCategoryRow =
                       t.category === DEBT_EXPENSE_CATEGORY;
                     const hideEdit = isRecurringTransaction || isDebtRow;
-                    const hideDelete =
-                      (isDebtRow && !isBorcCategoryRow) ||
-                      isRecurringTransaction;
+                    const hideDelete = isDebtRow && !isBorcCategoryRow;
                     const noActionButtons = hideEdit && hideDelete;
 
                     return (
