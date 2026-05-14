@@ -56,7 +56,6 @@ function AiAnalizPage() {
       setUsageLoading(true);
       try {
         const { data } = await apiClient.get<{
-          remainingQuestions: number;
           remainingAnalyses: number;
         }>("/api/ai/usage");
         if (!mounted) return;

@@ -4,7 +4,7 @@ import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { prisma } from "@/lib/db/prisma";
 import { getAiChatDailyCount } from "@/lib/db/ai-chat-daily-usage";
 import {
-  AI_ASSISTANT_MAX_MESSAGES_PER_DAY,
+  AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY,
   AI_LONG_REPORT_MAX_PER_DAY,
 } from "@/lib/ai/ai-insights-limits";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
@@ -38,7 +38,7 @@ export async function GET() {
     }
 
     const dayKey = utcDayKey(new Date());
-    const { count: questionCount } = await getAiChatDailyCount(
+    const { count: conversationCount } = await getAiChatDailyCount(
       session.user.id,
       dayKey,
     );
@@ -58,16 +58,19 @@ export async function GET() {
       },
     });
 
-    const remainingQuestions = Math.max(
+    const remainingConversations = Math.max(
       0,
-      AI_ASSISTANT_MAX_MESSAGES_PER_DAY - questionCount,
+      AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY - conversationCount,
     );
-    const remainingAnalyses = Math.max(0, AI_LONG_REPORT_MAX_PER_DAY - analysisCount);
+    const remainingAnalyses = Math.max(
+      0,
+      AI_LONG_REPORT_MAX_PER_DAY - analysisCount,
+    );
 
     return NextResponse.json({
-      remainingQuestions,
+      remainingConversations,
       remainingAnalyses,
-      questionLimit: AI_ASSISTANT_MAX_MESSAGES_PER_DAY,
+      conversationLimit: AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY,
       analysisLimit: AI_LONG_REPORT_MAX_PER_DAY,
     });
   } catch (e) {

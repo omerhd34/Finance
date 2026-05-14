@@ -144,6 +144,7 @@ type AiFinanceChatTurnDelegate = {
   findMany(args?: object): Promise<unknown>;
   create(args: { data: object }): Promise<unknown>;
   deleteMany(args: { where: object }): Promise<{ count: number }>;
+  count(args: { where: object }): Promise<number>;
 };
 
 export const aiFinanceChatTurn: AiFinanceChatTurnDelegate = (

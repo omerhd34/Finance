@@ -72,11 +72,13 @@ model AiFinanceChatTurn {
   id               String   @id @default(cuid())
   userId           String
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId   String?  @db.VarChar(191)
   userMessage      String   @db.Text
   assistantReply   String   @db.LongText
   createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([userId, conversationId])
 }
 
 model AiChatDailyUsage {

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { MessageCircle, Sparkles } from "lucide-react";
 import {
-  AI_ASSISTANT_MAX_MESSAGES_PER_DAY,
-  AI_ASSISTANT_STORED_QA_COUNT,
+  AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY,
+  AI_ASSISTANT_MAX_STORED_TURNS,
+  AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION,
   AI_LONG_REPORT_MAX_PER_DAY,
 } from "@/lib/ai/ai-insights-limits";
 import {
@@ -77,22 +78,22 @@ export function AiAssistantHero() {
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
             IQfinansAI Asistanı
           </h2>
-          <div className="space-y-3 text-sm leading-relaxed text-muted-foreground text-pretty md:text-base">
+          <div className="space-y-2 text-sm leading-relaxed text-muted-foreground text-pretty md:text-base">
             <p>
-              Finans ve kayıtlarınızla ilgili sorularınızda her cevapta sunucu
-              güncel işlem ve borç/alacak özetinizi yeniden yükler; ayrıca
-              istediğiniz diğer konularda da sohbet edebilirsiniz.
-            </p>
-            <p>
-              Günde en fazla{" "}
+              Finans kayıtlarınız ve diğer konularda sohbet; her yanıtta güncel
+              işlem ve borç/alacak özeti kullanılır. Günlük en çok{" "}
               <span className="font-medium text-foreground/85">
-                {AI_ASSISTANT_MAX_MESSAGES_PER_DAY}
+                {AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY}
               </span>{" "}
-              mesaj gönderebilirsiniz.{" "}
+              yeni sohbet , sohbet başına{" "}
               <span className="font-medium text-foreground/85">
-                Son {AI_ASSISTANT_STORED_QA_COUNT} Soru
+                {AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION}
               </span>{" "}
-              ile son tamamlanmış soru–cevaplarınıza dönebilirsiniz.
+              mesaj; sunucuda son{" "}
+              <span className="font-medium text-foreground/85">
+                {AI_ASSISTANT_MAX_STORED_TURNS}
+              </span>{" "}
+              sohbet saklanır.
             </p>
             <p>
               Başlıklı tam analiz raporu için{" "}

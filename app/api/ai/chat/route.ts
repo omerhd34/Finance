@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAIFetchError } from "@google/generative-ai";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
@@ -12,8 +13,10 @@ import { buildFinanceAnalyzePayload } from "@/lib/ai/build-finance-analyze-paylo
 import { generateGeminiChatReply } from "@/lib/ai/gemini-completion";
 import {
   AI_ASSISTANT_HISTORY_PAGE_SIZE,
-  AI_ASSISTANT_MAX_MESSAGES_PER_DAY,
+  AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY,
   AI_ASSISTANT_MAX_STORED_TURNS,
+  AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION,
+  AI_ASSISTANT_MESSAGE_LIMIT_REACHED_USER_MESSAGE,
 } from "@/lib/ai/ai-insights-limits";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 
@@ -26,7 +29,8 @@ const bodySchema = z.object({
       }),
     )
     .min(1)
-    .max(20),
+    .max(AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION * 2),
+  conversationId: z.string().min(8).max(128),
 });
 
 const CHAT_SYSTEM = `Kimliğin: IQfinansAI Asistanı — IQfinans uygulaması içinde çalışan genel amaçlı bir sohbet asistanısın. Kullanıcı finans kayıtları, uygulama hesabı veya tamamen alakasız konularda soru sorabilir; yanıtların Türkçe ve özlü olsun (varsayılan: birkaç kısa paragraf veya madde işaretleri; kullanıcı ayrıntı isterse biraz uzatabilirsin, yine de makul sınırlı kal).
@@ -76,7 +80,11 @@ function parseHistoryPagination(req: Request): {
       : Number.parseInt(rawLimit, 10);
   const maxByRemaining = Math.max(1, AI_ASSISTANT_MAX_STORED_TURNS - offset);
   const pageSize = Number.isFinite(parsedLimit)
-    ? Math.min(Math.max(1, parsedLimit), 50, maxByRemaining)
+    ? Math.min(
+        Math.max(1, parsedLimit),
+        AI_ASSISTANT_MAX_STORED_TURNS,
+        maxByRemaining,
+      )
     : Math.min(AI_ASSISTANT_HISTORY_PAGE_SIZE, maxByRemaining);
 
   return { offset, pageSize };
@@ -109,6 +117,20 @@ export async function GET(req: Request) {
     const { offset, pageSize } = parseHistoryPagination(req);
     const take = pageSize + 1;
 
+    const countRows = await prisma.$queryRaw<Array<{ c: bigint }>>(
+      Prisma.sql`
+        SELECT COUNT(DISTINCT CASE
+          WHEN \`conversationId\` IS NOT NULL
+            AND CHAR_LENGTH(TRIM(\`conversationId\`)) > 0
+          THEN TRIM(\`conversationId\`)
+          ELSE \`id\`
+        END) AS c
+        FROM \`AiFinanceChatTurn\`
+        WHERE \`userId\` = ${session.user.id}
+      `,
+    );
+    const distinctConversationCount = Number(countRows[0]?.c ?? 0);
+
     const rows = (await aiFinanceChatTurn.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
@@ -116,12 +138,14 @@ export async function GET(req: Request) {
       take,
       select: {
         id: true,
+        conversationId: true,
         userMessage: true,
         assistantReply: true,
         createdAt: true,
       },
     })) as {
       id: string;
+      conversationId: string | null;
       userMessage: string;
       assistantReply: string;
       createdAt: Date;
@@ -130,12 +154,17 @@ export async function GET(req: Request) {
     const hasMore = rows.length > pageSize;
     const turns = (hasMore ? rows.slice(0, pageSize) : rows).map((t) => ({
       id: t.id,
+      conversationId: t.conversationId ?? t.id,
       userMessage: t.userMessage,
       assistantReply: t.assistantReply,
       createdAt: t.createdAt.toISOString(),
     }));
 
-    return NextResponse.json({ turns, hasMore });
+    return NextResponse.json({
+      turns,
+      hasMore,
+      distinctConversationCount,
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
@@ -206,18 +235,6 @@ export async function POST(req: Request) {
     }
 
     const dayKey = utcDayKey(new Date());
-    const { count: dayCount, trackingEnabled } = await getAiChatDailyCount(
-      session.user.id,
-      dayKey,
-    );
-    if (trackingEnabled && dayCount >= AI_ASSISTANT_MAX_MESSAGES_PER_DAY) {
-      return NextResponse.json(
-        {
-          error: `Günlük sohbet mesajı limitine ulaştınız (${dayCount}/${AI_ASSISTANT_MAX_MESSAGES_PER_DAY}). Yarın tekrar deneyebilirsiniz.`,
-        },
-        { status: 429 },
-      );
-    }
 
     let bodyJson: unknown;
     try {
@@ -230,12 +247,52 @@ export async function POST(req: Request) {
     }
     const parsed = bodySchema.safeParse(bodyJson);
     if (!parsed.success) {
+      const messagesTooLong = parsed.error.issues.some(
+        (issue) => issue.path[0] === "messages" && issue.code === "too_big",
+      );
       return NextResponse.json(
-        { error: "Mesaj listesi geçersiz veya çok uzun." },
+        {
+          error: messagesTooLong
+            ? AI_ASSISTANT_MESSAGE_LIMIT_REACHED_USER_MESSAGE
+            : "Mesaj listesi geçersiz veya çok uzun.",
+        },
         { status: 400 },
       );
     }
-    const { messages } = parsed.data;
+    const { messages, conversationId: threadId } = parsed.data;
+
+    const priorTurnCount = await aiFinanceChatTurn.count({
+      where: {
+        userId: session.user.id,
+        conversationId: threadId,
+      },
+    });
+    const isNewConversation = priorTurnCount === 0;
+
+    if (priorTurnCount >= AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION) {
+      return NextResponse.json(
+        {
+          error: `Bu mesajlaşmada en fazla ${String(AI_ASSISTANT_MAX_USER_MESSAGES_PER_CONVERSATION)} mesaj gönderebilirsiniz. Yeni bir mesajlaşma başlatın.`,
+        },
+        { status: 429 },
+      );
+    }
+
+    const { count: dayConversationCount, trackingEnabled } =
+      await getAiChatDailyCount(session.user.id, dayKey);
+    if (
+      isNewConversation &&
+      trackingEnabled &&
+      dayConversationCount >= AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY
+    ) {
+      return NextResponse.json(
+        {
+          error: `Günlük yeni mesajlaşma limitine ulaştınız. Aynı sohbete devam edebilir veya yarın yeni bir mesajlaşma başlatabilirsiniz.`,
+        },
+        { status: 429 },
+      );
+    }
+
     const last = messages[messages.length - 1];
     if (last.role !== "user") {
       return NextResponse.json(
@@ -277,16 +334,18 @@ export async function POST(req: Request) {
       message: lastUser,
     });
 
-    await incrementAiChatDailyCount(session.user.id, dayKey);
-
     try {
       await aiFinanceChatTurn.create({
         data: {
           userId: session.user.id,
+          conversationId: threadId,
           userMessage: lastUser,
           assistantReply: reply,
         },
       });
+      if (isNewConversation) {
+        await incrementAiChatDailyCount(session.user.id, dayKey);
+      }
       const idsNewestFirst = (await aiFinanceChatTurn.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: "desc" },

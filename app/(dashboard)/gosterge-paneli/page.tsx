@@ -339,12 +339,7 @@ export default function DashboardPage() {
         />
 
         {debtTotals ? (
-          <DashboardDebtCard
-            items={debts}
-            receivable={debtTotals.receivable}
-            payable={debtTotals.payable}
-            currency={currency}
-          />
+          <DashboardDebtCard items={debts} currency={currency} />
         ) : null}
 
         {planPremium && investmentPositions.length > 0 ? (
