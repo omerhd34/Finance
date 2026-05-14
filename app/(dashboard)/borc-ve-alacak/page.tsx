@@ -16,6 +16,9 @@ import {
 import { DebtsPageHeader } from "@/components/debts/debts-page-header";
 import { DebtsSummaryCards } from "@/components/debts/debts-summary-cards";
 import { DebtsList } from "@/components/debts/debts-list";
+import { buildDebtMaturityRows } from "@/lib/debts/debt-maturity-buckets";
+import { Card } from "@/components/ui/card";
+import { DashboardDebtMaturityChart } from "@/components/dashboard/dashboard-debt-maturity-chart";
 import { EditDebtDialog } from "@/components/debts/edit-debt-dialog";
 import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
 import { AddDebtPrincipalDialog } from "@/components/debts/add-debt-principal-dialog";
@@ -67,6 +70,8 @@ export default function DebtsPage() {
     }
     return { recv, pay };
   }, [items]);
+
+  const maturityRows = useMemo(() => buildDebtMaturityRows(items), [items]);
 
   async function onCreate(values: NewDebtFormValues) {
     await dispatch(
@@ -167,6 +172,14 @@ export default function DebtsPage() {
           onEdit={setEditingId}
           onDelete={setDeletingId}
         />
+
+        <Card className="overflow-hidden">
+          <DashboardDebtMaturityChart
+            data={maturityRows}
+            currency={currency}
+            chartHeight={360}
+          />
+        </Card>
 
         <AddDebtPrincipalDialog
           open={!!addingPrincipalId}
