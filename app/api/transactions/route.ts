@@ -7,6 +7,40 @@ import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budge
 import { transactionCreateSchema } from "@/lib/schemas/validations";
 import type { Prisma } from "@prisma/client";
 
+function finiteAmount(value: unknown): number {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function signedTotalFromRows(
+  rows: { type: string; amount: unknown }[],
+): number {
+  let s = 0;
+  for (const t of rows) {
+    const a = finiteAmount(t.amount);
+    s += t.type === "income" ? a : -a;
+  }
+  return Number.isFinite(s) ? s : 0;
+}
+
+function transactionListOrderBy(
+  searchParams: URLSearchParams,
+): Prisma.TransactionOrderByWithRelationInput[] {
+  const sortBy = searchParams.get("sortBy");
+  const sortOrderRaw = searchParams.get("sortOrder");
+  const ord: "asc" | "desc" = sortOrderRaw === "asc" ? "asc" : "desc";
+  if (sortBy === "amount") {
+    return [{ amount: ord }, { date: ord }, { id: ord }];
+  }
+  if (sortBy === "date") {
+    return [{ date: ord }, { id: ord }];
+  }
+  return [{ date: "desc" }, { id: "desc" }];
+}
+
 const transactionTotalDedupeSelect = {
   id: true,
   recurringSlotKey: true,
@@ -14,6 +48,7 @@ const transactionTotalDedupeSelect = {
   amount: true,
   category: true,
   description: true,
+  type: true,
 } as Prisma.TransactionSelect;
 
 export async function GET(req: Request) {
@@ -63,16 +98,18 @@ export async function GET(req: Request) {
       const fetchRaw = Math.min(8000, cap * 4);
       const raw = await prisma.transaction.findMany({
         where,
-        orderBy: { date: "desc" },
+        orderBy: transactionListOrderBy(searchParams),
         take: fetchRaw,
       });
       const deduped = dedupeTransactionRows(raw);
       const items = deduped.slice(0, cap);
+      const signedTotalTry = signedTotalFromRows(deduped);
       return NextResponse.json({
         items,
         total: deduped.length,
         page: 1,
         pageSize: cap,
+        signedTotalTry,
       });
     }
 
@@ -80,15 +117,23 @@ export async function GET(req: Request) {
       where,
       select: transactionTotalDedupeSelect,
     });
-    const total = dedupeTransactionRows(rowsForTotal).length;
+    const dedupedForTotal = dedupeTransactionRows(rowsForTotal);
+    const total = dedupedForTotal.length;
+    const signedTotalTry = signedTotalFromRows(dedupedForTotal);
 
     const items = await prisma.transaction.findMany({
       where,
-      orderBy: { date: "desc" },
+      orderBy: transactionListOrderBy(searchParams),
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
-    return NextResponse.json({ items, total, page, pageSize });
+    return NextResponse.json({
+      items,
+      total,
+      page,
+      pageSize,
+      signedTotalTry,
+    });
   } catch {
     return NextResponse.json({ error: "Sunucu hatası" }, { status: 500 });
   }

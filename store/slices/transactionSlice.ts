@@ -20,6 +20,7 @@ type ListResponse = {
   total: number;
   page: number;
   pageSize: number;
+  signedTotalTry?: number;
 };
 
 const initialFilters: TransactionFilters = {
@@ -38,6 +39,9 @@ export type TransactionState = {
   total: number;
   page: number;
   pageSize: number;
+  signedTotalTry: number;
+  listSortBy: "date" | "amount" | null;
+  listSortOrder: "asc" | "desc";
 };
 
 const initialState: TransactionState = {
@@ -48,12 +52,17 @@ const initialState: TransactionState = {
   total: 0,
   page: 1,
   pageSize: 5,
+  signedTotalTry: 0,
+  listSortBy: null,
+  listSortOrder: "desc",
 };
 
 function buildQuery(
   filters: TransactionFilters,
   page: number,
   pageSize: number,
+  listSortBy: TransactionState["listSortBy"],
+  listSortOrder: TransactionState["listSortOrder"],
 ): string {
   const p = new URLSearchParams();
   if (filters.type) p.set("type", filters.type);
@@ -63,17 +72,33 @@ function buildQuery(
   if (filters.search.trim()) p.set("search", filters.search.trim());
   p.set("page", String(page));
   p.set("pageSize", String(pageSize));
+  if (listSortBy === "date" || listSortBy === "amount") {
+    p.set("sortBy", listSortBy);
+    p.set("sortOrder", listSortOrder);
+  }
   return p.toString();
 }
 
 export const fetchTransactions = createAsyncThunk(
   "transactions/fetch",
   async (
-    arg: { filters: TransactionFilters; page: number; pageSize: number },
+    arg: {
+      filters: TransactionFilters;
+      page: number;
+      pageSize: number;
+      listSortBy: TransactionState["listSortBy"];
+      listSortOrder: TransactionState["listSortOrder"];
+    },
     { rejectWithValue },
   ) => {
     try {
-      const q = buildQuery(arg.filters, arg.page, arg.pageSize);
+      const q = buildQuery(
+        arg.filters,
+        arg.page,
+        arg.pageSize,
+        arg.listSortBy,
+        arg.listSortOrder,
+      );
       const { data } = await apiClient.get<ListResponse>(
         `/api/transactions?${q}`,
       );
@@ -157,6 +182,26 @@ const transactionSlice = createSlice({
       state.filters = initialFilters;
       state.page = 1;
     },
+    toggleDateListSort: (state) => {
+      if (state.listSortBy !== "date") {
+        state.listSortBy = "date";
+        state.listSortOrder = "desc";
+        state.page = 1;
+      } else {
+        state.listSortOrder =
+          state.listSortOrder === "desc" ? "asc" : "desc";
+      }
+    },
+    toggleAmountListSort: (state) => {
+      if (state.listSortBy !== "amount") {
+        state.listSortBy = "amount";
+        state.listSortOrder = "desc";
+        state.page = 1;
+      } else {
+        state.listSortOrder =
+          state.listSortOrder === "desc" ? "asc" : "desc";
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -170,6 +215,8 @@ const transactionSlice = createSlice({
         state.total = action.payload.total;
         state.page = action.payload.page;
         state.pageSize = action.payload.pageSize;
+        const v = Number(action.payload.signedTotalTry);
+        state.signedTotalTry = Number.isFinite(v) ? v : 0;
       })
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
@@ -184,6 +231,12 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { setFilters, setPage, setPageSize, resetFilters } =
-  transactionSlice.actions;
+export const {
+  setFilters,
+  setPage,
+  setPageSize,
+  resetFilters,
+  toggleDateListSort,
+  toggleAmountListSort,
+} = transactionSlice.actions;
 export default transactionSlice.reducer;

@@ -1,7 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
@@ -32,9 +39,10 @@ import type { RecurringRule } from "@/types/recurring";
 import type { Transaction } from "@/types/transaction";
 import {
   expenseByCategoryForLastNMonths,
-  formatPeriodRangeLabel,
+  formatLastNMonthsPeriodRangeLabel,
   getLastNMonthsPeriodRange,
   lastNMonthsBars,
+  recommendedCategoryPieMonths,
   sumByTypeInRange,
 } from "@/lib/dashboard/dashboard-stats";
 import { computeFinancialHealthScore } from "@/lib/dashboard/financial-health-score";
@@ -64,6 +72,7 @@ export default function DashboardPage() {
   const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
   const [barsChartMonths, setBarsChartMonths] = useState(6);
   const [pieChartMonths, setPieChartMonths] = useState(1);
+  const pieChartMonthsTouchedRef = useRef(false);
   const [digestCopyError, setDigestCopyError] = useState<string | null>(null);
   const goldLive = useGoldLivePrices(planPremium);
   const silverLive = useSilverLivePrices(planPremium);
@@ -149,6 +158,22 @@ export default function DashboardPage() {
     load();
   }, [load]);
 
+  const handlePieChartMonthsChange = useCallback((months: number) => {
+    pieChartMonthsTouchedRef.current = true;
+    setPieChartMonths(months);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (loading) return;
+    if (pieChartMonthsTouchedRef.current) return;
+    const recommended = recommendedCategoryPieMonths(
+      items,
+      new Date(),
+      monthStartDay,
+    );
+    setPieChartMonths((prev) => (prev === recommended ? prev : recommended));
+  }, [items, monthStartDay, loading]);
+
   const now = new Date();
   const { start: kpiPeriodStart, end: kpiPeriodEnd } =
     getLastNMonthsPeriodRange(1, now, monthStartDay);
@@ -166,7 +191,10 @@ export default function DashboardPage() {
       kpiPeriodStart,
       kpiPeriodEnd,
     );
-    const net = totalIncome - totalExpense;
+    const epoch = new Date(0);
+    const net =
+      sumByTypeInRange(items, "income", epoch, kpiPeriodEnd) -
+      sumByTypeInRange(items, "expense", epoch, kpiPeriodEnd);
     const bars = lastNMonthsBars(items, barsChartMonths, now, monthStartDay);
     const pie = expenseByCategoryForLastNMonths(
       items,
@@ -195,23 +223,16 @@ export default function DashboardPage() {
     monthStartDay,
   ]);
 
-  const barsRangeLabel = useMemo(() => {
-    const { start, end } = getLastNMonthsPeriodRange(
-      barsChartMonths,
-      now,
-      monthStartDay,
-    );
-    return formatPeriodRangeLabel(start, end);
-  }, [barsChartMonths, now, monthStartDay]);
+  const barsRangeLabel = useMemo(
+    () =>
+      formatLastNMonthsPeriodRangeLabel(barsChartMonths, now, monthStartDay),
+    [barsChartMonths, now, monthStartDay],
+  );
 
-  const pieRangeLabel = useMemo(() => {
-    const { start, end } = getLastNMonthsPeriodRange(
-      pieChartMonths,
-      now,
-      monthStartDay,
-    );
-    return formatPeriodRangeLabel(start, end);
-  }, [pieChartMonths, now, monthStartDay]);
+  const pieRangeLabel = useMemo(
+    () => formatLastNMonthsPeriodRangeLabel(pieChartMonths, now, monthStartDay),
+    [pieChartMonths, now, monthStartDay],
+  );
 
   const investmentPnl = useMemo(
     () => totalInvestmentPnlTry(investmentPositions, liveQuotes),
@@ -329,7 +350,7 @@ export default function DashboardPage() {
           barsRangeLabel={barsRangeLabel}
           pieRangeLabel={pieRangeLabel}
           onBarsMonthsChange={setBarsChartMonths}
-          onPieMonthsChange={setPieChartMonths}
+          onPieMonthsChange={handlePieChartMonthsChange}
         />
 
         <DashboardRecurringCard

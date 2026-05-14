@@ -1,6 +1,7 @@
 import type { Transaction } from "@/types/transaction";
 import {
   addMonths,
+  endOfDay,
   endOfMonth,
   format,
   isBefore,
@@ -40,8 +41,32 @@ export function getLastNMonthsPeriodRange(
   );
   const currentPeriodStart = resolveCompletedPeriodEnd(now, safeMonthStartDay);
   const start = subMonths(currentPeriodStart, safeN - 1);
-  const end = now;
+  const end = endOfDay(now);
   return { start, end };
+}
+
+/**
+ * Ay başlangıç gününde "Son 1 ay" penceresi tek güne düştüğünde kategori gider
+ * pastası boş kalmasın diye: aynı günde henüz gider yoksa 2 ay; o gün için
+ * en az bir gider varsa 1 ay önerilir (gelir tek başına pastayı doldurmaz).
+ */
+export function recommendedCategoryPieMonths(
+  transactions: Transaction[],
+  now: Date = new Date(),
+  monthStartDay = 1,
+): 1 | 2 {
+  const { start, end } = getLastNMonthsPeriodRange(1, now, monthStartDay);
+  if (startOfDay(start).getTime() !== startOfDay(end).getTime()) {
+    return 1;
+  }
+  const s = start.getTime();
+  const e = end.getTime();
+  for (const t of transactions) {
+    if (t.type !== "expense") continue;
+    const d = new Date(t.date).getTime();
+    if (d >= s && d <= e) return 1;
+  }
+  return 2;
 }
 
 export function formatPeriodRangeLabel(
@@ -56,6 +81,26 @@ export function formatPeriodRangeLabel(
     ...(includeYear ? { year: "numeric" } : {}),
   });
   return `${formatter.format(start)} - ${formatter.format(end)}`;
+}
+
+export function formatLastNMonthsPeriodRangeLabel(
+  n: number,
+  now: Date = new Date(),
+  monthStartDay = 1,
+  locale = "tr-TR",
+): string {
+  const safeN = Math.max(1, Math.trunc(n));
+  const { start: periodAnchor } = getLastNMonthsPeriodRange(
+    1,
+    now,
+    monthStartDay,
+  );
+  if (safeN === 1) {
+    const endLabel = addMonths(periodAnchor, 1);
+    return formatPeriodRangeLabel(periodAnchor, endLabel, locale);
+  }
+  const left = subMonths(periodAnchor, safeN);
+  return formatPeriodRangeLabel(left, periodAnchor, locale);
 }
 
 export function lastNMonthsBars(

@@ -4,7 +4,7 @@ import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 import type { RecurringRule } from "@/types/recurring";
 import {
   fetchTransactions,
-  type TransactionFilters,
+  type TransactionState,
 } from "@/store/slices/transactionSlice";
 
 export type RecurringState = {
@@ -59,18 +59,16 @@ export const updateRecurringRule = createAsyncThunk(
         `/api/recurring/${arg.id}`,
         arg.body,
       );
-      const st = getState() as {
-        transactions: {
-          filters: TransactionFilters;
-          page: number;
-          pageSize: number;
-        };
+      const { transactions } = getState() as {
+        transactions: TransactionState;
       };
       await dispatch(
         fetchTransactions({
-          filters: st.transactions.filters,
-          page: st.transactions.page,
-          pageSize: st.transactions.pageSize,
+          filters: transactions.filters,
+          page: transactions.page,
+          pageSize: transactions.pageSize,
+          listSortBy: transactions.listSortBy,
+          listSortOrder: transactions.listSortOrder,
         }),
       );
       return data;
@@ -100,18 +98,16 @@ export const processDueRecurring = createAsyncThunk(
         "/api/recurring/process-due",
       );
       if (data.created > 0) {
-        const st = getState() as {
-          transactions: {
-            filters: TransactionFilters;
-            page: number;
-            pageSize: number;
-          };
+        const { transactions } = getState() as {
+          transactions: TransactionState;
         };
         await dispatch(
           fetchTransactions({
-            filters: st.transactions.filters,
-            page: st.transactions.page,
-            pageSize: st.transactions.pageSize,
+            filters: transactions.filters,
+            page: transactions.page,
+            pageSize: transactions.pageSize,
+            listSortBy: transactions.listSortBy,
+            listSortOrder: transactions.listSortOrder,
           }),
         );
       }
@@ -128,18 +124,16 @@ export const fulfillRecurringReminderThunk = createAsyncThunk(
     try {
       await apiClient.post(`/api/recurring/${id}/fulfill`);
       await dispatch(fetchRecurringRules());
-      const st = getState() as {
-        transactions: {
-          filters: TransactionFilters;
-          page: number;
-          pageSize: number;
-        };
+      const { transactions } = getState() as {
+        transactions: TransactionState;
       };
       await dispatch(
         fetchTransactions({
-          filters: st.transactions.filters,
-          page: st.transactions.page,
-          pageSize: st.transactions.pageSize,
+          filters: transactions.filters,
+          page: transactions.page,
+          pageSize: transactions.pageSize,
+          listSortBy: transactions.listSortBy,
+          listSortOrder: transactions.listSortOrder,
         }),
       );
       return id;

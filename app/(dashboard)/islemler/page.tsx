@@ -6,6 +6,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useSearchParams } from "next/navigation";
@@ -23,6 +24,8 @@ import {
   fetchTransactions,
   setFilters,
   setPage,
+  toggleAmountListSort,
+  toggleDateListSort,
   updateTransaction,
   type TransactionFilters,
 } from "@/store/slices/transactionSlice";
@@ -30,9 +33,9 @@ import { processDueRecurring } from "@/store/slices/recurringSlice";
 import { apiClient } from "@/lib/client/api-client";
 import {
   expenseByCategoryForLastNMonths,
-  formatPeriodRangeLabel,
-  getLastNMonthsPeriodRange,
+  formatLastNMonthsPeriodRangeLabel,
   lastNMonthsBars,
+  recommendedCategoryPieMonths,
 } from "@/lib/dashboard/dashboard-stats";
 import { formValueToExpenseSubcategory } from "@/lib/domain/categories";
 import { dedupeTransactionsForDisplay } from "@/lib/transactions/dedupe-transactions-display";
@@ -48,22 +51,27 @@ import { LogoLoading } from "@/components/ui/logo-loading";
 function TransactionsPageContent() {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  const { items, loading, error, filters, total, page, pageSize } =
-    useAppSelector((s) => s.transactions);
+  const {
+    items,
+    loading,
+    error,
+    filters,
+    total,
+    page,
+    pageSize,
+    signedTotalTry,
+    listSortBy,
+    listSortOrder,
+  } = useAppSelector((s) => s.transactions);
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const monthStartDay = useAppSelector((s) => s.auth.user?.monthStartDay ?? 1);
 
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
-  const [dateSortOrder, setDateSortOrder] = useState<"desc" | "asc" | null>(
-    null,
-  );
-  const [amountSortOrder, setAmountSortOrder] = useState<"desc" | "asc" | null>(
-    null,
-  );
   const [barsChartMonths, setBarsChartMonths] = useState(12);
   const [pieChartMonths, setPieChartMonths] = useState(1);
+  const pieChartMonthsTouchedRef = useRef(false);
   const [chartItems, setChartItems] = useState<Transaction[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
   const [newTransactionOpen, setNewTransactionOpen] = useState(false);
@@ -87,6 +95,22 @@ function TransactionsPageContent() {
     void loadChartTransactions();
   }, [loadChartTransactions]);
 
+  const handlePieChartMonthsChange = useCallback((months: number) => {
+    pieChartMonthsTouchedRef.current = true;
+    setPieChartMonths(months);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (chartLoading) return;
+    if (pieChartMonthsTouchedRef.current) return;
+    const recommended = recommendedCategoryPieMonths(
+      chartItems,
+      new Date(),
+      monthStartDay,
+    );
+    setPieChartMonths((prev) => (prev === recommended ? prev : recommended));
+  }, [chartItems, monthStartDay, chartLoading]);
+
   const chartNow = useMemo(() => new Date(), []);
   const transactionsChartBars = useMemo(
     () => lastNMonthsBars(chartItems, barsChartMonths, chartNow, monthStartDay),
@@ -102,22 +126,24 @@ function TransactionsPageContent() {
       ),
     [chartItems, pieChartMonths, chartNow, monthStartDay],
   );
-  const barsRangeLabel = useMemo(() => {
-    const { start, end } = getLastNMonthsPeriodRange(
-      barsChartMonths,
-      chartNow,
-      monthStartDay,
-    );
-    return formatPeriodRangeLabel(start, end);
-  }, [barsChartMonths, chartNow, monthStartDay]);
-  const pieRangeLabel = useMemo(() => {
-    const { start, end } = getLastNMonthsPeriodRange(
-      pieChartMonths,
-      chartNow,
-      monthStartDay,
-    );
-    return formatPeriodRangeLabel(start, end);
-  }, [pieChartMonths, chartNow, monthStartDay]);
+  const barsRangeLabel = useMemo(
+    () =>
+      formatLastNMonthsPeriodRangeLabel(
+        barsChartMonths,
+        chartNow,
+        monthStartDay,
+      ),
+    [barsChartMonths, chartNow, monthStartDay],
+  );
+  const pieRangeLabel = useMemo(
+    () =>
+      formatLastNMonthsPeriodRangeLabel(
+        pieChartMonths,
+        chartNow,
+        monthStartDay,
+      ),
+    [pieChartMonths, chartNow, monthStartDay],
+  );
 
   useLayoutEffect(() => {
     const patch: Partial<TransactionFilters> = {};
@@ -146,7 +172,13 @@ function TransactionsPageContent() {
       if (createdFromRecurring === 0) {
         try {
           await dispatch(
-            fetchTransactions({ filters, page, pageSize }),
+            fetchTransactions({
+              filters,
+              page,
+              pageSize,
+              listSortBy,
+              listSortOrder,
+            }),
           ).unwrap();
         } catch {}
       }
@@ -155,7 +187,7 @@ function TransactionsPageContent() {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, filters, page, pageSize]);
+  }, [dispatch, filters, page, pageSize, listSortBy, listSortOrder]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -163,20 +195,6 @@ function TransactionsPageContent() {
     () => dedupeTransactionsForDisplay(items),
     [items],
   );
-
-  const sortedDisplayItems = useMemo(() => {
-    if (dateSortOrder) {
-      return [...displayItems].sort((a, b) =>
-        dateSortOrder === "desc"
-          ? new Date(b.date).getTime() - new Date(a.date).getTime()
-          : new Date(a.date).getTime() - new Date(b.date).getTime(),
-      );
-    }
-    if (!amountSortOrder) return displayItems;
-    return [...displayItems].sort((a, b) =>
-      amountSortOrder === "desc" ? b.amount - a.amount : a.amount - b.amount,
-    );
-  }, [displayItems, dateSortOrder, amountSortOrder]);
 
   async function exportCsv() {
     setExporting("csv");
@@ -222,7 +240,15 @@ function TransactionsPageContent() {
       }),
     );
     setEditing(null);
-    void dispatch(fetchTransactions({ filters, page, pageSize }));
+    void dispatch(
+      fetchTransactions({
+        filters,
+        page,
+        pageSize,
+        listSortBy,
+        listSortOrder,
+      }),
+    );
     void loadChartTransactions();
   }
 
@@ -230,12 +256,28 @@ function TransactionsPageContent() {
     if (!deleting) return;
     await dispatch(deleteTransaction(deleting.id));
     setDeleting(null);
-    void dispatch(fetchTransactions({ filters, page, pageSize }));
+    void dispatch(
+      fetchTransactions({
+        filters,
+        page,
+        pageSize,
+        listSortBy,
+        listSortOrder,
+      }),
+    );
     void loadChartTransactions();
   }
 
   async function afterTransactionCreated() {
-    await dispatch(fetchTransactions({ filters, page, pageSize }));
+    await dispatch(
+      fetchTransactions({
+        filters,
+        page,
+        pageSize,
+        listSortBy,
+        listSortOrder,
+      }),
+    );
     void loadChartTransactions();
   }
 
@@ -272,19 +314,17 @@ function TransactionsPageContent() {
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         <TransactionsTableCard
-          items={sortedDisplayItems}
+          items={displayItems}
           loading={loading}
           currency={currency}
-          dateSortOrder={dateSortOrder}
-          onDateSortToggle={() => {
-            setAmountSortOrder(null);
-            setDateSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
-          }}
-          amountSortOrder={amountSortOrder}
-          onAmountSortToggle={() => {
-            setDateSortOrder(null);
-            setAmountSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
-          }}
+          dateSortOrder={
+            listSortBy === "date" ? listSortOrder : null
+          }
+          onDateSortToggle={() => dispatch(toggleDateListSort())}
+          amountSortOrder={
+            listSortBy === "amount" ? listSortOrder : null
+          }
+          onAmountSortToggle={() => dispatch(toggleAmountListSort())}
           total={total}
           page={page}
           totalPages={totalPages}
@@ -292,6 +332,7 @@ function TransactionsPageContent() {
           onNextPage={() => dispatch(setPage(page + 1))}
           onEdit={setEditing}
           onDelete={setDeleting}
+          filteredSignedTotalTry={signedTotalTry}
         />
 
         <TransactionsChartsSection
@@ -302,7 +343,7 @@ function TransactionsPageContent() {
           barsRangeLabel={barsRangeLabel}
           pieRangeLabel={pieRangeLabel}
           onBarsMonthsChange={setBarsChartMonths}
-          onPieMonthsChange={setPieChartMonths}
+          onPieMonthsChange={handlePieChartMonthsChange}
           loading={chartLoading}
         />
 

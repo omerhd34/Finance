@@ -41,6 +41,7 @@ type Props = {
   onNextPage: () => void;
   onEdit: (t: Transaction) => void;
   onDelete: (t: Transaction) => void;
+  filteredSignedTotalTry: number;
 };
 
 export function TransactionsTableCard({
@@ -56,6 +57,7 @@ export function TransactionsTableCard({
   onNextPage,
   onEdit,
   onDelete,
+  filteredSignedTotalTry,
 }: Props) {
   return (
     <Card>
@@ -119,97 +121,127 @@ export function TransactionsTableCard({
                   </TableCell>
                 </TableRow>
               ) : (
-                items.map((t) =>
-                  (() => {
-                    const isRecurringTransaction =
-                      Boolean(t.recurringRuleId) ||
-                      Boolean(t.recurringSlotKey) ||
-                      t.description?.startsWith(RECURRING_DESC_PREFIX) === true;
-                    const isDebtRow = isDebtMirrorTransaction(t);
-                    const isBorcCategoryRow =
-                      t.category === DEBT_EXPENSE_CATEGORY;
-                    const hideEdit = isRecurringTransaction || isDebtRow;
-                    const hideDelete = isDebtRow && !isBorcCategoryRow;
-                    const noActionButtons = hideEdit && hideDelete;
+                <>
+                  {items.map((t) =>
+                    (() => {
+                      const isRecurringTransaction =
+                        Boolean(t.recurringRuleId) ||
+                        Boolean(t.recurringSlotKey) ||
+                        t.description?.startsWith(RECURRING_DESC_PREFIX) ===
+                          true;
+                      const isDebtRow = isDebtMirrorTransaction(t);
+                      const isBorcCategoryRow =
+                        t.category === DEBT_EXPENSE_CATEGORY;
+                      const hideEdit = isRecurringTransaction || isDebtRow;
+                      const hideDelete = isDebtRow && !isBorcCategoryRow;
+                      const noActionButtons = hideEdit && hideDelete;
 
-                    return (
-                      <TableRow
-                        key={t.id}
-                        className={cn(
-                          "transition-colors duration-150",
-                          t.type === "income"
-                            ? "[&>td]:bg-emerald-50/90 hover:[&>td]:bg-emerald-100 dark:[&>td]:bg-emerald-950/50 dark:hover:[&>td]:bg-emerald-950/65"
-                            : "[&>td]:bg-red-50/90 hover:[&>td]:bg-red-100 dark:[&>td]:bg-red-950/50 dark:hover:[&>td]:bg-red-950/65",
-                        )}
-                      >
-                        <TableCell>{formatDateShort(t.date)}</TableCell>
-                        <TableCell>
-                          <Link
-                            href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
-                            className="text-foreground underline-offset-4 decoration-muted-foreground/50 hover:underline hover:text-foreground hover:decoration-foreground/40"
-                          >
-                            {formatExpenseCategoryLabel(
-                              t.category,
-                              t.subcategory,
-                            )}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <span className="block truncate">
-                            <TransactionDescriptionText
-                              description={t.description}
-                            />
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right font-medium tabular-nums pr-8 sm:pr-12">
-                          {formatMoneyAmount(t.amount, currency)}
-                        </TableCell>
-                        <TableCell className="pl-4 sm:pl-8">
-                          <Badge
-                            variant={t.type === "income" ? "income" : "expense"}
-                          >
-                            {t.type === "income" ? "Gelir" : "Gider"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right align-middle">
-                          <div className="inline-flex min-h-9 items-center justify-end gap-0.5">
-                            {!hideEdit ? (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Düzenle"
-                                onClick={() => onEdit(t)}
-                                className="cursor-pointer"
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            ) : null}
-                            {!hideDelete ? (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-destructive cursor-pointer"
-                                aria-label="Sil"
-                                onClick={() => onDelete(t)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            ) : null}
-                            {noActionButtons ? (
-                              <span
-                                className="inline-flex items-center"
-                                aria-hidden
-                              >
-                                <span className="size-9 shrink-0" />
-                                <span className="size-9 shrink-0" />
-                              </span>
-                            ) : null}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })(),
-                )
+                      return (
+                        <TableRow
+                          key={t.id}
+                          className={cn(
+                            "transition-colors duration-150",
+                            t.type === "income"
+                              ? "[&>td]:bg-emerald-50/90 hover:[&>td]:bg-emerald-100 dark:[&>td]:bg-emerald-950/50 dark:hover:[&>td]:bg-emerald-950/65"
+                              : "[&>td]:bg-red-50/90 hover:[&>td]:bg-red-100 dark:[&>td]:bg-red-950/50 dark:hover:[&>td]:bg-red-950/65",
+                          )}
+                        >
+                          <TableCell>{formatDateShort(t.date)}</TableCell>
+                          <TableCell>
+                            <Link
+                              href={`/islemler?category=${encodeURIComponent(t.category)}&type=${encodeURIComponent(t.type)}`}
+                              className="text-foreground underline-offset-4 decoration-muted-foreground/50 hover:underline hover:text-foreground hover:decoration-foreground/40"
+                            >
+                              {formatExpenseCategoryLabel(
+                                t.category,
+                                t.subcategory,
+                              )}
+                            </Link>
+                          </TableCell>
+                          <TableCell className="max-w-[200px]">
+                            <span className="block truncate">
+                              <TransactionDescriptionText
+                                description={t.description}
+                              />
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right font-medium tabular-nums pr-8 sm:pr-12">
+                            {formatMoneyAmount(t.amount, currency)}
+                          </TableCell>
+                          <TableCell className="pl-4 sm:pl-8">
+                            <Badge
+                              variant={
+                                t.type === "income" ? "income" : "expense"
+                              }
+                            >
+                              {t.type === "income" ? "Gelir" : "Gider"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right align-middle">
+                            <div className="inline-flex min-h-9 items-center justify-end gap-0.5">
+                              {!hideEdit ? (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  aria-label="Düzenle"
+                                  onClick={() => onEdit(t)}
+                                  className="cursor-pointer"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              ) : null}
+                              {!hideDelete ? (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive cursor-pointer"
+                                  aria-label="Sil"
+                                  onClick={() => onDelete(t)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              ) : null}
+                              {noActionButtons ? (
+                                <span
+                                  className="inline-flex items-center"
+                                  aria-hidden
+                                >
+                                  <span className="size-9 shrink-0" />
+                                  <span className="size-9 shrink-0" />
+                                </span>
+                              ) : null}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })(),
+                  )}
+                  <TableRow
+                    key="__page_amount_total"
+                    className="border-t-2 border-border bg-muted/20 hover:bg-muted/25 [&>td]:bg-transparent"
+                  >
+                    <TableCell
+                      colSpan={3}
+                      className="text-right text-sm font-medium text-muted-foreground"
+                    >
+                      Toplam
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        "text-right text-sm font-semibold tabular-nums pr-8 sm:pr-12",
+                        filteredSignedTotalTry > 0 &&
+                          "text-emerald-600 dark:text-emerald-400",
+                        filteredSignedTotalTry < 0 &&
+                          "text-red-600 dark:text-red-400",
+                        filteredSignedTotalTry === 0 &&
+                          "text-muted-foreground",
+                      )}
+                    >
+                      {formatMoneyAmount(filteredSignedTotalTry, currency)}
+                    </TableCell>
+                    <TableCell colSpan={2} />
+                  </TableRow>
+                </>
               )}
             </TableBody>
           </Table>
