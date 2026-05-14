@@ -11,8 +11,9 @@ import { aiFinanceChatTurn, prisma } from "@/lib/db/prisma";
 import { buildFinanceAnalyzePayload } from "@/lib/ai/build-finance-analyze-payload";
 import { generateGeminiChatReply } from "@/lib/ai/gemini-completion";
 import {
+  AI_ASSISTANT_HISTORY_PAGE_SIZE,
   AI_ASSISTANT_MAX_MESSAGES_PER_DAY,
-  AI_ASSISTANT_STORED_QA_COUNT,
+  AI_ASSISTANT_MAX_STORED_TURNS,
 } from "@/lib/ai/ai-insights-limits";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 
@@ -29,6 +30,8 @@ const bodySchema = z.object({
 });
 
 const CHAT_SYSTEM = `Kimliğin: IQfinansAI Asistanı — IQfinans uygulaması içinde çalışan genel amaçlı bir sohbet asistanısın. Kullanıcı finans kayıtları, uygulama hesabı veya tamamen alakasız konularda soru sorabilir; yanıtların Türkçe ve özlü olsun (varsayılan: birkaç kısa paragraf veya madde işaretleri; kullanıcı ayrıntı isterse biraz uzatabilirsin, yine de makul sınırlı kal).
+
+Kendini anlatırken: “merhaba / nasılsın / kimsin” gibi durumlarda **IQfinansAI Asistanıyım** de; “ben bir yapay zeka asistanıyım” gibi genel ifadeleri kullanma.
 
 Finans ve uygulama verisi (mesajla gelen JSON):
 - İşlemler, harcama/gelir özetleri, profil, ödeme geçmişi gibi **veri tabanlı** sorularda yalnızca mesajda verilen JSON’a dayan: finans kayıtları, \`uygulamaHesabi\`, \`kullaniciProfili\` (oturum sahibi; şifre ve profil resmi yok), \`shopierOdemeKayitlari\`. Veride olmayan tutar, kategori veya tarih uydurma.
@@ -50,7 +53,36 @@ function utcDayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-export async function GET() {
+function parseHistoryPagination(req: Request): {
+  offset: number;
+  pageSize: number;
+} {
+  const url = new URL(req.url);
+  const parsedOffset = Number.parseInt(
+    url.searchParams.get("offset") ?? "0",
+    10,
+  );
+  const offset = Number.isFinite(parsedOffset)
+    ? Math.min(
+        Math.max(0, parsedOffset),
+        Math.max(0, AI_ASSISTANT_MAX_STORED_TURNS - 1),
+      )
+    : 0;
+
+  const rawLimit = url.searchParams.get("limit");
+  const parsedLimit =
+    rawLimit === null || rawLimit === ""
+      ? AI_ASSISTANT_HISTORY_PAGE_SIZE
+      : Number.parseInt(rawLimit, 10);
+  const maxByRemaining = Math.max(1, AI_ASSISTANT_MAX_STORED_TURNS - offset);
+  const pageSize = Number.isFinite(parsedLimit)
+    ? Math.min(Math.max(1, parsedLimit), 50, maxByRemaining)
+    : Math.min(AI_ASSISTANT_HISTORY_PAGE_SIZE, maxByRemaining);
+
+  return { offset, pageSize };
+}
+
+export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -74,10 +106,14 @@ export async function GET() {
       );
     }
 
-    const turns = (await aiFinanceChatTurn.findMany({
+    const { offset, pageSize } = parseHistoryPagination(req);
+    const take = pageSize + 1;
+
+    const rows = (await aiFinanceChatTurn.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
-      take: AI_ASSISTANT_STORED_QA_COUNT,
+      skip: offset,
+      take,
       select: {
         id: true,
         userMessage: true,
@@ -91,14 +127,15 @@ export async function GET() {
       createdAt: Date;
     }[];
 
-    return NextResponse.json({
-      turns: turns.map((t) => ({
-        id: t.id,
-        userMessage: t.userMessage,
-        assistantReply: t.assistantReply,
-        createdAt: t.createdAt.toISOString(),
-      })),
-    });
+    const hasMore = rows.length > pageSize;
+    const turns = (hasMore ? rows.slice(0, pageSize) : rows).map((t) => ({
+      id: t.id,
+      userMessage: t.userMessage,
+      assistantReply: t.assistantReply,
+      createdAt: t.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json({ turns, hasMore });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
@@ -256,7 +293,7 @@ export async function POST(req: Request) {
         select: { id: true },
       })) as { id: string }[];
       const staleIds = idsNewestFirst
-        .slice(AI_ASSISTANT_STORED_QA_COUNT)
+        .slice(AI_ASSISTANT_MAX_STORED_TURNS)
         .map((r) => r.id);
       if (staleIds.length > 0) {
         await aiFinanceChatTurn.deleteMany({
