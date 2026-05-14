@@ -143,9 +143,15 @@ export function RecurringFormFields({
         <div className="space-y-2">
           <Label>Bitiş tarihi (isteğe bağlı)</Label>
           <DatePickerField
+            allowClear
             className="cursor-pointer"
             value={form.watch("endDate") ?? ""}
-            onChange={(v) => form.setValue("endDate", v)}
+            onChange={(v) =>
+              form.setValue("endDate", v, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
           />
           {variant === "new" && form.formState.errors.endDate && (
             <p className="text-sm text-destructive">
