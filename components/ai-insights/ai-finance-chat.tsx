@@ -297,10 +297,9 @@ export function AiFinanceChat() {
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-4 md:p-5">
             {messages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Aşağıdan istediğiniz soruyu yazın veya mikrofonla konuşun.
-                Geçmiş listesinden bir kayıt seçebilirsiniz. Bu oturumdaki
-                sohbet tarayıcıda tutulur; sayfayı yenilerseniz sıfırlanır.
+              <p className="text-center text-sm text-muted-foreground md:text-base">
+                Merhabalar, ben <strong>IQfinansAI</strong> Asistanıyım. Size
+                nasıl yardımcı olabilirim?
               </p>
             ) : null}
             {messages.map((m, i) => (
