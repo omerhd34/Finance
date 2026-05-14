@@ -17,9 +17,12 @@ export function AiRemainingUsageChip({
   dense = false,
 }: Props) {
   const hasData = remaining != null;
-  const label = mode === "conversations" ? "mesajlaşma" : "analiz";
+  const label = mode === "conversations" ? "sohbet" : "analiz";
   const count = remaining ?? 0;
-  const title = `Bugün kalan ${String(count)} ${label}`;
+  const title =
+    loading && !hasData
+      ? "Kalan hak yükleniyor"
+      : `Bugün kalan ${String(count)} ${label}`;
 
   const squareFrame = cn(
     "flex aspect-square shrink-0 items-center justify-center rounded-md border border-border/70 bg-card/80 font-semibold tabular-nums text-foreground shadow-inner",
@@ -46,17 +49,19 @@ export function AiRemainingUsageChip({
   return (
     <div
       className={cn(
-        "inline-flex h-9 min-w-[220px] items-center justify-center gap-2 rounded-md border border-border/70 bg-card/60 px-3 text-sm text-muted-foreground shadow-sm",
+        "inline-flex h-9 min-w-[min(100%,220px)] items-center justify-center gap-2 rounded-md border border-border/70 bg-card/60 px-3 text-sm text-muted-foreground shadow-sm",
       )}
       title={title}
     >
       {loading && !hasData ? (
-        <p className="flex items-center justify-center gap-2 text-center">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-        </p>
+        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
       ) : (
-        <p className="flex items-center gap-2">
-          <span className={cn(squareFrame, "size-8 text-sm")}>{count}</span>
+        <p className="text-center">
+          Bugün kalan{" "}
+          <span className="font-semibold tabular-nums text-foreground">
+            {count}
+          </span>{" "}
+          {label}
         </p>
       )}
     </div>

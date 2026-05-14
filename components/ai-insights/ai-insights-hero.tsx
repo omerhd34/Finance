@@ -93,10 +93,7 @@ export function AiAssistantHero() {
               <span className="font-medium text-foreground/85">
                 {AI_ASSISTANT_MAX_STORED_TURNS}
               </span>{" "}
-              sohbet saklanır.
-            </p>
-            <p>
-              Başlıklı tam analiz raporu için{" "}
+              sohbet saklanır. Başlıklı tam analiz raporu için{" "}
               <Link
                 href={AI_ANALIZ_PATH}
                 className="font-medium text-primary underline-offset-4 hover:underline"
@@ -105,6 +102,7 @@ export function AiAssistantHero() {
               </Link>{" "}
               sayfasını kullanın.
             </p>
+            <p></p>
           </div>
         </div>
       </div>
