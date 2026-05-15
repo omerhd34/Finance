@@ -7,18 +7,61 @@ import { WhyCard } from "@/components/landing/why/why-card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/common/utils";
 
+const WHY_CAROUSEL_AUTOPLAY_MS = {
+  sm: 10_000,
+  md: 15_000,
+} as const;
+
+function useWhyCarouselLayout(): {
+  perView: number;
+  autoplayMs: number;
+} {
+  const [perView, setPerView] = useState(1);
+  const [autoplayMs, setAutoplayMs] = useState<number>(
+    WHY_CAROUSEL_AUTOPLAY_MS.sm,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => {
+      const isMd = mq.matches;
+      setPerView(isMd ? 2 : 1);
+      setAutoplayMs(
+        isMd ? WHY_CAROUSEL_AUTOPLAY_MS.md : WHY_CAROUSEL_AUTOPLAY_MS.sm,
+      );
+    };
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return { perView, autoplayMs };
+}
+
 export function WhyGridCarousel() {
   const [index, setIndex] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const { perView, autoplayMs } = useWhyCarouselLayout();
   const total = LANDING_WHY_CARDS.length;
+  const maxIndex = Math.max(0, total - perView);
+  const slideIndex = Math.min(index, maxIndex);
+  const slideCount = maxIndex + 1;
+  const trackWidthPercent = (total / perView) * 100;
+  const slideWidthPercent = 100 / total;
+  const translatePercent = (slideIndex / total) * 100;
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const swipePointerId = useRef<number | null>(null);
 
   const go = useCallback(
     (delta: number) => {
-      setIndex((i) => (i + delta + total) % total);
+      setIndex((i) => {
+        const next = i + delta;
+        if (next < 0) return maxIndex;
+        if (next > maxIndex) return 0;
+        return next;
+      });
     },
-    [total],
+    [maxIndex],
   );
 
   const endSwipe = useCallback(
@@ -57,12 +100,12 @@ export function WhyGridCarousel() {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion || total <= 1) return;
+    if (reduceMotion || slideCount <= 1) return;
     const timer = window.setInterval(() => {
-      setIndex((i) => (i + 1) % total);
-    }, 8000);
+      go(1);
+    }, autoplayMs);
     return () => window.clearInterval(timer);
-  }, [reduceMotion, total]);
+  }, [reduceMotion, slideCount, go, autoplayMs]);
 
   return (
     <div
@@ -100,10 +143,17 @@ export function WhyGridCarousel() {
             !reduceMotion &&
               "transition-transform duration-500 ease-out motion-reduce:transition-none",
           )}
-          style={{ transform: `translate3d(-${index * 100}%, 0, 0)` }}
+          style={{
+            width: `${trackWidthPercent}%`,
+            transform: `translate3d(-${translatePercent}%, 0, 0)`,
+          }}
         >
           {LANDING_WHY_CARDS.map((card) => (
-            <div key={card.id} className="w-full shrink-0 px-0.5">
+            <div
+              key={card.id}
+              className="box-border shrink-0 px-2"
+              style={{ width: `${slideWidthPercent}%` }}
+            >
               <WhyCard card={card} />
             </div>
           ))}
@@ -117,25 +167,25 @@ export function WhyGridCarousel() {
             variant="outline"
             size="icon"
             className="shrink-0"
-            aria-label="Önceki kart"
+            aria-label="Önceki slayt"
             onClick={() => go(-1)}
           >
             <ChevronLeft className="size-4" aria-hidden />
           </Button>
           <div className="flex items-center gap-2">
-            {LANDING_WHY_CARDS.map((card, i) => (
+            {Array.from({ length: slideCount }, (_, slide) => (
               <button
-                key={card.id}
+                key={slide}
                 type="button"
                 className={cn(
                   "h-2 shrink-0 rounded-full transition-all",
-                  i === index
+                  slide === slideIndex
                     ? "w-6 bg-emerald-500 dark:bg-emerald-400"
                     : "w-2 bg-muted-foreground/35 hover:bg-muted-foreground/55",
                 )}
-                aria-label={`${card.title} — slayt ${i + 1}`}
-                aria-current={i === index ? "true" : undefined}
-                onClick={() => setIndex(i)}
+                aria-label={`${LANDING_WHY_CARDS[slide]?.title ?? "Kart"} — ${slide + 1} / ${slideCount}`}
+                aria-current={slide === slideIndex ? "true" : undefined}
+                onClick={() => setIndex(slide)}
               />
             ))}
           </div>
@@ -144,7 +194,7 @@ export function WhyGridCarousel() {
             variant="outline"
             size="icon"
             className="shrink-0"
-            aria-label="Sonraki kart"
+            aria-label="Sonraki slayt"
             onClick={() => go(1)}
           >
             <ChevronRight className="size-4" aria-hidden />
