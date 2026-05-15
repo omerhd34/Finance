@@ -168,9 +168,7 @@ export function DashboardKpiSection({
               {formatMoneyAmount(fullBalance, currency)}
             </div>
             <p className="text-xs font-medium leading-snug text-muted-foreground">
-              Net bakiye + borç/alacak neti + yatırım kar/zarar. Borç kartı
-              çıkmıyorsa veya borç verisi yoksa borç tarafı 0; yatırım kar/zarar
-              yalnızca Premium’da toplama eklenir (ücretsiz planda 0).
+              Net bakiye + borç/alacak + yatırım (Premium).
             </p>
           </div>
         }
