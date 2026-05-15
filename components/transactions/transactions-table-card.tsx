@@ -24,7 +24,7 @@ import {
   RECURRING_DESC_PREFIX,
   TransactionDescriptionText,
 } from "@/components/transactions/transaction-description-text";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Scale, Trash2 } from "lucide-react";
 
 type Props = {
   items: Transaction[];
@@ -59,6 +59,13 @@ export function TransactionsTableCard({
   onDelete,
   filteredSignedTotalTry,
 }: Props) {
+  const totalTone =
+    filteredSignedTotalTry > 0
+      ? "positive"
+      : filteredSignedTotalTry < 0
+        ? "negative"
+        : "neutral";
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -216,35 +223,62 @@ export function TransactionsTableCard({
                       );
                     })(),
                   )}
-                  <TableRow
-                    key="__page_amount_total"
-                    className="border-t-2 border-border bg-muted/20 hover:bg-muted/25 [&>td]:bg-transparent"
-                  >
-                    <TableCell
-                      colSpan={3}
-                      className="text-right text-sm font-medium text-muted-foreground"
-                    >
-                      Toplam
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right text-sm font-semibold tabular-nums pr-8 sm:pr-12",
-                        filteredSignedTotalTry > 0 &&
-                          "text-emerald-600 dark:text-emerald-400",
-                        filteredSignedTotalTry < 0 &&
-                          "text-red-600 dark:text-red-400",
-                        filteredSignedTotalTry === 0 &&
-                          "text-muted-foreground",
-                      )}
-                    >
-                      {formatMoneyAmount(filteredSignedTotalTry, currency)}
-                    </TableCell>
-                    <TableCell colSpan={2} />
-                  </TableRow>
                 </>
               )}
             </TableBody>
           </Table>
+          {items.length > 0 ? (
+            <div
+              className={cn(
+                "flex flex-col gap-3 border-t-2 border-border px-3 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:py-4",
+                totalTone === "positive" && "bg-sky-500/5 dark:bg-sky-950/35",
+                totalTone === "negative" &&
+                  "bg-amber-500/5 dark:bg-amber-950/35",
+                totalTone === "neutral" && "bg-muted/25",
+              )}
+              aria-live="polite"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <div
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-full ring-1",
+                    totalTone === "positive" &&
+                      "bg-sky-500/15 text-sky-700 ring-sky-500/25 dark:text-sky-300",
+                    totalTone === "negative" &&
+                      "bg-amber-500/15 text-amber-700 ring-amber-500/25 dark:text-amber-300",
+                    totalTone === "neutral" &&
+                      "bg-muted text-muted-foreground ring-border",
+                  )}
+                >
+                  <Scale className="size-4" aria-hidden />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">
+                    Net toplam
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Tüm filtrelenmiş kayıtlar (gelir − gider)
+                  </p>
+                </div>
+              </div>
+              <p
+                className={cn(
+                  "text-right text-base font-semibold tabular-nums pr-8 sm:pr-12",
+                  totalTone === "positive" && "text-sky-700 dark:text-sky-300",
+                  totalTone === "negative" &&
+                    "text-amber-700 dark:text-amber-300",
+                  totalTone === "neutral" && "text-muted-foreground",
+                )}
+              >
+                {filteredSignedTotalTry > 0
+                  ? "+"
+                  : filteredSignedTotalTry < 0
+                    ? "-"
+                    : ""}
+                {formatMoneyAmount(Math.abs(filteredSignedTotalTry), currency)}
+              </p>
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-col items-center justify-between gap-4 border-t border-border px-4 py-4 sm:flex-row sm:px-6">
           <p className="text-sm text-muted-foreground">
