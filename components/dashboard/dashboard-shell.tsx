@@ -14,7 +14,6 @@ import { DashboardShellHeader } from "@/components/dashboard/dashboard-shell-hea
 import {
   DASHBOARD_PAGE_PAD_X,
   DASHBOARD_PAGE_PAD_Y,
-  profileInitials,
   type ProfilePatchResponse,
 } from "@/components/dashboard/dashboard-shell-constants";
 import { cn } from "@/lib/common/utils";
@@ -33,16 +32,8 @@ export function DashboardShell({
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const reduxUserName = useAppSelector((s) => s.auth.user?.name);
-  const reduxUserEmail = useAppSelector((s) => s.auth.user?.email);
-  const reduxUserImage = useAppSelector((s) => s.auth.user?.image);
   const authUser = useAppSelector((s) => s.auth.user);
   const { data: session, update: updateSession } = useSession();
-  const sidebarAvatarSrc = reduxUserImage ?? session?.user?.image ?? undefined;
-  const sidebarFallbackInitials = profileInitials(
-    reduxUserName ?? session?.user?.name ?? null,
-    reduxUserEmail ?? session?.user?.email ?? "?",
-  );
   const { setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
@@ -159,10 +150,6 @@ export function DashboardShell({
     currency,
     currencySaving,
     profileHref,
-    sidebarAvatarSrc,
-    sidebarFallbackInitials,
-    userDisplayName: session?.user?.name ?? "Kullanıcı",
-    userEmail: session?.user?.email,
     sessionUserPresent: !!session?.user,
     onCurrencyChange: onSidebarCurrencyChange,
     themeReady,

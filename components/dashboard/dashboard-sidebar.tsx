@@ -12,6 +12,7 @@ import {
   PoundSterling,
   Sun,
   TurkishLira,
+  User,
 } from "lucide-react";
 import {
   dashboardNav,
@@ -19,7 +20,6 @@ import {
 } from "@/components/dashboard/dashboard-shell-constants";
 import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNotificationUnreadCount } from "@/hooks/use-notification-unread-count";
 
 const CURRENCY_CYCLE = ["TL", "EUR", "USD", "GBP"] as const;
@@ -67,10 +67,6 @@ export type DashboardSidebarProps = {
   currency: string;
   currencySaving: boolean;
   profileHref: string;
-  sidebarAvatarSrc?: string;
-  sidebarFallbackInitials: string;
-  userDisplayName: string;
-  userEmail: string | null | undefined;
   sessionUserPresent: boolean;
   onCurrencyChange: (next: string) => void;
   themeReady: boolean;
@@ -88,10 +84,6 @@ export function DashboardSidebar({
   currency,
   currencySaving,
   profileHref,
-  sidebarAvatarSrc,
-  sidebarFallbackInitials,
-  userDisplayName,
-  userEmail,
   sessionUserPresent,
   onCurrencyChange,
   themeReady,
@@ -168,11 +160,11 @@ export function DashboardSidebar({
           collapsed ? "p-2 pt-1" : "p-3 pt-2",
         )}
       >
-        {dashboardNav.map(({ href, label, icon: Icon }) => {
+        {dashboardNav.flatMap(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           const isPremium = premiumNavHrefs.has(href);
 
-          return (
+          const item = (
             <Link
               key={href}
               href={href}
@@ -215,6 +207,37 @@ export function DashboardSidebar({
                 notificationBadge("expanded")}
             </Link>
           );
+
+          if (href !== "/bildirimler") {
+            return [item];
+          }
+
+          const profileActive =
+            pathname === profileHref ||
+            pathname.startsWith(`${profileHref}/`);
+
+          const profileItem = (
+            <Link
+              key={`${profileHref}-profil-nav`}
+              href={profileHref}
+              onClick={onMobileNavigate}
+              title={collapsed ? "Profil" : undefined}
+              className={cn(
+                "flex items-center rounded-lg text-sm font-medium transition-colors",
+                collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
+                profileActive
+                  ? "relative border border-sky-400/80 bg-sky-200/90 text-sky-950 shadow-[0_0_0_1px_rgba(14,165,233,0.2)] before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l-lg before:bg-sky-600 dark:border-sky-400/50 dark:bg-sky-800/45 dark:text-sky-50 dark:shadow-[0_0_0_1px_rgba(56,189,248,0.18)] dark:before:bg-sky-300"
+                  : "border border-sky-300/90 bg-sky-100/85 text-sky-900 hover:border-sky-400 hover:bg-sky-200/90 hover:text-sky-950 dark:border-sky-500/35 dark:bg-sky-950/45 dark:text-sky-100 dark:hover:border-sky-400/55 dark:hover:bg-sky-900/50 dark:hover:text-sky-50",
+              )}
+            >
+              <span className="grid h-5 w-5 shrink-0 place-items-center">
+                <User className="h-4 w-4" aria-hidden />
+              </span>
+              {!collapsed && "Profil"}
+            </Link>
+          );
+
+          return [item, profileItem];
         })}
       </nav>
       <div className="mt-auto" />
@@ -256,21 +279,6 @@ export function DashboardSidebar({
             >
               <SidebarCurrencyIcon currency={currency} />
             </Button>
-          </div>
-          <div className="border-t border-border p-2">
-            <Link
-              href={profileHref}
-              onClick={onMobileNavigate}
-              title="Profil"
-              className="block h-9 w-full overflow-hidden rounded-lg border border-border/80 bg-muted/25 shadow-none transition-opacity hover:opacity-95"
-            >
-              <Avatar className="h-full w-full rounded-lg">
-                <AvatarImage src={sidebarAvatarSrc} alt="" />
-                <AvatarFallback className="rounded-lg bg-primary/20 text-primary">
-                  {sidebarFallbackInitials}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
           </div>
           <div className="border-t border-border p-2">
             <Button
@@ -336,30 +344,10 @@ export function DashboardSidebar({
             </Button>
           </div>
           <div className="border-t border-border p-3">
-            <Link
-              href={profileHref}
-              onClick={onMobileNavigate}
-              className="flex items-center gap-3 rounded-lg bg-muted/30 px-1 py-2 transition-colors hover:bg-muted/50"
-            >
-              <Avatar className="h-7 w-7">
-                <AvatarImage src={sidebarAvatarSrc} alt="" />
-                <AvatarFallback className="bg-primary/20 text-primary">
-                  {sidebarFallbackInitials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">
-                  {userDisplayName}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {userEmail}
-                </p>
-              </div>
-            </Link>
             <Button
               type="button"
               variant="outline"
-              className="relative mt-2 flex w-full cursor-pointer items-center justify-center rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
+              className="relative flex w-full cursor-pointer items-center justify-center rounded-lg border-destructive/25 bg-destructive/6 px-3 py-2.5 text-sm font-medium text-destructive shadow-none transition-colors hover:border-destructive/45 hover:bg-destructive/15 hover:text-destructive"
               onClick={() => void signOut({ callbackUrl: "/" })}
             >
               <LogOut
