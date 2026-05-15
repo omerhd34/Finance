@@ -31,7 +31,7 @@ export function ComparisonRows({
   return (
     <div
       className={cn(
-        "grid min-h-0 w-full grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-border/50 bg-muted/20 ring-1 ring-border/30",
+        "grid min-h-0 w-full flex-1 grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-border/45 bg-muted/20",
         wide && "lg:grid-cols-2",
         hasPos && hasNeg && "lg:grid-cols-2",
         className,
