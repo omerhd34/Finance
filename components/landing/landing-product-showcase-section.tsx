@@ -14,10 +14,10 @@ export function LandingProductShowcaseSection() {
             id="landing-product-showcase-heading"
             className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
           >
-            IQfinansAI&apos;ın{" "}
             <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent dark:from-emerald-300 dark:via-emerald-200 dark:to-teal-300">
-              güçlü finans araçları
+              IQfinansAI
             </span>
+            &apos;ın güçlü finans araçları
           </h2>
           <p className="mt-4 text-pretty text-lg text-muted-foreground">
             Gelir-giderden AI analizine; bütçe, borç ve yatırım süreçlerini tek
