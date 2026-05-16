@@ -14,10 +14,10 @@ function formatTurkishMonthYear(date: Date): string {
 const barHeights = [32, 54, 42, 71, 88, 62];
 
 const categories = [
-  { label: "Market", pct: 90, val: "₺8.840" },
-  { label: "Ulaşım", pct: 59, val: "₺5.200" },
-  { label: "Yemek", pct: 80, val: "₺7.750" },
-  { label: "Abonelik", pct: 23, val: "₺2.000" },
+  { label: "Market", pct: 90, val: "₺18.840" },
+  { label: "Ulaşım", pct: 59, val: "₺3.200" },
+  { label: "Yemek", pct: 70, val: "₺7.750" },
+  { label: "Abonelik", pct: 23, val: "₺3.000" },
 ];
 
 export function LandingHeroIsometricIllustration() {
@@ -44,7 +44,7 @@ export function LandingHeroIsometricIllustration() {
           </span>
         </div>
         <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-white">
-          ₺22.840
+          ₺42.840
         </p>
         <p className="mt-1 text-xs text-white/40">{monthYearLabel}</p>
         <div className="mt-3 flex h-12 items-end gap-1" aria-hidden>
@@ -82,10 +82,10 @@ export function LandingHeroIsometricIllustration() {
             Kalan borç
           </span>
           <p className="text-lg font-bold leading-none tracking-tight text-amber-400 tabular-nums sm:text-xl">
-            ₺4.200
+            ₺8.200
           </p>
           <p className="mt-2 text-[10px] text-white/40 sm:text-[11px]">
-            2 taksit kaldı
+            4 taksit kaldı
           </p>
         </div>
         <div className="rounded-xl border border-white/[0.07] bg-white/[0.035] p-3 backdrop-blur-md sm:p-3.5">
@@ -93,7 +93,7 @@ export function LandingHeroIsometricIllustration() {
             Net akış
           </span>
           <p className="text-lg font-bold leading-none tracking-tight text-sky-400 tabular-nums sm:text-xl">
-            +₺2.180
+            +₺15.180
           </p>
           <p className="mt-2 flex items-center gap-1 text-[10px] text-white/40 sm:text-[11px]">
             <TrendingUp
