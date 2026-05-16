@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ChevronUp, Moon, Sun } from "lucide-react";
+import { ChevronUp, Lightbulb, LightbulbOff } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -169,9 +169,9 @@ export function LandingFooter() {
             >
               {mounted ? (
                 resolvedTheme === "dark" ? (
-                  <Sun className="h-5 w-5" />
+                  <Lightbulb className="h-5 w-5" />
                 ) : (
-                  <Moon className="h-5 w-5" />
+                  <LightbulbOff className="h-5 w-5" />
                 )
               ) : (
                 <div className="h-5 w-5 rounded-full bg-muted-foreground/30 animate-pulse" />

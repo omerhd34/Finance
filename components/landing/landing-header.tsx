@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LogIn, Moon, Sun } from "lucide-react";
+import { LogIn, Lightbulb, LightbulbOff } from "lucide-react";
 import { useTheme } from "@wrksz/themes/client";
 import { BrandLockup } from "@/components/branding/brand-lockup";
 import { Button } from "@/components/ui/button";
@@ -53,9 +53,9 @@ export function LandingHeader() {
               onClick={toggleTheme}
             >
               {themeResolved && resolvedTheme === "dark" ? (
-                <Sun className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                <Lightbulb className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               ) : (
-                <Moon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                <LightbulbOff className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               )}
             </Button>
             <Button

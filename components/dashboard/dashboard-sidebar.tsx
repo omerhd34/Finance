@@ -6,13 +6,13 @@ import {
   DollarSign,
   Euro,
   LogOut,
-  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   PoundSterling,
-  Sun,
+  Lightbulb,
   TurkishLira,
   User,
+  LightbulbOff,
 } from "lucide-react";
 import {
   dashboardNav,
@@ -213,8 +213,7 @@ export function DashboardSidebar({
           }
 
           const profileActive =
-            pathname === profileHref ||
-            pathname.startsWith(`${profileHref}/`);
+            pathname === profileHref || pathname.startsWith(`${profileHref}/`);
 
           const profileItem = (
             <Link
@@ -255,12 +254,18 @@ export function DashboardSidebar({
             >
               {themeResolved ? (
                 resolvedTheme === "dark" ? (
-                  <Sun className="h-4 w-4 text-muted-foreground" aria-hidden />
+                  <Lightbulb
+                    className="h-4 w-4 text-muted-foreground"
+                    aria-hidden
+                  />
                 ) : (
-                  <Moon className="h-4 w-4 text-muted-foreground" aria-hidden />
+                  <LightbulbOff
+                    className="h-4 w-4 text-muted-foreground"
+                    aria-hidden
+                  />
                 )
               ) : (
-                <Moon
+                <LightbulbOff
                   className="h-4 w-4 text-muted-foreground opacity-60"
                   aria-hidden
                 />
@@ -308,12 +313,12 @@ export function DashboardSidebar({
               <span className="grid h-5 w-5 shrink-0 place-items-center">
                 {themeResolved ? (
                   resolvedTheme === "dark" ? (
-                    <Sun className="h-4 w-4" aria-hidden />
+                    <Lightbulb className="h-4 w-4" aria-hidden />
                   ) : (
-                    <Moon className="h-4 w-4" aria-hidden />
+                    <LightbulbOff className="h-4 w-4" aria-hidden />
                   )
                 ) : (
-                  <Moon className="h-4 w-4 opacity-60" aria-hidden />
+                  <LightbulbOff className="h-4 w-4 opacity-60" aria-hidden />
                 )}
               </span>
               <span>
