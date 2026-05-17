@@ -89,7 +89,10 @@ export async function PATCH(req: Request) {
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
-      data: data as Prisma.UserUpdateInput,
+      data: {
+        ...(data as Prisma.UserUpdateInput),
+        lastActiveAt: new Date(),
+      },
       select: profileSelectFields as unknown as Prisma.UserSelect,
     });
     return NextResponse.json(user);

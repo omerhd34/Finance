@@ -28,14 +28,6 @@ import {
 
 const PAGE_SIZE = 20;
 
-function formatDate(value: Date | null): string {
-  if (!value) return "-";
-  return new Intl.DateTimeFormat("tr-TR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(value);
-}
-
 function getFilterChipClass(isActive: boolean): string {
   return [
     "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
@@ -59,6 +51,7 @@ export default async function AdminUyelerPage({
   const token = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
   const adminEmail = getAdminEmailFromSessionToken(token);
   if (!adminEmail) redirect("/admin/giris");
+
   const params = await searchParams;
   const rawPage = Array.isArray(params?.sayfa)
     ? params?.sayfa[0]
@@ -72,6 +65,7 @@ export default async function AdminUyelerPage({
   const rawVerificationFilter = Array.isArray(params?.dogrulamaFiltre)
     ? params?.dogrulamaFiltre[0]
     : params?.dogrulamaFiltre;
+
   const parsedPage = Number(rawPage);
   const sortOrder = rawSort === "asc" ? "asc" : "desc";
   const planFilter =
@@ -91,6 +85,15 @@ export default async function AdminUyelerPage({
   const premiumMembers = await prisma.user.count({
     where: { planTier: "premium" },
   });
+
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 86_400_000);
+  const activeThisWeek = await prisma.user.count({
+    where: {
+      lastActiveAt: { gte: sevenDaysAgo },
+    } as Prisma.UserWhereInput,
+  });
+
   const where: Prisma.UserWhereInput = {
     ...(planFilter !== "tum" ? { planTier: planFilter } : {}),
     ...(verificationFilter === "dogrulandi"
@@ -98,6 +101,7 @@ export default async function AdminUyelerPage({
       : {}),
     ...(verificationFilter === "dogrulanmadi" ? { emailVerified: null } : {}),
   };
+
   const filteredMembers = await prisma.user.count({ where });
   const totalPages = Math.max(1, Math.ceil(filteredMembers / PAGE_SIZE));
   const currentPage = Number.isFinite(parsedPage)
@@ -116,14 +120,17 @@ export default async function AdminUyelerPage({
       country: true,
       createdAt: true,
       emailVerified: true,
-    },
+      lastActiveAt: true,
+    } as Prisma.UserSelect,
     where,
     orderBy: { createdAt: sortOrder },
     skip,
     take: PAGE_SIZE,
   });
 
-  const nextSortOrder = sortOrder === "desc" ? "asc" : "desc";
+  const activeFilterCount =
+    (planFilter !== "tum" ? 1 : 0) + (verificationFilter !== "tum" ? 1 : 0);
+
   const buildHref = (
     page: number,
     sort: "asc" | "desc",
@@ -138,6 +145,7 @@ export default async function AdminUyelerPage({
     return `/admin/uyeler?${query.toString()}`;
   };
 
+  const nextSortOrder = sortOrder === "desc" ? "asc" : "desc";
   const sortHref = buildHref(1, nextSortOrder);
   const previousPageHref = buildHref(currentPage - 1, sortOrder);
   const nextPageHref = buildHref(currentPage + 1, sortOrder);
@@ -147,12 +155,11 @@ export default async function AdminUyelerPage({
   const allVerificationHref = buildHref(1, sortOrder, planFilter, "tum");
   const verifiedHref = buildHref(1, sortOrder, planFilter, "dogrulandi");
   const unverifiedHref = buildHref(1, sortOrder, planFilter, "dogrulanmadi");
-  const activeFilterCount =
-    (planFilter !== "tum" ? 1 : 0) + (verificationFilter !== "tum" ? 1 : 0);
 
   return (
     <div className="mx-auto w-full max-w-8xl space-y-4 p-4 md:p-6">
       <AdminSharedHeader active="uyeler" />
+
       <Card>
         <CardHeader>
           <CardTitle>Üye Listesi</CardTitle>
@@ -160,7 +167,7 @@ export default async function AdminUyelerPage({
             Sisteme kayıtlı tüm üyeleri görüntüleyebilirsiniz.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-2 sm:grid-cols-3">
+        <CardContent className="grid gap-2 sm:grid-cols-4">
           <div className="rounded-lg border border-border p-3">
             <p className="text-xs text-muted-foreground">Toplam üye</p>
             <p className="text-xl font-semibold">{totalMembers}</p>
@@ -173,6 +180,10 @@ export default async function AdminUyelerPage({
             <p className="text-xs text-muted-foreground">Premium üye</p>
             <p className="text-xl font-semibold">{premiumMembers}</p>
           </div>
+          <div className="rounded-lg border border-border p-3">
+            <p className="text-xs text-muted-foreground">Son 7 günde aktif</p>
+            <p className="text-xl font-semibold">{activeThisWeek}</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -181,6 +192,7 @@ export default async function AdminUyelerPage({
           <CardTitle>Üyeler</CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Filters */}
           <div className="mb-4 rounded-xl border border-border/70 bg-card p-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-semibold tracking-tight">Filtreler</p>
@@ -251,12 +263,13 @@ export default async function AdminUyelerPage({
               </div>
             </div>
           </div>
+
           <div className="w-full overflow-x-auto">
-            <Table className="min-w-[900px]">
+            <Table className="min-w-[1050px]">
               <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead>Ad Soyad</TableHead>
-                  <TableHead className="w-[300px]">E-posta</TableHead>
+                  <TableHead className="w-[260px]">E-posta</TableHead>
                   <TableHead>Meslek</TableHead>
                   <TableHead>Şehir</TableHead>
                   <TableHead>Ülke</TableHead>
@@ -270,42 +283,63 @@ export default async function AdminUyelerPage({
                       Kayıt Tarihi
                     </Link>
                   </TableHead>
+                  <TableHead>Son Aktivite</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {members.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell>{member.name?.trim() || "-"}</TableCell>
-                    <TableCell className="max-w-[300px] truncate">
-                      {member.email}
-                    </TableCell>
-                    <TableCell>{member.profession?.trim() || "-"}</TableCell>
-                    <TableCell>{member.city?.trim() || "-"}</TableCell>
-                    <TableCell>{member.country?.trim() || "-"}</TableCell>
-                    <TableCell>
-                      {member.planTier === "premium" ? "Premium" : "Free"}
-                    </TableCell>
-                    <TableCell>
-                      {member.emailVerified ? (
-                        <Check
-                          className="h-4 w-4 text-emerald-500"
-                          aria-label="Doğrulandı"
-                        />
-                      ) : (
-                        <X
-                          className="h-4 w-4 text-red-500"
-                          aria-label="Doğrulanmadı"
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>{formatDate(member.createdAt)}</TableCell>
-                  </TableRow>
-                ))}
+                {members.map((member) => {
+                  const lastActiveAt =
+                    (member as unknown as { lastActiveAt: Date | null })
+                      .lastActiveAt ?? null;
+
+                  return (
+                    <TableRow key={member.id}>
+                      <TableCell>{member.name?.trim() || "-"}</TableCell>
+                      <TableCell className="max-w-[260px] truncate">
+                        {member.email}
+                      </TableCell>
+                      <TableCell>{member.profession?.trim() || "-"}</TableCell>
+                      <TableCell>{member.city?.trim() || "-"}</TableCell>
+                      <TableCell>{member.country?.trim() || "-"}</TableCell>
+                      <TableCell>
+                        {member.planTier === "premium" ? "Premium" : "Free"}
+                      </TableCell>
+                      <TableCell>
+                        {member.emailVerified ? (
+                          <Check
+                            className="h-4 w-4 text-emerald-500"
+                            aria-label="Doğrulandı"
+                          />
+                        ) : (
+                          <X
+                            className="h-4 w-4 text-red-500"
+                            aria-label="Doğrulanmadı"
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {new Intl.DateTimeFormat("tr-TR", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        }).format(new Date(member.createdAt))}
+                      </TableCell>
+                      <TableCell>
+                        {lastActiveAt
+                          ? new Intl.DateTimeFormat("tr-TR", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }).format(lastActiveAt)
+                          : "-"}
+                      </TableCell>{" "}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
+
       <div className="flex items-center justify-center gap-2">
         {currentPage <= 1 ? (
           <Button variant="outline" size="icon" disabled>

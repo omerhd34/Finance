@@ -155,6 +155,9 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    await prisma.$executeRaw`UPDATE \`User\` SET \`lastActiveAt\` = NOW(3) WHERE \`id\` = ${session.user.id}`;
+
     const { type, amount, category, subcategory, description, date } =
       parsed.data;
     const sub =
