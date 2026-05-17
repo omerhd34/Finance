@@ -58,6 +58,7 @@ export function formatMoneyAmount(
 export function formatDateTR(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("tr-TR", {
+    timeZone: "Europe/Istanbul",
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -66,7 +67,24 @@ export function formatDateTR(date: Date | string): string {
 
 export function formatDateShort(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("tr-TR");
+  return d.toLocaleDateString("tr-TR", {
+    timeZone: "Europe/Istanbul",
+  });
+}
+
+export function formatDateTimeTR(
+  date: Date | string | null | undefined,
+): string {
+  if (!date) return "-";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleString("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export function sentenceCaseFirstTr(text: string): string {

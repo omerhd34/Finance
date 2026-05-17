@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDateTimeTR } from "@/lib/common/utils";
 
 const PAGE_SIZE = 20;
 
@@ -318,18 +319,10 @@ export default async function AdminUyelerPage({
                         )}
                       </TableCell>
                       <TableCell>
-                        {new Intl.DateTimeFormat("tr-TR", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        }).format(new Date(member.createdAt))}
+                        {formatDateTimeTR(member.createdAt)}
                       </TableCell>
                       <TableCell>
-                        {lastActiveAt
-                          ? new Intl.DateTimeFormat("tr-TR", {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            }).format(lastActiveAt)
-                          : "-"}
+                        {formatDateTimeTR(lastActiveAt)}
                       </TableCell>{" "}
                     </TableRow>
                   );
