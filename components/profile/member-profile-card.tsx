@@ -39,6 +39,7 @@ import {
   OwnProfilePlanCard,
   ProfilePlanBadgeLink,
 } from "./own-profile-account-sections";
+import { profileInitials } from "../dashboard/dashboard-shell-constants";
 
 type ProfilePatchResponse = {
   name: string | null;
@@ -73,18 +74,6 @@ type MemberProfileCardProps = {
   initial: MemberProfileInitial;
   ownProfile: boolean;
 };
-
-function profileInitials(name: string | null, email: string): string {
-  const n = name?.trim();
-  if (n) {
-    const parts = n.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
-    }
-    return n.slice(0, 2).toUpperCase();
-  }
-  return email.slice(0, 2).toUpperCase();
-}
 
 function formatMembershipDate(iso: string): string {
   return new Intl.DateTimeFormat("tr-TR", {
