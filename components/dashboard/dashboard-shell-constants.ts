@@ -61,9 +61,3 @@ export const dashboardNav = [
   },
   { href: "/bildirimler", label: "Bildirimler", icon: Bell },
 ] as const;
-
-export const premiumNavHrefs = new Set([
-  "/yatirimlar",
-  "/yapay-zeka-analizi",
-  "/yapay-zeka-asistani",
-]);
