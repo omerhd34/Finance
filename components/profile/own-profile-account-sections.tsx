@@ -184,9 +184,10 @@ export function OwnProfilePlanCard({
               </div>
               <ul className="mt-5 flex flex-1 flex-col gap-2.5 text-sm text-muted-foreground">
                 {[
-                  "İşlemler, hedefler, bütçeler ve raporlar",
-                  "Borç / alacak takibi",
-                  "AI Analiz bu planda kapalıdır",
+                  "Gelir, gider ve nakit akışı kayıtları",
+                  "Aylık bütçe planlama ve finansal hedefler",
+                  "Borç ve alacak durum takibi",
+                  "Temel kategori ve harcama özetleri",
                 ].map((line) => (
                   <li key={line} className="flex gap-2.5">
                     <Check
