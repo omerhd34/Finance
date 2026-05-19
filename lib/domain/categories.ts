@@ -75,6 +75,7 @@ export const EXPENSE_CATEGORY_TREE = [
           "Fırın & Unlu Mamuller",
           "Atıştırmalık",
           "Dondurulmuş Gıda",
+          "İçecek",
           "Gıda Dışı / Temizlik",
           "Diğer",
         ],
