@@ -68,7 +68,8 @@ Veri katmanı **Prisma** ve **MySQL** ile modellenir; istemci tarafında **Redux
 | Komut | Açıklama |
 |-------|----------|
 | `npm run dev` | Geliştirme sunucusu (hot reload) |
-| `npm run build` | `prisma migrate deploy` sonrası üretim derlemesi (`next build --webpack`) |
+| `npm run build` | Üretim derlemesi (`next build --webpack`; veritabanı gerektirmez) |
+| `npm run db:migrate` | Bekleyen Prisma migration'larını uygular (deploy öncesi/sonrası) |
 | `npm start` | Derlenmiş uygulamayı çalıştırır (`build` sonrası) |
 | `npm run lint` | ESLint kontrolü |
 
