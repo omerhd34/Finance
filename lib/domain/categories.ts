@@ -33,7 +33,6 @@ export function refineIncomeExpenseSubcategory<
     });
   }
 }
-
 export const EXPENSE_CATEGORY_TREE = [
   {
     group: "Yaşam",
@@ -45,6 +44,7 @@ export const EXPENSE_CATEGORY_TREE = [
           "Aidat",
           "Tamirat / bakım",
           "Temizlik",
+          "Emlak / Çevre Vergisi",
           "Diğer",
         ],
       },
@@ -60,25 +60,35 @@ export const EXPENSE_CATEGORY_TREE = [
           "Diğer",
         ],
       },
-      {
-        category: "Market",
-        subcategories: ["Süpermarket", "Sanal market", "Diğer"],
-      },
-      {
-        category: "Yiyecek & İçecek",
-        subcategories: [
-          "Restoran / Kafe",
-          "Paket sipariş",
-          "Tatlı & Atıştırmalık",
-          "İçecek",
-          "Diğer",
-        ],
-      },
     ],
   },
   {
     group: "Alışveriş",
     categories: [
+      {
+        category: "Market",
+        subcategories: [
+          "Temel Gıda & Bakliyat",
+          "Kahvaltılık",
+          "Sebze & Meyve",
+          "Et, Tavuk & Şarküteri",
+          "Fırın & Unlu Mamuller",
+          "Atıştırmalık",
+          "Dondurulmuş Gıda",
+          "Gıda Dışı / Temizlik",
+          "Diğer",
+        ],
+      },
+      {
+        category: "Yiyecek & İçecek",
+        subcategories: [
+          "Hazır Yemek & Restoran",
+          "Kafe",
+          "Pastane",
+          "Alkol & Tütün",
+          "Diğer",
+        ],
+      },
       {
         category: "Elektronik",
         subcategories: [
@@ -94,11 +104,30 @@ export const EXPENSE_CATEGORY_TREE = [
       },
       {
         category: "Ev & Yaşam",
-        subcategories: ["Mobilya", "Dekorasyon", "Ev eşyası", "Diğer"],
+        subcategories: [
+          "Mobilya",
+          "Dekorasyon",
+          "Tekstil / Nevresim",
+          "Mutfak Gereçleri",
+          "Ev Aletleri & Donanım",
+          "Banyo & Temizlik Gereçleri",
+          "Bahçe & Balkon / Bitki",
+          "Ev Düzenleme & Düzenleyiciler",
+          "Diğer",
+        ],
       },
       {
         category: "Giyim",
-        subcategories: ["Kıyafet", "Ayakkabı", "Aksesuar", "Diğer"],
+        subcategories: [
+          "Günlük Giyim",
+          "Dış Giyim",
+          "Spor & Performans Giyimi",
+          "Ayakkabı",
+          "İç Giyim & Ev Giyimi",
+          "Çanta & Valiz",
+          "Aksesuar",
+          "Diğer",
+        ],
       },
       {
         category: "Çocuk & Bebek",
@@ -123,38 +152,38 @@ export const EXPENSE_CATEGORY_TREE = [
       {
         category: "Kırtasiye & Hobi",
         subcategories: [
-          "Kırtasiye / Okul malzemesi",
-          "Sanat & Zanaat",
-          "Kutu / Masa oyunları",
+          "Kırtasiye & Ofis Malzemeleri",
+          "Kitap, Çizgi Roman & Dergi",
+          "Sanat & El Sanatları",
+          "Kutu Oyunları & Puzzle",
+          "Maket, Model & Figür",
           "Diğer",
         ],
       },
       {
         category: "Evcil Hayvan",
         subcategories: [
-          "Kedi / Köpek maması",
-          "Kedi kumu",
+          "Mama & Besin Takviyeleri",
+          "Kedi Kumu & Hijyen",
+          "Sağlık & Veteriner",
+          "Bakım & Pet Kuaför",
           "Aksesuar & Oyuncak",
-          "Diğer",
-        ],
-      },
-      {
-        category: "Takı & Mücevher",
-        subcategories: [
-          "Saat",
-          "Mücevher (Altın, Pırlanta)",
-          "Bijuteri",
           "Diğer",
         ],
       },
       {
         category: "Spor & Outdoor",
         subcategories: [
-          "Spor giyim",
-          "Spor ekipmanları",
-          "Kamp & Outdoor malzemeleri",
+          "Spor Ekipmanları & Kondisyon",
+          "Sporcu Besinleri & Takviyeler",
+          "Kamp & Doğa Sporları",
+          "Outdoor Teknolojisi",
           "Diğer",
         ],
+      },
+      {
+        category: "Takı & Mücevher",
+        subcategories: ["Saat", "Lüks & Değerli Takı", "Bijuteri", "Diğer"],
       },
     ],
   },
@@ -167,7 +196,7 @@ export const EXPENSE_CATEGORY_TREE = [
           "Toplu taşıma",
           "Taksi",
           "Otopark",
-          "Köprü / otoyol",
+          "Köprü & Otoyol",
           "Diğer",
         ],
       },
@@ -175,10 +204,10 @@ export const EXPENSE_CATEGORY_TREE = [
         category: "Araç",
         subcategories: [
           "Yakıt",
-          "Bakım",
+          "Bakım / Servis",
           "Lastik",
           "Muayene",
-          "Sigorta",
+          "Sigorta (Kasko / Trafik)",
           "Diğer",
         ],
       },
@@ -191,8 +220,8 @@ export const EXPENSE_CATEGORY_TREE = [
         category: "Kişisel bakım",
         subcategories: [
           "Kuaför / berber",
+          "Güzellik / Estetik / Lazer",
           "Masaj / SPA",
-          "Kişisel ürün",
           "Diğer",
         ],
       },
@@ -200,18 +229,17 @@ export const EXPENSE_CATEGORY_TREE = [
         category: "Sağlık",
         subcategories: [
           "Eczane",
-          "Hastane",
-          "Muayene",
+          "Hastane / Muayene",
           "Diş bakımı",
           "Optik",
-          "Psikolojik danışmanlık",
-          "Psikiyatrik danışmanlık",
+          "Psikolojik Danışmanlık",
+          "Laboratuvar / Test / Tahlil",
           "Diğer",
         ],
       },
       {
         category: "Spor",
-        subcategories: ["Salon üyeliği", "Kurs", "Diğer"],
+        subcategories: ["Salon üyeliği", "Kurs / Özel Ders", "Diğer"],
       },
     ],
   },
@@ -221,22 +249,23 @@ export const EXPENSE_CATEGORY_TREE = [
       {
         category: "Eğitim",
         subcategories: [
-          "Kurs",
-          "Online eğitim",
-          "Kitap",
-          "Sertifika",
-          "Üniversite",
+          "Kurs & Özel Ders",
+          "Online Eğitim & Platformlar",
+          "Sertifika & Sınav Ücretleri",
+          "Okul & Üniversite Taksiti",
           "Diğer",
         ],
       },
       {
         category: "İş",
         subcategories: [
-          "Ofis giderleri",
-          "Abonelik",
-          "Reklam",
-          "Vergi",
-          "İş seyahati",
+          "Ofis, Çalışma Alanı & Kira",
+          "Dijital Araçlar & Yazılım",
+          "Donanım, Demirbaş & Cihaz",
+          "Reklam, Pazarlama & Tanıtım",
+          "İş Seyahati & Ağırlama",
+          "Kargo, Lojistik & Kurye",
+          "Mesleki Hizmet & Danışmanlık",
           "Diğer",
         ],
       },
@@ -252,19 +281,39 @@ export const EXPENSE_CATEGORY_TREE = [
       {
         category: "Kredi & Kart",
         subcategories: [
-          "Kredi kartı",
+          "Kredi kartı ekstrası",
           "Kredi taksidi",
           "Banka ücretleri",
+          "Faiz & Komisyon",
           "Diğer",
         ],
       },
       {
         category: "Sigorta",
-        subcategories: ["Hayat", "Sağlık Sigortası", "Kasko / Trafik", "Diğer"],
+        subcategories: [
+          "Hayat Sigortası",
+          "Sağlık Sigortası",
+          "Bireysel Emeklilik (BES)",
+          "Diğer",
+        ],
       },
       {
         category: "Vergi",
-        subcategories: ["Gelir vergisi", "MTV", "Harç", "Diğer"],
+        subcategories: [
+          "Gelir vergisi / Stopaj",
+          "MTV",
+          "Harç & Değerli Kağıt",
+          "Diğer",
+        ],
+      },
+      {
+        category: "Yatırım & Birikim",
+        subcategories: [
+          "Hisse Senedi",
+          "Kripto Varlıklar",
+          "Fon / Altın",
+          "Diğer",
+        ],
       },
     ],
   },
@@ -274,17 +323,22 @@ export const EXPENSE_CATEGORY_TREE = [
       {
         category: "Eğlence",
         subcategories: [
-          "Sinema",
-          "Tiyatro",
-          "Konser",
-          "Hobi",
+          "Sinema & Tiyatro",
+          "Konser & Festival",
+          "Maç & Spor Etkinlikleri",
+          "Oyun & İçi Satın Alım (Steam/PS)",
           "Dijital abonelik",
           "Diğer",
         ],
       },
       {
         category: "Seyahat",
-        subcategories: ["Otel", "Ulaşım", "Tatilde harcama", "Diğer"],
+        subcategories: [
+          "Otel / Konaklama",
+          "Uçak / Otobüs Bileti",
+          "Tatilde harcama",
+          "Diğer",
+        ],
       },
       {
         category: "Hediye & Bağış",
@@ -297,7 +351,7 @@ export const EXPENSE_CATEGORY_TREE = [
     categories: [
       {
         category: "Diğer",
-        subcategories: ["Genel"],
+        subcategories: ["Genel / Tanımsız"],
       },
     ],
   },
@@ -387,7 +441,7 @@ export function normalizeSubcategoryInput(v: unknown): string | undefined {
 
 export const INCOME_CATEGORIES = [
   "Maaş",
-  "Freelance",
+  "Serbest çalışan (Freelancer)",
   "Yatırım",
   "Kira Geliri",
   "Alacak",
