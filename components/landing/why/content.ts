@@ -14,10 +14,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Finans yönetimi",
     accent: "emerald",
     positives: [
-      "Gelir, gider, borç ve çoklu para biriminizi tek panelde birleştirip nakit akışı ve finansal sağlık skoruyla anlık görün.",
+      "Gelir, gider, borç, alacak ve çoklu para birimini tek panelde toplayın; güncel kurlarla ana para biriminize çevrilmiş özetleri, çubuk ve pasta grafiklerle dönem karşılaştırması ve finansal sağlık skoruyla izleyin.",
     ],
     negatives: [
-      "Tablolar ve ayrı uygulamalarda dağınık veriyle net bakiye ve riski her seferinde elle birleştirmek zorunda kalırsınız.",
+      "Tablolar ve ayrı uygulamalarda dağınık veriyle net bakiye, kur etkisi ve riski her seferinde elle birleştirmek zorunda kalırsınız.",
     ],
   },
   {
@@ -25,10 +25,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Bütçe ve planlama",
     accent: "violet",
     positives: [
-      "Kategori limitleri ve tekrarlayan ödemeleri takvim ve bildirimlerle izleyin; planlanan bütçeyi gerçekleşen harcamalarla yan yana kıyaslayın.",
+      "Kategori bazlı aylık limitler tanımlayın, harcama eşiğine yaklaşınca uyarı alın; tekrarlayan ödemeleri ve yaklaşan vadeleri bildirimlerle takip edin.",
     ],
     negatives: [
-      "Limitleri zihinde veya notta tutup sürpriz ödemeleri kaçırdığınızda bütçeyi ekran görüntüleriyle yeniden tazelemek zorunda kalırsınız.",
+      "Limitleri zihinde veya notta tutup sürpriz ödemeleri kaçırdığınızda bütçeyi ekran görüntüleriyle yeniden kurmak zorunda kalırsınız.",
     ],
   },
   {
@@ -36,10 +36,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Maliyet kontrolü",
     accent: "amber",
     positives: [
-      "Ücretsiz temel araçlarla başlayıp premiumda AI, OCR ve portföyü tek abonelikte toplayarak araç başına maliyeti düşürün.",
+      "Ücretsiz planda temel panel, işlem, bütçe ve borç takibine başlayın; Premium’da AI analiz, asistan, OCR ve yatırım portföyünü tek abonelikte toplayın.",
     ],
     negatives: [
-      "Grafik, OCR ve portföy için ayrı uygulamalara ödeme yapıp veriyi taşırken hem bütçeyi hem odağı bölersiniz.",
+      "Grafik, OCR, AI ve portföy için ayrı uygulamalara ödeme yapıp veriyi taşırken hem maliyeti hem odağı bölersiniz.",
     ],
   },
   {
@@ -47,10 +47,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "İşlem kaydı ve kategoriler",
     accent: "rose",
     positives: [
-      "Hazır kategori ağacı, toplu ekstre içe aktarma ve otomatik eşleştirme ile kayıtları tutarlı ve hızlı işleyin.",
+      "Geniş hazır kategori ağacıyla gelir ve giderleri tutarlı kaydedin; Premium’da fiş veya fatura görselinden OCR ile alanları doldurun, işlem listenizi CSV veya PDF olarak dışa aktarın.",
     ],
     negatives: [
-      "Manuel seçim ve kaydedilmeyen filtreler yüzünden raporlar dağınık kalır; dönem sonunda her şeyi baştan kurarsınız.",
+      "Her işlemi elle yazıp kategoriyi her seferinde seçtiğinizde kayıt yavaşlar; dönem sonunda rapor için veriyi baştan toparlamanız gerekir.",
     ],
   },
   {
@@ -58,10 +58,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Yapay zekâ ve otomasyon",
     accent: "sky",
     positives: [
-      "OCR ile belgeyi taratın, AI özet ve tasarruf önerileri alın; PDF dışa aktarım ve kurallarla bildirimleri otomatikleştirin.",
+      "Premium’da kayıtlı verilerinizden tam metin AI analiz raporu üretin; sohbet asistanına soru sorun, OCR ile belge girişini hızlandırın ve raporu PDF olarak indirin.",
     ],
     negatives: [
-      "Listeleri tek tek okuyup raporu elle yazdığınızda fiş arşivinde boğulur, anomalleri e-posta ile tablolar arasında avlarsınız.",
+      "Listeleri tek tek okuyup özeti kendiniz yazdığınızda fiş arşivinde boğulur; “bu ay nereye gitti?” sorusuna tablolar ve e-postalar arasında cevap ararsınız.",
     ],
   },
   {
@@ -69,10 +69,10 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     title: "Yatırım portföyü",
     accent: "emerald",
     positives: [
-      "Hisse, altın, kripto ve dövizi tek portföyde birleştirip güncel fiyatlarla kar/zarar ve riski tek ekrandan izleyin.",
+      "Hisse, altın, gümüş, kripto, döviz ve emtia pozisyonlarını tek portföyde toplayın; canlı kotasyonlarla anlık değer ve kar/zararı Premium’da tek ekrandan izleyin.",
     ],
     negatives: [
-      "Farklı borsa ve uygulamalarda pozisyonları elle topladığınızda toplam getiri ve vergi etkisini kabaca tahmin edersiniz.",
+      "Farklı borsa ve uygulamalarda pozisyonları elle topladığınızda toplam getiriyi kabaca tahmin eder, portföy riskini dağınık kalır.",
     ],
   },
 ];
