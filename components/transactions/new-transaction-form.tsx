@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState, type ChangeEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react";
 import { useFieldArray, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -42,6 +48,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { localTodayYmd } from "@/lib/common/utils";
 import { Plus, ScanLine, Trash2 } from "lucide-react";
 import { VoiceToTextButton } from "@/components/ai-insights/voice-to-text-button";
 
@@ -95,10 +102,15 @@ function manualIncomeCategory(category: string): string {
 
 type Props = {
   variant: "dialog" | "page";
+  dialogOpen?: boolean;
   onSuccess: () => void | Promise<void>;
 };
 
-export function NewTransactionForm({ variant, onSuccess }: Props) {
+export function NewTransactionForm({
+  variant,
+  dialogOpen,
+  onSuccess,
+}: Props) {
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const planPremium =
     normalizePlanTier(useAppSelector((s) => s.auth.user?.planTier)) ===
@@ -139,7 +151,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
       category: MANUAL_EXPENSE_CATEGORIES[0],
       subcategory: EXPENSE_SUBCATEGORY_NONE,
       description: "",
-      date: new Date().toISOString().slice(0, 10),
+      date: localTodayYmd(),
       lines: [
         {
           amount: 0,
@@ -155,6 +167,12 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
     control,
     name: "lines",
   });
+
+  useEffect(() => {
+    if (variant === "dialog" && dialogOpen) {
+      setValue("date", localTodayYmd(), { shouldValidate: true });
+    }
+  }, [variant, dialogOpen, setValue]);
 
   const categories =
     typeTab === "expense"
@@ -283,7 +301,7 @@ export function NewTransactionForm({ variant, onSuccess }: Props) {
         category: MANUAL_EXPENSE_CATEGORIES[0],
         subcategory: EXPENSE_SUBCATEGORY_NONE,
         description: "",
-        date: new Date().toISOString().slice(0, 10),
+        date: localTodayYmd(),
         lines: [
           {
             amount: 0,

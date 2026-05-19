@@ -30,6 +30,7 @@ export function NewTransactionDialog({ open, onOpenChange, onCreated }: Props) {
         </DialogHeader>
         <NewTransactionForm
           variant="dialog"
+          dialogOpen={open}
           onSuccess={async () => {
             await onCreated();
             onOpenChange(false);
