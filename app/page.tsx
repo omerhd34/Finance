@@ -5,6 +5,7 @@ import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { LandingPageShell } from "@/components/landing/landing-page-shell";
+import { LandingFaqSection } from "@/components/landing/landing-faq-section";
 import { LandingTestimonialsSection } from "@/components/landing/landing-testimonials-section";
 import { LandingJsonLd } from "@/components/seo/landing-json-ld";
 
@@ -19,6 +20,7 @@ export default function LandingPage() {
         <LandingWhySection />
         <LandingFeaturesSection />
         <LandingTestimonialsSection />
+        <LandingFaqSection />
       </main>
       <LandingFooter />
     </LandingPageShell>
