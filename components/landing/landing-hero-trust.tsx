@@ -3,10 +3,18 @@ import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { buildPublicTrustMemberLineParts } from "@/lib/site/trust";
 
+async function fetchRegisteredMemberLineParts() {
+  try {
+    const memberCount = await prisma.user.count();
+    return buildPublicTrustMemberLineParts(memberCount);
+  } catch {
+    return null;
+  }
+}
+
 export async function LandingHeroTrust() {
   noStore();
-  const memberCount = await prisma.user.count();
-  const memberParts = buildPublicTrustMemberLineParts(memberCount);
+  const memberParts = await fetchRegisteredMemberLineParts();
 
   return (
     <div className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-4 text-left xl:mx-0 xl:max-w-104">
