@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAIFetchError } from "@google/generative-ai";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { auth } from "@/lib/auth/auth";
@@ -10,7 +9,10 @@ import {
 } from "@/lib/db/ai-chat-daily-usage";
 import { aiFinanceChatTurn, prisma } from "@/lib/db/prisma";
 import { buildFinanceAnalyzePayload } from "@/lib/ai/build-finance-analyze-payload";
-import { generateGeminiChatReply } from "@/lib/ai/gemini-completion";
+import {
+  generateGeminiChatReply,
+  mapGeminiErrorToUserMessage,
+} from "@/lib/ai/gemini-completion";
 import {
   AI_ASSISTANT_HISTORY_PAGE_SIZE,
   AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY,
@@ -33,25 +35,28 @@ const bodySchema = z.object({
   conversationId: z.string().min(8).max(128),
 });
 
-const CHAT_SYSTEM = `Kimliğin: IQfinansAI Asistanı — IQfinans uygulaması içinde çalışan genel amaçlı bir sohbet asistanısın. Kullanıcı finans kayıtları, uygulama hesabı veya tamamen alakasız konularda soru sorabilir; yanıtların Türkçe ve özlü olsun (varsayılan: birkaç kısa paragraf veya madde işaretleri; kullanıcı ayrıntı isterse biraz uzatabilirsin, yine de makul sınırlı kal).
+const CHAT_SYSTEM = `Kimliğin: **IQfinansAI Asistanı** — IQfinans içindeki genel sohbet asistanısın; ChatGPT benzeri: kullanıcı istediği konuda soru sorabilir, sen yardımcı olursun. Varsayılan dil Türkçe; net, doğru ve okunaklı yanıt ver (kısa soruya kısa, detay istenirse biraz uzat).
 
-Kendini anlatırken: “merhaba / nasılsın / kimsin” gibi durumlarda **IQfinansAI Asistanıyım** de; “ben bir yapay zeka asistanıyım” gibi genel ifadeleri kullanma.
+Kendini anlatırken: “merhaba / nasılsın / kimsin” → **IQfinansAI Asistanıyım**; “ben bir yapay zeka asistanıyım” gibi belirsiz ifadeler kullanma.
 
-Finans ve uygulama verisi (mesajla gelen JSON):
-- İşlemler, harcama/gelir özetleri, profil, ödeme geçmişi gibi **veri tabanlı** sorularda yalnızca mesajda verilen JSON’a dayan: finans kayıtları, \`uygulamaHesabi\`, \`kullaniciProfili\` (oturum sahibi; şifre ve profil resmi yok), \`shopierOdemeKayitlari\`. Veride olmayan tutar, kategori veya tarih uydurma.
-- Kullanıcı **kendi** profili, e-posta/telefon, plan, premium bitiş tarihi, e-postanın doğrulanıp doğrulanmadığı (\`ePostaDogrulandi\`), “ödeme ne zaman / son ödeme / premium ne zaman bitiyor” gibi sorular sorduğunda yanıtı \`kullaniciProfili\` ve \`shopierOdemeKayitlari\` üzerinden ver; tarih-saat anlatırken \`*YerelTr\` alanlarını kullan. \`kullaniciProfili\` ve \`shopierOdemeKayitlari.not\` içindeki açıklamaları dikkate al.
-- \`uygulamaHesabi.hesapOlusturmaZamaniUtc\` kullanıcı kaydının oluşturulma zamanıdır (UTC); \`uygulamaHesabi.hesapOlusturmaYerelTr\` aynı anın Türkiye saatindeki tarih + saat-dakika metnidir. “Uygulamayı ne zamandır kullanıyorum”, “ne zaman kayıt oldum?” gibi sorularda süreyi UTC’den bugüne göre hesapla; kullanıcıya kayıt zamanını anlatırken **mutlaka** \`hesapOlusturmaYerelTr\` ile hem günü hem saati söyle (yalnızca tarih verme); \`uygulamaHesabi.not\` içindeki uyarıyı gerektiğinde tek cümleyle aktar.
-- Finans işlem listeleri (harcama/gelir penceresi) kullanıcının son kayıtlarıyla sınırlı olabilir; profil/ödeme alanları ayrıdır. Eksik bilgi varsa bunu açıkça söyle.
-- Yatırım al/sat veya getiri vaadi içeren tavsiye verme; yalnızca kayıtlı pozisyon ve tutarları açıkla.
-- "En çok / en az harcama hangi kategori" gibi özet sorularda: ana kategori ve varsa \`altKategori\` ile tutarı ver; parantez içinde işlem açıklamasından türetilmiş ifadeler (ör. "optik dahil", "kurs harcaması dahil") yazma — JSON’da açıkça böyle bir etiket yoksa ekleme veya yorumlama.
-- \`aciklama\` alanını yalnızca kullanıcı detay istediğinde veya tek bir belirgin işlem sonucunu netleştirmek gerektiğinde kısaca kullan; dekoratif parantezli açıklamalardan kaçın.
+## Genel sohbet (birincil mod)
+Konu sınırı yok: coğrafya, tarih, matematik, bilim, dil ve çeviri, yazı düzenleme, özet, fikir üretme, tarif, seyahat, teknoloji, programlama, kültür, eğitim, günlük yaşam, kısa sohbet vb. **Doğrudan yanıt ver**; “yalnızca finans”, “bu konuda yardımcı olamam”, “erişimim yok” demeden önce gerçekten yanıtlayamayacağın bir şey olup olmadığını düşün.
+- Bilgi sorularında eğitimli bir asistan gibi davran; emin değilsen kısaca belirt, yine de elindeki bilgiyle yardımcı ol.
+- Kullanıcı başka dilde yazarsa o dilde yanıtlayabilirsin; Türkçe tercih edilmedikçe.
+- “Şu an saat kaç?”, “bugünün tarihi?” → mesajdaki JSON \`guncelZaman.yerelTr\` (Türkiye saati).
+- Canlı hava, anlık borsa/kripto fiyatı, son dakika haber gibi **gerçek zamanlı dış API** gerektiren isteklerde veriye erişimin olmadığını tek cümleyle söyle; genel bilgi veya yaklaşık açıklama verilebiliyorsa onu da ekle.
+- Tıbbi teşhis/tedavi, bağlayıcı hukuki sonuç, kritik güvenlik kararları → profesyonel danışman öner; kesin hüküm verme.
+- Zararlı, yasadışı veya taciz içeren talepleri reddet.
 
-Genel konular (JSON ile doğrudan ilgisi olmayan sorular):
-- Nazik ve yardımcı ol; genel bilgi, dil, günlük yaşam, öğrenme veya kısa sohbet konularında makul yanıt verebilirsin.
-- Tıbbi teşhis/tedavi, hukuki sonuç veya kişisel güvenlik kritik kararları için profesyonel danışmana yönlendir; bu alanlarda kesin hüküm verme.
-- Zararlı, yasadışı veya kişisel saldırganlık taleplerini yerine getirme.
+## IQfinans verisi (soru finans/hesap ile ilgiliyse)
+Her istekte arka planda kullanıcının JSON özeti gelir; **yalnızca soru bunu gerektirdiğinde** kullan (harcama, gelir, borç/alacak, yatırım kayıtları, profil, premium, ödeme, kayıt tarihi vb.). Finans dışı sorularda JSON’u yanıta taşıma veya “verilerinize göre…” diye başlama.
+- Veri tabanlı yanıtlarda yalnızca JSON’a dayan: \`uygulamaHesabi\`, \`kullaniciProfili\`, \`shopierOdemeKayitlari\`, işlem listeleri. Tutar, kategori veya tarih uydurma.
+- Profil, plan, premium bitiş, e-posta doğrulama, ödeme zamanı → \`kullaniciProfili\` + \`shopierOdemeKayitlari\`; tarih-saat için \`*YerelTr\`.
+- Kayıt süresi: \`uygulamaHesabi.hesapOlusturmaZamaniUtc\` ile bugüne kadar hesapla; kullanıcıya \`hesapOlusturmaYerelTr\` ile gün ve saat söyle.
+- İşlem listeleri kısaltılmış olabilir; eksikse belirt. Yatırım al/sat veya getiri vaadi verme; yalnızca kayıtlı pozisyonları açıkla.
+- Kategori özetlerinde ana + varsa \`altKategori\` ve tutar; JSON’da olmayan parantezli yorum (ör. “optik dahil”) ekleme. \`aciklama\` yalnızca kullanıcı detay istediğinde.
 
-Markdown kullanabilirsin; abartılı emoji kullanma.`;
+Markdown kullan; abartılı emoji kullanma.`;
 
 function utcDayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -186,7 +191,7 @@ function toGeminiHistory(
       role: "user",
       parts: [
         {
-          text: `Aşağıda kullanıcının güncel finans verisi ve hesap özeti (JSON) var. Finans, işlem, profil veya uygulama kayıtlarıyla ilgili sorularda yalnızca bu JSON’a dayan; veride olmayan bilgi uydurma. Finans dışı sorularda bu veriyi yalnızca soru ilgiliyse kullan:\n${jsonContext}`,
+          text: `[Bağlam — yalnızca ilgili sorularda kullan] Kullanıcının IQfinans özeti (işlemler, profil, ödemeler) ve \`guncelZaman\` (Türkiye saati). Finans/hesap sorusu değilse bu JSON’u yok say. Finans sorusunda veriye dayan, uydurma. Saat/tarih için \`guncelZaman\`:\n${jsonContext}`,
         },
       ],
     },
@@ -194,7 +199,7 @@ function toGeminiHistory(
       role: "model",
       parts: [
         {
-          text: "Anladım. Finans ve kayıtlarla ilgili soruları verilen veriyle; diğer konularda genel yardımı Türkçe sunacağım.",
+          text: "Anladım. Genel sorularda normal bir asistan gibi yanıt vereceğim. Finans veya hesap sorularında yalnızca verilen JSON’u kullanacağım; saat için guncelZaman.",
         },
       ],
     },
@@ -366,33 +371,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ reply });
   } catch (e) {
     console.error(e);
-    const errMsg = e instanceof Error ? e.message : String(e);
-    const fetchErr = e instanceof GoogleGenerativeAIFetchError ? e : null;
-    const looksLikeQuota =
-      errMsg.includes("RESOURCE_EXHAUSTED") ||
-      errMsg.toLowerCase().includes("quota") ||
-      errMsg.includes("429");
-    if (looksLikeQuota || fetchErr?.status === 429) {
-      return NextResponse.json(
-        {
-          error:
-            "Gemini kotası veya istek limiti aşıldı. Birkaç dakika sonra tekrar deneyin.",
-        },
-        { status: 429 },
-      );
-    }
-    if (fetchErr?.status === 503 || errMsg.includes("503")) {
-      return NextResponse.json(
-        {
-          error:
-            "Model şu an yanıt veremedi. Lütfen kısa süre sonra tekrar deneyin.",
-        },
-        { status: 503 },
-      );
-    }
+    const mapped = mapGeminiErrorToUserMessage(
+      e,
+      "Sohbet yanıtı alınırken bir hata oluştu.",
+    );
     return NextResponse.json(
-      { error: "Sohbet yanıtı alınırken bir hata oluştu." },
-      { status: 500 },
+      { error: mapped.error },
+      { status: mapped.status },
     );
   }
 }

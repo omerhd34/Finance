@@ -1,45 +1,19 @@
-import {
-  GoogleGenerativeAI,
-  GoogleGenerativeAIFetchError,
-} from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { z } from "zod";
+import {
+  isGeminiQuotaExhausted,
+  isRetryableGeminiError,
+  resolveModelChain,
+  shouldTryNextGeminiModel,
+} from "@/lib/ai/gemini-completion";
 import {
   MANUAL_EXPENSE_CATEGORIES,
   MANUAL_INCOME_CATEGORIES,
   isValidExpenseSubcategory,
 } from "@/lib/domain/categories";
 
-const RETRYABLE_STATUSES = new Set([429, 500, 502, 503]);
-
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isRetryableGeminiError(e: unknown): boolean {
-  if (e instanceof GoogleGenerativeAIFetchError) {
-    const s = e.status;
-    return s != null && RETRYABLE_STATUSES.has(s);
-  }
-  const msg = e instanceof Error ? e.message : String(e);
-  return (
-    msg.includes("503") ||
-    msg.includes("502") ||
-    msg.includes("429") ||
-    msg.includes("500") ||
-    msg.includes("Service Unavailable") ||
-    msg.includes("RESOURCE_EXHAUSTED")
-  );
-}
-
-function resolveModelChain(): string[] {
-  const primary = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-  const fromEnv = process.env.GEMINI_MODEL_FALLBACKS?.split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const defaults = ["gemini-2.0-flash", "gemini-1.5-flash"];
-  const fallbacks = fromEnv?.length ? fromEnv : defaults;
-  const chain = [primary, ...fallbacks.filter((m) => m !== primary)];
-  return [...new Set(chain)];
 }
 
 const rawOcrSchema = z.object({
@@ -153,6 +127,12 @@ export async function scanReceiptImageWithGemini(
         };
       } catch (e) {
         lastError = e;
+        if (isGeminiQuotaExhausted(e)) {
+          throw e;
+        }
+        if (shouldTryNextGeminiModel(e)) {
+          break;
+        }
         if (!isRetryableGeminiError(e)) {
           throw e;
         }

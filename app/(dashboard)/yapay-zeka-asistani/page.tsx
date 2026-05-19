@@ -13,7 +13,7 @@ export default function YapayZekaAsistaniPage() {
   const planPremium = normalizePlanTier(session?.user?.planTier) === "premium";
 
   const perks = [
-    "İstediğiniz konuda Türkçe soru–cevap; finans sorularında her yanıtta veriler sunucuda yenilenir",
+    "Genel sohbet asistanı: coğrafya, yazı, kod, günlük sorular; finans sorularında kayıtlarınız her yanıtta yenilenir",
     "Tarayıcı destekliyse sesli soru girişi (Yeni işlem ekranında da geçerli)",
   ];
 

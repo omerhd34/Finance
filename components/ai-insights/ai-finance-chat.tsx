@@ -298,8 +298,8 @@ export function AiFinanceChat() {
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-4 md:p-5">
             {messages.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground md:text-base">
-                Merhabalar, ben <strong>IQfinansAI</strong> Asistanıyım. Size
-                nasıl yardımcı olabilirim?
+                Merhabalar, ben <strong>IQfinansAI</strong> Asistanıyım. Finans
+                kayıtlarınız veya istediğiniz her konuda sorabilirsiniz.
               </p>
             ) : null}
             {messages.map((m, i) => (
@@ -350,7 +350,7 @@ export function AiFinanceChat() {
                     void send();
                   }
                 }}
-                placeholder="Örneğin: Bu ay en çok hangi kategoriye harcadım?"
+                placeholder="Her konuda sorabilirsiniz — örn. Türkiye’nin başkenti, bir metni özetle, bu ay en çok hangi kategoriye harcadım?"
                 rows={2}
                 className="min-h-[72px] flex-1 resize-none"
                 disabled={loading}

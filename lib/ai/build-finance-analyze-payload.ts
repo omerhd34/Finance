@@ -53,6 +53,12 @@ function formatOptionalZamanYerelTr(d: Date | null | undefined): string | null {
 }
 
 export type FinanceAnalyzePayload = {
+  guncelZaman: {
+    utc: string;
+    yerelTr: string;
+    saatDilimi: "Europe/Istanbul";
+    not: string;
+  };
   uygulamaHesabi: {
     hesapOlusturmaZamaniUtc: string;
     hesapOlusturmaYerelTr: string;
@@ -396,6 +402,12 @@ export async function buildFinanceAnalyzePayload(
         };
 
   return {
+    guncelZaman: {
+      utc: analizAnı.toISOString(),
+      yerelTr: formatZamanYerelTr(analizAnı),
+      saatDilimi: "Europe/Istanbul",
+      not: "Sunucunun bu istek anındaki zamanı (Türkiye saati). “Şu an saat kaç?”, “bugünün tarihi ne?” gibi sorularda yanıtı bu alana dayandır; kullanıcıya “erişemiyorum” deme.",
+    },
     uygulamaHesabi: {
       hesapOlusturmaZamaniUtc: dbUser.createdAt.toISOString(),
       hesapOlusturmaYerelTr: formatZamanYerelTr(dbUser.createdAt),

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAIFetchError } from "@google/generative-ai";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { prisma } from "@/lib/db/prisma";
 import { buildFinanceAnalyzePayload } from "@/lib/ai/build-finance-analyze-payload";
-import { generateGeminiText } from "@/lib/ai/gemini-completion";
+import {
+  generateGeminiText,
+  mapGeminiErrorToUserMessage,
+} from "@/lib/ai/gemini-completion";
 import { AI_LONG_REPORT_MAX_PER_DAY } from "@/lib/ai/ai-insights-limits";
 import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
 
@@ -177,53 +179,13 @@ export async function POST() {
     return NextResponse.json({ markdown });
   } catch (e) {
     console.error(e);
-    const errMsg = e instanceof Error ? e.message : String(e);
-    const fetchErr = e instanceof GoogleGenerativeAIFetchError ? e : null;
-    const looksLikeQuota =
-      errMsg.includes("RESOURCE_EXHAUSTED") ||
-      errMsg.toLowerCase().includes("quota") ||
-      errMsg.includes("429");
-    if (looksLikeQuota || fetchErr?.status === 429) {
-      return NextResponse.json(
-        {
-          error:
-            "Gemini kotası veya istek limiti aşıldı. Birkaç dakika sonra tekrar deneyin. Kotayı AI Studio’dan kontrol edin; daha yüksek limit için faturalandırma gerekebilir.",
-        },
-        { status: 429 },
-      );
-    }
-    if (fetchErr?.status === 503 || errMsg.includes("503")) {
-      return NextResponse.json(
-        {
-          error:
-            "Gemini şu an yoğunluk nedeniyle yanıt veremedi. Bir süre sonra tekrar deneyin; sorun sürerse .env içinde GEMINI_MODEL veya GEMINI_MODEL_FALLBACKS ile başka bir model deneyebilirsiniz.",
-        },
-        { status: 503 },
-      );
-    }
-    if (e instanceof GoogleGenerativeAIFetchError) {
-      if (e.status === 404) {
-        return NextResponse.json(
-          {
-            error:
-              "Bu Gemini model adı artık bu API’de yok veya bölgenizde kapalı. .env içinde GEMINI_MODEL=gemini-2.5-flash veya gemini-2.0-flash deneyin; güncel listeyi ai.google.dev/gemini-api/docs/models adresinden kontrol edin.",
-          },
-          { status: 400 },
-        );
-      }
-      if (e.status === 400 && e.message.includes("API key")) {
-        return NextResponse.json(
-          {
-            error:
-              "GEMINI_API_KEY geçersiz veya eksik. aistudio.google.com üzerinden yeni bir anahtar oluşturun.",
-          },
-          { status: 401 },
-        );
-      }
-    }
+    const mapped = mapGeminiErrorToUserMessage(
+      e,
+      "Analiz sırasında bir hata oluştu",
+    );
     return NextResponse.json(
-      { error: "Analiz sırasında bir hata oluştu" },
-      { status: 500 },
+      { error: mapped.error },
+      { status: mapped.status },
     );
   }
 }

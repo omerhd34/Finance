@@ -80,8 +80,10 @@ export function AiAssistantHero() {
           </h2>
           <div className="space-y-2 text-sm leading-relaxed text-muted-foreground text-pretty md:text-base">
             <p>
-              Finans kayıtlarınız ve diğer konularda sohbet; her yanıtta güncel
-              işlem ve borç/alacak özeti kullanılır. Günlük en çok{" "}
+              Genel amaçlı sohbet: coğrafya, matematik, yazı, kod, günlük
+              sorular ve daha fazlası; IQfinans kayıtlarınızı sorunca her
+              yanıtta güncel işlem ve borç/alacak özeti de kullanılır. Günlük
+              en çok{" "}
               <span className="font-medium text-foreground/85">
                 {AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY}
               </span>{" "}
