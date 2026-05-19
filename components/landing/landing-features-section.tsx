@@ -10,6 +10,10 @@ export function LandingFeaturesSection() {
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
       <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[min(100%,720px)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgb(16_185_129/0.08),transparent_65%)] dark:bg-[radial-gradient(ellipse_at_center,rgb(52_211_153/0.12),transparent_68%)]"
+          aria-hidden
+        />
         <div className="mx-auto max-w-2xl text-center">
           <p className={landingEyebrow}>Plan karşılaştırması</p>
           <h2
