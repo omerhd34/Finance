@@ -2,6 +2,7 @@ import {
   ArrowRightLeft,
   Bell,
   CalendarClock,
+  Calculator,
   HandCoins,
   LayoutDashboard,
   PieChart,
@@ -52,6 +53,7 @@ export const dashboardNav = [
   { href: "/butceler", label: "Bütçeler", icon: PieChart },
   { href: "/borc-ve-alacak", label: "Borç ve Alacak", icon: HandCoins },
   { href: "/kur-donusum", label: "Kur Dönüşüm", icon: ArrowRightLeft },
+  { href: "/hesaplamalar", label: "Hesaplamalar", icon: Calculator },
   { href: "/yatirimlar", label: "Yatırım", icon: TrendingUp },
   { href: "/yapay-zeka-analizi", label: "IQfinansAI Analiz", icon: Sparkles },
   {

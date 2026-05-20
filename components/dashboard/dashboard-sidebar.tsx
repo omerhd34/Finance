@@ -181,7 +181,7 @@ export function DashboardSidebar({
           );
 
           if (href !== "/bildirimler") {
-            if (href === "/kur-donusum" || href === "/yapay-zeka-asistani") {
+            if (href === "/hesaplamalar" || href === "/yapay-zeka-asistani") {
               return [
                 item,
                 <Separator
