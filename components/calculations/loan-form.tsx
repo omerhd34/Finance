@@ -280,17 +280,51 @@ export function LoanForm({ loanType }: { loanType: LoanType }) {
                   filename: `${loanType}-odeme-plani`,
                   sheetName: "Ödeme Planı",
                   columns: [
-                    { header: "Vade (Ay)", key: "installmentNo", align: "left" },
-                    { header: "Taksit", key: "installmentAmount", align: "right", format: (v) => formatCurrency(Number(v)) },
-                    { header: "Anapara", key: "principalPaid", align: "right", format: (v) => formatCurrency(Number(v)) },
-                    { header: "Faiz", key: "interestPaid", align: "right", format: (v) => formatCurrency(Number(v)) },
+                    {
+                      header: "Vade (Ay)",
+                      key: "installmentNo" as const,
+                      align: "left",
+                    },
+                    {
+                      header: "Taksit",
+                      key: "installmentAmount" as const,
+                      align: "right",
+                      format: (v) => formatCurrency(Number(v)),
+                    },
+                    {
+                      header: "Anapara",
+                      key: "principalPaid" as const,
+                      align: "right",
+                      format: (v) => formatCurrency(Number(v)),
+                    },
+                    {
+                      header: "Faiz",
+                      key: "interestPaid" as const,
+                      align: "right",
+                      format: (v) => formatCurrency(Number(v)),
+                    },
                     ...(hasTaxes
                       ? [
-                          { header: "KKDF", key: "kkdfPaid", align: "right" as const, format: (v: unknown) => formatCurrency(Number(v)) },
-                          { header: "BSMV", key: "bsmvPaid", align: "right" as const, format: (v: unknown) => formatCurrency(Number(v)) },
+                          {
+                            header: "KKDF",
+                            key: "kkdfPaid" as const,
+                            align: "right" as const,
+                            format: (v: unknown) => formatCurrency(Number(v)),
+                          },
+                          {
+                            header: "BSMV",
+                            key: "bsmvPaid" as const,
+                            align: "right" as const,
+                            format: (v: unknown) => formatCurrency(Number(v)),
+                          },
                         ]
                       : []),
-                    { header: "Bakiye", key: "remainingPrincipal", align: "right", format: (v) => formatCurrency(Number(v)) },
+                    {
+                      header: "Bakiye",
+                      key: "remainingPrincipal" as const,
+                      align: "right",
+                      format: (v) => formatCurrency(Number(v)),
+                    },
                   ],
                   rows: result.schedule.map((row) => ({
                     installmentNo: row.installmentNo,
