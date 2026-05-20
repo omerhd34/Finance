@@ -3,6 +3,7 @@ import {
   BarChart3,
   BellRing,
   Bot,
+  Calculator,
   FileDown,
   MessageSquare,
   Globe,
@@ -72,6 +73,12 @@ export const LANDING_FEATURES: LandingFeatureItem[] = [
     icon: BellRing,
   },
   {
+    title: "Finansal hesaplama araçları",
+    description:
+      "Mevduat faizi, kredi taksiti, KDV, birikim hedefi, enflasyon (TÜFE) ve BES hesaplamaları; grafikli ödeme planı ile dışa aktarma.",
+    icon: Calculator,
+  },
+  {
     title: "Yapay zekâ analiz raporu",
     description:
       "Kayıtlı verilerinizden tam metin analiz; kategori yorumları, trendler ve tasarruf önerileri.",
@@ -128,6 +135,7 @@ export const LANDING_PLANS: LandingPlan[] = [
       "Borç ve alacak takibi",
       "Çoklu para birimi desteği",
       "Anlık kur dönüşümü",
+      "Mevduat, kredi, KDV, birikim, enflasyon ve BES hesaplama araçları",
     ],
   },
   {

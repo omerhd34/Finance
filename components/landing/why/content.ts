@@ -54,6 +54,17 @@ export const LANDING_WHY_CARDS: LandingWhyCard[] = [
     ],
   },
   {
+    id: "financial-calculations",
+    title: "Finansal hesaplama araçları",
+    accent: "sky",
+    positives: [
+      "Mevduat faizi, konut/ihtiyaç/taşıt kredisi taksiti, KDV, birikim hedefi, enflasyon (TÜFE) ve bireysel emeklilik hesaplarını ücretsiz tek yerden yapın; detaylı ödeme ve birikim planlarını grafikle görüp Excel veya PDF olarak indirip arşivleyin.",
+    ],
+    negatives: [
+      "Her hesap için ayrı bankacılık veya hesaplama sitesine girip sonuçları elle not aldığınızda hem zaman kaybeder hem güncel olmayan parametrelerle yanıltıcı çıktılar elde edersiniz.",
+    ],
+  },
+  {
     id: "ai-automation",
     title: "Yapay zekâ ve otomasyon",
     accent: "sky",

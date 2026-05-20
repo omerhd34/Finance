@@ -40,20 +40,26 @@ export const LANDING_MODULES: LandingModuleItem[] = [
   },
   {
     id: "06",
+    title: "Finansal Hesaplama Araçları",
+    description:
+      "Mevduat faizi, konut/ihtiyaç/taşıt kredisi taksiti, KDV, birikim hedefi, enflasyon (TÜFE) ve bireysel emeklilik hesaplarını tek yerden yapın. Detaylı ödeme ve birikim planlarını grafiklerle inceleyin, sonuçları Excel veya PDF olarak indirip arşivleyin.",
+  },
+  {
+    id: "07",
     title: "Yatırım Portföyü",
     description:
       "Hisse, altın, döviz, kripto ve emtia pozisyonlarınızı manuel kaydedin; canlı kotasyonlarla anlık değer ve portföy genelindeki kar/zararı izleyin. Dağılımınızı ve toplam pozisyon büyüklüğünü tek ekranda kontrol edin.",
     premium: true,
   },
   {
-    id: "07",
+    id: "08",
     title: "IQfinansAI Analiz Raporu",
     description:
       "Girdiğiniz gelir–gider verilerinden yapay zekâ tam metin rapor üretir: kategori bazlı yorum, harcama trendleri ve tasarruf fırsatları. Raporu PDF olarak indirip arşivleyebilir veya güvendiğiniz biriyle paylaşabilirsiniz.",
     premium: true,
   },
   {
-    id: "08",
+    id: "09",
     title: "IQfinansAI Asistanı",
     description:
       "Sohbet ekranından bütçe ve harcama alışkanlıklarınızı sorun; yanıtlar gerçek kayıtlarınıza dayanır. Hangi kalemlere odaklanmanız gerektiği, ay sonu riskleri ve gelişim önerileri kişiselleştirilmiş şekilde sunulur.",
