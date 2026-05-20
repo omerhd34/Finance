@@ -14,8 +14,7 @@ export const gridSlotClasses: Record<string, string> = {
   "budget-planning":
     "lg:col-span-5 lg:col-start-6 lg:row-start-1 lg:self-stretch",
 
-  "cost-control":
-    "lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:self-stretch",
+  "cost-control": "lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:self-stretch",
   "transaction-categories":
     "lg:col-span-5 lg:col-start-6 lg:row-start-2 lg:self-stretch",
 
@@ -23,4 +22,7 @@ export const gridSlotClasses: Record<string, string> = {
     "lg:col-span-5 lg:col-start-1 lg:row-start-3 lg:self-stretch",
   "investment-portfolio":
     "lg:col-span-5 lg:col-start-6 lg:row-start-3 lg:self-stretch",
+
+  "financial-calculations":
+    "lg:col-span-5 lg:col-start-1 lg:row-start-4 lg:self-stretch",
 };

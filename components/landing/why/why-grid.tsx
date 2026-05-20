@@ -10,7 +10,7 @@ export function WhyGrid() {
       <div className="mt-16 lg:hidden">
         <WhyGridCarousel />
       </div>
-      <ul className="mt-16 hidden w-full grid-cols-1 gap-4 lg:grid lg:grid-cols-10 lg:grid-rows-3 lg:items-stretch lg:gap-5 *:min-h-0">
+      <ul className="mt-16 hidden w-full grid-cols-1 gap-4 lg:grid lg:grid-cols-10 lg:grid-rows-4 lg:items-stretch lg:gap-5 *:min-h-0">
         {LANDING_WHY_CARDS.map((card) => (
           <li
             key={card.id}
