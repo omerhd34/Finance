@@ -45,7 +45,7 @@ function VerifyShell({
     <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="fixed inset-0 -z-10">
         <Image
-          src="/finance.jpg"
+          src="/finance.webp"
           alt=""
           fill
           className="object-cover brightness-[0.3]"

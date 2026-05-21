@@ -13,7 +13,7 @@ const LandingHeroIsometricIllustration = dynamic(
 );
 
 const primaryCtaClass =
-  "inline-flex h-12 w-full items-center justify-center rounded-full bg-emerald-600 px-8 text-base font-semibold text-white shadow-lg shadow-emerald-950/45 transition hover:bg-emerald-500 hover:shadow-xl hover:shadow-emerald-950/50 sm:w-auto";
+  "inline-flex h-12 w-full items-center justify-center rounded-full bg-emerald-700 px-8 text-base font-semibold text-white shadow-lg shadow-emerald-950/45 transition hover:bg-emerald-600 hover:shadow-xl hover:shadow-emerald-950/50 sm:w-auto";
 
 const secondaryCtaClass =
   "inline-flex h-10 flex-1 items-center justify-center rounded-full border border-white/25 bg-white/12 px-5 text-sm text-white backdrop-blur-md transition hover:bg-white/22 sm:h-12 sm:flex-initial sm:px-8 sm:text-base";
@@ -37,7 +37,7 @@ export function LandingHero() {
           fill
           priority
           fetchPriority="high"
-          quality={55}
+          quality={75}
           className="object-cover object-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1280px"
         />

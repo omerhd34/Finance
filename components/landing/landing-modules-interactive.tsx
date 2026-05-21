@@ -48,6 +48,25 @@ function ModulesVisual() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoadVideo(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -96,6 +115,7 @@ function ModulesVisual() {
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    setShouldLoadVideo(true);
     if (video.paused) {
       void video.play();
     } else {
@@ -167,10 +187,20 @@ function ModulesVisual() {
             )}
             muted={isMuted}
             playsInline
-            preload="metadata"
+            preload="none"
+            poster="/video-poster.webp"
             aria-label="IQfinansAI ürün tanıtım videosu"
           >
-            <source src={LANDING_MODULES_VIDEO_SRC} type="video/mp4" />
+            {shouldLoadVideo ? (
+              <source src={LANDING_MODULES_VIDEO_SRC} type="video/mp4" />
+            ) : null}
+            <track
+              kind="captions"
+              src="/iqfinansai-captions.vtt"
+              srcLang="tr"
+              label="Türkçe"
+              default
+            />
           </video>
 
           <div className="absolute inset-x-0 bottom-0 z-20 bg-linear-to-t from-black/80 via-black/50 to-transparent px-3 pb-3 pt-10 sm:px-4 sm:pb-4">
@@ -316,7 +346,7 @@ function ModulesList({
                 className={cn(
                   "absolute left-4 top-5 flex -translate-x-1/2 items-center justify-center rounded-full transition-all sm:top-6",
                   active
-                    ? "h-8 w-8 bg-emerald-600 text-xs font-bold text-white shadow-md shadow-emerald-900/20 dark:bg-emerald-500"
+                    ? "h-8 w-8 bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-900/20 dark:bg-emerald-600"
                     : "h-2.5 w-2.5 bg-emerald-500/70 group-hover:bg-emerald-600",
                 )}
                 aria-hidden
