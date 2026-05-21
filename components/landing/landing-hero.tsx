@@ -1,6 +1,5 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { LandingHeroTrust } from "@/components/landing/landing-hero-trust";
 
@@ -31,15 +30,11 @@ export function LandingHero() {
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden
       >
-        <Image
-          src="/finance.webp"
-          alt="Kişisel finans, bütçe ve harcama yönetimi — IQfinansAI arka plan görseli"
-          fill
-          priority
-          fetchPriority="high"
-          quality={75}
-          className="object-cover object-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
-          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1280px"
+        <div
+          className="absolute inset-0 bg-cover bg-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
+          style={{ backgroundImage: "url(/finance.webp)" }}
+          role="img"
+          aria-label="Kişisel finans, bütçe ve harcama yönetimi — IQfinansAI arka plan görseli"
         />
         <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/42 to-black/62 dark:from-black/72 dark:via-black/60 dark:to-black/80" />
         <div className="absolute inset-0 bg-linear-to-tr from-emerald-950/28 via-transparent to-teal-950/18 dark:from-emerald-950/42 dark:to-teal-950/28" />
