@@ -1,21 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { ThemeProvider } from "@wrksz/themes/next";
 import { siteMetadata } from "@/lib/site/metadata";
-import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   preload: true,
   adjustFontFallback: true,
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  preload: false,
 });
 
 export const metadata = siteMetadata;
@@ -28,25 +22,13 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body
         className={`${geistSans.className} min-h-full flex flex-col bg-background text-foreground`}
       >
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=G-X6CFQR7EP5`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-X6CFQR7EP5');
-    gtag('config', 'AW-18071789147');
-  `}
-        </Script>
+        <GoogleAnalytics />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

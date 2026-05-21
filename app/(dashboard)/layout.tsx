@@ -1,3 +1,5 @@
+import "react-day-picker/style.css";
+import { geistMono } from "@/lib/fonts/geist-mono";
 import { redirect } from "next/navigation";
 import Script from "next/script";
 import { cookies } from "next/headers";
@@ -24,13 +26,15 @@ export default async function DashboardGroupLayout({
   );
 
   return (
-    <Providers>
-      <Script id="sidebar-collapsed-init" strategy="beforeInteractive">
-        {sidebarCollapsedBootstrapScript()}
-      </Script>
-      <DashboardShell initialSidebarCollapsed={initialSidebarCollapsed}>
-        {children}
-      </DashboardShell>
-    </Providers>
+    <div className={geistMono.variable}>
+      <Providers>
+        <Script id="sidebar-collapsed-init" strategy="beforeInteractive">
+          {sidebarCollapsedBootstrapScript()}
+        </Script>
+        <DashboardShell initialSidebarCollapsed={initialSidebarCollapsed}>
+          {children}
+        </DashboardShell>
+      </Providers>
+    </div>
   );
 }

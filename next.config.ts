@@ -4,7 +4,16 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   experimental: {
     inlineCss: true,
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-slot",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "date-fns",
+    ],
   },
   async redirects() {
     return [
@@ -44,7 +53,7 @@ const nextConfig: NextConfig = {
     return [{ source: "/favicon.ico", destination: "/FinansIQ-192.png" }];
   },
   images: {
-    qualities: [65, 75, 88],
+    qualities: [55, 65, 75, 88],
     remotePatterns: [
       {
         protocol: "https",

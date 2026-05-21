@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/common/utils";
 
 type BrandLockupVariant = "landing" | "sidebar";

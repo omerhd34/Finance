@@ -1,0 +1,45 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+"use client";
+
+import { useEffect, useState } from "react";
+import { Lightbulb, LightbulbOff } from "lucide-react";
+import { useTheme } from "@wrksz/themes/client";
+
+export function LandingHeaderThemeToggle() {
+  const { setTheme, resolvedTheme } = useTheme();
+  const [themeReady, setThemeReady] = useState(false);
+  const themeResolved =
+    themeReady && (resolvedTheme === "light" || resolvedTheme === "dark");
+
+  useEffect(() => {
+    setThemeReady(true);
+  }, []);
+
+  const toggleTheme = () => {
+    const current = resolvedTheme ?? "dark";
+    setTheme(current === "dark" ? "light" : "dark");
+  };
+
+  const themeLabel = themeResolved
+    ? resolvedTheme === "dark"
+      ? "Açık temaya geç"
+      : "Koyu temaya geç"
+    : "Tema";
+
+  return (
+    <button
+      type="button"
+      disabled={!themeReady}
+      className="flex h-7.5 w-7.5 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground sm:h-9 sm:w-9 disabled:opacity-60"
+      aria-label={themeLabel}
+      title={themeLabel}
+      onClick={toggleTheme}
+    >
+      {themeResolved && resolvedTheme === "dark" ? (
+        <Lightbulb className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden />
+      ) : (
+        <LightbulbOff className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden />
+      )}
+    </button>
+  );
+}
