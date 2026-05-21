@@ -131,6 +131,7 @@ export function DashboardSidebar({
         className={cn(
           "flex min-h-0 flex-1 flex-col gap-1",
           collapsed ? "p-2 pt-0" : "p-3 pt-0",
+          isMobile && "pt-4",
         )}
       >
         {!isMobile && (
