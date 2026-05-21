@@ -7,26 +7,19 @@ const TRACKED_PREFIXES = [
   "/api/investments",
   "/api/recurring",
   "/api/category-budgets",
-  "/api/notifications",
   "/api/ai/",
-  "/api/user/",
-  "/api/shopier/",
   "/api/support",
-  "/api/exchange-rates",
-  "/api/fx-prices",
-  "/api/borsa-istanbul",
-  "/api/stock-prices",
-  "/api/crypto-prices",
-  "/api/gold-prices",
-  "/api/silver-prices",
-  "/api/platinum-prices",
-  "/api/commodity-prices",
 ];
 
-const DEBOUNCE_MS = 60_000;
+const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const DEBOUNCE_MS = 5 * 60_000;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (!MUTATION_METHODS.has(request.method)) {
+    return NextResponse.next();
+  }
 
   const isTracked = TRACKED_PREFIXES.some((prefix) =>
     pathname.startsWith(prefix),

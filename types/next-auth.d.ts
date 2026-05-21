@@ -33,5 +33,6 @@ declare module "next-auth/jwt" {
     planTier?: "free" | "premium";
     premiumUntil?: string | null;
     isEmailVerified?: boolean;
+    emailVerifyCheckedAt?: number;
   }
 }

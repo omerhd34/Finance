@@ -22,7 +22,10 @@ export function useNotificationUnreadCount() {
 
   useEffect(() => {
     void refreshUnread();
-    const intervalId = window.setInterval(() => void refreshUnread(), 15000);
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      void refreshUnread();
+    }, 60_000);
     return () => window.clearInterval(intervalId);
   }, [refreshUnread]);
 

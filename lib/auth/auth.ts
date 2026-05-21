@@ -133,12 +133,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
       if (token.id && token.isEmailVerified !== true) {
-        const ev = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { emailVerified: true },
-        });
-        if (ev?.emailVerified) {
-          token.isEmailVerified = true;
+        const EMAIL_VERIFY_RECHECK_MS = 5 * 60_000;
+        const nowMs = Date.now();
+        const lastCheckedAt =
+          typeof token.emailVerifyCheckedAt === "number"
+            ? token.emailVerifyCheckedAt
+            : 0;
+        if (nowMs - lastCheckedAt >= EMAIL_VERIFY_RECHECK_MS) {
+          const ev = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { emailVerified: true },
+          });
+          if (ev?.emailVerified) {
+            token.isEmailVerified = true;
+          }
+          token.emailVerifyCheckedAt = nowMs;
         }
       }
       if (trigger === "update" && session && typeof session === "object") {

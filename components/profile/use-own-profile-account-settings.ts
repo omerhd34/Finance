@@ -105,8 +105,9 @@ export function useOwnProfileAccountSettings(ownProfile: boolean) {
     void loadLatestOrder();
 
     const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       void loadLatestOrder();
-    }, 15000);
+    }, 60_000);
 
     return () => {
       cancelled = true;
