@@ -28,8 +28,8 @@ export function DashboardPremiumPromo() {
               aria-hidden
             />
           </span>
-          <span className="text-sm font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-            Premium
+          <span className="text-sm font-semibold tracking-wide text-emerald-700 dark:text-emerald-300">
+            PREMIUM
           </span>
         </div>
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
