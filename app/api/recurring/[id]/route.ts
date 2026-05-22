@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { prisma, recurringRule } from "@/lib/db/prisma";
+import { clearRecurringReminderNotificationsForRule } from "@/lib/recurring/recurring-reminder-alerts";
 import {
   addRecurringInterval,
   alignNextDueToFuture,
@@ -265,6 +266,10 @@ export async function DELETE(_req: Request, context: RouteContext) {
       });
       await tx.recurringRule.delete({ where: { id } });
     });
+    try {
+      await clearRecurringReminderNotificationsForRule(session.user.id, id);
+    } catch {
+    }
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Silinemedi" }, { status: 500 });

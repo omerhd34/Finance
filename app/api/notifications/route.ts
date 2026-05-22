@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { notification } from "@/lib/db/prisma";
+import { evaluateRecurringReminderAlerts } from "@/lib/recurring/recurring-reminder-alerts";
+import { processAutoRecurringForUser } from "@/lib/recurring/recurring-service";
 
 export async function GET(req: Request) {
   try {
@@ -8,11 +10,26 @@ export async function GET(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
+    const userId = session.user.id;
+
+    void Promise.allSettled([
+      processAutoRecurringForUser(userId).catch((e) => {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[notifications] AUTO process error:", e);
+        }
+      }),
+      evaluateRecurringReminderAlerts(userId).catch((e) => {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[notifications] reminder evaluator error:", e);
+        }
+      }),
+    ]);
+
     const { searchParams } = new URL(req.url);
     const countOnly = searchParams.get("countOnly") === "1";
     if (countOnly) {
       const unreadCount = await notification.count({
-        where: { userId: session.user.id, readAt: null },
+        where: { userId, readAt: null },
       });
       return NextResponse.json({ items: [], unreadCount });
     }
@@ -24,7 +41,7 @@ export async function GET(req: Request) {
     const unreadOnly = searchParams.get("unreadOnly") === "1";
 
     const where = {
-      userId: session.user.id,
+      userId,
       ...(unreadOnly ? { readAt: null } : {}),
     };
 
@@ -35,7 +52,7 @@ export async function GET(req: Request) {
         take: limit,
       }),
       notification.count({
-        where: { userId: session.user.id, readAt: null },
+        where: { userId, readAt: null },
       }),
     ]);
 
