@@ -54,8 +54,7 @@ const KPI_CARDS: KpiCard[] = [
       "bg-lime-500/15 text-lime-700 ring-lime-500/30 dark:text-lime-300",
     glowClassName: "bg-lime-500/25",
     valueClassName: "text-emerald-600 dark:text-emerald-400",
-    description:
-      "Mali denge güçlü; borç ve gider optimizasyonuyla üst banda çıkabilirsin.",
+    description: "",
   },
   {
     id: "net",
