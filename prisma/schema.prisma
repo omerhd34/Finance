@@ -131,6 +131,7 @@ model RecurringRule {
   userId      String
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
+  alertLogs   RecurringAlertLog[]
   type        String
   amount      Float
   category    String
@@ -147,6 +148,17 @@ model RecurringRule {
   updatedAt   DateTime  @updatedAt
 
   @@index([userId, isActive, nextDueDate])
+}
+
+model RecurringAlertLog {
+  id        String        @id @default(cuid())
+  ruleId    String
+  rule      RecurringRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  slotKey   String
+  createdAt DateTime      @default(now())
+
+  @@unique([ruleId, slotKey])
+  @@index([ruleId])
 }
 
 model CategoryBudget {
