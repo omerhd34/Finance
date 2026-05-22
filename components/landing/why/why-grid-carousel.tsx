@@ -14,8 +14,8 @@ import {
 import { cn } from "@/lib/common/utils";
 
 const WHY_CAROUSEL_AUTOPLAY_MS = {
-  sm: 10_000,
-  md: 15_000,
+  sm: 20_000,
+  md: 20_000,
 } as const;
 
 function useWhyCarouselPerView(): { perView: 1 | 2; autoplayMs: number } {
