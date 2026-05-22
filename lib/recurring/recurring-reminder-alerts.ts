@@ -18,14 +18,18 @@ const AUTO_COMPLETED_TYPE = "recurring_auto_completed";
 const TR_MORNING_CUTOFF_HOUR = 9;
 
 function getTurkeyHour(now: Date): number {
-  const parts = new Intl.DateTimeFormat("en-GB", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "Europe/Istanbul",
     hour: "2-digit",
-    hour12: false,
+    hourCycle: "h23",
   }).formatToParts(now);
   const hourPart = parts.find((p) => p.type === "hour");
-  const h = hourPart ? parseInt(hourPart.value, 10) : NaN;
-  return Number.isFinite(h) ? h : 0;
+  if (!hourPart) return 0;
+  const h = parseInt(hourPart.value, 10);
+  if (!Number.isFinite(h)) return 0;
+  if (h >= 24) return 0;
+  if (h < 0) return 0;
+  return h;
 }
 
 export function isAfterRecurringMorningCutoff(now: Date = new Date()): boolean {
