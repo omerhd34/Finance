@@ -12,13 +12,6 @@ import { loginSchema, type LoginInput } from "@/lib/schemas/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
@@ -51,12 +44,17 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md border-border bg-card">
-      <CardHeader>
-        <CardTitle>Giriş yap</CardTitle>
-        <CardDescription>IQfinansAI hesabınıza erişin.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Giriş yap
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          IQfinansAI hesabınla devam edin.
+        </p>
+      </div>
+
+      <div className="space-y-4">
         {passwordJustReset && (
           <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-foreground">
             Şifren güncellendi. Yeni şifrenle giriş yapabilirsin.
@@ -71,7 +69,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
           <Button
             type="button"
             variant="outline"
-            className="w-full cursor-pointer"
+            className="h-11 w-full cursor-pointer"
             onClick={() =>
               signIn("google", { callbackUrl: "/gosterge-paneli" })
             }
@@ -86,7 +84,9 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">veya</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                veya
+              </span>
             </div>
           </div>
         )}
@@ -111,7 +111,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
               />
               <Label
                 htmlFor="email"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-transparent px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:bg-background peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:text-xs ${
                   errors.email
                     ? "text-destructive peer-focus:text-destructive"
                     : "text-muted-foreground peer-focus:text-primary"
@@ -120,16 +120,11 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
                 E-posta
               </Label>
             </div>
+            {errors.email && (
+              <p className="text-xs text-destructive">{errors.email.message}</p>
+            )}
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-end">
-              <Link
-                href="/sifremi-unuttum"
-                className="text-xs text-muted-foreground hover:text-primary hover:underline"
-              >
-                Şifreni mi unuttun?
-              </Link>
-            </div>
             <div className="relative">
               <Input
                 id="password"
@@ -145,7 +140,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
               />
               <Label
                 htmlFor="password"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-transparent px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:bg-background peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:text-xs ${
                   errors.password
                     ? "text-destructive peer-focus:text-destructive"
                     : "text-muted-foreground peer-focus:text-primary"
@@ -167,30 +162,42 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Link
+              href="/sifremi-unuttum"
+              className="text-xs text-muted-foreground hover:text-primary hover:underline"
+            >
+              Şifreni mi unuttun?
+            </Link>
           </div>
           {errors.root && (
             <p className="text-sm text-destructive">{errors.root.message}</p>
           )}
           <Button
             type="submit"
-            className="w-full cursor-pointer"
+            className="h-11 w-full cursor-pointer"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Giriş..." : "Giriş yap"}
           </Button>
         </form>
-        <p className="text-center text-sm text-muted-foreground">
-          Hesabın yok mu?{" "}
-          <Link href="/kayit" className="text-primary hover:underline">
-            Kayıt ol
-          </Link>
-        </p>
-        <p className="text-center text-sm text-muted-foreground">
-          <Link href="/" className="text-primary hover:underline">
-            Anasayfaya dön
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Hesabın yok mu?{" "}
+        <Link
+          href="/kayit"
+          className="font-medium text-primary hover:underline"
+        >
+          Kayıt ol
+        </Link>
+      </p>
+    </div>
   );
 }

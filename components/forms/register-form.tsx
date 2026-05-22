@@ -12,13 +12,6 @@ import { registerSchema, type RegisterInput } from "@/lib/schemas/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import axios from "axios";
 import { apiClient } from "@/lib/client/api-client";
 
@@ -98,17 +91,22 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md border-border bg-card">
-      <CardHeader>
-        <CardTitle>Hesap oluştur</CardTitle>
-        <CardDescription>IQfinansAI ile ücretsiz başlayın.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Hesap oluştur
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Bilgilerini gir, birkaç saniyede başla.
+        </p>
+      </div>
+
+      <div className="space-y-4">
         {googleEnabled && (
           <Button
             type="button"
             variant="outline"
-            className="w-full cursor-pointer"
+            className="h-11 w-full cursor-pointer"
             onClick={() =>
               signIn("google", { callbackUrl: "/gosterge-paneli" })
             }
@@ -123,7 +121,9 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">veya</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                veya
+              </span>
             </div>
           </div>
         )}
@@ -147,7 +147,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
               />
               <Label
                 htmlFor="name"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-transparent px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:bg-background peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:text-xs ${
                   errors.name
                     ? "text-destructive peer-focus:text-destructive"
                     : "text-muted-foreground peer-focus:text-primary"
@@ -156,6 +156,9 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 Ad ve Soyad
               </Label>
             </div>
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <div className="relative">
@@ -173,7 +176,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
               />
               <Label
                 htmlFor="email"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-transparent px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:bg-background peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:text-xs ${
                   errors.email
                     ? "text-destructive peer-focus:text-destructive"
                     : "text-muted-foreground peer-focus:text-primary"
@@ -182,6 +185,9 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 E-posta
               </Label>
             </div>
+            {errors.email && (
+              <p className="text-xs text-destructive">{errors.email.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <div className="relative">
@@ -199,7 +205,7 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
               />
               <Label
                 htmlFor="password"
-                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-card px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:text-xs ${
+                className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-transparent px-1 transition-all peer-focus:-top-0.5 peer-focus:left-2 peer-focus:bg-background peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-0.5 peer-[:not(:placeholder-shown)]:left-2 peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:text-xs ${
                   errors.password
                     ? "text-destructive peer-focus:text-destructive"
                     : "text-muted-foreground peer-focus:text-primary"
@@ -221,30 +227,34 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
+            )}
           </div>
           {errors.root && (
             <p className="text-sm text-destructive">{errors.root.message}</p>
           )}
           <Button
             type="submit"
-            className="w-full cursor-pointer"
+            className="h-11 w-full cursor-pointer"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Kaydediliyor..." : "Kayıt ol"}
+            {isSubmitting ? "Kaydediliyor..." : "Hesap oluştur"}
           </Button>
         </form>
-        <p className="text-center text-sm text-muted-foreground">
-          Zaten hesabın var mı?{" "}
-          <Link href="/giris" className="text-primary hover:underline">
-            Giriş yap
-          </Link>
-        </p>
-        <p className="text-center text-sm text-muted-foreground">
-          <Link href="/" className="text-primary hover:underline">
-            Anasayfaya dön
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Zaten hesabın var mı?{" "}
+        <Link
+          href="/giris"
+          className="font-medium text-primary hover:underline"
+        >
+          Giriş yap
+        </Link>
+      </p>
+    </div>
   );
 }
