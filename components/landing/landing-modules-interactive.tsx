@@ -205,7 +205,7 @@ function ModuleTabContent({ module }: { module: LandingModuleItem }) {
           {highlights.map((item) => (
             <li
               key={item}
-              className="flex min-w-0 items-start gap-2.5 leading-relaxed text-foreground sm:gap-3 text-[13px] sm:text-[14px] lg:text-[15px]"
+              className="flex min-w-0 items-start gap-2.5 leading-relaxed text-foreground sm:gap-3 text-[13px] sm:text-[14px] lg:text-[16px]"
             >
               <span
                 className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"
