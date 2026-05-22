@@ -189,6 +189,32 @@ export function NotificationsPageClient() {
                       Bütçelere git
                     </Link>
                   )}
+                  {(n.type === "debt_due_soon" ||
+                    n.type === "debt_due_today" ||
+                    n.type === "debt_overdue") && (
+                    <Link
+                      href="/borc-ve-alacak"
+                      className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      Borç ve Alacak&apos;a git
+                    </Link>
+                  )}
+                  {n.type === "recurring_reminder_due" && (
+                    <Link
+                      href="/tekrarlayanlar"
+                      className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      Tekrarlayanlar&apos;a git
+                    </Link>
+                  )}
+                  {n.type === "recurring_auto_completed" && (
+                    <Link
+                      href="/islemler"
+                      className="mt-3 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      İşlemlere git
+                    </Link>
+                  )}
                 </article>
               </li>
             ))}
