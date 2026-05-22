@@ -26,6 +26,14 @@ const LandingModulesSection = dynamic(
   { loading: () => <LandingSectionFallback minHeight="32rem" /> },
 );
 
+const LandingDashboardSection = dynamic(
+  () =>
+    import("@/components/landing/dashboard-preview/section").then(
+      (m) => m.LandingDashboardSection,
+    ),
+  { loading: () => <LandingSectionFallback minHeight="32rem" /> },
+);
+
 const LandingWhySection = dynamic(
   () =>
     import("@/components/landing/why/section").then((m) => m.LandingWhySection),
@@ -70,6 +78,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <LandingHero />
         <LandingModulesSection />
+        <LandingDashboardSection />
         <LandingWhySection />
         <LandingFeaturesSection />
         <LandingTestimonialsSection />
