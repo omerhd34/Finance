@@ -7,6 +7,11 @@ import {
   type TransactionState,
 } from "@/store/slices/transactionSlice";
 
+function emitNotificationsRefresh(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("notifications:refresh"));
+}
+
 export type RecurringState = {
   items: RecurringRule[];
   loading: boolean;
@@ -26,6 +31,7 @@ export const fetchRecurringRules = createAsyncThunk(
       const { data } = await apiClient.get<{ items: RecurringRule[] }>(
         "/api/recurring",
       );
+      emitNotificationsRefresh();
       return data.items;
     } catch (e: unknown) {
       return rejectWithValue(parseApiErrorForUser(e, "Kayıtlar yüklenemedi"));
@@ -111,6 +117,7 @@ export const processDueRecurring = createAsyncThunk(
           }),
         );
       }
+      emitNotificationsRefresh();
       return data.created;
     } catch (e: unknown) {
       return rejectWithValue(parseApiErrorForUser(e, "İşlenemedi"));
