@@ -4,7 +4,7 @@ import { DashboardPreviewShell } from "@/components/landing/dashboard-preview/da
 export function LandingDashboardSection() {
   return (
     <section
-      className="relative border-t border-border/60 py-16 md:py-24"
+      className="relative hidden border-t border-border/60 py-16 md:py-24 lg:block"
       aria-labelledby="landing-dashboard-heading"
     >
       <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
