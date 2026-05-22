@@ -1,3 +1,4 @@
+import { resolveResendFrom } from "@/lib/email/resend-sender";
 import { getSiteUrl } from "@/lib/site/site-url";
 
 function escapeHtml(text: string): string {
@@ -224,8 +225,7 @@ export async function sendSupportContactEmail(params: {
     return { ok: false, message: "Sunucuda RESEND_API_KEY tanımlı değil." };
   }
 
-  const from =
-    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
+  const from = resolveResendFrom();
 
   const html = buildSupportContactEmailHtml(params);
   const text = buildSupportContactEmailText(params);

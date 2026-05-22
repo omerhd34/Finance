@@ -1,3 +1,5 @@
+import { resolveResendFrom } from "@/lib/email/resend-sender";
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -123,8 +125,7 @@ export async function sendEmailVerificationMessage(params: {
     return false;
   }
 
-  const from =
-    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
+  const from = resolveResendFrom();
 
   const html = buildVerifyEmailHtml(params.verifyUrl);
   const text = buildVerifyEmailText(params.verifyUrl);

@@ -1,6 +1,7 @@
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 import { notification, prisma } from "@/lib/db/prisma";
 import { debtRemaining } from "@/lib/debts/debt-remaining";
+import { resolveResendFrom } from "@/lib/email/resend-sender";
 import { formatDateTR, formatMoney } from "@/lib/common/utils";
 
 type DebtDirection = "RECEIVABLE" | "PAYABLE";
@@ -189,8 +190,7 @@ async function sendDebtAlertEmail(params: {
     return false;
   }
 
-  const from =
-    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
+  const from = resolveResendFrom();
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",

@@ -1,3 +1,5 @@
+import { resolveResendFrom } from "@/lib/email/resend-sender";
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -130,8 +132,7 @@ export async function sendPasswordResetEmail(params: {
     return false;
   }
 
-  const from =
-    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
+  const from = resolveResendFrom();
 
   const html = buildPasswordResetEmailHtml(params.resetUrl);
   const text = buildPasswordResetEmailText(params.resetUrl);

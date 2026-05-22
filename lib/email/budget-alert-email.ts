@@ -1,3 +1,5 @@
+import { resolveResendFrom } from "@/lib/email/resend-sender";
+
 export async function sendBudgetAlertEmail(params: {
   to: string;
   subject: string;
@@ -13,8 +15,7 @@ export async function sendBudgetAlertEmail(params: {
     return false;
   }
 
-  const from =
-    process.env.RESEND_FROM?.trim() ?? "IQfinansAI <onboarding@resend.dev>";
+  const from = resolveResendFrom();
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
