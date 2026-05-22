@@ -71,8 +71,8 @@ export function MobileComparisonCard({
             planColumnCellClass,
           )}
         >
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-            Premium
+          <span className="text-[10px] font-semibold tracking-wide text-muted-foreground">
+            PREMIUM
           </span>
           <FeatureAvailability available={premiumAvailable} />
         </div>
