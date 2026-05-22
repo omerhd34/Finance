@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { LandingHeroTrust } from "@/components/landing/landing-hero-trust";
 
 const LandingHeroIsometricIllustration = dynamic(
@@ -16,9 +16,6 @@ const primaryCtaClass =
 
 const secondaryCtaClass =
   "inline-flex h-10 flex-1 items-center justify-center rounded-full border border-white/25 bg-white/12 px-5 text-sm text-white backdrop-blur-md transition hover:bg-white/22 sm:h-12 sm:flex-initial sm:px-8 sm:text-base";
-
-const faqCtaClass =
-  "group inline-flex h-10 flex-1 items-center justify-center gap-1 rounded-full border border-emerald-400/35 bg-emerald-500/10 px-4 text-sm font-semibold text-emerald-100 backdrop-blur-sm transition hover:border-emerald-300/60 hover:bg-emerald-400/18 hover:text-emerald-50 sm:h-12 sm:flex-initial sm:gap-1.5 sm:px-5";
 
 export function LandingHero() {
   return (
@@ -83,13 +80,6 @@ export function LandingHero() {
               <div className="flex w-full items-center justify-center gap-2 sm:w-auto">
                 <Link href="/giris" className={secondaryCtaClass}>
                   Hesabım var
-                </Link>
-                <Link href="/sss" className={faqCtaClass}>
-                  SSS
-                  <ArrowUpRight
-                    className="h-3.5 w-3.5 opacity-70 transition group-hover:translate-x-0.5 group-hover:opacity-100"
-                    aria-hidden
-                  />
                 </Link>
               </div>
             </div>
