@@ -70,12 +70,12 @@ export function LandingHero() {
             <p className="mx-auto mt-3 max-w-xl text-pretty text-sm leading-relaxed text-white/85 sm:mt-8 sm:text-lg md:text-xl xl:mx-0">
               Yapay zekâ destekli{" "}
               <strong className="font-semibold text-white">IQfinansAI</strong>{" "}
-              ile harcamalarını tek ekrandan gör, hedeflerine bilinçli ilerle.
+              ile 10 gün premium denemeni başlat, harcamalarını tek ekrandan gör.
             </p>
 
             <div className="mt-5 flex flex-col items-center justify-center gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-3 xl:justify-start">
               <Link href="/kayit" className={primaryCtaClass}>
-                Ücretsiz Kayıt Ol
+                10 Gün Premium Dene
               </Link>
               <div className="flex w-full items-center justify-center gap-2 sm:w-auto">
                 <Link href="/giris" className={secondaryCtaClass}>

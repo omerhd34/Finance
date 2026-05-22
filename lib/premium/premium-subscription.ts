@@ -2,7 +2,9 @@ import { prisma } from "@/lib/db/prisma";
 
 export {
   PREMIUM_SUBSCRIPTION_DAYS,
+  PREMIUM_TRIAL_DAYS,
   addPremiumPeriod,
+  addPremiumTrialPeriod,
 } from "@/lib/premium/premium-subscription-constants";
 
 export async function ensurePremiumNotExpired(userId: string): Promise<void> {
