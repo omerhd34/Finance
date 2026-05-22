@@ -3,6 +3,10 @@ import { Prisma } from "@prisma/client";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { prisma, recurringRule } from "@/lib/db/prisma";
 import {
+  isAfterRecurringMorningCutoff,
+  sendRecurringAutoCompletedAlert,
+} from "@/lib/recurring/recurring-reminder-alerts";
+import {
   addRecurringInterval,
   endOfToday,
   isDueOrOverdue,
@@ -10,6 +14,7 @@ import {
   normalizeDueDate,
   type RecurringFrequency,
 } from "@/lib/recurring/recurring-schedule";
+import type { RecurringRule as RecurringRuleType } from "@/types/recurring";
 
 export function recurringSlotKeyFor(ruleId: string, on: Date): string {
   return `${ruleId}|${format(on, "yyyy-MM-dd")}`;
@@ -68,9 +73,31 @@ export function processAutoRecurringForUser(
 async function runProcessAutoRecurringForUser(
   userId: string,
 ): Promise<{ created: number }> {
-  const rules = await recurringRule.findMany({
-    where: { userId, isActive: true, mode: "AUTO" },
-  });
+  if (!isAfterRecurringMorningCutoff()) {
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "[recurring-service] Türkiye saati 09:00 öncesi; AUTO işleme ertelendi.",
+      );
+    }
+    return { created: 0 };
+  }
+
+  const [user, rules] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        email: true,
+        currency: true,
+        notificationsEnabled: true,
+      } as { email: true; currency: true; notificationsEnabled: true },
+    }),
+    recurringRule.findMany({
+      where: { userId, isActive: true, mode: "AUTO" },
+    }),
+  ]);
+  const userEmail = user?.email ?? null;
+  const userCurrency = user?.currency ?? "TL";
+  const notificationsEnabled = user?.notificationsEnabled !== false;
   const nowEnd = endOfToday();
   let created = 0;
 
@@ -131,6 +158,17 @@ async function runProcessAutoRecurringForUser(
             date: cursor,
           });
         }
+        try {
+          await sendRecurringAutoCompletedAlert({
+            userId,
+            userEmail,
+            notificationsEnabled,
+            currency: userCurrency,
+            rule: rule as unknown as RecurringRuleType,
+            occurredOn: cursor,
+            slotKey,
+          });
+        } catch {}
         created++;
       } catch (e) {
         if (!isUniqueConstraintError(e)) throw e;
