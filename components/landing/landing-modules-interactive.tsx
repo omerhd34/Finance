@@ -38,6 +38,18 @@ const PREVIEW_BY_MODULE_ID: Record<string, ComponentType> = {
   "09": IQfinansAIAsistaniPreview,
 };
 
+const PAGE_NAME_BY_MODULE_ID: Record<string, string> = {
+  "01": "Ana Panel",
+  "02": "İşlemler",
+  "03": "Bütçeler",
+  "04": "Borç ve Alacak",
+  "05": "Kur Dönüşüm",
+  "06": "Hesaplamalar",
+  "07": "Yatırım",
+  "08": "IQfinansAI Analiz",
+  "09": "IQfinansAI Asistanı",
+};
+
 const MODULE_HIGHLIGHTS: Record<string, string[]> = {
   "01": [
     "Aylık gelir-gider trendini çubuk ve çizgi grafiklerle dönem dönem karşılaştır.",
@@ -139,16 +151,15 @@ function ModulePreviewSheet({ module }: { module: LandingModuleItem }) {
         className="w-full sm:max-w-2xl lg:max-w-3xl xl:max-w-4xl"
       >
         <SheetHeader>
-          <div className="flex items-start gap-2.5 pr-8">
-            <ModuleNumberBadge id={module.id} active />
-            <div className="min-w-0">
-              <SheetTitle>{module.title}</SheetTitle>
-              <SheetDescription className="mt-1 text-[13px] leading-snug">
-                {module.description}
-              </SheetDescription>
-            </div>
+          <div className="flex items-center gap-3 pr-8">
+            <SheetTitle className="min-w-0 wrap-break-word text-lg font-bold tracking-tight sm:text-xl">
+              {PAGE_NAME_BY_MODULE_ID[module.id] ?? module.title}
+            </SheetTitle>
             {module.premium ? <ModulePremiumBadge /> : null}
           </div>
+          <SheetDescription className="sr-only">
+            {module.title} modülü canlı önizlemesi
+          </SheetDescription>
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <Preview />
