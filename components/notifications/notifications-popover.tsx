@@ -182,6 +182,24 @@ export function NotificationsPopover() {
                             Borç ve Alacak&apos;a git
                           </Link>
                         )}
+                        {n.type === "recurring_reminder_due" && (
+                          <Link
+                            href="/tekrarlayanlar"
+                            className="mt-2 inline-block text-xs font-medium text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Tekrarlayanlar&apos;a git
+                          </Link>
+                        )}
+                        {n.type === "recurring_auto_completed" && (
+                          <Link
+                            href="/islemler"
+                            className="mt-2 inline-block text-xs font-medium text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            İşlemlere git
+                          </Link>
+                        )}
                       </button>
                       <Button
                         type="button"
