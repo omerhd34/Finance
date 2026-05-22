@@ -7,7 +7,7 @@ Sunucu tarafı ağırlıklı bir mimaride **React Server Components**, **Route H
 ## Önizleme
 
 <p align="center">
-  <a href="https://youtu.be/REPLACE_ME">
+  <a href="https://youtu.be/NxXwm90ImfQ">
     <img src="./public/website3.png" alt="Finance uygulama demosu — YouTube'da izlemek için tıklayın" width="920" />
   </a>
   <br />
