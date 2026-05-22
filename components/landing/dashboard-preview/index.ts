@@ -1,0 +1,13 @@
+export { LandingDashboardSection } from "@/components/landing/dashboard-preview/section";
+export { DashboardPreviewShell } from "@/components/landing/dashboard-preview/dashboard-preview-shell";
+export { AnaPanelPreview } from "@/components/landing/dashboard-preview/ana-panel";
+export { IslemlerPreview } from "@/components/landing/dashboard-preview/islemler";
+export { TekrarlayanPreview } from "@/components/landing/dashboard-preview/tekrarlayan";
+export { ButcelerPreview } from "@/components/landing/dashboard-preview/butceler";
+export { BorcVeAlacakPreview } from "@/components/landing/dashboard-preview/borc-ve-alacak";
+export { KurDonusumPreview } from "@/components/landing/dashboard-preview/kur-donusum";
+export { HesaplamalarPreview } from "@/components/landing/dashboard-preview/hesaplamalar";
+export { YatirimPreview } from "@/components/landing/dashboard-preview/yatirim";
+export { IQfinansAIAnalizPreview } from "@/components/landing/dashboard-preview/iqfinansai-analiz";
+export { IQfinansAIAsistaniPreview } from "@/components/landing/dashboard-preview/iqfinansai-asistani";
+export { BildirimlerPreview } from "@/components/landing/dashboard-preview/bildirimler";
