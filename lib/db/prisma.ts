@@ -85,6 +85,23 @@ export const budgetAlertLog: BudgetAlertLogDelegate = (
   prisma as unknown as { budgetAlertLog: BudgetAlertLogDelegate }
 ).budgetAlertLog;
 
+type RecurringAlertLogRow = {
+  id: string;
+  ruleId: string;
+  slotKey: string;
+  createdAt: Date;
+};
+
+type RecurringAlertLogDelegate = {
+  findFirst(args: object): Promise<RecurringAlertLogRow | null>;
+  create(args: { data: object }): Promise<RecurringAlertLogRow>;
+  deleteMany(args: { where: object }): Promise<{ count: number }>;
+};
+
+export const recurringAlertLog: RecurringAlertLogDelegate = (
+  prisma as unknown as { recurringAlertLog: RecurringAlertLogDelegate }
+).recurringAlertLog;
+
 type PasswordResetTokenRow = {
   id: string;
   email: string;
