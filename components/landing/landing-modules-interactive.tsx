@@ -52,58 +52,76 @@ const PAGE_NAME_BY_MODULE_ID: Record<string, string> = {
 
 const MODULE_HIGHLIGHTS: Record<string, string[]> = {
   "01": [
+    "Günlük, haftalık veya aylık dönem seçerek gelir-gider dengesini ayrıntılı görüntüle.",
     "Aylık gelir-gider trendini çubuk ve çizgi grafiklerle dönem dönem karşılaştır.",
     "Kategori bazlı pasta grafiğinde en çok hangi alana harcadığını anında gör.",
     "Tasarruf oranını ve önceki döneme göre değişimi öne çıkan KPI kartlarıyla takip et.",
     "Net bakiye, borç-alacak ve yatırım kar/zararını tek panoramada izle.",
+    "Finansal sağlık skorunla genel durumu tek bakışta özetle.",
   ],
   "02": [
-    "Tarih, tutar ve kategori ağacıyla saniyeler içinde işlem ekle veya düzenle.",
+    "Tarih, tutar ve geniş kategori ağacıyla saniyeler içinde işlem ekle veya düzenle.",
     "Tekrarlayan faturalar ve abonelikler için vade planla, yaklaşan ödemelerde uyarı al.",
+    "Gelişmiş filtre, etiketleme ve arama ile binlerce işlem arasından ilgili kayda tek tıkla ulaş.",
     "Premium’da fiş veya fatura fotoğrafını yükle; OCR tutar, tarih ve kategoriyi otomatik doldursun.",
-    "Gelişmiş filtre ve arama ile binlerce işlem arasından ilgili kayda tek tıkla ulaş.",
+    "Manuel veri girişine harcadığın zamanı en aza indir, kayıtların hep güncel kalsın.",
+    "Geçmiş işlemleri kolayca dışa aktararak yedekle veya raporlarına dahil et.",
   ],
   "03": [
-    "Ev, tatil, acil durum veya emeklilik için ayrı birikim hedefleri tanımla.",
-    "Hedef tutar, bugüne kadar biriken miktar ve kalan süreyi ilerleme çubuğuyla izle.",
+    "Ev, tatil, eğitim, acil durum veya emeklilik için ayrı birikim hedefleri tanımla.",
+    "Hedef tutar, bugüne kadar biriken miktar ve kalan süreyi renkli ilerleme çubuğuyla izle.",
     "Aylık katkı senaryolarını değiştirerek hedefe ne zaman ulaşacağını anında gör.",
+    "Farklı tasarruf planlarını yan yana kıyaslayarak senin için en uygun stratejiyi seç.",
     "Hedef yaklaştıkça akıllı bildirimlerle motivasyon ve hatırlatma al.",
+    "Tasarruf alışkanlığını gelişim önerileri ve kilometre taşlarıyla sürekli güçlendir.",
   ],
   "04": [
     "Kişi veya kuruma olan borç ve alacaklarını ayrı kalemler halinde sınıflandır.",
-    "Yapılan ödemelerle kalan bakiye, vade ve faiz bilgilerini anında güncelle.",
+    "Her kayıt için vade tarihi, faiz oranı ve geri ödeme planını esnekçe belirle.",
+    "Yapılan ödemelerle kalan bakiye, vade ve faiz bilgileri anında güncellensin.",
     "Toplam alacak, toplam borç ve net pozisyonu tek karta sığdırılmış özet panelden takip et.",
-    "Vadesi gelen kayıtlar için otomatik hatırlatma ve geciken ödemelerde uyarı sistemi.",
+    "Vadesi gelen kayıtlar için otomatik hatırlatma, geciken ödemelerde uyarı al.",
+    "Kimden ne alacağını veya kime ne borcun olduğunu tek listede net biçimde gör.",
   ],
   "05": [
     "TL, USD, EUR, GBP ve daha birçok dövizde işlem girerek ana paranı tek bir birime çevir.",
+    "Farklı dövizlerdeki gelir, gider ve yatırımları tek platformda topluca yönet.",
     "Güncel TCMB referans kurları ve gram altın gibi emtia fiyatlarını anlık olarak takip et.",
     "Çoklu para birimli işlemleri raporlara dahil ederek toplu, okunabilir özetler oluştur.",
     "Kur değişimlerine göre portföy değerinin nasıl etkilendiğini grafiklerle gör.",
+    "Global harcama alışkanlıklarını panel ve grafiklerle net biçimde analiz et.",
   ],
   "06": [
     "Konut, ihtiyaç ve taşıt kredisi için aylık taksit, faiz ve toplam ödeme tablolarını üret.",
     "Mevduat faizi, KDV, birikim hedefi, enflasyon (TÜFE) ve BES senaryolarını tek modülde hesapla.",
     "Detaylı ödeme ve birikim planlarını çubuk ve çizgi grafiklerle karşılaştırmalı incele.",
+    "Farklı vade, oran ve katkı senaryolarını yan yana koyarak en uygun stratejiyi seç.",
     "Tüm hesaplama sonuçlarını Excel veya PDF olarak indirip arşivle ya da paylaş.",
+    "Geçmiş hesaplamalara dönerek farklı dönemlerdeki kararlarını kolayca gözden geçir.",
   ],
   "07": [
     "Hisse senedi, altın, döviz, kripto ve emtia pozisyonlarını tek panelde topluca yönet.",
     "Canlı kotasyonlarla anlık değer, ortalama maliyet ve toplam kar/zararı eş zamanlı izle.",
     "Tür bazında dağılım grafikleriyle portföyünün risk konsantrasyonunu netçe gör.",
+    "Çeşitlendirme fırsatlarını hızla tespit ederek pozisyonlarını dengele.",
     "Yatırım kararlarını destekleyecek geçmişe yönelik kar/zarar trendlerini analiz et.",
+    "Toplam pozisyon büyüklüğünü ve getiri performansını tek ekranda incele.",
   ],
   "08": [
     "Yapay zekâ; gelir-gider verilerinden kategori yorumları ve trend analizleri içeren tam metin rapor üretir.",
     "Tasarruf fırsatları, harcama anomalileri ve önerilen aksiyonlar kişiselleştirilmiş şekilde listelenir.",
-    "Raporu PDF formatında indirip arşivleyebilir, güvendiğin biriyle veya danışmanınla paylaşabilirsin.",
     "Aylık raporlama akışıyla bir önceki dönemin gelişimini sistematik biçimde karşılaştır.",
+    "Gizli kalmış optimizasyon noktalarını AI sayesinde keşfederek kararlarını güçlendir.",
+    "Raporu PDF formatında indirip arşivleyebilir, güvendiğin biriyle veya danışmanınla paylaşabilirsin.",
+    "Geçmiş raporlarla finansal yolculuğunu belgeleyerek ilerlemeni gözle görür biçimde takip et.",
   ],
   "09": [
     "Sohbet ekranından bütçe ve harcama alışkanlıklarını sor; yanıtlar gerçek kayıtlarına dayanır.",
     "Hangi kalemlere odaklanman gerektiği, ay sonu riskleri ve gelişim önerileri kişiye özel hazırlanır.",
     "Sıkça sorulan finansal sorulara saniyeler içinde veriye dayalı, kanıtlı yanıtlar alırsın.",
-    "Asistan, yatırım, borç ve tasarruf konularında uygulanabilir, somut adımlar önerir.",
+    "Asistan; yatırım, borç ve tasarruf konularında uygulanabilir, somut adımlar önerir.",
+    "Uzun vadeli finansal gelişimini destekleyecek strateji önerileriyle yol haritan netleşir.",
+    "Tahminler yerine kendi verilerine dayanan kanıtlı yanıtlarla daha bilinçli kararlar alırsın.",
   ],
 };
 
@@ -181,16 +199,13 @@ function ModuleTabContent({ module }: { module: LandingModuleItem }) {
         </h3>
         {module.premium ? <ModulePremiumBadge /> : null}
       </div>
-      <p className="mt-4 wrap-break-word text-[14px] leading-[1.7] text-muted-foreground sm:mt-5 sm:text-[15px] sm:leading-[1.75] lg:min-h-44 lg:text-base lg:leading-[1.8]">
-        {module.description}
-      </p>
 
       {highlights.length > 0 ? (
-        <ul className="mt-5 flex flex-col gap-y-3 sm:mt-7 sm:gap-y-3.5">
+        <ul className="mt-6 flex flex-1 flex-col justify-between gap-y-3.5 sm:mt-7 sm:gap-y-4 lg:mt-8 lg:gap-y-5">
           {highlights.map((item) => (
             <li
               key={item}
-              className="flex min-w-0 items-start gap-2.5 text-[13px] leading-relaxed text-foreground sm:gap-3 sm:text-[14px] lg:text-[15px]"
+              className="flex min-w-0 items-start gap-2.5 leading-relaxed text-foreground sm:gap-3 text-[13px] sm:text-[14px] lg:text-[15px]"
             >
               <span
                 className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"
@@ -202,7 +217,7 @@ function ModuleTabContent({ module }: { module: LandingModuleItem }) {
         </ul>
       ) : null}
 
-      <div className="mt-auto flex justify-end pt-6 sm:pt-8">
+      <div className="flex justify-end pt-8 sm:pt-10">
         <ModulePreviewSheet module={module} />
       </div>
     </div>
@@ -262,12 +277,8 @@ function MobileModuleAccordionItem({
         <div className="min-h-0 overflow-hidden">
           <div className="px-4 pb-4 sm:px-5 sm:pb-5">
             <div className="border-t border-border/60 pt-4 sm:pt-5">
-              <p className="wrap-break-word text-[14px] leading-[1.7] text-muted-foreground sm:text-[15px] sm:leading-[1.75]">
-                {module.description}
-              </p>
-
               {highlights.length > 0 ? (
-                <ul className="mt-4 flex flex-col gap-y-2.5 sm:mt-5 sm:gap-y-3">
+                <ul className="flex flex-col gap-y-2.5 sm:gap-y-3">
                   {highlights.map((item) => (
                     <li
                       key={item}
