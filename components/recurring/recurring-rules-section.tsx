@@ -9,6 +9,7 @@ type Props = {
   items: RecurringRule[];
   loading: boolean;
   currency: string;
+  filtered?: boolean;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 };
@@ -17,6 +18,7 @@ export function RecurringRulesSection({
   items,
   loading,
   currency,
+  filtered = false,
   onEdit,
   onDelete,
 }: Props) {
@@ -28,7 +30,9 @@ export function RecurringRulesSection({
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          Henüz tekrarlayan işlem yok. Yeni işlem ekleyerek başlayın.
+          {filtered
+            ? "Seçilen filtrelere uyan tekrarlayan işlem bulunamadı."
+            : "Henüz tekrarlayan işlem yok. Yeni işlem ekleyerek başlayın."}
         </CardContent>
       </Card>
     );
