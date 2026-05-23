@@ -42,8 +42,11 @@ function txDescription(
 
 export function processAutoRecurringForUser(
   userId: string,
+  options: { sendAlerts?: boolean } = {},
 ): Promise<{ created: number }> {
-  const existing = processDueInFlight.get(userId);
+  const sendAlerts = options.sendAlerts !== false;
+  const cacheKey = `${userId}|${sendAlerts ? "1" : "0"}`;
+  const existing = processDueInFlight.get(cacheKey);
   if (existing) return existing;
 
   let resolve!: (v: { created: number }) => void;
@@ -53,16 +56,16 @@ export function processAutoRecurringForUser(
     reject = rej;
   });
 
-  processDueInFlight.set(userId, p);
+  processDueInFlight.set(cacheKey, p);
 
   void (async () => {
     try {
-      resolve(await runProcessAutoRecurringForUser(userId));
+      resolve(await runProcessAutoRecurringForUser(userId, sendAlerts));
     } catch (e) {
       reject(e);
     } finally {
-      if (processDueInFlight.get(userId) === p) {
-        processDueInFlight.delete(userId);
+      if (processDueInFlight.get(cacheKey) === p) {
+        processDueInFlight.delete(cacheKey);
       }
     }
   })();
@@ -72,6 +75,7 @@ export function processAutoRecurringForUser(
 
 async function runProcessAutoRecurringForUser(
   userId: string,
+  sendAlerts: boolean,
 ): Promise<{ created: number }> {
   if (!isAfterRecurringMorningCutoff()) {
     if (process.env.NODE_ENV === "development") {
@@ -158,17 +162,19 @@ async function runProcessAutoRecurringForUser(
             date: cursor,
           });
         }
-        try {
-          await sendRecurringAutoCompletedAlert({
-            userId,
-            userEmail,
-            notificationsEnabled,
-            currency: userCurrency,
-            rule: rule as unknown as RecurringRuleType,
-            occurredOn: cursor,
-            slotKey,
-          });
-        } catch {}
+        if (sendAlerts) {
+          try {
+            await sendRecurringAutoCompletedAlert({
+              userId,
+              userEmail,
+              notificationsEnabled,
+              currency: userCurrency,
+              rule: rule as unknown as RecurringRuleType,
+              occurredOn: cursor,
+              slotKey,
+            });
+          } catch {}
+        }
         created++;
       } catch (e) {
         if (!isUniqueConstraintError(e)) throw e;

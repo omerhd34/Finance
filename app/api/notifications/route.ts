@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { notification } from "@/lib/db/prisma";
-import { evaluateRecurringReminderAlerts } from "@/lib/recurring/recurring-reminder-alerts";
-import { processAutoRecurringForUser } from "@/lib/recurring/recurring-service";
 
 export async function GET(req: Request) {
   try {
@@ -11,19 +9,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
     const userId = session.user.id;
-
-    void Promise.allSettled([
-      processAutoRecurringForUser(userId).catch((e) => {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[notifications] AUTO process error:", e);
-        }
-      }),
-      evaluateRecurringReminderAlerts(userId).catch((e) => {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[notifications] reminder evaluator error:", e);
-        }
-      }),
-    ]);
 
     const { searchParams } = new URL(req.url);
     const countOnly = searchParams.get("countOnly") === "1";

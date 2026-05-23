@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { recurringRule } from "@/lib/db/prisma";
-import { evaluateRecurringReminderAlerts } from "@/lib/recurring/recurring-reminder-alerts";
 import { normalizeDueDate } from "@/lib/recurring/recurring-schedule";
 import { recurringCreateSchema } from "@/lib/schemas/validations";
 
@@ -12,9 +11,6 @@ export async function GET() {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
-    try {
-      await evaluateRecurringReminderAlerts(session.user.id);
-    } catch {}
     const items = await recurringRule.findMany({
       where: { userId: session.user.id },
       orderBy: [{ isActive: "desc" }, { nextDueDate: "asc" }],
