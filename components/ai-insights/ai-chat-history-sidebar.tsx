@@ -4,6 +4,8 @@ import { useMemo, useState, type ReactNode } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { tr } from "date-fns/locale";
 import {
+  ChevronDown,
+  ChevronUp,
   MessageSquarePlus,
   MoreHorizontal,
   Search,
@@ -87,6 +89,9 @@ export function AiChatHistorySidebar({
   >(null);
   const [pendingDeleteConversationId, setPendingDeleteConversationId] =
     useState<string | null>(null);
+  const [expandedOnMobile, setExpandedOnMobile] = useState(false);
+
+  const MOBILE_VISIBLE_LIMIT = 3;
 
   const groups = useMemo(() => groupChatTurns(turns), [turns]);
 
@@ -171,7 +176,7 @@ export function AiChatHistorySidebar({
           <div className="flex items-start justify-between gap-2 px-1">
             <div className="min-w-0">
               <p className="text-lg font-semibold leading-tight text-foreground">
-                IQfinansAI mesajları
+                Mesajlar
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Kayıtlı soru–cevaplarınız
@@ -182,17 +187,18 @@ export function AiChatHistorySidebar({
               <Button
                 type="button"
                 size="sm"
-                className="h-9 shrink-0 cursor-pointer gap-1.5 px-3 text-xs font-semibold disabled:cursor-not-allowed"
+                aria-label="Yeni soru"
+                className="h-9 w-9 shrink-0 cursor-pointer p-0 text-xs font-semibold disabled:cursor-not-allowed md:w-auto md:gap-1.5 md:px-3"
                 disabled={disabled || newQuestionDisabled}
                 title={
                   newQuestionDisabled
                     ? "Günlük yeni mesajlaşma limitine ulaştınız. Yarın tekrar deneyebilir veya mevcut sohbetlere devam edebilirsiniz."
-                    : undefined
+                    : "Yeni soru"
                 }
                 onClick={() => onNewQuestion()}
               >
                 <MessageSquarePlus className="size-4 shrink-0" aria-hidden />
-                Yeni soru
+                <span className="hidden md:inline">Yeni soru</span>
               </Button>
             </div>
           </div>
@@ -213,7 +219,7 @@ export function AiChatHistorySidebar({
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+        <div className="flex flex-1 flex-col overflow-visible md:min-h-0 md:overflow-y-auto md:overscroll-contain">
           {loading ? (
             <div
               className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-12"
@@ -234,14 +240,20 @@ export function AiChatHistorySidebar({
                 </p>
               ) : (
                 <ul className="py-1">
-                  {filteredGroups.map((group) => {
+                  {filteredGroups.map((group, idx) => {
                     const last = group.turns[group.turns.length - 1];
                     const active =
                       group.conversationId === selectedConversationId;
                     const busy =
                       deletingConversationId === group.conversationId;
+                    const isOverMobileLimit = idx >= MOBILE_VISIBLE_LIMIT;
+                    const hiddenOnMobile =
+                      isOverMobileLimit && !expandedOnMobile;
                     return (
-                      <li key={group.conversationId}>
+                      <li
+                        key={group.conversationId}
+                        className={cn(hiddenOnMobile && "hidden md:block")}
+                      >
                         <div
                           className={cn(
                             "group flex w-full items-stretch gap-0 border-b border-transparent transition-colors dark:border-white/5",
@@ -318,8 +330,40 @@ export function AiChatHistorySidebar({
                   })}
                 </ul>
               )}
+              {filteredGroups.length > MOBILE_VISIBLE_LIMIT ? (
+                <div className="border-t border-border bg-muted/40 px-2 py-2 md:hidden dark:border-white/10 dark:bg-[#111b21]/95">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="h-10 w-full cursor-pointer gap-1.5 text-sm font-medium"
+                    disabled={disabled}
+                    onClick={() => setExpandedOnMobile((prev) => !prev)}
+                    aria-expanded={expandedOnMobile}
+                  >
+                    {expandedOnMobile ? (
+                      <>
+                        <ChevronUp className="size-4" aria-hidden />
+                        Daha az göster
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="size-4" aria-hidden />
+                        Diğerleri (
+                        {filteredGroups.length - MOBILE_VISIBLE_LIMIT})
+                      </>
+                    )}
+                  </Button>
+                </div>
+              ) : null}
               {hasMoreHistory && turns.length > 0 ? (
-                <div className="border-t border-border bg-muted/40 px-2 py-2 dark:border-white/10 dark:bg-[#111b21]/95">
+                <div
+                  className={cn(
+                    "border-t border-border bg-muted/40 px-2 py-2 dark:border-white/10 dark:bg-[#111b21]/95",
+                    filteredGroups.length > MOBILE_VISIBLE_LIMIT &&
+                      !expandedOnMobile &&
+                      "hidden md:block",
+                  )}
+                >
                   <Button
                     type="button"
                     variant="secondary"

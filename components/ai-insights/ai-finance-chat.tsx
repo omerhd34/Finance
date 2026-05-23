@@ -265,9 +265,9 @@ export function AiFinanceChat() {
 
   return (
     <div className="space-y-4">
-      <div className="flex h-[min(560px,72vh)] min-h-[300px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm md:flex-row">
+      <div className="flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm md:h-[min(560px,72vh)] md:min-h-[300px] md:flex-row">
         <AiChatHistorySidebar
-          className="h-[min(220px,36vh)] w-full shrink-0 overflow-hidden border-b md:h-full md:min-h-0 md:w-[clamp(300px,36vw,460px)] md:shrink-0 md:border-b-0 md:border-r"
+          className="w-full shrink-0 border-b md:h-full md:min-h-0 md:w-[clamp(300px,36vw,460px)] md:shrink-0 md:overflow-hidden md:border-b-0 md:border-r"
           turns={historyTurns}
           loading={historyLoading}
           error={historyError}
@@ -294,7 +294,7 @@ export function AiFinanceChat() {
           onDeleteConversation={deleteConversation}
         />
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="flex h-[min(440px,60vh)] min-h-[320px] min-w-0 flex-col md:h-auto md:min-h-0 md:flex-1">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-4 md:p-5">
             {messages.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground md:text-base">
