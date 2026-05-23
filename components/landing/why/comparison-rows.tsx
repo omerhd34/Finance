@@ -45,8 +45,8 @@ export function ComparisonRows({
             "bg-linear-to-b from-emerald-500/6 to-transparent dark:from-emerald-400/5",
           )}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-600/90 dark:text-emerald-400/90">
-            IQfinansAI ile
+          <p className="text-[10px] font-semibold  tracking-[0.2em] text-emerald-600/90 dark:text-emerald-400/90">
+            IQfinansAI
           </p>
           <ul className="flex min-h-0 flex-col gap-3">
             {positiveItems.map((text) => (
@@ -64,7 +64,7 @@ export function ComparisonRows({
             "bg-linear-to-b from-rose-500/4 to-transparent dark:from-rose-400/5",
           )}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-600/80 dark:text-rose-400/75">
+          <p className="text-[10px] font-semibold tracking-[0.2em] text-rose-600/80 dark:text-rose-400/75">
             Dağınık süreçte
           </p>
           <ul className="flex min-h-0 flex-col gap-3">
