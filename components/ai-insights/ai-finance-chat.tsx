@@ -350,7 +350,7 @@ export function AiFinanceChat() {
                     void send();
                   }
                 }}
-                placeholder="Her konuda sorabilirsiniz — örn. Türkiye’nin başkenti, bir metni özetle, bu ay en çok hangi kategoriye harcadım?"
+                placeholder="Bu ay en çok hangi kategoriye harcadım?"
                 rows={2}
                 className="min-h-[72px] flex-1 resize-none"
                 disabled={loading}
