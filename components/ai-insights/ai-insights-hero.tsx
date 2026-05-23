@@ -28,19 +28,25 @@ export function AiAnalizHero() {
           </h2>
           <div className="space-y-3 text-sm leading-relaxed text-muted-foreground text-pretty md:text-base">
             <p>
-              Son <span className="font-medium text-foreground/85">30 gün</span>{" "}
-              giderleriniz ile güncel{" "}
+              <span className="font-medium text-foreground/85">
+                Mevcut bütçe döneminizin
+              </span>{" "}
+              gelir ve giderleri, güncel{" "}
               <span className="font-medium text-foreground/85">
                 borç ve alacak
               </span>{" "}
-              kayıtlarınız birlikte okunur; rapor tek bir Türkçe metinde
-              özetlenir.
+              kayıtlarınızla birlikte okunur; rapor tek bir Türkçe metinde
+              özetlenir. Pencere uzunluğu, profilinizdeki{" "}
+              <span className="font-medium text-foreground/85">
+                ay başlangıç günü
+              </span>{" "}
+              ayarına göre belirlenir (ay başlangıcından bugüne kadar).
             </p>
             <p>
               Çıktıda genel değerlendirme, kategori yorumları, tasarruf
               önerileri, bir sonraki dönem için bütçe çerçevesi ve borç/alacak
-              özeti yer alır. Premium planda geçmiş raporlara dönüp PDF olarak
-              dışa aktarabilirsiniz. Günde en fazla{" "}
+              özeti yer alır. Geçmiş raporlara dönüp PDF olarak dışa
+              aktarabilirsiniz. Günde en fazla{" "}
               <span className="font-medium text-foreground/85">
                 {AI_LONG_REPORT_MAX_PER_DAY}
               </span>{" "}
@@ -82,8 +88,8 @@ export function AiAssistantHero() {
             <p>
               Genel amaçlı sohbet: coğrafya, matematik, yazı, kod, günlük
               sorular ve daha fazlası; IQfinans kayıtlarınızı sorunca her
-              yanıtta güncel işlem ve borç/alacak özeti de kullanılır. Günlük
-              en çok{" "}
+              yanıtta güncel işlem ve borç/alacak özeti de kullanılır. Günlük en
+              çok{" "}
               <span className="font-medium text-foreground/85">
                 {AI_ASSISTANT_MAX_CONVERSATIONS_PER_DAY}
               </span>{" "}

@@ -7,7 +7,7 @@ function formatTry(n: number): string {
 }
 
 function topExpenseCategories(
-  rows: FinanceAnalyzePayload["son30GunHarcamalar"],
+  rows: FinanceAnalyzePayload["mevcutDonemHarcamalar"],
   limit: number,
 ): { label: string; total: number }[] {
   const map = new Map<string, number>();
@@ -26,7 +26,7 @@ function topExpenseCategories(
 }
 
 function topIncomeCategories(
-  rows: FinanceAnalyzePayload["son30GunGelirler"],
+  rows: FinanceAnalyzePayload["mevcutDonemGelirler"],
   limit: number,
 ): { label: string; total: number }[] {
   const map = new Map<string, number>();
@@ -51,34 +51,35 @@ function formatVadeTr(iso: string | null): string | null {
 export function buildMessagingDigestFromPayload(
   payload: FinanceAnalyzePayload,
 ): string {
-  const expenses = payload.son30GunHarcamalar;
+  const expenses = payload.mevcutDonemHarcamalar;
   const totalExpense = expenses.reduce((s, r) => {
     const v = typeof r.tutar === "number" ? r.tutar : Number(r.tutar);
     return s + (Number.isFinite(v) ? v : 0);
   }, 0);
-  const incomes = payload.son30GunGelirler;
-  const { son30GunToplamGelir, gelirKayitSayisi } = payload.gelirOzeti;
-  const netFlow = son30GunToplamGelir - totalExpense;
+  const incomes = payload.mevcutDonemGelirler;
+  const { mevcutDonemToplamGelir, gelirKayitSayisi } = payload.gelirOzeti;
+  const netFlow = mevcutDonemToplamGelir - totalExpense;
   const { toplamAlacakKalan, toplamBorcKalan, netPozisyon } =
     payload.borcVeAlacaklar.ozet;
   const topExp = topExpenseCategories(expenses, 5);
   const topInc = topIncomeCategories(incomes, 5);
-  const gunlukOrtGider = totalExpense / 30;
-  const gunlukOrtGelir = son30GunToplamGelir / 30;
+  const donemGunSayisi = Math.max(1, payload.harcamaPenceresi.donemGunSayisi);
+  const gunlukOrtGider = totalExpense / donemGunSayisi;
+  const gunlukOrtGelir = mevcutDonemToplamGelir / donemGunSayisi;
 
   const lines: string[] = [
     `📊 IQfinansAI — kısa özet (${new Date().toLocaleDateString("tr-TR")})`,
     "",
-    `Son 30 gün (pencere: ${payload.harcamaPenceresi.baslangic.slice(0, 10)} → ${payload.harcamaPenceresi.bitis.slice(0, 10)})`,
+    `Mevcut bütçe dönemi — ${donemGunSayisi} gün (pencere: ${payload.harcamaPenceresi.baslangic.slice(0, 10)} → ${payload.harcamaPenceresi.bitis.slice(0, 10)})`,
     `• Toplam gider: ${formatTry(totalExpense)} TL (${expenses.length} kayıt)`,
     `• Günlük ortalama gider: ~${formatTry(gunlukOrtGider)} TL`,
-    `• Toplam gelir: ${formatTry(son30GunToplamGelir)} TL (${gelirKayitSayisi} kayıt)`,
+    `• Toplam gelir: ${formatTry(mevcutDonemToplamGelir)} TL (${gelirKayitSayisi} kayıt)`,
     `• Günlük ortalama gelir: ~${formatTry(gunlukOrtGelir)} TL`,
     `• Net (gelir − gider): ${formatTry(netFlow)} TL`,
   ];
 
-  if (son30GunToplamGelir > 0) {
-    const tasarrufOrani = (netFlow / son30GunToplamGelir) * 100;
+  if (mevcutDonemToplamGelir > 0) {
+    const tasarrufOrani = (netFlow / mevcutDonemToplamGelir) * 100;
     lines.push(
       `• Gelire göre net oran: ~${tasarrufOrani.toFixed(1).replace(".", ",")}%`,
     );
@@ -89,7 +90,7 @@ export function buildMessagingDigestFromPayload(
     const kat = netFlow / refUcret;
     lines.push(
       "",
-      `Referans net asgari ücret (~${formatTry(refUcret)} TL/ay, ortam değişkeni): son 30 gün net akışının bu tutara oranı ~${kat.toFixed(2).replace(".", ",")}× (yalnızca kabaca ölçek; resmi hesap değildir).`,
+      `Referans net asgari ücret (~${formatTry(refUcret)} TL/ay, ortam değişkeni): mevcut dönem net akışının bu tutara oranı ~${kat.toFixed(2).replace(".", ",")}× (yalnızca kabaca ölçek; resmi hesap değildir).`,
     );
   }
 

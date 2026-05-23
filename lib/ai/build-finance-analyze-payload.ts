@@ -7,6 +7,7 @@ import {
   valueTry,
 } from "@/lib/investments/investment-position-math";
 import { EXPENSE_CATEGORY_TREE } from "@/lib/domain/categories";
+import { getLastNMonthsPeriodRange } from "@/lib/dashboard/dashboard-stats";
 import type { Transaction } from "@prisma/client";
 import type { Debt } from "@/types/debt";
 import type {
@@ -98,15 +99,20 @@ export type FinanceAnalyzePayload = {
     ayBaslangicGunu: number;
     butceDonemiNotu: string;
   };
-  harcamaPenceresi: { baslangic: string; bitis: string; not: string };
+  harcamaPenceresi: {
+    baslangic: string;
+    bitis: string;
+    donemGunSayisi: number;
+    not: string;
+  };
   gelirOzeti: {
-    son30GunToplamGelir: number;
+    mevcutDonemToplamGelir: number;
     gelirKayitSayisi: number;
   };
   referansAsgariUcretNetAylikTl: number | null;
   giderKategoriSemasi: typeof EXPENSE_CATEGORY_TREE;
-  son30GunHarcamalar: FinanceTxPayload;
-  son30GunGelirler: FinanceGelirPayload;
+  mevcutDonemHarcamalar: FinanceTxPayload;
+  mevcutDonemGelirler: FinanceGelirPayload;
   borcVeAlacaklar: {
     kayitlar: FinanceDebtLine[];
     ozet: {
@@ -198,39 +204,55 @@ export async function buildFinanceAnalyzePayload(
   opts?: BuildFinancePayloadOpts,
 ): Promise<FinanceAnalyzePayload> {
   const analizAnı = opts?.referenceTime ?? new Date();
-  const since = new Date(analizAnı);
-  since.setDate(since.getDate() - 30);
+
+  const userForPeriod = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      monthStartDay: true,
+      currency: true,
+      createdAt: true,
+      name: true,
+      profession: true,
+      city: true,
+      country: true,
+      email: true,
+      emailVerified: true,
+      phone: true,
+      notificationsEnabled: true,
+      planTier: true,
+      premiumUntil: true,
+    },
+  });
+  if (!userForPeriod) {
+    throw new Error("Kullanıcı bulunamadı.");
+  }
+
+  const ayGun = userForPeriod.monthStartDay ?? 1;
+  const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(ayGun);
+
+  const { start: donemBaslangic, end: donemBitis } = getLastNMonthsPeriodRange(
+    1,
+    analizAnı,
+    ayGun,
+  );
+  const donemGunSayisi = Math.max(
+    1,
+    Math.round(
+      (donemBitis.getTime() - donemBaslangic.getTime()) / (24 * 60 * 60 * 1000),
+    ),
+  );
 
   const [
-    dbUser,
     transactions,
     incomeTransactions,
     debts,
     investmentRows,
     shopierRows,
   ] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        monthStartDay: true,
-        currency: true,
-        createdAt: true,
-        name: true,
-        profession: true,
-        city: true,
-        country: true,
-        email: true,
-        emailVerified: true,
-        phone: true,
-        notificationsEnabled: true,
-        planTier: true,
-        premiumUntil: true,
-      },
-    }),
     prisma.transaction.findMany({
       where: {
         userId,
-        date: { gte: since },
+        date: { gte: donemBaslangic, lte: donemBitis },
         type: "expense",
       },
       orderBy: { date: "desc" },
@@ -238,7 +260,7 @@ export async function buildFinanceAnalyzePayload(
     prisma.transaction.findMany({
       where: {
         userId,
-        date: { gte: since },
+        date: { gte: donemBaslangic, lte: donemBitis },
         type: "income",
       },
       orderBy: { date: "desc" },
@@ -265,12 +287,7 @@ export async function buildFinanceAnalyzePayload(
       },
     }),
   ]);
-  if (!dbUser) {
-    throw new Error("Kullanıcı bulunamadı.");
-  }
-
-  const ayGun = dbUser.monthStartDay ?? 1;
-  const kullaniciAyAyarlari = kullaniciAyAyarlariForPayload(ayGun);
+  const dbUser = userForPeriod;
 
   const kullaniciProfili: FinanceAnalyzePayload["kullaniciProfili"] = {
     ad: dbUser.name,
@@ -310,7 +327,7 @@ export async function buildFinanceAnalyzePayload(
   const fullExpenseSum = transactions.reduce((s, t) => s + t.amount, 0);
   const fullIncomeSum = incomeTransactions.reduce((s, t) => s + t.amount, 0);
 
-  let son30GunHarcamalar: FinanceTxPayload = transactions.map(
+  let mevcutDonemHarcamalar: FinanceTxPayload = transactions.map(
     (t: Transaction) => ({
       tarih: t.date.toISOString(),
       kategori: t.category,
@@ -320,7 +337,7 @@ export async function buildFinanceAnalyzePayload(
     }),
   );
 
-  let son30GunGelirler: FinanceGelirPayload = incomeTransactions.map(
+  let mevcutDonemGelirler: FinanceGelirPayload = incomeTransactions.map(
     (t: Transaction) => ({
       tarih: t.date.toISOString(),
       kategori: t.category,
@@ -331,18 +348,21 @@ export async function buildFinanceAnalyzePayload(
 
   const maxE = opts?.truncate?.maxExpenses;
   const maxI = opts?.truncate?.maxIncomes;
-  let pencereNotu =
-    "İşlem tarihine göre son 30 takvim günü (ay başlangıç ayarından bağımsız pencere).";
-  if (maxE != null && son30GunHarcamalar.length > maxE) {
-    son30GunHarcamalar = son30GunHarcamalar.slice(0, maxE);
+  const donemAciklama =
+    ayGun === 1
+      ? `Kullanıcının mevcut bütçe dönemi (takvim ayı). ${donemGunSayisi} günlük pencere.`
+      : `Kullanıcının mevcut bütçe dönemi: ayın ${ayGun}. günü başlangıçlı; bu istek anında dönem başından bugüne kadar ${donemGunSayisi} gün geçmiştir.`;
+  let pencereNotu = `${donemAciklama} İşlemler yalnızca bu kesit içinden listelenir; takvim ayı veya sabit 30 gün değil.`;
+  if (maxE != null && mevcutDonemHarcamalar.length > maxE) {
+    mevcutDonemHarcamalar = mevcutDonemHarcamalar.slice(0, maxE);
     pencereNotu += ` Gider satırları yalnızca en güncel ${maxE} kayıtla sınırlandı (sohbet için). Tam dönem gider toplamı yaklaşık ${Math.round(fullExpenseSum)} TL; ${transactions.length} kayıt.`;
   }
-  if (maxI != null && son30GunGelirler.length > maxI) {
-    son30GunGelirler = son30GunGelirler.slice(0, maxI);
+  if (maxI != null && mevcutDonemGelirler.length > maxI) {
+    mevcutDonemGelirler = mevcutDonemGelirler.slice(0, maxI);
     pencereNotu += ` Gelir satırları yalnızca en güncel ${maxI} kayıtla sınırlandı (sohbet için). Tam dönem gelir toplamı yaklaşık ${Math.round(fullIncomeSum)} TL; ${incomeTransactions.length} kayıt.`;
   }
 
-  const son30GunToplamGelir = fullIncomeSum;
+  const mevcutDonemToplamGelir = fullIncomeSum;
 
   let toplamAlacakKalan = 0;
   let toplamBorcKalan = 0;
@@ -417,18 +437,19 @@ export async function buildFinanceAnalyzePayload(
     shopierOdemeKayitlari,
     kullaniciAyAyarlari,
     harcamaPenceresi: {
-      baslangic: since.toISOString(),
-      bitis: analizAnı.toISOString(),
+      baslangic: donemBaslangic.toISOString(),
+      bitis: donemBitis.toISOString(),
+      donemGunSayisi,
       not: pencereNotu,
     },
     gelirOzeti: {
-      son30GunToplamGelir,
+      mevcutDonemToplamGelir,
       gelirKayitSayisi: incomeTransactions.length,
     },
     referansAsgariUcretNetAylikTl: resolveReferansAsgariUcretNetAylik(),
     giderKategoriSemasi: EXPENSE_CATEGORY_TREE,
-    son30GunHarcamalar,
-    son30GunGelirler,
+    mevcutDonemHarcamalar,
+    mevcutDonemGelirler,
     borcVeAlacaklar: {
       kayitlar,
       ozet: {

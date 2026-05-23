@@ -61,12 +61,21 @@ export const aiInsightsMarkdownComponents: Components = {
         <table
           className={cn(
             "w-full min-w-[min(100%,480px)] table-fixed border-collapse text-[0.9375rem] leading-relaxed",
-            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(1)]:w-[30%]",
-            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(2)]:w-[26%]",
-            "[&:has(thead_tr_th:nth-child(3))_th:nth-child(3)]:w-[44%]",
-            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(1)]:w-[30%]",
-            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(2)]:w-[26%]",
-            "[&:has(thead_tr_th:nth-child(3))_td:nth-child(3)]:w-[44%]",
+            "[&:has(thead_tr_th:nth-child(4))]:min-w-[min(100%,720px)]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_th:nth-child(1)]:w-[30%]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_th:nth-child(2)]:w-[26%]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_th:nth-child(3)]:w-[44%]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_td:nth-child(1)]:w-[30%]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_td:nth-child(2)]:w-[26%]",
+            "[&:has(thead_tr_th:nth-child(3)):not(:has(thead_tr_th:nth-child(4)))_td:nth-child(3)]:w-[44%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_th:nth-child(1)]:w-[22%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_th:nth-child(2)]:w-[15%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_th:nth-child(3)]:w-[15%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_th:nth-child(4)]:w-[48%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_td:nth-child(1)]:w-[22%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_td:nth-child(2)]:w-[15%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_td:nth-child(3)]:w-[15%]",
+            "[&:has(thead_tr_th:nth-child(4)):not(:has(thead_tr_th:nth-child(5)))_td:nth-child(4)]:w-[48%]",
           )}
         >
           {children}
