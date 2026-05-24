@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardShellHeader } from "@/components/dashboard/dashboard-shell-header";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 import {
   DASHBOARD_PAGE_PAD_X,
   DASHBOARD_PAGE_PAD_Y,
@@ -182,6 +183,7 @@ export function DashboardShell({
             DASHBOARD_PAGE_PAD_Y,
           )}
         >
+          <DashboardEmailVerificationBanner className="mb-6 md:mb-8" />
           {children}
         </main>
         {open && (
