@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
-import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowUpDown, Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   ADMIN_SESSION_COOKIE,
   getAdminEmailFromSessionToken,
@@ -38,12 +38,15 @@ function getFilterChipClass(isActive: boolean): string {
   ].join(" ");
 }
 
+type SortField = "kayit" | "aktivite";
+
 export default async function AdminUyelerPage({
   searchParams,
 }: {
   searchParams?: Promise<{
     sayfa?: string | string[];
     siralama?: string | string[];
+    siralamaAlani?: string | string[];
     planFiltre?: string | string[];
     dogrulamaFiltre?: string | string[];
   }>;
@@ -60,6 +63,9 @@ export default async function AdminUyelerPage({
   const rawSort = Array.isArray(params?.siralama)
     ? params?.siralama[0]
     : params?.siralama;
+  const rawSortField = Array.isArray(params?.siralamaAlani)
+    ? params?.siralamaAlani[0]
+    : params?.siralamaAlani;
   const rawPlanFilter = Array.isArray(params?.planFiltre)
     ? params?.planFiltre[0]
     : params?.planFiltre;
@@ -69,6 +75,7 @@ export default async function AdminUyelerPage({
 
   const parsedPage = Number(rawPage);
   const sortOrder = rawSort === "asc" ? "asc" : "desc";
+  const sortField: SortField = rawSortField === "kayit" ? "kayit" : "aktivite";
   const planFilter =
     rawPlanFilter === "premium" || rawPlanFilter === "free"
       ? rawPlanFilter
@@ -110,6 +117,13 @@ export default async function AdminUyelerPage({
     : 1;
   const skip = (currentPage - 1) * PAGE_SIZE;
 
+  const orderBy: Prisma.UserOrderByWithRelationInput =
+    sortField === "aktivite"
+      ? ({
+          lastActiveAt: { sort: sortOrder, nulls: "last" },
+        } as unknown as Prisma.UserOrderByWithRelationInput)
+      : { createdAt: sortOrder };
+
   const members = await prisma.user.findMany({
     select: {
       id: true,
@@ -124,7 +138,7 @@ export default async function AdminUyelerPage({
       lastActiveAt: true,
     } as Prisma.UserSelect,
     where,
-    orderBy: { createdAt: sortOrder },
+    orderBy,
     skip,
     take: PAGE_SIZE,
   });
@@ -135,27 +149,59 @@ export default async function AdminUyelerPage({
   const buildHref = (
     page: number,
     sort: "asc" | "desc",
+    field: SortField = sortField,
     plan: "tum" | "premium" | "free" = planFilter,
     verification: "tum" | "dogrulandi" | "dogrulanmadi" = verificationFilter,
   ) => {
     const query = new URLSearchParams();
     query.set("sayfa", String(page));
     query.set("siralama", sort);
+    if (field !== "aktivite") query.set("siralamaAlani", field);
     if (plan !== "tum") query.set("planFiltre", plan);
     if (verification !== "tum") query.set("dogrulamaFiltre", verification);
     return `/admin/uyeler?${query.toString()}`;
   };
 
-  const nextSortOrder = sortOrder === "desc" ? "asc" : "desc";
-  const sortHref = buildHref(1, nextSortOrder);
+  const buildSortHref = (field: SortField) => {
+    const nextOrder: "asc" | "desc" =
+      sortField === field ? (sortOrder === "desc" ? "asc" : "desc") : "desc";
+    return buildHref(1, nextOrder, field);
+  };
+
+  const createdSortHref = buildSortHref("kayit");
+  const activitySortHref = buildSortHref("aktivite");
   const previousPageHref = buildHref(currentPage - 1, sortOrder);
   const nextPageHref = buildHref(currentPage + 1, sortOrder);
-  const allPlanHref = buildHref(1, sortOrder, "tum");
-  const premiumPlanHref = buildHref(1, sortOrder, "premium");
-  const freePlanHref = buildHref(1, sortOrder, "free");
-  const allVerificationHref = buildHref(1, sortOrder, planFilter, "tum");
-  const verifiedHref = buildHref(1, sortOrder, planFilter, "dogrulandi");
-  const unverifiedHref = buildHref(1, sortOrder, planFilter, "dogrulanmadi");
+  const allPlanHref = buildHref(1, sortOrder, sortField, "tum");
+  const premiumPlanHref = buildHref(1, sortOrder, sortField, "premium");
+  const freePlanHref = buildHref(1, sortOrder, sortField, "free");
+  const allVerificationHref = buildHref(
+    1,
+    sortOrder,
+    sortField,
+    planFilter,
+    "tum",
+  );
+  const verifiedHref = buildHref(
+    1,
+    sortOrder,
+    sortField,
+    planFilter,
+    "dogrulandi",
+  );
+  const unverifiedHref = buildHref(
+    1,
+    sortOrder,
+    sortField,
+    planFilter,
+    "dogrulanmadi",
+  );
+
+  const renderSortIcon = (field: SortField) => (
+    <ArrowUpDown
+      className={`ml-1 h-3.5 w-3.5 ${sortField === field ? "" : "opacity-50"}`}
+    />
+  );
 
   return (
     <div className="mx-auto w-full max-w-8xl space-y-4 p-4 md:p-6">
@@ -278,13 +324,22 @@ export default async function AdminUyelerPage({
                   <TableHead>Doğrulama</TableHead>
                   <TableHead>
                     <Link
-                      href={sortHref}
+                      href={createdSortHref}
                       className="inline-flex cursor-pointer items-center hover:underline"
                     >
                       Kayıt Tarihi
+                      {renderSortIcon("kayit")}
                     </Link>
                   </TableHead>
-                  <TableHead>Son Aktivite</TableHead>
+                  <TableHead>
+                    <Link
+                      href={activitySortHref}
+                      className="inline-flex cursor-pointer items-center hover:underline"
+                    >
+                      Son Aktivite
+                      {renderSortIcon("aktivite")}
+                    </Link>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
