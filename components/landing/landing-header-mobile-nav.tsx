@@ -31,7 +31,7 @@ export function LandingHeaderMobileNav() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-[88vw] max-w-sm gap-0 border-l border-border/60 bg-background/95 p-0 backdrop-blur-xl"
+        className="landing-mobile-nav-sheet w-[88vw] max-w-sm gap-0 border-l border-border/60 bg-background/95 p-0 backdrop-blur-xl"
       >
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
           <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/12" />

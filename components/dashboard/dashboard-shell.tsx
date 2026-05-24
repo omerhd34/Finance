@@ -164,7 +164,7 @@ export function DashboardShell({
         dir="ltr"
         data-dashboard-sidebar
         className={cn(
-          "hidden h-dvh min-h-0 shrink-0 flex-col overflow-y-auto overscroll-contain border-r border-border bg-sidebar lg:flex lg:flex-col",
+          "hidden h-dvh min-h-0 shrink-0 flex-col overflow-y-auto overscroll-contain border-r border-border bg-sidebar transition-[width] duration-250 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none lg:flex lg:flex-col",
           sidebarCollapsed ? "w-18" : "w-64",
         )}
       >
@@ -184,22 +184,35 @@ export function DashboardShell({
         >
           {children}
         </main>
-        {open && (
-          <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">
-            <button
-              type="button"
-              className="absolute inset-0 bg-black/60"
-              aria-label="Menüyü kapat"
-              onClick={() => setOpen(false)}
-            />
-            <div
-              dir="ltr"
-              className="absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col border-r border-border bg-sidebar shadow-xl"
-            >
-              <DashboardSidebar collapsed={false} isMobile {...sidebarProps} />
-            </div>
+        <div
+          className={cn(
+            "fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden",
+            open ? "pointer-events-auto" : "pointer-events-none",
+          )}
+          aria-hidden={!open}
+        >
+          <button
+            type="button"
+            tabIndex={open ? 0 : -1}
+            className={cn(
+              "absolute inset-0 bg-black/60 transition-opacity ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+              open ? "opacity-100 duration-600" : "opacity-0 duration-300",
+            )}
+            aria-label="Menüyü kapat"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            dir="ltr"
+            className={cn(
+              "absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col border-r border-border bg-sidebar shadow-xl transition-transform ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
+              open
+                ? "translate-x-0 duration-600"
+                : "-translate-x-full duration-300",
+            )}
+          >
+            <DashboardSidebar collapsed={false} isMobile {...sidebarProps} />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
