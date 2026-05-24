@@ -3,6 +3,7 @@ import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { ThemeProvider } from "@wrksz/themes/next";
 import { siteMetadata } from "@/lib/site/metadata";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
           themes={["light", "dark"]}
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

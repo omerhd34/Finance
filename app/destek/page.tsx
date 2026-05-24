@@ -27,8 +27,6 @@ import {
   getSupportPhone,
   normalizePhoneForTel,
 } from "@/lib/site/support-config";
-import { Toaster } from "@/components/ui/sonner";
-
 const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
@@ -208,7 +206,6 @@ export default function DestekPage() {
         }}
       />
       <LandingHeader />
-      <Toaster />
       <main className="flex-1">
         <section
           className="border-b border-border/60 pb-14 pt-24 md:pb-20 md:pt-28"
