@@ -209,8 +209,6 @@ export function OwnProfilePlanCard({
                   <p className="text-center text-sm leading-relaxed text-muted-foreground">
                     Premium süreniz dolduğunda hesabınız otomatik olarak
                     ücretsiz plana döner.
-                    <br />
-                    Yenilediğinizde tekrar premium olursunuz.
                   </p>
                 ) : (
                   <Button
@@ -319,10 +317,7 @@ export function OwnProfilePlanCard({
         </fieldset>
         {checkoutBlockedByEmail ? (
           <p className="mt-4 inline-flex w-full items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-left text-sm text-amber-700 dark:text-amber-300">
-            <MailWarning
-              className="mt-0.5 h-4 w-4 shrink-0"
-              aria-hidden
-            />
+            <MailWarning className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             <span>
               Ödeme yapabilmek için önce e-posta adresinizi doğrulayın.
               Doğrulama sonrası {PREMIUM_TRIAL_DAYS} günlük Premium denemeniz
