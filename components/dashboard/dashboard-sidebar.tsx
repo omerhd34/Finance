@@ -237,13 +237,11 @@ export function DashboardSidebar({
 
       <div className="mt-auto" />
 
-      {/* ALT KISIM: PROFILE ALANI */}
       <Separator className="bg-foreground/10 dark:bg-border" />
 
       {collapsed ? (
         <div className="py-4 flex justify-center">
           {" "}
-          {/* Daraltılmış modda dikey boşluk artırıldı */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -293,10 +291,13 @@ export function DashboardSidebar({
       ) : (
         <div className="px-3 py-4">
           {" "}
-          {/* py-2 yerine py-4 yapılarak alt kısım dikeyde yükseltildi */}
           <div className="flex items-center gap-2 rounded-xl p-1.5 text-left bg-transparent">
-            {/* Profil Bilgisi Alanı */}
-            <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Link
+              href={profileHref}
+              onClick={onMobileNavigate}
+              title="Profilime git"
+              className="flex items-center gap-2 flex-1 min-w-0 rounded-lg -m-1 p-1 cursor-pointer hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               <Avatar className="h-8 w-8 rounded-full border border-border shrink-0">
                 <AvatarImage
                   src={finalUserImage ?? undefined}
@@ -315,9 +316,8 @@ export function DashboardSidebar({
                   {userEmail}
                 </span>
               </div>
-            </div>
+            </Link>
 
-            {/* Sadece "..." Butonuna Tıklanınca Açılan Dropdown Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
