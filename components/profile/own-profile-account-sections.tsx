@@ -21,6 +21,7 @@ import {
   PREMIUM_TRIAL_DAYS,
 } from "@/lib/premium/premium-subscription-constants";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
+import { PremiumDaysGauge } from "./premium-days-gauge";
 import type {
   DeleteFormValues,
   LatestShopierOrder,
@@ -114,6 +115,7 @@ type PlanCardProps = {
   latestOrder: LatestShopierOrder | null;
   awaitingCheckoutCompletion: boolean;
   premiumEndFormatted: string | null;
+  premiumUntilIso: string | null;
   sessionUserPresent: boolean;
   emailVerified: boolean;
   onOpenCheckout: () => void | Promise<void>;
@@ -126,6 +128,7 @@ export function OwnProfilePlanCard({
   latestOrder,
   awaitingCheckoutCompletion,
   premiumEndFormatted,
+  premiumUntilIso,
   sessionUserPresent,
   emailVerified,
   onOpenCheckout,
@@ -287,30 +290,32 @@ export function OwnProfilePlanCard({
                 ))}
               </ul>
               <div className="mt-6 border-t border-border/50 pt-5">
-                <Button
-                  type="button"
-                  disabled={
-                    currentPlan === "premium" ||
-                    checkoutBusy ||
-                    !sessionUserPresent ||
-                    checkoutBlockedByEmail
-                  }
-                  onClick={() => void onOpenCheckout()}
-                  className="w-full cursor-pointer rounded-full bg-emerald-500 font-semibold text-black shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 dark:text-white"
-                >
-                  <span className="inline-flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:gap-2">
-                    <span className="inline-flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 shrink-0" aria-hidden />
-                      {currentPlan === "premium"
-                        ? premiumEndFormatted
-                          ? `${premiumEndFormatted}'de sona erecektir.`
-                          : "Premium bitiş tarihi yükleniyor..."
-                        : checkoutBusy
+                {currentPlan === "premium" ? (
+                  <PremiumDaysGauge
+                    premiumUntilIso={premiumUntilIso}
+                    endFormatted={premiumEndFormatted}
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    disabled={
+                      checkoutBusy ||
+                      !sessionUserPresent ||
+                      checkoutBlockedByEmail
+                    }
+                    onClick={() => void onOpenCheckout()}
+                    className="w-full cursor-pointer rounded-full bg-emerald-500 font-semibold text-black shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 dark:text-white"
+                  >
+                    <span className="inline-flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:gap-2">
+                      <span className="inline-flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 shrink-0" aria-hidden />
+                        {checkoutBusy
                           ? "Ödeme sayfası hazırlanıyor…"
-                          : "Shopier ile öde"}
+                          : "Shopier ile öde."}
+                      </span>
                     </span>
-                  </span>
-                </Button>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

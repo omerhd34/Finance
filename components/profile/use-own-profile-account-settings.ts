@@ -253,6 +253,7 @@ export function useOwnProfileAccountSettings(ownProfile: boolean) {
     checkoutError,
     latestOrder,
     premiumEndFormatted,
+    premiumUntilIso,
     currentPlan,
     awaitingCheckoutCompletion,
     openPremiumCheckout,

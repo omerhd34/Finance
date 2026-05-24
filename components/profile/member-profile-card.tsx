@@ -645,6 +645,7 @@ export function MemberProfileCard({
         latestOrder={accountSettings.latestOrder}
         awaitingCheckoutCompletion={accountSettings.awaitingCheckoutCompletion}
         premiumEndFormatted={accountSettings.premiumEndFormatted}
+        premiumUntilIso={accountSettings.premiumUntilIso}
         sessionUserPresent={Boolean(session?.user)}
         emailVerified={session?.user?.isEmailVerified !== false}
         onOpenCheckout={accountSettings.openPremiumCheckout}
