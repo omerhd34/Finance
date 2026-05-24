@@ -321,9 +321,7 @@ export default async function AdminUyelerPage({
                       <TableCell>
                         {formatDateTimeTR(member.createdAt)}
                       </TableCell>
-                      <TableCell>
-                        {formatDateTimeTR(lastActiveAt)}
-                      </TableCell>{" "}
+                      <TableCell>{formatDateTimeTR(lastActiveAt)}</TableCell>
                     </TableRow>
                   );
                 })}
