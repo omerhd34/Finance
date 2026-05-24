@@ -8,52 +8,53 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  profession    String?
-  city          String?
-  country       String?
-  monthStartDay Int           @default(1)
-  email         String        @unique
-  emailVerified DateTime?
-  password      String?
-  image         String?       @db.LongText
-  phone                 String?
-  currency              String        @default("TL")
-  notificationsEnabled  Boolean       @default(true)
-  planTier                String        @default("free")
+  id                      String                   @id @default(cuid())
+  name                    String?
+  profession              String?
+  city                    String?
+  country                 String?
+  monthStartDay           Int                      @default(1)
+  email                   String                   @unique
+  emailVerified           DateTime?
+  password                String?
+  image                   String?                  @db.LongText
+  phone                   String?
+  currency                String                   @default("TL")
+  notificationsEnabled    Boolean                  @default(true)
+  planTier                String                   @default("free")
   premiumUntil            DateTime?
-  createdAt             DateTime      @default(now())
-  lastActiveAt          DateTime?
-  transactions    Transaction[]
-  debts           Debt[]
-  investments     InvestmentPosition[]
-  recurringRules   RecurringRule[]
-  accounts         Account[]
-  sessions         Session[]
-  categoryBudgets  CategoryBudget[]
-  notifications    Notification[]
+  premiumTrialUsedAt      DateTime?
+  createdAt               DateTime                 @default(now())
+  lastActiveAt            DateTime?
+  transactions            Transaction[]
+  debts                   Debt[]
+  investments             InvestmentPosition[]
+  recurringRules          RecurringRule[]
+  accounts                Account[]
+  sessions                Session[]
+  categoryBudgets         CategoryBudget[]
+  notifications           Notification[]
   emailVerificationTokens EmailVerificationToken[]
-  aiFinanceAnalyses      AiFinanceAnalysis[]
-  aiFinanceChatTurns     AiFinanceChatTurn[]
-  aiChatDailyUsages      AiChatDailyUsage[]
-  shopierOrders          ShopierOrder[]
+  aiFinanceAnalyses       AiFinanceAnalysis[]
+  aiFinanceChatTurns      AiFinanceChatTurn[]
+  aiChatDailyUsages       AiChatDailyUsage[]
+  shopierOrders           ShopierOrder[]
 }
 
 model ShopierOrder {
-  id              String   @id @default(cuid())
-  orderCode       String   @unique
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status          String   @default("PENDING")
-  amountTry       Float?
-  currency        String?  @default("TRY")
+  id               String    @id @default(cuid())
+  orderCode        String    @unique
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status           String    @default("PENDING")
+  amountTry        Float?
+  currency         String?   @default("TRY")
   shopierPaymentId String?
-  rawPayload      Json?
-  paidAt          DateTime?
-  planGrantedAt   DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  rawPayload       Json?
+  paidAt           DateTime?
+  planGrantedAt    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
@@ -70,13 +71,13 @@ model AiFinanceAnalysis {
 }
 
 model AiFinanceChatTurn {
-  id               String   @id @default(cuid())
-  userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  conversationId   String?  @db.VarChar(191)
-  userMessage      String   @db.Text
-  assistantReply   String   @db.LongText
-  createdAt        DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String?  @db.VarChar(191)
+  userMessage    String   @db.Text
+  assistantReply String   @db.LongText
+  createdAt      DateTime @default(now())
 
   @@index([userId, createdAt])
   @@index([userId, conversationId])
@@ -106,46 +107,46 @@ model EmailVerificationToken {
 }
 
 model Transaction {
-  id                String         @id @default(cuid())
-  type              String
-  amount            Float
-  category          String
-  subcategory       String?
-  description       String?
-  date              DateTime       @default(now())
-  userId            String
-  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recurringRuleId   String?
-  recurringRule     RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
-  recurringSlotKey  String?        @unique
-  debtId            String?
-  debt              Debt?          @relation(fields: [debtId], references: [id], onDelete: SetNull)
-  createdAt         DateTime       @default(now())
+  id               String         @id @default(cuid())
+  type             String
+  amount           Float
+  category         String
+  subcategory      String?
+  description      String?
+  date             DateTime       @default(now())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurringRuleId  String?
+  recurringRule    RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
+  recurringSlotKey String?        @unique
+  debtId           String?
+  debt             Debt?          @relation(fields: [debtId], references: [id], onDelete: SetNull)
+  createdAt        DateTime       @default(now())
 
   @@index([userId, date])
   @@index([debtId])
 }
 
 model RecurringRule {
-  id          String        @id @default(cuid())
-  userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String              @id @default(cuid())
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
-  alertLogs   RecurringAlertLog[]
-  type        String
-  amount      Float
-  category    String
-  subcategory String?
-  description String?
-  frequency   String
-  interval    Int       @default(1)
-  startDate   DateTime
-  endDate     DateTime?
-  mode        String
-  isActive    Boolean   @default(true)
-  nextDueDate DateTime
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  alertLogs    RecurringAlertLog[]
+  type         String
+  amount       Float
+  category     String
+  subcategory  String?
+  description  String?
+  frequency    String
+  interval     Int                 @default(1)
+  startDate    DateTime
+  endDate      DateTime?
+  mode         String
+  isActive     Boolean             @default(true)
+  nextDueDate  DateTime
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 
   @@index([userId, isActive, nextDueDate])
 }
@@ -162,16 +163,16 @@ model RecurringAlertLog {
 }
 
 model CategoryBudget {
-  id                     String           @id @default(cuid())
-  userId                 String
-  user                   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category               String
-  monthlyLimit           Float
-  alertThresholdPercent  Float            @default(80)
-  emailAlertsEnabled     Boolean          @default(true)
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-  alertLogs              BudgetAlertLog[]
+  id                    String           @id @default(cuid())
+  userId                String
+  user                  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category              String
+  monthlyLimit          Float
+  alertThresholdPercent Float            @default(80)
+  emailAlertsEnabled    Boolean          @default(true)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  alertLogs             BudgetAlertLog[]
 
   @@unique([userId, category])
   @@index([userId])
@@ -193,47 +194,47 @@ model Notification {
 }
 
 model BudgetAlertLog {
-  id         String         @id @default(cuid())
-  budgetId   String
-  budget     CategoryBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  monthKey   String
-  alertType  String
-  createdAt  DateTime       @default(now())
+  id        String         @id @default(cuid())
+  budgetId  String
+  budget    CategoryBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  monthKey  String
+  alertType String
+  createdAt DateTime       @default(now())
 
   @@unique([budgetId, monthKey, alertType])
   @@index([budgetId])
 }
 
 model Debt {
-  id                 String        @id @default(cuid())
-  direction          String
-  counterparty       String
-  totalAmount        Float
-  paidAmount         Float         @default(0)
-  dueDate            DateTime?
-  note               String?       @db.Text
-  userId             String
-  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  receivableIncomes  Transaction[]
-  createdAt          DateTime      @default(now())
+  id                String        @id @default(cuid())
+  direction         String
+  counterparty      String
+  totalAmount       Float
+  paidAmount        Float         @default(0)
+  dueDate           DateTime?
+  note              String?       @db.Text
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receivableIncomes Transaction[]
+  createdAt         DateTime      @default(now())
 
   @@index([userId, direction])
 }
 
 model InvestmentPosition {
-  id                     String   @id @default(cuid())
-  assetType              String
-  goldSubtype            String?
-  title                  String
-  ticker                 String?
-  quantity               Float
-  avgCostPerUnitTry      Float
-  marketPricePerUnitTry  Float?
-  note                   String?  @db.Text
-  userId                 String
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  assetType             String
+  goldSubtype           String?
+  title                 String
+  ticker                String?
+  quantity              Float
+  avgCostPerUnitTry     Float
+  marketPricePerUnitTry Float?
+  note                  String?  @db.Text
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   @@index([userId, assetType])
 }
@@ -273,4 +274,3 @@ model PasswordResetToken {
 
   @@index([email])
 }
-

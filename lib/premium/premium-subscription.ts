@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { addPremiumTrialPeriod } from "@/lib/premium/premium-subscription-constants";
 
 export {
   PREMIUM_SUBSCRIPTION_DAYS,
@@ -23,4 +24,37 @@ export async function ensurePremiumNotExpired(userId: string): Promise<void> {
       data: { planTier: "free", premiumUntil: null },
     });
   }
+}
+
+export async function grantPremiumTrialIfEligible(
+  userId: string,
+): Promise<boolean> {
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      emailVerified: true,
+      planTier: true,
+      premiumTrialUsedAt: true,
+    },
+  });
+  if (!u) return false;
+  if (!u.emailVerified) return false;
+  if (u.premiumTrialUsedAt != null) return false;
+  if (u.planTier === "premium") return false;
+
+  const now = new Date();
+  const result = await prisma.user.updateMany({
+    where: {
+      id: userId,
+      premiumTrialUsedAt: null,
+      planTier: "free",
+      emailVerified: { not: null },
+    },
+    data: {
+      planTier: "premium",
+      premiumUntil: addPremiumTrialPeriod(now),
+      premiumTrialUsedAt: now,
+    },
+  });
+  return result.count > 0;
 }

@@ -6,7 +6,10 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db/prisma";
 import { normalizeUserCurrency } from "@/lib/common/currency";
-import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
+import {
+  ensurePremiumNotExpired,
+  grantPremiumTrialIfEligible,
+} from "@/lib/premium/premium-subscription";
 
 const MAX_JWT_PICTURE_CHARS = 2048;
 
@@ -113,6 +116,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         Boolean(token.id) && (Boolean(user) || token.hasPassword === undefined);
       if (shouldSyncProfile) {
         await ensurePremiumNotExpired(token.id as string);
+        try {
+          await grantPremiumTrialIfEligible(token.id as string);
+        } catch (trialErr) {
+          console.error("[auth.jwt] trial grant", trialErr);
+        }
         const dbUser = (await prisma.user.findUnique({
           where: { id: token.id as string },
           select: jwtProfileSelect as unknown as Prisma.UserSelect,
@@ -166,6 +174,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
         if (s.reloadUser === true && token.id) {
           await ensurePremiumNotExpired(token.id as string);
+          try {
+            await grantPremiumTrialIfEligible(token.id as string);
+          } catch (trialErr) {
+            console.error("[auth.jwt.reload] trial grant", trialErr);
+          }
           const dbUser = (await prisma.user.findUnique({
             where: { id: token.id as string },
             select: jwtProfileSelect as unknown as Prisma.UserSelect,

@@ -14,9 +14,12 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/common/utils";
-import { Check, CreditCard, Shield, Sparkles } from "lucide-react";
+import { Check, CreditCard, MailWarning, Shield, Sparkles } from "lucide-react";
 import { PREMIUM_PRICE_TRY } from "@/lib/premium/premium-price";
-import { PREMIUM_SUBSCRIPTION_DAYS } from "@/lib/premium/premium-subscription-constants";
+import {
+  PREMIUM_SUBSCRIPTION_DAYS,
+  PREMIUM_TRIAL_DAYS,
+} from "@/lib/premium/premium-subscription-constants";
 import { LANDING_PLANS } from "@/components/landing/landing-content";
 import type {
   DeleteFormValues,
@@ -112,6 +115,7 @@ type PlanCardProps = {
   awaitingCheckoutCompletion: boolean;
   premiumEndFormatted: string | null;
   sessionUserPresent: boolean;
+  emailVerified: boolean;
   onOpenCheckout: () => void | Promise<void>;
 };
 
@@ -123,8 +127,10 @@ export function OwnProfilePlanCard({
   awaitingCheckoutCompletion,
   premiumEndFormatted,
   sessionUserPresent,
+  emailVerified,
   onOpenCheckout,
 }: PlanCardProps) {
+  const checkoutBlockedByEmail = !emailVerified && currentPlan !== "premium";
   return (
     <Card
       id="plan"
@@ -288,7 +294,8 @@ export function OwnProfilePlanCard({
                   disabled={
                     currentPlan === "premium" ||
                     checkoutBusy ||
-                    !sessionUserPresent
+                    !sessionUserPresent ||
+                    checkoutBlockedByEmail
                   }
                   onClick={() => void onOpenCheckout()}
                   className="w-full cursor-pointer rounded-full bg-emerald-500 font-semibold text-black shadow-md shadow-emerald-900/30 transition hover:bg-emerald-400 dark:text-white"
@@ -310,6 +317,19 @@ export function OwnProfilePlanCard({
             </div>
           </div>
         </fieldset>
+        {checkoutBlockedByEmail ? (
+          <p className="mt-4 inline-flex w-full items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-left text-sm text-amber-700 dark:text-amber-300">
+            <MailWarning
+              className="mt-0.5 h-4 w-4 shrink-0"
+              aria-hidden
+            />
+            <span>
+              Ödeme yapabilmek için önce e-posta adresinizi doğrulayın.
+              Doğrulama sonrası {PREMIUM_TRIAL_DAYS} günlük Premium denemeniz
+              otomatik başlar.
+            </span>
+          </p>
+        ) : null}
         {checkoutBusy ? (
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Shopier ödeme sayfası hazırlanıyor…

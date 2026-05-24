@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db/prisma";
 import { sendVerificationEmailForUserId } from "@/lib/email/send-verification-email";
-import { addPremiumTrialPeriod } from "@/lib/premium/premium-subscription";
 import { registerSchema } from "@/lib/schemas/validations";
 
 export async function POST(req: Request) {
@@ -29,8 +28,6 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashed,
-        planTier: "premium",
-        premiumUntil: addPremiumTrialPeriod(new Date()),
       },
     });
 

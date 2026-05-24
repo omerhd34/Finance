@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { emailVerificationToken, prisma } from "@/lib/db/prisma";
 import { hashPasswordResetToken } from "@/lib/auth/password-reset-token";
+import { grantPremiumTrialIfEligible } from "@/lib/premium/premium-subscription";
 
 export type VerifyEmailTokenResult =
   | { ok: true }
@@ -43,6 +44,12 @@ export async function verifyEmailWithRawToken(
       data: { emailVerified: new Date() },
     });
     await emailVerificationToken.deleteMany({ where: { tokenHash } });
+
+    try {
+      await grantPremiumTrialIfEligible(row.userId);
+    } catch (trialErr) {
+      console.error("[verify-email-token-server] trial grant", trialErr);
+    }
 
     return { ok: true };
   } catch (e) {

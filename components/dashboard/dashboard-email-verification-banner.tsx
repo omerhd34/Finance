@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
+import { PREMIUM_TRIAL_DAYS } from "@/lib/premium/premium-subscription-constants";
 
 export function DashboardEmailVerificationBanner({
   className,
@@ -46,7 +47,7 @@ export function DashboardEmailVerificationBanner({
         sent?: boolean;
       }>("/api/auth/verify-email/send");
       if (data?.sent) {
-        toast.success("Doğrulama e-postası gönderildi");
+        toast.success("Doğrulama e-postası gönderildi.");
         await updateSession({ reloadUser: true } as Record<string, unknown>);
         router.refresh();
       } else if (data?.message) {
@@ -91,11 +92,12 @@ export function DashboardEmailVerificationBanner({
           </span>
         </div>
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-          Hesabınızı doğrulayın
+          Hesabınızı doğrulayın ve {PREMIUM_TRIAL_DAYS} gün Premium kazanın
         </h2>
-        <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
-          Hesabınızı tam olarak kullanabilmek için e-posta adresinize
-          gönderilecek bağlantı ile doğrulama yapın.
+        <p className="max-w-4xl text-pretty text-sm leading-relaxed text-muted-foreground">
+          E-posta adresinize gönderilecek bağlantıyla hesabınızı doğrulayın;
+          doğrulama sonrası {PREMIUM_TRIAL_DAYS} günlük Premium denemeniz
+          otomatik olarak başlar.
         </p>
       </div>
       <Button

@@ -646,6 +646,7 @@ export function MemberProfileCard({
         awaitingCheckoutCompletion={accountSettings.awaitingCheckoutCompletion}
         premiumEndFormatted={accountSettings.premiumEndFormatted}
         sessionUserPresent={Boolean(session?.user)}
+        emailVerified={session?.user?.isEmailVerified !== false}
         onOpenCheckout={accountSettings.openPremiumCheckout}
       />
       <OwnProfileDangerZone
