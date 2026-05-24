@@ -20,7 +20,7 @@ export async function POST() {
         );
       }
       return NextResponse.json(
-        { error: "E-posta zaten doğrulanmış." },
+        { error: "E-posta zaten doğrulanmış.", code: "ALREADY_VERIFIED" },
         { status: 400 },
       );
     }

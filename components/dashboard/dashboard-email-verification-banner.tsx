@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { MailWarning } from "lucide-react";
@@ -14,9 +14,25 @@ export function DashboardEmailVerificationBanner({
 }: {
   className?: string;
 }) {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   const [sending, setSending] = useState(false);
+  const refreshedRef = useRef(false);
+
+  useEffect(() => {
+    if (refreshedRef.current) return;
+    if (status !== "authenticated") return;
+    if (session?.user?.isEmailVerified !== false) return;
+    refreshedRef.current = true;
+    void (async () => {
+      try {
+        await updateSession({ reloadUser: true } as Record<string, unknown>);
+        router.refresh();
+      } catch {
+        /* noop */
+      }
+    })();
+  }, [status, session?.user?.isEmailVerified, updateSession, router]);
 
   if (!session?.user) return null;
   if (session.user.isEmailVerified !== false) return null;
@@ -37,7 +53,14 @@ export function DashboardEmailVerificationBanner({
         toast.info(data.message);
       }
     } catch (e: unknown) {
-      const ax = e as { response?: { data?: { error?: string } } };
+      const ax = e as {
+        response?: { data?: { error?: string; code?: string } };
+      };
+      if (ax.response?.data?.code === "ALREADY_VERIFIED") {
+        await updateSession({ reloadUser: true } as Record<string, unknown>);
+        router.refresh();
+        return;
+      }
       toast.error(
         ax.response?.data?.error ??
           "E-posta gönderilemedi. Bir süre sonra tekrar deneyin.",
