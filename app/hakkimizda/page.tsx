@@ -25,14 +25,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/common/utils";
 import { SITE_FOUNDER } from "@/lib/site/founder";
 import { getSiteUrl } from "@/lib/site/site-url";
 
 const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Hakkımızda",
+  title: "Hakkımda | IQfinansAI",
   description:
     "IQfinansAI’nin misyonu, değerleri ve kişisel finansınızı netleştirmek için benimsediğim modern yaklaşım.",
   alternates: {
@@ -40,7 +39,7 @@ export const metadata: Metadata = {
     languages: { "tr-TR": "/hakkimizda" },
   },
   openGraph: {
-    title: "Hakkımızda | IQfinansAI",
+    title: "Hakkımda | IQfinansAI",
     description:
       "Finansal özgürlüğe giden yolu teknolojiyle sadeleştiriyorum. Değerlerim ve vizyonum hakkında bilgi edinin.",
     url: `${siteUrl}/hakkimizda`,
@@ -112,114 +111,30 @@ const values = [
   },
 ] as const;
 
-type TechStackChip = { label: string; href: string };
-
 type TechStackGroup = {
   id: string;
   title: string;
-  chips: readonly TechStackChip[];
+  chips: readonly string[];
 };
 
 const techStackChipClassName =
-  "inline-flex max-w-full rounded-md border border-border/80 bg-muted/50 px-2.5 py-1 text-left text-xs font-medium text-pretty text-foreground underline-offset-2 wrap-break-word transition hover:border-emerald-500/45 hover:text-emerald-700 dark:hover:text-emerald-300";
-
-const featuredTechStackLabels = new Set([
-  "Next.js (App Router)",
-  "Tailwind CSS",
-  "TypeScript",
-  "Node.js",
-  "MySQL",
-  "Google Gemini API",
-  "Redux Toolkit",
-  "Shopier",
-  "CollectAPI",
-  "ixirhost | İksir İnternet Hizmetleri A.Ş.",
-  "Teknik SEO",
-  "NextAuth.js",
-  "bcrypt",
-]);
-
-const techStackChipFeaturedClassName =
-  "border-emerald-500/50 bg-emerald-500/14 text-emerald-950 hover:border-emerald-600/60 hover:bg-emerald-500/22 hover:text-emerald-950 dark:border-emerald-400/45 dark:bg-emerald-400/14 dark:text-emerald-50 dark:hover:border-emerald-300/55 dark:hover:bg-emerald-400/22 dark:hover:text-emerald-50";
+  "inline-flex max-w-full rounded-md border border-emerald-500/50 bg-emerald-500/14 px-2.5 py-1 text-left text-xs font-medium text-pretty text-emerald-950 wrap-break-word dark:border-emerald-400/45 dark:bg-emerald-400/14 dark:text-emerald-50";
 
 const techStackGroups: readonly TechStackGroup[] = [
   {
     id: "frontend",
-    title: "Ön uç ve tasarım (Frontend)",
-    chips: [
-      { label: "Next.js (App Router)", href: "https://nextjs.org/" },
-      { label: "React", href: "https://react.dev/" },
-      { label: "TypeScript", href: "https://www.typescriptlang.org/" },
-      { label: "Tailwind CSS", href: "https://tailwindcss.com/" },
-      { label: "shadcn/ui", href: "https://ui.shadcn.com/" },
-      { label: "Radix UI", href: "https://www.radix-ui.com/" },
-    ],
+    title: "Ön yüz (Frontend)",
+    chips: ["Next.js (App Router)", "TypeScript", "Tailwind CSS"],
   },
   {
     id: "runtime-data",
     title: "Çalışma zamanı ve veri (Backend)",
-    chips: [
-      { label: "Node.js", href: "https://nodejs.org/" },
-      { label: "Prisma", href: "https://www.prisma.io/" },
-      { label: "MySQL", href: "https://www.mysql.com/" },
-      { label: "Vercel", href: "https://vercel.com/" },
-      { label: "Railway", href: "https://railway.app/" },
-    ],
+    chips: ["Node.js", "Prisma", "MySQL"],
   },
   {
-    id: "auth",
-    title: "Oturum ve güvenlik",
-    chips: [
-      { label: "NextAuth.js", href: "https://authjs.dev/" },
-      { label: "bcrypt", href: "https://www.npmjs.com/package/bcryptjs" },
-    ],
-  },
-  {
-    id: "ai-forms-state",
-    title: "Yapay zekâ (AI), doğrulama ve durum",
-    chips: [
-      { label: "Google Gemini API", href: "https://ai.google.dev/gemini-api" },
-      { label: "Zod", href: "https://zod.dev/" },
-      { label: "React Hook Form", href: "https://react-hook-form.com/" },
-      { label: "Redux Toolkit", href: "https://redux-toolkit.js.org/" },
-    ],
-  },
-  {
-    id: "integrations",
-    title: "Ödeme ve piyasa verisi",
-    chips: [
-      {
-        label: "Shopier",
-        href: "https://www.shopier.com/iqfinansai/46432141",
-      },
-      { label: "CollectAPI", href: "https://collectapi.com/" },
-    ],
-  },
-  {
-    id: "seo-analytics-hosting",
-    title: "SEO, arama, analitik, reklam ve alan adı",
-    chips: [
-      {
-        label: "Teknik SEO",
-        href: "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
-      },
-      {
-        label: "Google Search Console",
-        href: "https://search.google.com/search-console/about",
-      },
-      {
-        label: "Google Analytics",
-        href: "https://marketingplatform.google.com/about/analytics/",
-      },
-      {
-        label: "Meta Ads Manager (Instagram)",
-        href: "https://adsmanager.facebook.com/",
-      },
-      {
-        label: "ixirhost | İksir İnternet Hizmetleri A.Ş.",
-        href: "https://www.ixirhost.com/",
-      },
-    ],
+    id: "ai-integrations",
+    title: "Yapay zekâ ve entegrasyonlar",
+    chips: ["Gemini API", "NextAuth.js", "Shopier"],
   },
 ];
 
@@ -227,7 +142,7 @@ export default function HakkimizdaPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Hakkımızda",
+    name: "Hakkımda",
     description:
       "IQfinansAI hakkında misyon, değerler ve ürün yaklaşımı; tek geliştirici perspektifiyle hazırlanmış bilgiler.",
     url: `${siteUrl}/hakkimizda`,
@@ -269,7 +184,7 @@ export default function HakkimizdaPage() {
                 </span>{" "}
                 şekillendirin
               </h1>
-              <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+              <p className="mx-auto mt-5 max-w-3xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
                 IQfinansAI, modern dünyada finansal yönetimin sadece rakamlardan
                 ibaret olmadığı inancıyla doğdu. Parayı yönetmeyi bir stres
                 kaynağı olmaktan çıkarıp bir strateji haline getirmeyi
@@ -291,7 +206,7 @@ export default function HakkimizdaPage() {
               />
               <div className="relative flex flex-col items-center gap-10 md:flex-row md:items-center md:gap-14 lg:gap-16">
                 {SITE_FOUNDER.photoSrc ? (
-                  <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-emerald-950/25 ring-2 ring-emerald-500/20 md:h-48 md:w-48">
+                  <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-emerald-950/25 ring-2 ring-emerald-500/20 md:h-52 md:w-52">
                     <Image
                       src={SITE_FOUNDER.photoSrc}
                       alt={
@@ -324,7 +239,18 @@ export default function HakkimizdaPage() {
                     id="about-founder-heading"
                     className="mt-8 border-l-[3px] border-emerald-500/50 pl-5 text-pretty text-base font-light italic leading-[1.75] text-muted-foreground md:border-l-4 md:pl-6 md:text-lg md:leading-relaxed"
                   >
-                    &ldquo;{SITE_FOUNDER.quote}&rdquo;
+                    {SITE_FOUNDER.quoteSegments.map((segment, index) =>
+                      "bold" in segment && segment.bold ? (
+                        <strong
+                          key={index}
+                          className="font-semibold italic text-foreground"
+                        >
+                          {segment.text}
+                        </strong>
+                      ) : (
+                        <span key={index}>{segment.text}</span>
+                      ),
+                    )}
                   </blockquote>
                   <div className="mt-8 space-y-2">
                     <Link
@@ -364,8 +290,11 @@ export default function HakkimizdaPage() {
                 hedefler arasındaki bağ koptuğunda finansal stres başlar.
               </p>
               <p className="mt-4 text-pretty text-muted-foreground leading-relaxed md:text-lg">
-                IQfinansAI, bu parçalı yapıyı tek bir zekâ altında toplar.
-                Amacım sadece veri saklamak değil, o veriyi sizin için{" "}
+                <strong className="font-semibold text-foreground">
+                  IQfinansAI
+                </strong>
+                , bu parçalı yapıyı tek bir zekâ altında toplar. Amacım sadece
+                veri saklamak değil, o veriyi sizin için{" "}
                 <strong className="font-semibold text-foreground">
                   anlamlı bir yol haritasına
                 </strong>{" "}
@@ -376,7 +305,7 @@ export default function HakkimizdaPage() {
               <CardHeader>
                 <CardTitle className="text-xl">Mühendislik Felsefem</CardTitle>
                 <CardDescription>
-                  Her satır kodda ve her tasarım kararında önceliğim
+                  Her satır kodda ve her tasarım kararında önceliğim:
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5 text-sm text-muted-foreground leading-relaxed">
@@ -389,7 +318,7 @@ export default function HakkimizdaPage() {
                       Bütünleşik Ekosistem:
                     </span>{" "}
                     Harcamalarınız ile hedefleriniz arasındaki bağı kurarak
-                    finansal sağlığınızı bir bütün olarak izlerim.
+                    finansal sağlığınızı bir bütün olarak izlemenizi sağlarım.
                   </p>
                 </div>
                 <div className="flex gap-4">
@@ -410,7 +339,7 @@ export default function HakkimizdaPage() {
                   </div>
                   <p>
                     <span className="font-semibold text-foreground">
-                      Etik AI:
+                      Etik Yapay Zekâ (AI):
                     </span>{" "}
                     Üründeki yapay zekâ sizi yönlendirmez, size ayna tutar. Son
                     karar her zaman sizin özgür iradenizdedir.
@@ -461,6 +390,69 @@ export default function HakkimizdaPage() {
         </section>
 
         <section
+          className={`${aboutSectionBase} relative overflow-hidden py-16 md:py-24`}
+          aria-labelledby="about-stack-heading"
+        >
+          <div
+            className="absolute left-1/2 top-1/2 -z-10 h-120 w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/5 blur-[100px] dark:bg-emerald-500/10"
+            aria-hidden="true"
+          />
+
+          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0 relative z-10">
+            <div className="mx-auto max-w-6xl text-center">
+              <p className={eyebrow}>
+                <Code2
+                  className="mr-1.5 inline-block h-3.5 w-3.5 align-[-0.125em] opacity-90"
+                  aria-hidden
+                />
+                Teknoloji yığını
+              </p>
+              <h2
+                id="about-stack-heading"
+                className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
+              >
+                Site ne ile kuruldu?
+              </h2>
+              <div className="mt-6 space-y-5 text-pretty text-muted-foreground md:text-lg md:leading-relaxed">
+                <p>
+                  Finansal verilerinizin güvenliği ve platformun
+                  sürdürülebilirliği için modern, şeffaf ve ölçeklenebilir bir
+                  teknoloji altyapısı kullanıyorum.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {techStackGroups.map((group) => (
+                <li key={group.id} className="group relative">
+                  <div
+                    className="absolute -inset-0.5 rounded-2xl bg-linear-to-br from-emerald-500/20 to-transparent opacity-0 blur transition duration-500 group-hover:opacity-100 dark:from-emerald-400/15"
+                    aria-hidden="true"
+                  />
+                  <Card className="relative h-full overflow-hidden border-border/50 bg-background/60 backdrop-blur-xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/5 dark:bg-zinc-950/60 dark:hover:border-emerald-500/30">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-base font-semibold tracking-tight text-foreground/90">
+                        {group.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2.5 pt-0">
+                      {group.chips.map((chip) => (
+                        <span
+                          key={`${group.id}-${chip}`}
+                          className={techStackChipClassName}
+                        >
+                          {chip}
+                        </span>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section
           className={`${aboutSectionBase} py-16 md:py-20`}
           aria-labelledby="about-cta-heading"
         >
@@ -473,8 +465,11 @@ export default function HakkimizdaPage() {
                 Yeni nesil finans deneyimine katılın
               </h2>
               <p className="max-w-xl text-pretty text-muted-foreground md:text-lg">
-                IQfinansAI ile tanışmak için en doğru zaman bugün. Kontrolü
-                elinize alın, finansal geleceğinizi berraklaştırın.
+                <strong className="font-semibold text-foreground">
+                  IQfinansAI
+                </strong>{" "}
+                ile tanışmak için en doğru zaman bugün. Kontrolü elinize alın,
+                finansal geleceğinizi berraklaştırın.
               </p>
               <div className="mt-4 flex w-full flex-col items-stretch justify-center gap-4 sm:w-auto sm:flex-row sm:items-center">
                 <Button
@@ -497,101 +492,6 @@ export default function HakkimizdaPage() {
                 </Button>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section
-          className={`${aboutSectionBase} relative overflow-hidden py-16 md:py-24`}
-          aria-labelledby="about-stack-heading"
-        >
-          <div
-            className="absolute left-1/2 top-1/2 -z-10 h-120 w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/5 blur-[100px] dark:bg-emerald-500/10"
-            aria-hidden="true"
-          />
-
-          <div className="mx-auto w-full max-w-7xl px-4 xl:px-0 relative z-10">
-            <div className="mx-auto max-w-6xl text-center">
-              <p className={eyebrow}>
-                <Code2
-                  className="mr-1.5 inline-block h-3.5 w-3.5 align-[-0.125em] opacity-90"
-                  aria-hidden
-                />
-                Teknoloji yığını
-              </p>
-              <h2
-                id="about-stack-heading"
-                className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl"
-              >
-                Site neyle kuruldu?
-              </h2>
-              <div className="mt-6 space-y-5 text-pretty text-muted-foreground md:text-lg md:leading-relaxed">
-                <p>
-                  Finans verisi taşıyan bir üründe, hangi katmanların bir arada
-                  çalıştığını gizlemek yerine{" "}
-                  <span className="font-semibold text-foreground">
-                    açıkça paylaşmayı
-                  </span>{" "}
-                  doğru buluyorum: böylece hem güven hem de &quot;bu sistem
-                  sürdürülebilir mi?&quot; sorusuna net bir çerçeve çiziliyor.
-                </p>
-                <p>
-                  Aşağıdaki kartlarda araçları{" "}
-                  <span className="font-semibold text-foreground">
-                    tek tek sıralamak
-                  </span>{" "}
-                  yerine, ön uçtan veri tabanına, ödemeden piyasa beslemesine
-                  kadar{" "}
-                  <span className="font-semibold text-foreground">
-                    hangi işin nerede çözüldüğünü
-                  </span>{" "}
-                  grupladım. Merak ettiğiniz bir satır olursa ilgili karttan
-                  gidebilir; burada amaç liste atmak değil, mimariyi anlaşılır
-                  kılmak.
-                </p>
-              </div>
-            </div>
-
-            <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {techStackGroups.map((group) => (
-                <li key={group.id} className="group relative">
-                  <div
-                    className="absolute -inset-0.5 rounded-2xl bg-linear-to-br from-emerald-500/20 to-transparent opacity-0 blur transition duration-500 group-hover:opacity-100 dark:from-emerald-400/15"
-                    aria-hidden="true"
-                  />
-                  <Card className="relative h-full overflow-hidden border-border/50 bg-background/60 backdrop-blur-xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/5 dark:bg-zinc-950/60 dark:hover:border-emerald-500/30">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-base font-semibold tracking-tight text-foreground/90">
-                        {group.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2.5 pt-0">
-                      {group.chips.map((chip) => {
-                        const isFeatured = featuredTechStackLabels.has(
-                          chip.label,
-                        );
-                        return (
-                          <Link
-                            key={`${group.id}-${chip.label}`}
-                            href={chip.href}
-                            prefetch={false}
-                            className={cn(
-                              techStackChipClassName,
-                              "transition-transform duration-200 hover:-translate-y-0.5",
-                              isFeatured && techStackChipFeaturedClassName,
-                            )}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            title={`${chip.label} — resmi site`}
-                          >
-                            {chip.label}
-                          </Link>
-                        );
-                      })}
-                    </CardContent>
-                  </Card>
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
       </main>

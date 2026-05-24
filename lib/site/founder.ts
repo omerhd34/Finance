@@ -1,7 +1,19 @@
 export const SITE_FOUNDER = {
   displayName: "Ömer Halis Demir",
-  quote:
-    "Bence finansal özgürlük, yalnızca ne kadar kazandığınızla değil; paranızın nereye gittiğini anlamanız, alışkanlıklarınızı net görebilmeniz ve buna göre hareket edebilmenizle tanımlanır. Çoğu insan verisini yeterince sahiplenmiyor: dağınık tablolar, ertelenmiş düzenlemeler ve günlük dalgalarda kaybolan sabır… IQfinansAI’yi tam buradan çıkardım: karmaşık görüneni tek bir düzen içinde toplayan, gizliliğe saygılı, anlaşılır ve uygulaması mümkün bir finans yol arkadaşı. Amacım, bütçenizi, hedeflerinizi ve yatırımlarınızı aynı resimde tutmanıza yardım etmek; bunu herkes için adil, şeffaf ve ulaşılabilir kılmak.",
+  quoteSegments: [
+    { text: "İstanbul Ticaret Üniversitesi", bold: true },
+    {
+      text: "'nde almış olduğum mühendislik eğitimiyle analitik düşünme, sistem tasarımı ve problem çözme alanlarında güçlü bir temel edindim. 6 yıllık profesyonel ",
+    },
+    { text: "Full Stack Developer", bold: true },
+    {
+      text: " tecrübemle; web teknolojileri, veri yönetimi ve finansal süreçleri yenilikçi çözümlerle bir araya getiriyorum. ",
+    },
+    { text: "IQfinansAI", bold: true },
+    {
+      text: "'yi; kullanıcıların bütçe, hedef, yatırım ve finansal alışkanlıklarını çok daha anlaşılır, düzenli ve erişilebilir bir yapıda yönetebilmeleri için hayata geçirdim. Amacım, teknik bilgi birikimimi insanların finansal geleceklerini bilinçli ve güvenle inşa etmelerini sağlayan, modern ve sade bir ürüne dönüştürmek.",
+    },
+  ],
   credentials: "FULL STACK DEVELOPER & ELEKTRİK-ELEKTRONİK MÜHENDİSİ",
   personalSiteUrl: "https://omerhalisdemir.com.tr/",
   photoSrc: "/img.jpg",

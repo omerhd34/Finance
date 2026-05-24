@@ -116,7 +116,7 @@ export function LandingFooter() {
           </div>
 
           <FooterColumn title="Kurumsal">
-            <FooterLink href="/hakkimizda">Hakkımızda</FooterLink>
+            <FooterLink href="/hakkimizda">Hakkımda</FooterLink>
             <FooterLink href="/yasal-bilgiler">Yasal bilgiler</FooterLink>
           </FooterColumn>
 
