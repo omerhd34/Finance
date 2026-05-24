@@ -4,8 +4,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import type { PieLabelRenderProps } from "recharts";
 import type { CategorySlice } from "@/lib/dashboard/dashboard-stats";
 import { cn, formatMoney } from "@/lib/common/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -21,42 +19,18 @@ const SLICE_COLORS = [
   "#64748b",
 ];
 
-function CategoryLabel(props: PieLabelRenderProps) {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
-
-  if (
-    cx === undefined ||
-    cy === undefined ||
-    midAngle === undefined ||
-    innerRadius === undefined ||
-    outerRadius === undefined
-  ) {
-    return null;
-  }
-
-  const RADIAN = Math.PI / 180;
-  const radius =
-    Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5;
-  const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
-  const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor="middle"
-      dominantBaseline="central"
-      className="text-[11px] font-bold"
-    >
-      {percent && percent > 0.05 ? `${Math.round(percent * 100)}%` : ""}
-    </text>
-  );
-}
-
 type CategoryPieChartProps = {
   data: CategorySlice[];
   chartClassName?: string;
+};
+
+type Arc = {
+  name: string;
+  color: string;
+  value: number;
+  pct: number;
+  length: number;
+  offset: number;
 };
 
 export function CategoryPieChart({
@@ -66,7 +40,7 @@ export function CategoryPieChart({
   const router = useRouter();
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [hoveredName, setHoveredName] = useState<string | null>(null);
 
   const chartData = useMemo(
     () => [...data].sort((a, b) => b.value - a.value),
@@ -77,12 +51,32 @@ export function CategoryPieChart({
     [chartData],
   );
 
+  const radius = 36;
+  const innerRadius = 22;
+  const circumference = 2 * Math.PI * radius;
+
+  const arcs = useMemo<Arc[]>(() => {
+    if (monthTotal <= 0) return [];
+    const result: Arc[] = [];
+    let cursor = 0;
+    chartData.forEach((slice, i) => {
+      const pct = (slice.value / monthTotal) * 100;
+      const length = (slice.value / monthTotal) * circumference;
+      result.push({
+        name: slice.name,
+        color: SLICE_COLORS[i % SLICE_COLORS.length],
+        value: slice.value,
+        pct,
+        length,
+        offset: cursor,
+      });
+      cursor += length;
+    });
+    return result;
+  }, [chartData, monthTotal, circumference]);
+
   useEffect(() => {
     setMounted(true);
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const chartHeightClass = cn(
@@ -112,102 +106,107 @@ export function CategoryPieChart({
       <div className={cn("w-full rounded-lg bg-muted/20", chartHeightClass)} />
     );
 
+  const hovered = hoveredName
+    ? (arcs.find((a) => a.name === hoveredName) ?? null)
+    : null;
+
   return (
-    <div className="flex flex-col items-center w-full">
-      <div
-        className={chartHeightClass}
-        onMouseDownCapture={(e) => e.preventDefault()}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart
-            tabIndex={-1}
-            className="[&_.recharts-surface:focus]:outline-none [&_.recharts-sector:focus]:outline-none"
+    <div className="flex w-full flex-col items-center">
+      <div className={cn("flex items-center justify-center", chartHeightClass)}>
+        <div className="relative h-full aspect-square max-h-full">
+          <svg
+            viewBox="0 0 100 100"
+            className="h-full w-full -rotate-90"
+            role="img"
+            aria-label="Kategori giderleri donut grafiği"
           >
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={isMobile ? "50%" : "44%"}
-              outerRadius={isMobile ? "90%" : "80%"}
-              paddingAngle={2}
-              stroke="#1a1a1a"
-              strokeWidth={2}
-              label={CategoryLabel}
-              labelLine={false}
-              rootTabIndex={-1}
-            >
-              {chartData.map((item, i) => (
-                <Cell
-                  key={`c-${i}`}
-                  fill={SLICE_COLORS[i % SLICE_COLORS.length]}
-                  className="cursor-pointer"
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={radius - innerRadius}
+              className="text-muted/40"
+            />
+            {arcs.map((arc) => {
+              const isDimmed = hoveredName !== null && hoveredName !== arc.name;
+              return (
+                <circle
+                  key={arc.name}
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  fill="none"
+                  stroke={arc.color}
+                  strokeWidth={radius - innerRadius}
+                  strokeDasharray={`${arc.length} ${circumference}`}
+                  strokeDashoffset={-arc.offset}
+                  opacity={isDimmed ? 0.35 : 1}
+                  style={{
+                    pointerEvents: "stroke",
+                    cursor: "pointer",
+                    transition: "opacity 150ms ease-out",
+                  }}
+                  onMouseEnter={() => setHoveredName(arc.name)}
+                  onMouseLeave={() => setHoveredName(null)}
+                  onFocus={() => setHoveredName(arc.name)}
+                  onBlur={() => setHoveredName(null)}
                   onClick={() =>
                     router.push(
-                      `/islemler?category=${encodeURIComponent(item.name)}&type=expense`,
+                      `/islemler?category=${encodeURIComponent(arc.name)}&type=expense`,
                     )
                   }
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${arc.name}: ${formatMoney(arc.value, currency)} (%${arc.pct.toFixed(1)})`}
                 />
-              ))}
-            </Pie>
-            <Tooltip
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const item = payload[0];
-                return (
-                  <div
-                    style={{
-                      background: "#111",
-                      border: "1px solid #333",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                      padding: "8px 12px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        color: item.payload?.fill ?? "#fff",
-                        fontWeight: 600,
-                        marginBottom: 4,
-                      }}
-                    >
-                      {item.name}
-                    </p>
-                    <p style={{ color: "#fff" }}>
-                      Tutar : {formatMoney(Number(item.value || 0), currency)}
-                    </p>
-                  </div>
-                );
-              }}
-            />{" "}
-          </PieChart>
-        </ResponsiveContainer>
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-[10px] uppercase tracking-tighter text-muted-foreground">
-              Toplam
-            </p>
-            <p className="text-sm md:text-base font-bold tabular-nums">
-              {formatMoney(monthTotal, currency)}
-            </p>
+              );
+            })}
+          </svg>
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+            {hovered ? (
+              <>
+                <span
+                  className="text-xs font-medium uppercase tracking-wider sm:text-sm"
+                  style={{ color: hovered.color }}
+                >
+                  {hovered.name}
+                </span>
+                <span className="text-lg font-semibold tabular-nums text-foreground sm:text-xl md:text-2xl">
+                  {formatMoney(hovered.value, currency)}
+                </span>
+                <span className="text-xs tabular-nums text-muted-foreground sm:text-sm">
+                  %{hovered.pct.toFixed(1)}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[10px] uppercase tracking-tighter text-muted-foreground sm:text-xs">
+                  Toplam
+                </span>
+                <span className="text-base font-bold tabular-nums sm:text-lg md:text-xl">
+                  {formatMoney(monthTotal, currency)}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full px-4 mt-6 border-t border-border/40 pt-6 md:hidden">
-        {chartData.map((item, i) => (
-          <div key={i} className="flex items-center gap-2">
+      <div className="mt-6 grid w-full grid-cols-2 gap-x-6 gap-y-3 border-t border-border/40 px-4 pt-6 md:hidden">
+        {arcs.map((arc) => (
+          <div key={arc.name} className="flex items-center gap-2">
             <div
-              className="w-2.5 h-2.5 rounded-sm shrink-0"
-              style={{ backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length] }}
+              className="h-2.5 w-2.5 shrink-0 rounded-sm"
+              style={{ backgroundColor: arc.color }}
             />
-            <div className="flex flex-col min-w-0">
-              <span className="text-[11px] text-muted-foreground truncate leading-none mb-1">
-                {item.name}
+            <div className="flex min-w-0 flex-col">
+              <span className="mb-1 truncate text-[11px] leading-none text-muted-foreground">
+                {arc.name}
               </span>
-              <span className="text-[12px] font-semibold text-foreground leading-none">
-                {formatMoney(item.value, currency)}
+              <span className="text-[12px] font-semibold leading-none text-foreground">
+                {formatMoney(arc.value, currency)}
               </span>
             </div>
           </div>
