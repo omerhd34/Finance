@@ -79,19 +79,23 @@ export function DashboardKpiSection({
             value={
               <div className="space-y-0.5">
                 <div>{financialHealth.score}</div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  {financialHealth.insight}
-                </p>
+                {financialHealth.insight ? (
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {financialHealth.insight}
+                  </p>
+                ) : null}
               </div>
             }
             valueClassName={
-              financialHealth.level === "cok-iyi"
-                ? "text-emerald-600 dark:text-emerald-400"
-                : financialHealth.level === "iyi"
-                  ? "text-sky-600 dark:text-sky-400"
-                  : financialHealth.level === "gelisiyor"
-                    ? "text-amber-600 dark:text-amber-400"
-                    : "text-rose-600 dark:text-rose-400"
+              financialHealth.insight === ""
+                ? "text-foreground"
+                : financialHealth.level === "cok-iyi"
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : financialHealth.level === "iyi"
+                    ? "text-sky-600 dark:text-sky-400"
+                    : financialHealth.level === "gelisiyor"
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-rose-600 dark:text-rose-400"
             }
           />
         ) : null}

@@ -185,9 +185,32 @@ function findScoreBand(score: number): ScoreBand {
   return band ?? SCORE_BANDS.at(0)!;
 }
 
+function hasNoFinancialData(input: FinancialHealthInput): boolean {
+  if (input.monthIncome > 0) return false;
+  if (input.monthExpense > 0) return false;
+  if (input.debtReceivable > 0) return false;
+  if (input.debtPayable > 0) return false;
+  if (typeof input.investmentPnl === "number" && input.investmentPnl !== 0) {
+    return false;
+  }
+  const barsHaveActivity = input.monthlyBars.some(
+    (row) => row.gelir !== 0 || row.gider !== 0,
+  );
+  if (barsHaveActivity) return false;
+  return true;
+}
+
 export function computeFinancialHealthScore(
   input: FinancialHealthInput,
 ): FinancialHealthScore {
+  if (hasNoFinancialData(input)) {
+    return {
+      score: 0,
+      level: "zayif",
+      insight: "",
+    };
+  }
+
   const savingsRatio =
     input.monthIncome > 0
       ? (input.monthIncome - input.monthExpense) / input.monthIncome
