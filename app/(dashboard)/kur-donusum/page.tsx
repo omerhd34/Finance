@@ -155,7 +155,7 @@ export default function CurrencyConverterPage() {
 
   return (
     <DataLoadingShell ready={ratesReady}>
-      <div className="mx-auto max-w-2xl px-4 pt-4">
+      <div className="mx-auto max-w-8xl ">
         <DashboardEmailVerificationBanner />
       </div>
       <div className="mx-auto flex min-h-[calc(100dvh-8.5rem)] max-w-2xl items-center px-4 py-6">
