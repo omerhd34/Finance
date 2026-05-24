@@ -169,6 +169,11 @@ export function DashboardKpiSection({
               ? "text-rose-600 dark:text-rose-400"
               : "text-foreground"
         }
+        className={
+          cardCount === 7
+            ? "sm:col-span-2 lg:col-span-2 xl:col-span-3"
+            : undefined
+        }
       />
     </div>
   );
