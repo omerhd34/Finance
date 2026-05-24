@@ -4,6 +4,7 @@ import { DashboardPreviewShell } from "@/components/landing/dashboard-preview/da
 export function LandingDashboardSection() {
   return (
     <section
+      id="canli-dashboard"
       className="relative hidden border-t border-border/60 py-16 md:py-24 lg:block"
       aria-labelledby="landing-dashboard-heading"
     >

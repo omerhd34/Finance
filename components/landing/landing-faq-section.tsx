@@ -70,6 +70,7 @@ export function LandingFaqSection() {
 
   return (
     <section
+      id="sss"
       className="relative overflow-hidden border-t border-border/60 py-16 md:py-24"
       aria-labelledby="landing-faq-heading"
     >

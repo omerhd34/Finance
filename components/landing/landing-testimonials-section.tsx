@@ -6,6 +6,7 @@ const eyebrow =
 export function LandingTestimonialsSection() {
   return (
     <section
+      id="kullanici-hikayeleri"
       className="relative overflow-hidden border-t border-border/60 bg-muted/20 py-16 md:py-24"
       aria-labelledby="landing-testimonials-heading"
     >

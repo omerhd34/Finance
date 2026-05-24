@@ -4,6 +4,7 @@ import { LandingModulesInteractive } from "@/components/landing/landing-modules-
 export function LandingModulesSection() {
   return (
     <section
+      id="ana-moduller"
       className="relative border-t border-border/60 py-16 md:py-24"
       aria-labelledby="landing-modules-heading"
     >
@@ -13,7 +14,7 @@ export function LandingModulesSection() {
           aria-hidden
         />
         <div className="mx-auto max-w-3xl text-center">
-          <p className={landingEyebrow}>Ana modüllerimiz</p>
+          <p className={landingEyebrow}>Modüllerimiz</p>
           <h2
             id="landing-modules-heading"
             className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl md:leading-[1.15]"

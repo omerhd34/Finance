@@ -4,6 +4,7 @@ import { LandingFeatureComparisonTable } from "./landing-feature-comparison-tabl
 export function LandingFeaturesSection() {
   return (
     <section
+      id="plan-karsilastirmasi"
       className="relative py-20 md:py-28"
       aria-labelledby="landing-features-heading"
     >

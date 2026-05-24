@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`dark ${geistSans.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} h-full scroll-smooth antialiased`}
       suppressHydrationWarning
     >
       <body

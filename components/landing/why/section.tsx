@@ -4,6 +4,7 @@ import { landingEyebrow } from "../landing-eyebrow";
 export function LandingWhySection() {
   return (
     <section
+      id="neden-iqfinansai"
       className="relative overflow-hidden border-t border-border/60 py-16 md:py-28"
       aria-labelledby="landing-why-heading"
     >
