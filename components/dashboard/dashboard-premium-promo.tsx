@@ -33,11 +33,11 @@ export function DashboardPremiumPromo() {
           </span>
         </div>
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-          AI analiz ve yatırım takibini açın
+          IQfinansAI ve yatırım portföyünü tek abonelikte aç
         </h2>
         <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
-          Kişiselleştirilmiş AI analizi, hisse ve altın yatırım takibi ve
-          öncelikli yenilikler.
+          Tam metin AI analiz raporu, AI asistan sohbeti, fiş ve fatura OCR’ı,
+          hisse, altın, döviz ve kripto portföy takibi.
         </p>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 pt-0.5">
           <span
