@@ -8,6 +8,7 @@ import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 export type NotificationItem = {
   id: string;
@@ -110,6 +111,7 @@ export function NotificationsPageClient() {
   return (
     <DataLoadingShell ready={!loading}>
       <div className="space-y-4">
+        <DashboardEmailVerificationBanner />
         {unreadCount > 0 ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Button

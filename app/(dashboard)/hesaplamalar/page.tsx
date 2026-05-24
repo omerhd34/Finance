@@ -10,6 +10,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 const calculationTools = [
   {
@@ -59,6 +60,7 @@ const calculationTools = [
 export default function CalculationsPage() {
   return (
     <div className="space-y-6">
+      <DashboardEmailVerificationBanner />
       <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-linear-to-br from-primary/[0.07] via-card to-card/90 p-6 shadow-sm md:p-8">
         <div
           className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl"

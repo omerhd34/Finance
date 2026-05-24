@@ -11,8 +11,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardShellHeader } from "@/components/dashboard/dashboard-shell-header";
-import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
-import { DataLoadingProvider } from "@/components/ui/data-loading-context";
 import {
   DASHBOARD_PAGE_PAD_X,
   DASHBOARD_PAGE_PAD_Y,
@@ -184,10 +182,7 @@ export function DashboardShell({
             DASHBOARD_PAGE_PAD_Y,
           )}
         >
-          <DataLoadingProvider>
-            <DashboardEmailVerificationBanner className="mb-6 md:mb-8" />
-            {children}
-          </DataLoadingProvider>
+          {children}
         </main>
         {open && (
           <div className="fixed inset-x-0 bottom-0 top-14 z-50 lg:hidden">

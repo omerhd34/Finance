@@ -47,6 +47,7 @@ import { TransactionsPageHeader } from "@/components/transactions/transactions-p
 import { TransactionsTableCard } from "@/components/transactions/transactions-table-card";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
 import { LogoLoading } from "@/components/ui/logo-loading";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 function TransactionsPageContent() {
   const dispatch = useAppDispatch();
@@ -286,6 +287,7 @@ function TransactionsPageContent() {
   return (
     <DataLoadingShell ready={pageDataReady}>
       <div className="space-y-6">
+        <DashboardEmailVerificationBanner />
         <TransactionsPageHeader
           exporting={exporting}
           onExportCsv={exportCsv}

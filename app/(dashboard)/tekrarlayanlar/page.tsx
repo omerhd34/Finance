@@ -32,6 +32,7 @@ import {
 import { RecurringRulesSection } from "@/components/recurring/recurring-rules-section";
 import { RecurringToolbar } from "@/components/recurring/recurring-toolbar";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 export default function RecurringPage() {
   const dispatch = useAppDispatch();
@@ -181,6 +182,7 @@ export default function RecurringPage() {
   return (
     <DataLoadingShell ready={initialListReady}>
       <div className="space-y-8">
+        <DashboardEmailVerificationBanner />
         <p className="text-sm text-muted-foreground">
           Kira, abonelik ve maaş gibi düzenli ödemeleri bir kez tanımlayarak
           kolayca takip edin. Otomatik modda vade günü geldiğinde işlem kaydı

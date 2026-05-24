@@ -18,6 +18,7 @@ import { AiRemainingUsageChip } from "@/components/ai-insights/ai-remaining-usag
 import { AiInsightsSections } from "@/components/ai-insights/ai-insights-sections";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 function LegacyAssistantTabRedirect() {
@@ -119,68 +120,71 @@ function AiAnalizPage() {
 
   return (
     <DataLoadingShell ready={pageReady}>
-      {!planPremium ? (
-        <div className="space-y-6">
-          <AiAnalizHero />
-          <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
-            <p className="text-sm font-semibold text-foreground">
-              Premium ile neler kazanırsınız?
-            </p>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-              {premiumAiPerks.map((line) => (
-                <li key={line} className="flex gap-3">
-                  <Check
-                    className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
-                    aria-hidden
-                  />
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
+      <div className="space-y-6">
+        <DashboardEmailVerificationBanner />
+        {!planPremium ? (
+          <div className="space-y-6">
+            <AiAnalizHero />
+            <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">
+              <p className="text-sm font-semibold text-foreground">
+                Premium ile neler kazanırsınız?
+              </p>
+              <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                {premiumAiPerks.map((line) => (
+                  <li key={line} className="flex gap-3">
+                    <Check
+                      className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500/90"
+                      aria-hidden
+                    />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <PremiumPlanNotice title="IQfinansAI Analiz Premium plandadır." />
           </div>
-          <PremiumPlanNotice title="IQfinansAI Analiz Premium plandadır." />
-        </div>
-      ) : (
-        <div className="space-y-8">
-          <AiAnalizHero />
+        ) : (
+          <div className="space-y-8">
+            <AiAnalizHero />
 
-          <AiInsightsRunControls
-            hasResult={markdown != null}
-            loading={loading}
-            error={error}
-            onRun={run}
-            planLocked={false}
-            secondaryAction={
-              <>
-                {sections.length > 0 ? (
-                  <AiInsightsExportDropdown
-                    exporting={exporting}
-                    onExportPdf={exportPdf}
+            <AiInsightsRunControls
+              hasResult={markdown != null}
+              loading={loading}
+              error={error}
+              onRun={run}
+              planLocked={false}
+              secondaryAction={
+                <>
+                  {sections.length > 0 ? (
+                    <AiInsightsExportDropdown
+                      exporting={exporting}
+                      onExportPdf={exportPdf}
+                    />
+                  ) : null}
+                  <AiInsightsHistoryDialog
+                    disabled={loading || exporting !== null}
+                    onSelect={(md) => {
+                      setMarkdown(md);
+                      setError(null);
+                    }}
                   />
-                ) : null}
-                <AiInsightsHistoryDialog
-                  disabled={loading || exporting !== null}
-                  onSelect={(md) => {
-                    setMarkdown(md);
-                    setError(null);
-                  }}
-                />
-                <AiRemainingUsageChip
-                  mode="analyses"
-                  remaining={remainingAnalyses}
-                  loading={usageLoading}
-                />
-              </>
-            }
-          />
+                  <AiRemainingUsageChip
+                    mode="analyses"
+                    remaining={remainingAnalyses}
+                    loading={usageLoading}
+                  />
+                </>
+              }
+            />
 
-          {loading ? <AiInsightsLoadingSkeleton /> : null}
+            {loading ? <AiInsightsLoadingSkeleton /> : null}
 
-          {!loading && sections.length > 0 ? (
-            <AiInsightsSections sections={sections} />
-          ) : null}
-        </div>
-      )}
+            {!loading && sections.length > 0 ? (
+              <AiInsightsSections sections={sections} />
+            ) : null}
+          </div>
+        )}
+      </div>
     </DataLoadingShell>
   );
 }

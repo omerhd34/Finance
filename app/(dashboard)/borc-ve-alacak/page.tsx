@@ -24,6 +24,7 @@ import { PayDebtDialog } from "@/components/debts/pay-debt-dialog";
 import { AddDebtPrincipalDialog } from "@/components/debts/add-debt-principal-dialog";
 import { DeleteDebtDialog } from "@/components/debts/delete-debt-dialog";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 export default function DebtsPage() {
   const dispatch = useAppDispatch();
@@ -148,6 +149,7 @@ export default function DebtsPage() {
   return (
     <DataLoadingShell ready={initialDebtsReady}>
       <div className="space-y-6">
+        <DashboardEmailVerificationBanner />
         <DebtsPageHeader
           newOpen={newOpen}
           onNewOpenChange={setNewOpen}

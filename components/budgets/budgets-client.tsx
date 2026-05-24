@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/common/utils";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 import {
   BudgetsFilters,
   DEFAULT_BUDGETS_FILTERS,
@@ -227,6 +228,7 @@ export function BudgetsClient({ currency }: Props) {
   return (
     <DataLoadingShell ready={!loading}>
       <div className="space-y-6">
+        <DashboardEmailVerificationBanner />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-muted-foreground">

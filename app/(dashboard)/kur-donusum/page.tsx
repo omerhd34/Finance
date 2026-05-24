@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 type FxResponse = {
   quotes?: Record<string, number> | null;
@@ -154,6 +155,9 @@ export default function CurrencyConverterPage() {
 
   return (
     <DataLoadingShell ready={ratesReady}>
+      <div className="mx-auto max-w-2xl px-4 pt-4">
+        <DashboardEmailVerificationBanner />
+      </div>
       <div className="mx-auto flex min-h-[calc(100dvh-8.5rem)] max-w-2xl items-center px-4 py-6">
         <Card className="w-full overflow-hidden rounded-2xl border border-emerald-600/20 bg-linear-to-b from-[#f5fffa] via-[#eefcf5] to-[#eaf9f1] text-emerald-950 shadow-[0_18px_48px_rgba(16,185,129,0.10)] dark:border-emerald-500/18 dark:bg-linear-to-b dark:from-[#0b1410] dark:via-[#091210] dark:to-[#071110] dark:text-white dark:shadow-[0_24px_64px_rgba(16,185,129,0.12),inset_0_1px_0_rgba(255,255,255,0.04)]">
           <CardContent className="p-8 space-y-6">

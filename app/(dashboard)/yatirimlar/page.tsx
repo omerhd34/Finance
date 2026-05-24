@@ -41,6 +41,7 @@ import { InvestmentsPositionsTabs } from "@/components/investments/investments-p
 import { InvestmentsSummaryCards } from "@/components/investments/investments-summary-cards";
 import { PremiumPlanNotice } from "@/components/premium/premium-plan-notice";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 const PREMIUM_INVESTMENT_PERKS = [
@@ -241,6 +242,7 @@ export default function InvestmentsPage() {
   return (
     <DataLoadingShell ready={pageDataReady}>
       <div className="space-y-6">
+        <DashboardEmailVerificationBanner />
         {!planPremium ? (
           <>
             <div className="rounded-2xl border border-border/80 bg-card/50 p-5 shadow-sm">

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ArrowLeft, LineChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InflationForm } from "@/components/calculations/inflation-form";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 export default function InflationCalculationPage() {
   return (
     <div className="mx-auto max-w-8xl space-y-6">
+      <DashboardEmailVerificationBanner />
       <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         <div
           className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-linear-to-b from-emerald-400 via-emerald-500 to-emerald-600"

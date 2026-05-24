@@ -13,10 +13,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SimpleInterestForm } from "@/components/calculations/simple-interest-form";
 import { CompoundInterestForm } from "@/components/calculations/compound-interest-form";
 import { TermDepositForm } from "@/components/calculations/term-deposit-form";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 
 export default function InterestCalculationPage() {
   return (
     <div className="mx-auto max-w-8xl space-y-6">
+      <DashboardEmailVerificationBanner />
       <div className="relative overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         <div
           className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-linear-to-b from-emerald-400 via-emerald-500 to-emerald-600"

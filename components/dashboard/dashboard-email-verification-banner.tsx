@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
 import { PREMIUM_TRIAL_DAYS } from "@/lib/premium/premium-subscription-constants";
-import { useIsDataLoading } from "@/components/ui/data-loading-context";
 
 export function DashboardEmailVerificationBanner({
   className,
@@ -20,7 +19,6 @@ export function DashboardEmailVerificationBanner({
   const router = useRouter();
   const [sending, setSending] = useState(false);
   const refreshedRef = useRef(false);
-  const isPageLoading = useIsDataLoading();
 
   useEffect(() => {
     if (refreshedRef.current) return;
@@ -37,7 +35,6 @@ export function DashboardEmailVerificationBanner({
     })();
   }, [status, session?.user?.isEmailVerified, updateSession, router]);
 
-  if (isPageLoading) return null;
   if (!session?.user) return null;
   if (session.user.isEmailVerified !== false) return null;
 

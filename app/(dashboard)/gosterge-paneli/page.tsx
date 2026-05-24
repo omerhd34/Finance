@@ -17,6 +17,7 @@ import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurri
 import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
 import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
+import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
 import { AiMessagingDigestCopyButton } from "@/components/ai-insights/ai-messaging-digest-copy-button";
 import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
@@ -328,6 +329,7 @@ export default function DashboardPage() {
   return (
     <DataLoadingShell ready={!loading}>
       <div className="space-y-8">
+        <DashboardEmailVerificationBanner />
         {!planPremium ? <DashboardPremiumPromo /> : null}
 
         <DashboardKpiSection
