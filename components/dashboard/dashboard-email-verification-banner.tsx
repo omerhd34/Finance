@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { MailWarning } from "lucide-react";
@@ -10,6 +10,9 @@ import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
 import { PREMIUM_TRIAL_DAYS } from "@/lib/premium/premium-subscription-constants";
 
+const EMAIL_VERIFICATION_RECHECK_KEY_PREFIX =
+  "iqfinansai:email-verification-rechecked:";
+
 export function DashboardEmailVerificationBanner({
   className,
 }: {
@@ -18,22 +21,35 @@ export function DashboardEmailVerificationBanner({
   const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   const [sending, setSending] = useState(false);
-  const refreshedRef = useRef(false);
 
   useEffect(() => {
-    if (refreshedRef.current) return;
     if (status !== "authenticated") return;
+    if (!session?.user?.id) return;
     if (session?.user?.isEmailVerified !== false) return;
-    refreshedRef.current = true;
+
+    const recheckKey = `${EMAIL_VERIFICATION_RECHECK_KEY_PREFIX}${session.user.id}`;
+    if (sessionStorage.getItem(recheckKey) === "1") return;
+    sessionStorage.setItem(recheckKey, "1");
+
     void (async () => {
       try {
-        await updateSession({ reloadUser: true } as Record<string, unknown>);
-        router.refresh();
+        const refreshedSession = await updateSession({
+          reloadUser: true,
+        } as Record<string, unknown>);
+        if (refreshedSession?.user?.isEmailVerified === true) {
+          router.refresh();
+        }
       } catch {
         /* noop */
       }
     })();
-  }, [status, session?.user?.isEmailVerified, updateSession, router]);
+  }, [
+    status,
+    session?.user?.id,
+    session?.user?.isEmailVerified,
+    updateSession,
+    router,
+  ]);
 
   if (!session?.user) return null;
   if (session.user.isEmailVerified !== false) return null;
@@ -48,8 +64,6 @@ export function DashboardEmailVerificationBanner({
       }>("/api/auth/verify-email/send");
       if (data?.sent) {
         toast.success("Doğrulama e-postası gönderildi.");
-        await updateSession({ reloadUser: true } as Record<string, unknown>);
-        router.refresh();
       } else if (data?.message) {
         toast.info(data.message);
       }

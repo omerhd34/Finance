@@ -24,6 +24,7 @@ export default function RootLayout({
     <html
       lang="tr"
       className={`dark ${geistSans.variable} h-full scroll-smooth antialiased`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body

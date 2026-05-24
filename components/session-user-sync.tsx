@@ -49,16 +49,43 @@ function buildAuthUserFromSession(session: {
 export function SessionUserSync() {
   const { data: session, status } = useSession();
   const dispatch = useDispatch<AppDispatch>();
+  const userId = session?.user?.id;
+  const userName = session?.user?.name;
+  const userEmail = session?.user?.email;
+  const userImage = session?.user?.image;
+  const userCurrency = session?.user?.currency;
+  const userPhone = session?.user?.phone;
+  const userProfession = session?.user?.profession;
+  const userCity = session?.user?.city;
+  const userCountry = session?.user?.country;
+  const userMonthStartDay = session?.user?.monthStartDay;
+  const userNotificationsEnabled = session?.user?.notificationsEnabled;
+  const userPlanTier = session?.user?.planTier;
 
   useEffect(() => {
     if (status === "loading") return;
 
-    if (!session?.user?.id || !session.user.email) {
+    if (!userId || !userEmail) {
       dispatch(clearUser());
       return;
     }
 
-    const base = buildAuthUserFromSession(session);
+    const base = buildAuthUserFromSession({
+      user: {
+        id: userId,
+        name: userName,
+        email: userEmail,
+        image: userImage,
+        currency: userCurrency,
+        phone: userPhone,
+        profession: userProfession,
+        city: userCity,
+        country: userCountry,
+        monthStartDay: userMonthStartDay,
+        notificationsEnabled: userNotificationsEnabled,
+        planTier: userPlanTier,
+      },
+    });
     dispatch(setUser(base));
 
     let cancelled = false;
@@ -71,7 +98,7 @@ export function SessionUserSync() {
           setUser({
             ...base,
             image: data.image ?? base.image,
-            planTier: normalizePlanTier(data.planTier ?? session.user.planTier),
+            planTier: normalizePlanTier(data.planTier ?? userPlanTier),
           }),
         );
       } catch {}
@@ -80,7 +107,22 @@ export function SessionUserSync() {
     return () => {
       cancelled = true;
     };
-  }, [session, status, dispatch]);
+  }, [
+    status,
+    dispatch,
+    userId,
+    userName,
+    userEmail,
+    userImage,
+    userCurrency,
+    userPhone,
+    userProfession,
+    userCity,
+    userCountry,
+    userMonthStartDay,
+    userNotificationsEnabled,
+    userPlanTier,
+  ]);
 
   return null;
 }

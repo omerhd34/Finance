@@ -27,10 +27,10 @@ export default async function DashboardGroupLayout({
 
   return (
     <div className={geistMono.variable}>
+      <Script id="sidebar-collapsed-init" strategy="beforeInteractive">
+        {sidebarCollapsedBootstrapScript()}
+      </Script>
       <Providers>
-        <Script id="sidebar-collapsed-init" strategy="beforeInteractive">
-          {sidebarCollapsedBootstrapScript()}
-        </Script>
         <DashboardShell initialSidebarCollapsed={initialSidebarCollapsed}>
           {children}
         </DashboardShell>
