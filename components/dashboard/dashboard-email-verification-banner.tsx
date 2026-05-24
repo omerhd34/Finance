@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/client/api-client";
 import { cn } from "@/lib/common/utils";
 import { PREMIUM_TRIAL_DAYS } from "@/lib/premium/premium-subscription-constants";
+import { useIsDataLoading } from "@/components/ui/data-loading-context";
 
 export function DashboardEmailVerificationBanner({
   className,
@@ -19,6 +20,7 @@ export function DashboardEmailVerificationBanner({
   const router = useRouter();
   const [sending, setSending] = useState(false);
   const refreshedRef = useRef(false);
+  const isPageLoading = useIsDataLoading();
 
   useEffect(() => {
     if (refreshedRef.current) return;
@@ -35,6 +37,7 @@ export function DashboardEmailVerificationBanner({
     })();
   }, [status, session?.user?.isEmailVerified, updateSession, router]);
 
+  if (isPageLoading) return null;
   if (!session?.user) return null;
   if (session.user.isEmailVerified !== false) return null;
 
@@ -92,7 +95,7 @@ export function DashboardEmailVerificationBanner({
           </span>
         </div>
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-          Hesabınızı doğrulayın ve {PREMIUM_TRIAL_DAYS} gün Premium kazanın
+          Hesabınızı doğrulayın ve {PREMIUM_TRIAL_DAYS} gün Premium kazanın.
         </h2>
         <p className="max-w-4xl text-pretty text-sm leading-relaxed text-muted-foreground">
           E-posta adresinize gönderilecek bağlantıyla hesabınızı doğrulayın;
