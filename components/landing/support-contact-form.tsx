@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,15 +24,45 @@ const fieldClass =
   "border-border/80 bg-background/80 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/30";
 
 const fieldGroupClass = "flex flex-col";
-const labelClass = "mb-2.5 block text-sm font-medium leading-snug";
-
+const labelClass = "pb-2 block text-sm font-medium leading-snug";
 const formShellClass = "mx-auto w-full max-w-2xl";
 
-const SUCCESS_MESSAGE_HIDE_MS = 10_000;
+type SupportTextFieldName = Extract<
+  keyof SupportContactClientInput,
+  "name" | "email" | "subject"
+>;
+
+const SUPPORT_TEXT_FIELDS = [
+  {
+    name: "name",
+    id: "support-name",
+    label: "Ad ve Soyad:",
+    type: "text",
+    autoComplete: "name",
+  },
+  {
+    name: "email",
+    id: "support-email",
+    label: "E-posta:",
+    type: "email",
+    autoComplete: "email",
+  },
+  {
+    name: "subject",
+    id: "support-subject",
+    label: "Konu:",
+    type: "text",
+    autoComplete: "off",
+  },
+] as const satisfies readonly {
+  name: SupportTextFieldName;
+  id: string;
+  label: string;
+  type: "email" | "text";
+  autoComplete: string;
+}[];
 
 export function SupportContactForm({ inboxConfigured, className }: Props) {
-  const [sent, setSent] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -51,17 +81,8 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
     },
   });
 
-  useEffect(() => {
-    if (!sent) return;
-    const timerId = window.setTimeout(() => {
-      setSent(false);
-    }, SUCCESS_MESSAGE_HIDE_MS);
-    return () => window.clearTimeout(timerId);
-  }, [sent]);
-
   async function onSubmit(data: SupportContactClientInput) {
     clearErrors("root");
-    setSent(false);
     try {
       const res = await fetch("/api/support/contact", {
         method: "POST",
@@ -74,12 +95,12 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
       };
 
       if (!res.ok) {
-        setError("root", {
-          message:
-            typeof payload.error === "string" && payload.error.length > 0
-              ? payload.error
-              : "Gönderim başarısız. Lütfen tekrar deneyin.",
-        });
+        const message =
+          typeof payload.error === "string" && payload.error.length > 0
+            ? payload.error
+            : "Gönderim başarısız. Lütfen tekrar deneyin.";
+        setError("root", { message });
+        toast.error(message);
         return;
       }
 
@@ -91,11 +112,14 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
         _contact_hp: "",
       });
       fireGoogleAdsPurchaseConversion();
-      setSent(true);
-    } catch {
-      setError("root", {
-        message: "Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin.",
+      toast.success("Mesajınız alındı", {
+        description: "En kısa sürede size dönüş yapacağız.",
       });
+    } catch {
+      const message =
+        "Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin.";
+      setError("root", { message });
+      toast.error(message);
     }
   }
 
@@ -118,7 +142,7 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
     <div className={cn(formShellClass, className)}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-6 space-y-5 rounded-2xl border border-emerald-500/25 bg-card/70 p-6 shadow-lg backdrop-blur-sm md:p-8"
+        className="flex flex-col gap-4 rounded-2xl border border-emerald-500/25 bg-card/70 p-5 shadow-lg backdrop-blur-sm md:p-6"
         noValidate
       >
         <input
@@ -134,70 +158,40 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
           {...register("_contact_hp")}
         />
 
-        <div className={fieldGroupClass}>
-          <Label htmlFor="support-name" className={labelClass}>
-            Adınız ve Soyadınız:
-          </Label>
-          <Input
-            id="support-name"
-            autoComplete="name"
-            disabled={isSubmitting}
-            className={fieldClass}
-            {...register("name")}
-          />
-          {errors.name ? (
-            <p className="mt-1.5 text-sm text-destructive" role="alert">
-              {errors.name.message}
-            </p>
-          ) : null}
-        </div>
+        {SUPPORT_TEXT_FIELDS.map((field) => {
+          const errorMessage = errors[field.name]?.message;
 
-        <div className={fieldGroupClass}>
-          <Label htmlFor="support-email" className={labelClass}>
-            E-posta:
-          </Label>
-          <Input
-            id="support-email"
-            type="email"
-            autoComplete="email"
-            disabled={isSubmitting}
-            className={fieldClass}
-            {...register("email")}
-          />
-          {errors.email ? (
-            <p className="mt-1.5 text-sm text-destructive" role="alert">
-              {errors.email.message}
-            </p>
-          ) : null}
-        </div>
+          return (
+            <div key={field.name} className={fieldGroupClass}>
+              <Label htmlFor={field.id} className={labelClass}>
+                {field.label}
+              </Label>
+              <Input
+                id={field.id}
+                type={field.type}
+                autoComplete={field.autoComplete}
+                disabled={isSubmitting}
+                className={fieldClass}
+                {...register(field.name)}
+              />
+              {errorMessage ? (
+                <p className="mt-1.5 text-sm text-destructive" role="alert">
+                  {errorMessage}
+                </p>
+              ) : null}
+            </div>
+          );
+        })}
 
-        <div className={fieldGroupClass}>
-          <Label htmlFor="support-subject" className={labelClass}>
-            Konu:
-          </Label>
-          <Input
-            id="support-subject"
-            autoComplete="off"
-            disabled={isSubmitting}
-            className={fieldClass}
-            {...register("subject")}
-          />
-          {errors.subject ? (
-            <p className="mt-1.5 text-sm text-destructive" role="alert">
-              {errors.subject.message}
-            </p>
-          ) : null}
-        </div>
-
-        <div className={fieldGroupClass}>
+        <div className={cn(fieldGroupClass, "min-h-0 flex-1")}>
           <Label htmlFor="support-message" className={labelClass}>
-            Mesajınız:
+            Mesaj:
           </Label>
           <Textarea
             id="support-message"
-            rows={5}
+            rows={3}
             disabled={isSubmitting}
-            className={cn(fieldClass, "min-h-[140px] resize-y")}
+            className={cn(fieldClass, "min-h-[100px] flex-1 resize-y")}
             {...register("message")}
           />
           {errors.message ? (
@@ -210,15 +204,6 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
         {errors.root ? (
           <p className="text-sm text-destructive" role="alert">
             {errors.root.message}
-          </p>
-        ) : null}
-
-        {sent ? (
-          <p
-            className="rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-4 py-3 text-center text-sm font-medium text-emerald-800 dark:text-emerald-200"
-            role="status"
-          >
-            Mesajınız alındı. En kısa sürede size dönüş yapacağız.
           </p>
         ) : null}
 

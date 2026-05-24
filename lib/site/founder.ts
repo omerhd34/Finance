@@ -16,6 +16,9 @@ export const SITE_FOUNDER = {
   ],
   credentials: "FULL STACK DEVELOPER & ELEKTRİK-ELEKTRONİK MÜHENDİSİ",
   personalSiteUrl: "https://omerhalisdemir.com.tr/",
+  githubUrl: "https://github.com/omerhd34",
+  linkedinUrl: "https://www.linkedin.com/in/%C3%B6mer-halis-demir-7a9b79169/",
+  cvUrl: "https://www.omerhalisdemir.com.tr/pdf/cv.pdf#zoom=100",
   photoSrc: "/img.jpg",
   initials: "ÖHD",
 } as const;
