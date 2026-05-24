@@ -140,8 +140,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.isEmailVerified = Boolean(dbUser.emailVerified);
         }
       }
+      if (
+        token.id &&
+        token.isEmailVerified === true &&
+        (token as { planTier?: string }).planTier !== "premium"
+      ) {
+        const PLAN_RECHECK_MS = 30_000;
+        const nowMs = Date.now();
+        const lastCheckedAt =
+          typeof (token as { planRecheckedAt?: number }).planRecheckedAt ===
+          "number"
+            ? ((token as { planRecheckedAt?: number })
+                .planRecheckedAt as number)
+            : 0;
+        if (nowMs - lastCheckedAt >= PLAN_RECHECK_MS) {
+          try {
+            await grantPremiumTrialIfEligible(token.id as string);
+          } catch (trialErr) {
+            console.error("[auth.jwt.planRecheck] trial grant", trialErr);
+          }
+          await ensurePremiumNotExpired(token.id as string);
+          const refreshed = (await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: {
+              planTier: true,
+              premiumUntil: true,
+            },
+          })) as {
+            planTier: string;
+            premiumUntil: Date | null;
+          } | null;
+          if (refreshed) {
+            token.planTier =
+              refreshed.planTier === "premium" ? "premium" : "free";
+            token.premiumUntil = refreshed.premiumUntil?.toISOString() ?? null;
+          }
+          (token as { planRecheckedAt?: number }).planRecheckedAt = nowMs;
+        }
+      }
       if (token.id && token.isEmailVerified !== true) {
-        const EMAIL_VERIFY_RECHECK_MS = 5 * 60_000;
+        const EMAIL_VERIFY_RECHECK_MS = 30_000;
         const nowMs = Date.now();
         const lastCheckedAt =
           typeof token.emailVerifyCheckedAt === "number"
@@ -154,6 +192,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           if (ev?.emailVerified) {
             token.isEmailVerified = true;
+            try {
+              await grantPremiumTrialIfEligible(token.id as string);
+            } catch (trialErr) {
+              console.error("[auth.jwt.recheck] trial grant", trialErr);
+            }
+            await ensurePremiumNotExpired(token.id as string);
+            const refreshed = (await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: {
+                planTier: true,
+                premiumUntil: true,
+              },
+            })) as {
+              planTier: string;
+              premiumUntil: Date | null;
+            } | null;
+            if (refreshed) {
+              token.planTier =
+                refreshed.planTier === "premium" ? "premium" : "free";
+              token.premiumUntil =
+                refreshed.premiumUntil?.toISOString() ?? null;
+            }
           }
           token.emailVerifyCheckedAt = nowMs;
         }

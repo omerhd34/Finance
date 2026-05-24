@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/prisma";
 import { profileUpdateSchema } from "@/lib/schemas/validations";
-import { ensurePremiumNotExpired } from "@/lib/premium/premium-subscription";
+import {
+  ensurePremiumNotExpired,
+  grantPremiumTrialIfEligible,
+} from "@/lib/premium/premium-subscription";
 
 const profileSelectFields = {
   id: true,
@@ -26,6 +29,11 @@ export async function GET() {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+    }
+    try {
+      await grantPremiumTrialIfEligible(session.user.id);
+    } catch (trialErr) {
+      console.error("[GET /api/user/profile] trial grant", trialErr);
     }
     await ensurePremiumNotExpired(session.user.id);
     const user = await prisma.user.findUnique({

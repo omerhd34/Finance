@@ -59,13 +59,6 @@ export function SessionUserSync() {
     }
 
     const base = buildAuthUserFromSession(session);
-
-    const hasProfileImage = Boolean(session.user.image?.trim());
-    if (hasProfileImage) {
-      dispatch(setUser(base));
-      return;
-    }
-
     dispatch(setUser(base));
 
     let cancelled = false;
@@ -77,13 +70,11 @@ export function SessionUserSync() {
         dispatch(
           setUser({
             ...base,
-            image: data.image ?? null,
+            image: data.image ?? base.image,
             planTier: normalizePlanTier(data.planTier ?? session.user.planTier),
           }),
         );
-      } catch {
-        if (!cancelled) dispatch(setUser(base));
-      }
+      } catch {}
     })();
 
     return () => {
