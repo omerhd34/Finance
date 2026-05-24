@@ -19,7 +19,14 @@ function buildVerifyEmailHtml(verifyUrl: string): string {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light" />
   <title>E-posta doğrulama</title>
+  <style>
+    :root { color-scheme: light only; supported-color-schemes: light; }
+    a.iqf-cta, a.iqf-cta:link, a.iqf-cta:visited, a.iqf-cta:hover, a.iqf-cta:active { color:#ffffff !important; text-decoration:none !important; }
+    a.iqf-cta span { color:#ffffff !important; }
+  </style>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f5;padding:32px 16px;">
@@ -65,8 +72,8 @@ function buildVerifyEmailHtml(verifyUrl: string): string {
                 </tr>
                 <tr>
                   <td style="padding:0 28px 12px 28px;text-align:center;">
-                    <a href="${safeUrl}" style="display:inline-block;padding:14px 32px;background:${accent};color:#ffffff !important;text-decoration:none;font-size:15px;font-weight:600;border-radius:8px;">
-                      E-postamı doğrula
+                    <a href="${safeUrl}" class="iqf-cta" style="display:inline-block;padding:14px 32px;background:${accent};color:#ffffff !important;text-decoration:none;font-size:15px;font-weight:600;border-radius:8px;mso-padding-alt:0;">
+                      <span style="color:#ffffff !important;text-decoration:none;">E-postamı doğrula</span>
                     </a>
                   </td>
                 </tr>
