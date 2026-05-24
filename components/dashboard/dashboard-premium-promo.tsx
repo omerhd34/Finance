@@ -35,7 +35,7 @@ export function DashboardPremiumPromo() {
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
           IQfinansAI ve yatırım portföyünü tek abonelikte aç
         </h2>
-        <p className="max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-4xl text-pretty text-sm leading-relaxed text-muted-foreground">
           Tam metin AI analiz raporu, AI asistan sohbeti, fiş ve fatura OCR’ı,
           hisse, altın, döviz ve kripto portföy takibi.
         </p>
