@@ -23,20 +23,23 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const supportContactFormSchema = z.object({
-  name: z.string().min(2, "Ad en az 2 karakter olmalı").max(120, "Ad çok uzun"),
+  name: z
+    .string()
+    .min(2, "Ad en az 2 karakter olmalı.")
+    .max(120, "Ad çok uzun."),
   email: z
     .string()
     .min(1, "E-posta zorunludur")
-    .email("Geçerli bir e-posta girin")
+    .email("Geçerli bir e-posta girin.")
     .transform((s) => s.trim().toLowerCase()),
   subject: z
     .string()
-    .min(4, "Konu en az 4 karakter olmalı")
-    .max(200, "Konu çok uzun"),
+    .min(4, "Konu en az 4 karakter olmalı.")
+    .max(200, "Konu çok uzun."),
   message: z
     .string()
-    .min(20, "Mesaj en az 20 karakter olmalı")
-    .max(8000, "Mesaj çok uzun"),
+    .min(20, "Mesaj en az 20 karakter olmalı.")
+    .max(8000, "Mesaj çok uzun."),
 });
 
 export const supportContactClientSchema = supportContactFormSchema.extend({
@@ -45,19 +48,19 @@ export const supportContactClientSchema = supportContactFormSchema.extend({
 
 export const resetPasswordSchema = z
   .object({
-    token: z.string().min(1, "Geçersiz bağlantı"),
-    password: z.string().min(8, "Şifre en az 8 karakter olmalı"),
+    token: z.string().min(1, "Geçersiz bağlantı."),
+    password: z.string().min(8, "Şifre en az 8 karakter olmalı."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Şifreler eşleşmiyor",
+    message: "Şifreler eşleşmiyor.",
     path: ["confirmPassword"],
   });
 
 export const transactionBodyFieldsSchema = z.object({
   type: z.enum(["income", "expense"]),
-  amount: z.number().positive("Tutar pozitif olmalı"),
-  category: z.string().min(1, "Kategori seçin"),
+  amount: z.number().positive("Tutar pozitif olmalı."),
+  category: z.string().min(1, "Kategori seçin."),
   subcategory: z.union([z.string(), z.null()]).optional(),
   description: z.string().optional(),
   date: z.coerce.date(),
@@ -74,8 +77,8 @@ export const transactionCreateSchema = transactionBodyFieldsSchema
 export const transactionBatchCreateSchema = z.object({
   items: z
     .array(transactionCreateSchema)
-    .min(1, "En az bir kalem gerekli")
-    .max(30, "En fazla 30 kalem"),
+    .min(1, "En az bir kalem gerekli.")
+    .max(30, "En fazla 30 kalem."),
 });
 
 export const transactionUpdateSchema = transactionBodyFieldsSchema.partial();
@@ -106,8 +109,8 @@ export type TransactionEditFormValues = z.infer<
 
 const recurringFieldsObject = z.object({
   type: z.enum(["income", "expense"]),
-  amount: z.number().positive("Tutar pozitif olmalı"),
-  category: z.string().min(1, "Kategori seçin"),
+  amount: z.number().positive("Tutar pozitif olmalı."),
+  category: z.string().min(1, "Kategori seçin."),
   subcategory: z.union([z.string(), z.null()]).optional(),
   description: z.string().optional().nullable(),
   frequency: z.enum(["WEEKLY", "MONTHLY", "YEARLY"]),
@@ -123,7 +126,7 @@ export const recurringCreateSchema = recurringFieldsObject
     isActive: z.boolean().optional().default(true),
   })
   .refine((d) => !d.endDate || d.startDate <= d.endDate, {
-    message: "Bitiş tarihi başlangıçtan önce olamaz",
+    message: "Bitiş tarihi başlangıçtan önce olamaz.",
     path: ["endDate"],
   })
   .superRefine((data, ctx) =>
@@ -143,18 +146,18 @@ export const recurringUpdateSchema = recurringFieldsObject
       d.endDate === null ||
       d.startDate <= d.endDate,
     {
-      message: "Bitiş tarihi başlangıçtan önce olamaz",
+      message: "Bitiş tarihi başlangıçtan önce olamaz.",
       path: ["endDate"],
     },
   );
 
 export const categoryBudgetCreateSchema = z.object({
-  category: z.string().min(1, "Kategori seçin"),
-  monthlyLimit: z.number().positive("Aylık limit pozitif olmalı"),
+  category: z.string().min(1, "Kategori seçin."),
+  monthlyLimit: z.number().positive("Aylık limit pozitif olmalı."),
   alertThresholdPercent: z
     .number()
-    .min(1, "En az %1")
-    .max(100, "En fazla %100")
+    .min(1, "En az %1.")
+    .max(100, "En fazla %100.")
     .optional()
     .default(80),
   emailAlertsEnabled: z.boolean().optional().default(true),
@@ -170,14 +173,14 @@ export const categoryBudgetUpdateSchema = z.object({
 export const debtCreateSchema = z
   .object({
     direction: z.enum(["RECEIVABLE", "PAYABLE"]),
-    counterparty: z.string().min(1, "Kişi veya başlık gerekli"),
-    totalAmount: z.number().positive("Toplam tutar pozitif olmalı"),
+    counterparty: z.string().min(1, "Kişi veya başlık gerekli."),
+    totalAmount: z.number().positive("Toplam tutar pozitif olmalı."),
     paidAmount: z.number().min(0).optional().default(0),
     dueDate: z.coerce.date().optional().nullable(),
     note: z.string().optional().nullable(),
   })
   .refine((d) => d.paidAmount <= d.totalAmount, {
-    message: "Ödenen tutar toplamı aşamaz",
+    message: "Ödenen tutar toplamı aşamaz.",
     path: ["paidAmount"],
   });
 
@@ -195,27 +198,27 @@ export const debtUpdateSchema = z
 const profileAvatarDataUrlSchema = z
   .string()
   .min(1)
-  .max(120_000, "Profil fotoğrafı çok büyük")
+  .max(120_000, "Profil fotoğrafı çok büyük.")
   .refine(
     (s) =>
       s.startsWith("data:image/jpeg;base64,") ||
       s.startsWith("data:image/png;base64,") ||
       s.startsWith("data:image/webp;base64,"),
-    { message: "Geçersiz profil görseli" },
+    { message: "Geçersiz profil görseli." },
   );
 
 export const profileUpdateSchema = z.object({
-  name: z.string().min(1, "Ad ve soyad gerekli").optional(),
-  profession: z.string().max(80, "Meslek en fazla 80 karakter").optional(),
-  city: z.string().max(80, "Şehir en fazla 80 karakter").optional(),
-  country: z.string().max(80, "Ülke en fazla 80 karakter").optional(),
+  name: z.string().min(1, "Ad ve soyad gerekli.").optional(),
+  profession: z.string().max(80, "Meslek en fazla 80 karakter.").optional(),
+  city: z.string().max(80, "Şehir en fazla 80 karakter.").optional(),
+  country: z.string().max(80, "Ülke en fazla 80 karakter.").optional(),
   monthStartDay: z
     .number()
-    .int("Ay başlangıç günü tam sayı olmalı")
-    .min(1, "Ay başlangıç günü en az 1 olmalı")
-    .max(28, "Ay başlangıç günü en fazla 28 olmalı")
+    .int("Ay başlangıç günü tam sayı olmalı.")
+    .min(1, "Ay başlangıç günü en az 1 olmalı.")
+    .max(28, "Ay başlangıç günü en fazla 28 olmalı.")
     .optional(),
-  phone: z.string().max(48, "En fazla 48 karakter").optional(),
+  phone: z.string().max(48, "En fazla 48 karakter.").optional(),
   currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
   notificationsEnabled: z.boolean().optional(),
   image: z.union([profileAvatarDataUrlSchema, z.null()]).optional(),
@@ -223,38 +226,32 @@ export const profileUpdateSchema = z.object({
 
 export const passwordChangeSchema = z
   .object({
-    currentPassword: z.string().min(1, "Mevcut şifre gerekli"),
-    newPassword: z.string().min(8, "Yeni şifre en az 8 karakter"),
+    currentPassword: z.string().min(1, "Mevcut şifre gerekli."),
+    newPassword: z.string().min(8, "Yeni şifre en az 8 karakter."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Yeni şifreler eşleşmiyor",
+    message: "Yeni şifreler eşleşmiyor.",
     path: ["confirmPassword"],
   });
 
 export const accountDeleteSchema = z.object({
   confirm: z.string().refine((val) => val === "SİL", {
-    message: 'Onay için tam olarak "SİL" yazın',
+    message: 'Onay için tam olarak "SİL" yazın.',
   }),
 });
 
 export const investmentCreateSchema = z
   .object({
-    assetType: z.enum([
-      "GOLD",
-      "COMMODITY",
-      "STOCK",
-      "FX",
-      "CRYPTO",
-    ]),
+    assetType: z.enum(["GOLD", "COMMODITY", "STOCK", "FX", "CRYPTO"]),
     goldSubtype: z
       .enum(GOLD_SUBTYPE_VALUES as unknown as [string, ...string[]])
       .optional()
       .nullable(),
     title: z.string().optional(),
     ticker: z.string().optional().nullable(),
-    quantity: z.number().positive("Miktar pozitif olmalı"),
-    avgCostPerUnitTry: z.number().positive("Alış fiyatı pozitif olmalı"),
+    quantity: z.number().positive("Miktar pozitif olmalı."),
+    avgCostPerUnitTry: z.number().positive("Alış fiyatı pozitif olmalı."),
     marketPricePerUnitTry: z.number().positive().optional().nullable(),
     note: z.string().optional().nullable(),
   })
@@ -262,50 +259,50 @@ export const investmentCreateSchema = z
     (d) =>
       d.assetType !== "STOCK" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
-    { message: "Hisse için kod gerekli", path: ["ticker"] },
+    { message: "Hisse için kod gerekli.", path: ["ticker"] },
   )
   .refine(
     (d) =>
       d.assetType !== "GOLD" ||
       (d.goldSubtype != null &&
         (GOLD_SUBTYPE_VALUES as readonly string[]).includes(d.goldSubtype)),
-    { message: "Altın türü seçin", path: ["goldSubtype"] },
+    { message: "Altın türü seçin.", path: ["goldSubtype"] },
   )
   .refine(
     (d) =>
       d.assetType !== "FX" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 2),
-    { message: "Döviz seçin", path: ["ticker"] },
+    { message: "Döviz seçin.", path: ["ticker"] },
   )
   .refine(
     (d) =>
       d.assetType !== "FX" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Döviz seçin", path: ["title"] },
+    { message: "Döviz seçin.", path: ["title"] },
   )
   .refine(
     (d) =>
       d.assetType !== "CRYPTO" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
-    { message: "Kripto seçin", path: ["ticker"] },
+    { message: "Kripto seçin.", path: ["ticker"] },
   )
   .refine(
     (d) =>
       d.assetType !== "CRYPTO" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Kripto seçin", path: ["title"] },
+    { message: "Kripto seçin.", path: ["title"] },
   )
   .refine(
     (d) =>
       d.assetType !== "COMMODITY" ||
       (typeof d.ticker === "string" && d.ticker.trim().length >= 1),
-    { message: "Emtia seçin", path: ["ticker"] },
+    { message: "Emtia seçin.", path: ["ticker"] },
   )
   .refine(
     (d) =>
       d.assetType !== "COMMODITY" ||
       (typeof d.title === "string" && d.title.trim().length >= 1),
-    { message: "Emtia seçin", path: ["title"] },
+    { message: "Emtia seçin.", path: ["title"] },
   );
 
 export const investmentUpdateSchema = z
