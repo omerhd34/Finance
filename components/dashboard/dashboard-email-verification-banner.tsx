@@ -94,10 +94,10 @@ export function DashboardEmailVerificationBanner({
         <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
           Hesabınızı doğrulayın ve {PREMIUM_TRIAL_DAYS} gün Premium kazanın.
         </h2>
-        <p className="max-w-4xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-5xl text-pretty text-sm leading-relaxed text-muted-foreground">
           E-posta adresinize gönderilecek bağlantıyla hesabınızı doğrulayın;
-          doğrulama sonrası {PREMIUM_TRIAL_DAYS} günlük Premium denemeniz
-          otomatik olarak başlar.
+          doğrulama sonrası {PREMIUM_TRIAL_DAYS} günlük <strong>Premium</strong>{" "}
+          denemeniz otomatik olarak başlar.
         </p>
       </div>
       <Button
