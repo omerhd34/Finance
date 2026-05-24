@@ -13,21 +13,21 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const calculationTools = [
   {
-    title: "Faiz Hesaplama",
+    title: "Faiz",
     description:
       "Basit faiz, bileşik faiz ve vadeli mevduat senaryolarını tek sayfada hesaplayın.",
     href: "/hesaplamalar/faiz",
     icon: BadgePercent,
   },
   {
-    title: "Kredi Taksit Hesaplama",
+    title: "Kredi Taksit",
     description:
       "İhtiyaç, konut ve taşıt kredileri için KKDF + BSMV dahil aylık taksiti hesaplayın.",
     href: "/hesaplamalar/kredi",
     icon: WalletCards,
   },
   {
-    title: "KDV Hesaplama",
+    title: "KDV",
     description:
       "KDV dahil ve hariç tutarları farklı oranlara göre hızlıca hesaplayın.",
     href: "/hesaplamalar/kdv",
@@ -41,14 +41,14 @@ const calculationTools = [
     icon: Target,
   },
   {
-    title: "Enflasyon Hesaplama",
+    title: "Enflasyon",
     description:
       "İki dönem arasındaki tutar eşdeğerini resmi TÜFE endeksine göre hesaplayın.",
     href: "/hesaplamalar/enflasyon",
     icon: ChartNoAxesCombined,
   },
   {
-    title: "Bireysel Emeklilik Hesaplama",
+    title: "Bireysel Emeklilik",
     description:
       "BES katkı payı, %25 devlet katkısı ve stopaj dahil net birikiminizi hesaplayın.",
     href: "/hesaplamalar/bireysel-emeklilik",

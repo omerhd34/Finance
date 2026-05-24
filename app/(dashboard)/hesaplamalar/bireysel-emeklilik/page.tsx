@@ -29,7 +29,7 @@ export default function PrivatePensionCalculationPage() {
         <div className="relative p-6 pl-7 md:p-8 md:pl-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
             <PiggyBank className="h-3.5 w-3.5" aria-hidden />
-            Bireysel Emeklilik Hesa
+            Bireysel Emeklilik
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight md:text-3xl">
             BES birikiminizi ve net ele geçecek tutarı hesaplayın
