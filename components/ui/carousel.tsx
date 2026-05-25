@@ -151,7 +151,6 @@ const Carousel = React.forwardRef<
 Carousel.displayName = "Carousel";
 
 type CarouselContentProps = React.HTMLAttributes<HTMLDivElement> & {
-  /** Yükseklik senkronizasyonu vb. için görünüm (overflow) katmanına ref */
   viewportRef?: React.Ref<HTMLDivElement>;
 };
 
