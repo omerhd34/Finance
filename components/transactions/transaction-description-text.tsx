@@ -1,6 +1,5 @@
 export const RECURRING_DESC_PREFIX = "[Tekrarlayan]";
 
-/** Açıklamada tekrarlayan önekini kalın gösterir (İşlemler tablosu vb.). */
 export function TransactionDescriptionText({
   description,
 }: {
