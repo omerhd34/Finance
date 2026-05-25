@@ -69,7 +69,9 @@ export async function PUT(req: Request, context: RouteContext) {
     const data = parsed.data;
     const sub =
       data.type === "expense"
-        ? (data.subcategory?.trim() ? data.subcategory.trim() : null)
+        ? data.subcategory?.trim()
+          ? data.subcategory.trim()
+          : null
         : null;
     const tx = await prisma.transaction.update({
       where: { id },
@@ -147,6 +149,31 @@ export async function DELETE(_req: Request, context: RouteContext) {
           });
         }
       }
+      if (existing.recurringRuleId && existing.recurringSlotKey) {
+        await (
+          txClient as unknown as {
+            recurringSkippedSlot: {
+              upsert(args: {
+                where: object;
+                create: object;
+                update: object;
+              }): Promise<unknown>;
+            };
+          }
+        ).recurringSkippedSlot.upsert({
+          where: {
+            ruleId_slotKey: {
+              ruleId: existing.recurringRuleId,
+              slotKey: existing.recurringSlotKey,
+            },
+          },
+          create: {
+            ruleId: existing.recurringRuleId,
+            slotKey: existing.recurringSlotKey,
+          },
+          update: {},
+        });
+      }
       await txClient.transaction.delete({ where: { id } });
     });
     if (existing.type === "expense") {
@@ -177,8 +204,7 @@ export async function DELETE(_req: Request, context: RouteContext) {
     ) {
       return NextResponse.json(
         {
-          error:
-            "Bu alacak kaydı silinirse ödenen tutar geçersiz hale gelir.",
+          error: "Bu alacak kaydı silinirse ödenen tutar geçersiz hale gelir.",
         },
         { status: 400 },
       );

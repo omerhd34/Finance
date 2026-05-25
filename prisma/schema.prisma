@@ -128,30 +128,42 @@ model Transaction {
 }
 
 model RecurringRule {
-  id           String              @id @default(cuid())
+  id           String                 @id @default(cuid())
   userId       String
-  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
   alertLogs    RecurringAlertLog[]
+  skippedSlots RecurringSkippedSlot[]
   type         String
   amount       Float
   category     String
   subcategory  String?
   description  String?
   frequency    String
-  interval     Int                 @default(1)
+  interval     Int                    @default(1)
   startDate    DateTime
   endDate      DateTime?
   mode         String
-  isActive     Boolean             @default(true)
+  isActive     Boolean                @default(true)
   nextDueDate  DateTime
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 
   @@index([userId, isActive, nextDueDate])
 }
 
 model RecurringAlertLog {
+  id        String        @id @default(cuid())
+  ruleId    String
+  rule      RecurringRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  slotKey   String
+  createdAt DateTime      @default(now())
+
+  @@unique([ruleId, slotKey])
+  @@index([ruleId])
+}
+
+model RecurringSkippedSlot {
   id        String        @id @default(cuid())
   ruleId    String
   rule      RecurringRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
@@ -211,6 +223,8 @@ model Debt {
   counterparty      String
   totalAmount       Float
   paidAmount        Float         @default(0)
+  assetUnit         String        @default("TL")
+  assetSymbol       String?
   dueDate           DateTime?
   note              String?       @db.Text
   userId            String

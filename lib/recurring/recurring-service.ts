@@ -1,7 +1,11 @@
 import { format } from "date-fns";
 import { Prisma } from "@prisma/client";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
-import { prisma, recurringRule } from "@/lib/db/prisma";
+import {
+  prisma,
+  recurringRule,
+  recurringSkippedSlot,
+} from "@/lib/db/prisma";
 import {
   isAfterRecurringMorningCutoff,
   sendRecurringAutoCompletedAlert,
@@ -126,6 +130,10 @@ async function runProcessAutoRecurringForUser(
       normalizeDueDate(expectedCursor) < normalizeDueDate(fallbackCursor)
         ? expectedCursor
         : fallbackCursor;
+    const skippedRows = await recurringSkippedSlot.findMany({
+      where: { ruleId: rule.id },
+    });
+    const skippedSlots = new Set(skippedRows.map((r) => r.slotKey));
     let safety = 0;
     let any = false;
 
@@ -135,6 +143,16 @@ async function runProcessAutoRecurringForUser(
       isWithinRuleEnd(cursor, rule.endDate ? new Date(rule.endDate) : null)
     ) {
       const slotKey = recurringSlotKeyFor(rule.id, cursor);
+      if (skippedSlots.has(slotKey)) {
+        any = true;
+        cursor = addRecurringInterval(
+          cursor,
+          rule.frequency as RecurringFrequency,
+          rule.interval,
+        );
+        safety++;
+        continue;
+      }
       try {
         await prisma.transaction.create({
           data: {

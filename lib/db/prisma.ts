@@ -102,6 +102,28 @@ export const recurringAlertLog: RecurringAlertLogDelegate = (
   prisma as unknown as { recurringAlertLog: RecurringAlertLogDelegate }
 ).recurringAlertLog;
 
+type RecurringSkippedSlotRow = {
+  id: string;
+  ruleId: string;
+  slotKey: string;
+  createdAt: Date;
+};
+
+type RecurringSkippedSlotDelegate = {
+  findMany(args?: object): Promise<RecurringSkippedSlotRow[]>;
+  create(args: { data: object }): Promise<RecurringSkippedSlotRow>;
+  upsert(args: {
+    where: object;
+    create: object;
+    update: object;
+  }): Promise<RecurringSkippedSlotRow>;
+  deleteMany(args: { where: object }): Promise<{ count: number }>;
+};
+
+export const recurringSkippedSlot: RecurringSkippedSlotDelegate = (
+  prisma as unknown as { recurringSkippedSlot: RecurringSkippedSlotDelegate }
+).recurringSkippedSlot;
+
 type PasswordResetTokenRow = {
   id: string;
   email: string;
