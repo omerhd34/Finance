@@ -1,6 +1,7 @@
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 import type { Debt } from "@/types/debt";
 import { debtRemaining } from "@/lib/debts/debt-remaining";
+import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
 
 type BucketKey = "vadesiz" | "d0_30" | "d31_60" | "d61_90" | "d90plus";
 
@@ -70,6 +71,7 @@ export function buildDebtMaturityRows(
   };
 
   for (const d of items) {
+    if (!isTryAssetUnit(d.assetUnit)) continue;
     const rem = debtRemaining(d);
     if (rem <= 0) continue;
     const key = dueDateToBucketKey(d.dueDate);

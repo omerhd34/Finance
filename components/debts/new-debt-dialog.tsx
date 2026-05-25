@@ -7,7 +7,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
-import { newDebtSchema, type NewDebtFormValues } from "@/lib/debts/debts-schema";
+import {
+  newDebtSchema,
+  type NewDebtFormValues,
+} from "@/lib/debts/debts-schema";
+import {
+  DEFAULT_DEBT_ASSET_UNIT,
+  debtAssetUnitLabel,
+} from "@/lib/debts/debt-asset-units";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
@@ -28,40 +35,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DebtAssetUnitPicker,
+  type SymbolOptionsByGroup,
+} from "./debt-asset-unit-picker";
+
+export type {
+  SymbolOption,
+  SymbolOptionsByGroup,
+} from "./debt-asset-unit-picker";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: NewDebtFormValues) => Promise<void>;
+  symbolOptionsByGroup: SymbolOptionsByGroup;
 };
 
-export function NewDebtDialog({ open, onOpenChange, onSubmit }: Props) {
+const DEFAULT_VALUES: NewDebtFormValues = {
+  direction: "RECEIVABLE",
+  counterparty: "",
+  totalAmount: 0,
+  paidAmount: 0,
+  assetUnit: DEFAULT_DEBT_ASSET_UNIT,
+  assetSymbol: "",
+  dueDate: "",
+  note: "",
+};
+
+export function NewDebtDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  symbolOptionsByGroup,
+}: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<NewDebtFormValues>({
     resolver: zodResolver(newDebtSchema),
-    defaultValues: {
-      direction: "RECEIVABLE",
-      counterparty: "",
-      totalAmount: 0,
-      paidAmount: 0,
-      dueDate: "",
-      note: "",
-    },
+    defaultValues: DEFAULT_VALUES,
   });
+
+  const assetUnit = form.watch("assetUnit") ?? DEFAULT_DEBT_ASSET_UNIT;
+  const assetSymbol = form.watch("assetSymbol") ?? "";
+  const unitShort =
+    assetUnit === "FX" && assetSymbol
+      ? assetSymbol
+      : debtAssetUnitLabel(assetUnit, "short");
 
   async function handleSubmit(values: NewDebtFormValues) {
     setSubmitError(null);
     try {
       await onSubmit(values);
-      form.reset({
-        direction: "RECEIVABLE",
-        counterparty: "",
-        totalAmount: 0,
-        paidAmount: 0,
-        dueDate: "",
-        note: "",
-      });
+      form.reset(DEFAULT_VALUES);
       onOpenChange(false);
     } catch (e: unknown) {
       setSubmitError(
@@ -123,6 +149,21 @@ export function NewDebtDialog({ open, onOpenChange, onSubmit }: Props) {
               </SelectContent>
             </Select>
           </div>
+          <DebtAssetUnitPicker
+            unit={assetUnit}
+            symbol={assetSymbol}
+            onChange={({ unit, symbol }) => {
+              form.setValue(
+                "assetUnit",
+                unit as NewDebtFormValues["assetUnit"],
+              );
+              form.setValue("assetSymbol", symbol);
+            }}
+            symbolOptionsByGroup={symbolOptionsByGroup}
+            errorMessage={
+              form.formState.errors.assetSymbol?.message as string | undefined
+            }
+          />
           <div className="space-y-2">
             <Label>Kişi / başlık</Label>
             <Input {...form.register("counterparty")} />
@@ -134,18 +175,18 @@ export function NewDebtDialog({ open, onOpenChange, onSubmit }: Props) {
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Toplam tutar</Label>
+              <Label>Toplam ({unitShort})</Label>
               <Input
                 type="number"
-                step="0.01"
+                step="0.0001"
                 {...form.register("totalAmount", { valueAsNumber: true })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Şu ana kadar ödenen</Label>
+              <Label>Şu ana kadar ödenen ({unitShort})</Label>
               <Input
                 type="number"
-                step="0.01"
+                step="0.0001"
                 {...form.register("paidAmount", { valueAsNumber: true })}
               />
               {form.formState.errors.paidAmount && (

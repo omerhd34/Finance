@@ -1,6 +1,10 @@
 import { differenceInCalendarDays, startOfDay } from "date-fns";
 import { notification, prisma } from "@/lib/db/prisma";
 import { debtRemaining } from "@/lib/debts/debt-remaining";
+import {
+  formatDebtAssetAmount,
+  isTryAssetUnit,
+} from "@/lib/debts/debt-asset-units";
 import { resolveResendFrom } from "@/lib/email/resend-sender";
 import { formatDateTR, formatMoney } from "@/lib/common/utils";
 
@@ -12,6 +16,8 @@ type DebtRow = {
   counterparty: string;
   totalAmount: number;
   paidAmount: number;
+  assetUnit: string;
+  assetSymbol: string | null;
   dueDate: Date | string | null;
 };
 
@@ -275,6 +281,8 @@ export async function evaluateDebtDueAlerts(userId: string): Promise<void> {
         counterparty: true,
         totalAmount: true,
         paidAmount: true,
+        assetUnit: true,
+        assetSymbol: true,
         dueDate: true,
       },
     }),
@@ -307,7 +315,9 @@ export async function evaluateDebtDueAlerts(userId: string): Promise<void> {
     });
     if (alreadySent) continue;
 
-    const remainingLabel = formatMoney(debtRemaining(d), currency);
+    const remainingLabel = isTryAssetUnit(d.assetUnit)
+      ? formatMoney(debtRemaining(d), currency)
+      : formatDebtAssetAmount(debtRemaining(d), d.assetUnit, d.assetSymbol);
     const dueDateLabel = formatDateTR(due);
     const { title, body } = buildTitleAndBody({
       kind,

@@ -5,6 +5,12 @@ import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budge
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
 import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
 import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
+import {
+  DEFAULT_DEBT_ASSET_UNIT,
+  debtAssetUnitNeedsSymbol,
+  isTryAssetUnit,
+  normalizeDebtAssetSymbol,
+} from "@/lib/debts/debt-asset-units";
 import { debt, prisma } from "@/lib/db/prisma";
 import { evaluateDebtDueAlerts } from "@/lib/debts/debt-due-alerts";
 import { debtCreateSchema } from "@/lib/schemas/validations";
@@ -42,8 +48,33 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    const { direction, counterparty, totalAmount, paidAmount, dueDate, note } =
-      parsed.data;
+    const {
+      direction,
+      counterparty,
+      totalAmount,
+      paidAmount,
+      assetUnit,
+      assetSymbol,
+      tryValueAtCreation,
+      dueDate,
+      note,
+    } = parsed.data;
+    const unit = assetUnit ?? DEFAULT_DEBT_ASSET_UNIT;
+    const symbol = debtAssetUnitNeedsSymbol(unit)
+      ? normalizeDebtAssetSymbol(assetSymbol)
+      : null;
+    if (debtAssetUnitNeedsSymbol(unit) && !symbol) {
+      return NextResponse.json(
+        { error: { assetSymbol: ["Sembol seçin"] } },
+        { status: 400 },
+      );
+    }
+    const isTryUnit = isTryAssetUnit(unit);
+    const tryDelta = isTryUnit
+      ? totalAmount
+      : tryValueAtCreation && tryValueAtCreation > 0
+        ? tryValueAtCreation
+        : 0;
     const userId = session.user.id;
     const row = await prisma.$transaction(async (tx) => {
       const created = await tx.debt.create({
@@ -52,32 +83,34 @@ export async function POST(req: Request) {
           counterparty,
           totalAmount,
           paidAmount,
+          assetUnit: unit,
+          assetSymbol: symbol,
           dueDate: dueDate ?? null,
           note: note ?? null,
           userId,
         },
       });
-      if (direction === "RECEIVABLE" && totalAmount > 0) {
+      if (direction === "RECEIVABLE" && tryDelta > 0) {
         await applyReceivableTotalDelta(tx, {
           userId,
           debtId: created.id,
           oldTotal: 0,
-          newTotal: totalAmount,
+          newTotal: tryDelta,
           counterparty,
         });
       }
-      if (direction === "PAYABLE" && totalAmount > 0) {
+      if (direction === "PAYABLE" && tryDelta > 0) {
         await applyPayableTotalDelta(tx, {
           userId,
           debtId: created.id,
           oldTotal: 0,
-          newTotal: totalAmount,
+          newTotal: tryDelta,
           counterparty,
         });
       }
       return created;
     });
-    if (direction === "RECEIVABLE" && totalAmount > 0) {
+    if (direction === "RECEIVABLE" && tryDelta > 0) {
       await evaluateCategoryBudgetsForTransactionContext({
         userId,
         type: "expense",

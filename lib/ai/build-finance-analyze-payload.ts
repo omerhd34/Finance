@@ -33,9 +33,11 @@ export type FinanceGelirPayload = {
 export type FinanceDebtLine = {
   yon: "alacak" | "borç";
   karsiTaraf: string;
+  sembol?: string | null;
   toplamTutar: number;
   odenen: number;
   kalanTutar: number;
+  birim: string;
   vade: string | null;
   not: string | null;
 };
@@ -368,15 +370,20 @@ export async function buildFinanceAnalyzePayload(
   let toplamBorcKalan = 0;
   const kayitlar: FinanceDebtLine[] = debts.map((d: Debt) => {
     const kalan = Math.max(0, d.totalAmount - d.paidAmount);
-    if (d.direction === "RECEIVABLE") toplamAlacakKalan += kalan;
-    else toplamBorcKalan += kalan;
+    const birim = (d.assetUnit as string | null | undefined) ?? "TL";
+    if (birim === "TL") {
+      if (d.direction === "RECEIVABLE") toplamAlacakKalan += kalan;
+      else toplamBorcKalan += kalan;
+    }
     const vadeRaw = d.dueDate;
     return {
       yon: d.direction === "RECEIVABLE" ? "alacak" : "borç",
       karsiTaraf: d.counterparty,
+      sembol: (d as Debt & { assetSymbol?: string | null }).assetSymbol ?? null,
       toplamTutar: d.totalAmount,
       odenen: d.paidAmount,
       kalanTutar: kalan,
+      birim,
       vade:
         vadeRaw != null
           ? new Date(vadeRaw as string | Date).toISOString()

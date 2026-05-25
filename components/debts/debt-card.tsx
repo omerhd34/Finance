@@ -3,6 +3,12 @@
 import { differenceInCalendarDays } from "date-fns";
 import { debtProgressPercent, debtRemaining } from "@/lib/debts/debt-remaining";
 import { formatDateTR, formatMoneyAmount } from "@/lib/common/utils";
+import {
+  convertDebtAssetToTry,
+  formatDebtAssetAmount,
+  isTryAssetUnit,
+  type DebtAssetTryRates,
+} from "@/lib/debts/debt-asset-units";
 import type { Debt } from "@/types/debt";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +25,7 @@ import { Progress } from "@/components/ui/progress";
 type Props = {
   debt: Debt;
   currency: string;
+  tryRates: DebtAssetTryRates;
   onPay: () => void;
   onAddPrincipal: () => void;
   onEdit: () => void;
@@ -28,6 +35,7 @@ type Props = {
 export function DebtCard({
   debt: d,
   currency,
+  tryRates,
   onPay,
   onAddPrincipal,
   onEdit,
@@ -37,6 +45,24 @@ export function DebtCard({
   const settled = rem <= 0;
   const daysLeft = d.dueDate
     ? differenceInCalendarDays(new Date(d.dueDate), new Date())
+    : null;
+  const isTry = isTryAssetUnit(d.assetUnit);
+
+  const remainingLabel = isTry
+    ? formatMoneyAmount(rem, currency)
+    : formatDebtAssetAmount(rem, d.assetUnit, d.assetSymbol);
+  const totalLabel = isTry
+    ? formatMoneyAmount(d.totalAmount, currency)
+    : formatDebtAssetAmount(d.totalAmount, d.assetUnit, d.assetSymbol);
+  const paidLabel = isTry
+    ? formatMoneyAmount(d.paidAmount, currency)
+    : formatDebtAssetAmount(d.paidAmount, d.assetUnit, d.assetSymbol);
+
+  const remTry = !isTry
+    ? convertDebtAssetToTry(rem, d.assetUnit, tryRates, d.assetSymbol)
+    : null;
+  const totalTry = !isTry
+    ? convertDebtAssetToTry(d.totalAmount, d.assetUnit, tryRates, d.assetSymbol)
     : null;
 
   return (
@@ -53,14 +79,19 @@ export function DebtCard({
           </div>
         </div>
         <CardDescription>
-          Kalan: {formatMoneyAmount(rem, currency)} - Toplam:{" "}
-          {formatMoneyAmount(d.totalAmount, currency)}
+          Kalan: {remainingLabel} - Toplam: {totalLabel}
         </CardDescription>
+        {!isTry && remTry != null && totalTry != null ? (
+          <p className="text-xs text-muted-foreground tabular-nums">
+            ≈ Kalan {formatMoneyAmount(remTry, currency)} - Toplam{" "}
+            {formatMoneyAmount(totalTry, currency)} (anlık fiyat)
+          </p>
+        ) : null}
       </CardHeader>
       <CardContent className="space-y-3">
         <Progress value={debtProgressPercent(d)} />
         <p className="text-xs text-muted-foreground">
-          Ödenen: {formatMoneyAmount(d.paidAmount, currency)}
+          Ödenen: {paidLabel}
           {d.dueDate
             ? ` - Vade: ${formatDateTR(d.dueDate)}${
                 !settled && daysLeft !== null

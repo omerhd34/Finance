@@ -34,6 +34,7 @@ import { usePlatinumLivePrices } from "@/hooks/use-platinum-live-prices";
 import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
 import { debtRemaining } from "@/lib/debts/debt-remaining";
+import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
 import type { Debt } from "@/types/debt";
 import type { InvestmentPosition } from "@/types/investment";
 import type { RecurringRule } from "@/types/recurring";
@@ -139,6 +140,7 @@ export default function DashboardPage() {
       let receivable = 0;
       let payable = 0;
       for (const d of debtRes.data.items) {
+        if (!isTryAssetUnit(d.assetUnit)) continue;
         const r = debtRemaining(d);
         if (d.direction === "RECEIVABLE") receivable += r;
         else payable += r;

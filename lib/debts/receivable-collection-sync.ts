@@ -29,7 +29,7 @@ async function findReceivableDebtByCounterparty(
   counterparty: string,
 ) {
   const debts = await tx.debt.findMany({
-    where: { userId, direction: "RECEIVABLE" },
+    where: { userId, direction: "RECEIVABLE", assetUnit: "TL" },
   });
   const key = counterpartyKey(counterparty);
   return debts.find((d) => counterpartyKey(d.counterparty) === key) ?? null;

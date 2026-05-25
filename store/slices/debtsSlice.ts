@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/client/api-client";
 import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
+import type { DebtAssetUnit } from "@/lib/debts/debt-asset-units";
 import type { Debt } from "@/types/debt";
 
 export type DebtsState = {
@@ -35,6 +36,9 @@ export const addDebt = createAsyncThunk(
       counterparty: string;
       totalAmount: number;
       paidAmount?: number;
+      assetUnit?: DebtAssetUnit;
+      assetSymbol?: string | null;
+      tryValueAtCreation?: number;
       dueDate?: Date | null;
       note?: string | null;
     },
@@ -46,6 +50,9 @@ export const addDebt = createAsyncThunk(
         counterparty: payload.counterparty,
         totalAmount: payload.totalAmount,
         paidAmount: payload.paidAmount ?? 0,
+        assetUnit: payload.assetUnit,
+        assetSymbol: payload.assetSymbol ?? null,
+        tryValueAtCreation: payload.tryValueAtCreation,
         dueDate: payload.dueDate ?? null,
         note: payload.note ?? null,
       });
@@ -76,11 +83,14 @@ export const updateDebt = createAsyncThunk(
 
 export const recordDebtPayment = createAsyncThunk(
   "debts/recordPayment",
-  async (arg: { id: string; amountTry: number }, { rejectWithValue }) => {
+  async (
+    arg: { id: string; amountTry: number; tryValueDelta?: number },
+    { rejectWithValue },
+  ) => {
     try {
       const { data } = await apiClient.post<Debt>(
         `/api/debts/${arg.id}/payment`,
-        { amount: arg.amountTry },
+        { amount: arg.amountTry, tryValueDelta: arg.tryValueDelta },
       );
       return data;
     } catch (e: unknown) {
@@ -91,11 +101,14 @@ export const recordDebtPayment = createAsyncThunk(
 
 export const recordDebtPrincipalIncrease = createAsyncThunk(
   "debts/recordPrincipalIncrease",
-  async (arg: { id: string; amountTry: number }, { rejectWithValue }) => {
+  async (
+    arg: { id: string; amountTry: number; tryValueDelta?: number },
+    { rejectWithValue },
+  ) => {
     try {
       const { data } = await apiClient.post<Debt>(
         `/api/debts/${arg.id}/principal`,
-        { amount: arg.amountTry },
+        { amount: arg.amountTry, tryValueDelta: arg.tryValueDelta },
       );
       return data;
     } catch (e: unknown) {

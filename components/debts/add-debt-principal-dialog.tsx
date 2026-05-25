@@ -21,12 +21,14 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (amountDisplay: number) => Promise<void>;
+  unitShortLabel?: string;
 };
 
 export function AddDebtPrincipalDialog({
   open,
   onOpenChange,
   onSubmit,
+  unitShortLabel,
 }: Props) {
   const form = useForm<PrincipalForm>({
     resolver: zodResolver(payDebtSchema),
@@ -54,10 +56,10 @@ export function AddDebtPrincipalDialog({
             Girdiğiniz tutar toplam borca eklenir.
           </p>
           <div className="space-y-2">
-            <Label>Tutar</Label>
+            <Label>{unitShortLabel ? `Tutar (${unitShortLabel})` : "Tutar"}</Label>
             <Input
               type="number"
-              step="0.01"
+              step="0.0001"
               {...form.register("amount", { valueAsNumber: true })}
             />
             {form.formState.errors.amount && (

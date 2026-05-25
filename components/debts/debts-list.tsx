@@ -1,5 +1,6 @@
 "use client";
 
+import type { DebtAssetTryRates } from "@/lib/debts/debt-asset-units";
 import type { Debt } from "@/types/debt";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DebtCard } from "./debt-card";
@@ -10,6 +11,7 @@ type Props = {
   items: Debt[];
   loading: boolean;
   currency: string;
+  tryRates: DebtAssetTryRates;
   onPay: (id: string) => void;
   onAddPrincipal: (id: string) => void;
   onEdit: (id: string) => void;
@@ -22,6 +24,7 @@ export function DebtsList({
   items,
   loading,
   currency,
+  tryRates,
   onPay,
   onAddPrincipal,
   onEdit,
@@ -47,6 +50,7 @@ export function DebtsList({
               key={d.id}
               debt={d}
               currency={currency}
+              tryRates={tryRates}
               onPay={() => onPay(d.id)}
               onAddPrincipal={() => onAddPrincipal(d.id)}
               onEdit={() => onEdit(d.id)}

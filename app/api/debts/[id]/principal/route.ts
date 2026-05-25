@@ -4,7 +4,8 @@ import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { prisma } from "@/lib/db/prisma";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
-import { payDebtSchema } from "@/lib/debts/debts-schema";
+import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
+import { debtAmountEventServerSchema } from "@/lib/debts/debts-schema";
 import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
 import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
 
@@ -21,7 +22,7 @@ export async function POST(req: Request, context: RouteContext) {
 
     const { id } = await context.params;
     const body: unknown = await req.json();
-    const parsed = payDebtSchema.safeParse(body);
+    const parsed = debtAmountEventServerSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten().fieldErrors },
@@ -37,6 +38,11 @@ export async function POST(req: Request, context: RouteContext) {
     }
 
     const added = parsed.data.amount;
+    const tryDelta = isTryAssetUnit(existing.assetUnit)
+      ? added
+      : parsed.data.tryValueDelta && parsed.data.tryValueDelta > 0
+        ? parsed.data.tryValueDelta
+        : 0;
     const newTotal = existing.totalAmount + added;
     const userId = session.user.id;
     const row = await prisma.$transaction(async (tx) => {
@@ -44,27 +50,27 @@ export async function POST(req: Request, context: RouteContext) {
         where: { id },
         data: { totalAmount: newTotal },
       });
-      if (existing.direction === "RECEIVABLE") {
+      if (tryDelta > 0 && existing.direction === "RECEIVABLE") {
         await applyReceivableTotalDelta(tx, {
           userId,
           debtId: id,
-          oldTotal: existing.totalAmount,
-          newTotal,
+          oldTotal: 0,
+          newTotal: tryDelta,
           counterparty: existing.counterparty,
         });
-      } else if (existing.direction === "PAYABLE") {
+      } else if (tryDelta > 0 && existing.direction === "PAYABLE") {
         await applyPayableTotalDelta(tx, {
           userId,
           debtId: id,
-          oldTotal: existing.totalAmount,
-          newTotal,
+          oldTotal: 0,
+          newTotal: tryDelta,
           counterparty: existing.counterparty,
         });
       }
       return updated;
     });
 
-    if (existing.direction === "RECEIVABLE") {
+    if (tryDelta > 0 && existing.direction === "RECEIVABLE") {
       await evaluateCategoryBudgetsForTransactionContext({
         userId,
         type: "expense",

@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { refineIncomeExpenseSubcategory } from "@/lib/domain/categories";
 import { refineManualTransactionCategoryBlocked } from "@/lib/debts/debt-expense-description";
+import {
+  DEBT_ASSET_UNIT_VALUES,
+  DEFAULT_DEBT_ASSET_UNIT,
+} from "@/lib/debts/debt-asset-units";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/investments/gold-subtypes";
 
 export const loginSchema = z.object({
@@ -176,6 +180,12 @@ export const debtCreateSchema = z
     counterparty: z.string().min(1, "Kişi veya başlık gerekli."),
     totalAmount: z.number().positive("Toplam tutar pozitif olmalı."),
     paidAmount: z.number().min(0).optional().default(0),
+    assetUnit: z
+      .enum(DEBT_ASSET_UNIT_VALUES as unknown as [string, ...string[]])
+      .optional()
+      .default(DEFAULT_DEBT_ASSET_UNIT),
+    assetSymbol: z.string().trim().max(32).optional().nullable(),
+    tryValueAtCreation: z.number().positive().optional(),
     dueDate: z.coerce.date().optional().nullable(),
     note: z.string().optional().nullable(),
   })
@@ -190,6 +200,10 @@ export const debtUpdateSchema = z
     counterparty: z.string().min(1).optional(),
     totalAmount: z.number().positive().optional(),
     paidAmount: z.number().min(0).optional(),
+    assetUnit: z
+      .enum(DEBT_ASSET_UNIT_VALUES as unknown as [string, ...string[]])
+      .optional(),
+    assetSymbol: z.string().trim().max(32).optional().nullable(),
     dueDate: z.coerce.date().optional().nullable(),
     note: z.string().optional().nullable(),
   })

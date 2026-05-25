@@ -23,9 +23,15 @@ type Props = {
   onPay: (amountDisplay: number) => Promise<void>;
   receivableIncomeHint?: boolean;
   payableExpenseHint?: boolean;
+  unitShortLabel?: string;
 };
 
-export function PayDebtDialog({ open, onOpenChange, onPay }: Props) {
+export function PayDebtDialog({
+  open,
+  onOpenChange,
+  onPay,
+  unitShortLabel,
+}: Props) {
   const form = useForm<PayForm>({
     resolver: zodResolver(payDebtSchema),
     defaultValues: { amount: 0 },
@@ -52,10 +58,10 @@ export function PayDebtDialog({ open, onOpenChange, onPay }: Props) {
             Girdiğiniz tutar uygulanır; kalan tutarı aşmamalıdır.
           </p>
           <div className="space-y-2">
-            <Label>Tutar</Label>
+            <Label>{unitShortLabel ? `Tutar (${unitShortLabel})` : "Tutar"}</Label>
             <Input
               type="number"
-              step="0.01"
+              step="0.0001"
               {...form.register("amount", { valueAsNumber: true })}
             />
             {form.formState.errors.amount && (

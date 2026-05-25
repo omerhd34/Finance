@@ -8,6 +8,11 @@ import { applyPayablePaidDelta } from "@/lib/debts/payable-expense-sync";
 import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
 import { applyReceivablePaidDelta } from "@/lib/debts/receivable-income-sync";
 import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
+import {
+  debtAssetUnitNeedsSymbol,
+  isTryAssetUnit,
+  normalizeDebtAssetSymbol,
+} from "@/lib/debts/debt-asset-units";
 import { clearDebtDueAlertHistoryForDebt } from "@/lib/debts/debt-due-alerts";
 import { debtUpdateSchema } from "@/lib/schemas/validations";
 
@@ -54,6 +59,22 @@ export async function PUT(req: Request, context: RouteContext) {
       data.counterparty !== undefined
         ? data.counterparty
         : existing.counterparty;
+    const nextAssetUnit =
+      data.assetUnit !== undefined ? data.assetUnit : existing.assetUnit;
+    const wasTry = isTryAssetUnit(existing.assetUnit);
+    const isTryNow = isTryAssetUnit(nextAssetUnit);
+    const assetUnitChanged = nextAssetUnit !== existing.assetUnit;
+    const nextAssetSymbol = debtAssetUnitNeedsSymbol(nextAssetUnit)
+      ? (data.assetSymbol !== undefined
+          ? normalizeDebtAssetSymbol(data.assetSymbol)
+          : existing.assetSymbol)
+      : null;
+    if (debtAssetUnitNeedsSymbol(nextAssetUnit) && !nextAssetSymbol) {
+      return NextResponse.json(
+        { error: { assetSymbol: ["Sembol seçin"] } },
+        { status: 400 },
+      );
+    }
     if (nextPaid > nextTotal) {
       return NextResponse.json(
         { error: { paidAmount: ["Ödenen tutar toplamı aşamaz"] } },
@@ -76,10 +97,70 @@ export async function PUT(req: Request, context: RouteContext) {
             totalAmount: data.totalAmount,
           }),
           ...(data.paidAmount !== undefined && { paidAmount: data.paidAmount }),
+          ...(data.assetUnit !== undefined && { assetUnit: data.assetUnit }),
+          assetSymbol: nextAssetSymbol,
           ...(data.dueDate !== undefined && { dueDate: data.dueDate }),
           ...(data.note !== undefined && { note: data.note }),
         },
       });
+
+      const directionChanged = nextDirection !== existing.direction;
+      if (assetUnitChanged || directionChanged) {
+        await tx.transaction.deleteMany({
+          where: { debtId: id, userId },
+        });
+      }
+
+      if (assetUnitChanged) {
+        if (isTryNow) {
+          if (nextDirection === "RECEIVABLE") {
+            if (nextTotal > 0) {
+              receivableTotalAdjusted = true;
+              await applyReceivableTotalDelta(tx, {
+                userId,
+                debtId: id,
+                oldTotal: 0,
+                newTotal: nextTotal,
+                counterparty: nextCounterparty,
+              });
+            }
+            if (nextPaid > 0) {
+              await applyReceivablePaidDelta(tx, {
+                userId,
+                debtId: id,
+                oldPaid: 0,
+                newPaid: nextPaid,
+                counterparty: nextCounterparty,
+              });
+            }
+          } else if (nextDirection === "PAYABLE") {
+            if (nextTotal > 0) {
+              await applyPayableTotalDelta(tx, {
+                userId,
+                debtId: id,
+                oldTotal: 0,
+                newTotal: nextTotal,
+                counterparty: nextCounterparty,
+              });
+            }
+            if (nextPaid > 0) {
+              payablePaidAdjusted = true;
+              await applyPayablePaidDelta(tx, {
+                userId,
+                debtId: id,
+                oldPaid: 0,
+                newPaid: nextPaid,
+                counterparty: nextCounterparty,
+              });
+            }
+          }
+        }
+        return updated;
+      }
+
+      if (!wasTry || !isTryNow) {
+        return updated;
+      }
 
       if (
         existing.direction === "RECEIVABLE" &&

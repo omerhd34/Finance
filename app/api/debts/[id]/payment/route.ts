@@ -4,7 +4,8 @@ import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { prisma } from "@/lib/db/prisma";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
-import { payDebtSchema } from "@/lib/debts/debts-schema";
+import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
+import { debtAmountEventServerSchema } from "@/lib/debts/debts-schema";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -19,7 +20,7 @@ export async function POST(req: Request, context: RouteContext) {
 
     const { id } = await context.params;
     const body: unknown = await req.json();
-    const parsed = payDebtSchema.safeParse(body);
+    const parsed = debtAmountEventServerSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten().fieldErrors },
@@ -43,6 +44,15 @@ export async function POST(req: Request, context: RouteContext) {
       );
     }
 
+    const isTryUnit = isTryAssetUnit(existing.assetUnit);
+    let tryAmount = 0;
+    if (isTryUnit) {
+      tryAmount = applied;
+    } else if (parsed.data.tryValueDelta && parsed.data.tryValueDelta > 0) {
+      const ratio = parsed.data.amount > 0 ? applied / parsed.data.amount : 0;
+      tryAmount = parsed.data.tryValueDelta * ratio;
+    }
+
     const userId = session.user.id;
     const paymentDate = new Date();
     const row = await prisma.$transaction(async (tx) => {
@@ -50,12 +60,12 @@ export async function POST(req: Request, context: RouteContext) {
         where: { id },
         data: { paidAmount: existing.paidAmount + applied },
       });
-      if (existing.direction === "RECEIVABLE") {
+      if (tryAmount > 0 && existing.direction === "RECEIVABLE") {
         await tx.transaction.create({
           data: {
             userId,
             type: "income",
-            amount: applied,
+            amount: tryAmount,
             category: "Alacak",
             subcategory: null,
             description: `Kimden: ${existing.counterparty}`,
@@ -63,12 +73,12 @@ export async function POST(req: Request, context: RouteContext) {
             debtId: id,
           },
         });
-      } else if (existing.direction === "PAYABLE") {
+      } else if (tryAmount > 0 && existing.direction === "PAYABLE") {
         await tx.transaction.create({
           data: {
             userId,
             type: "expense",
-            amount: applied,
+            amount: tryAmount,
             category: DEBT_EXPENSE_CATEGORY,
             subcategory: null,
             description: `Kime: ${existing.counterparty}`,
@@ -80,7 +90,7 @@ export async function POST(req: Request, context: RouteContext) {
       return updated;
     });
 
-    if (existing.direction === "PAYABLE") {
+    if (tryAmount > 0 && existing.direction === "PAYABLE") {
       await evaluateCategoryBudgetsForTransactionContext({
         userId,
         type: "expense",
