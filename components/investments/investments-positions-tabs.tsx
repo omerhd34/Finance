@@ -100,14 +100,14 @@ export function InvestmentsPositionsTabs({
               {tab === "GOLD"
                 ? "Altın kayıtları"
                 : tab === "COMMODITY"
-                    ? "Emtia kayıtları"
-                    : tab === "STOCK"
-                      ? "Hisse kayıtları"
-                      : tab === "FX"
-                        ? "Döviz kayıtları"
-                        : tab === "CRYPTO"
-                          ? "Kripto kayıtları"
-                          : "Kayıtlar"}
+                  ? "Emtia kayıtları"
+                  : tab === "STOCK"
+                    ? "Hisse kayıtları"
+                    : tab === "FX"
+                      ? "Döviz kayıtları"
+                      : tab === "CRYPTO"
+                        ? "Kripto kayıtları"
+                        : "Kayıtlar"}
             </CardTitle>
             <CardDescription className="inline-flex min-h-5 items-center gap-2">
               {loading ? (

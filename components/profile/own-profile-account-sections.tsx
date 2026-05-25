@@ -4,6 +4,7 @@ import type { UseFormReturn } from "react-hook-form";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -393,14 +394,12 @@ export function OwnProfileDangerZone({
               {deleteForm.formState.errors.confirm.message}
             </p>
           )}
-          <Button
+          <DeleteButton
             type="submit"
-            variant="destructive"
-            disabled={deleteForm.formState.isSubmitting}
-            className="cursor-pointer"
-          >
-            Hesabı sil
-          </Button>
+            loading={deleteForm.formState.isSubmitting}
+            label="Hesabı sil"
+            loadingLabel="Siliniyor…"
+          />
         </form>
       </CardContent>
     </Card>

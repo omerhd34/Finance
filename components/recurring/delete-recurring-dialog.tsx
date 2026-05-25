@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import {
   Dialog,
   DialogContent,
@@ -38,13 +39,7 @@ export function DeleteRecurringDialog({
           >
             Vazgeç
           </Button>
-          <Button
-            variant="destructive"
-            className="cursor-pointer"
-            onClick={onConfirm}
-          >
-            Sil
-          </Button>
+          <DeleteButton onClick={onConfirm} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import {
   Dialog,
   DialogContent,
@@ -33,13 +34,7 @@ export function DeleteDebtDialog({ open, onOpenChange, onConfirm }: Props) {
           >
             Vazgeç
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            className="cursor-pointer"
-          >
-            Sil
-          </Button>
+          <DeleteButton onClick={onConfirm} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

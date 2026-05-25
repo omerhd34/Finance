@@ -272,6 +272,48 @@ body {
   }
 }
 
+@keyframes delete-shake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  20% {
+    transform: translateX(-1.5px) rotate(-3deg);
+  }
+  40% {
+    transform: translateX(1.5px) rotate(3deg);
+  }
+  60% {
+    transform: translateX(-1px) rotate(-2deg);
+  }
+  80% {
+    transform: translateX(1px) rotate(2deg);
+  }
+}
+
+@keyframes delete-crumb-fall {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -120%) scale(0.6);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(-50%, -10%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 120%) scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group\/del:hover [data-delete-icon],
+  .group\/delicon:hover [data-delete-icon] {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,

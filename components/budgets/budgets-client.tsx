@@ -13,6 +13,7 @@ import {
 } from "@/lib/domain/categories";
 import { formatMoneyAmount } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import {
   Dialog,
   DialogContent,
@@ -527,13 +528,7 @@ export function BudgetsClient({ currency }: Props) {
               >
                 Vazgeç
               </Button>
-              <Button
-                variant="destructive"
-                className="cursor-pointer"
-                onClick={() => void onConfirmDelete()}
-              >
-                Sil
-              </Button>
+              <DeleteButton onClick={() => void onConfirmDelete()} />
             </DialogFooter>
           </DialogContent>
         </Dialog>

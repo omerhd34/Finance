@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { IQfinansAiAssistantIcon } from "@/components/branding/iqfinans-ai-assistant-icon";
 import { Button } from "@/components/ui/button";
+import { DeleteButton } from "@/components/ui/delete-button";
 import {
   Dialog,
   DialogContent,
@@ -153,15 +154,13 @@ export function AiChatHistorySidebar({
             >
               İptal
             </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              className="cursor-pointer sm:min-w-28"
-              disabled={deletingConversationId !== null}
+            <DeleteButton
+              className="sm:min-w-28"
+              loading={deletingConversationId !== null}
+              label="Evet, sil"
+              loadingLabel="Siliniyor…"
               onClick={() => void confirmDelete()}
-            >
-              {deletingConversationId !== null ? "Siliniyor…" : "Evet, sil"}
-            </Button>
+            />
           </DialogFooter>
         </DialogContent>
       </Dialog>
