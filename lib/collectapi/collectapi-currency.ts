@@ -27,6 +27,53 @@ export type CollectapiSymbolsPayload = {
   result?: CollectapiSymbolRow[];
 };
 
+const CURRENCY_NAMES_TR: Record<string, string> = {
+  AED: "Birleşik Arap Emirlikleri dirhemi",
+  ARS: "Arjantin pesosu",
+  AUD: "Avustralya doları",
+  BGN: "Bulgar levası",
+  BHD: "Bahreyn dinarı",
+  BND: "Brunei doları",
+  BRL: "Brezilya reali",
+  BWP: "Botsvana pulası",
+  CAD: "Kanada doları",
+  CHF: "İsviçre frangı",
+  CLP: "Şili pesosu",
+  CNY: "Çin yuanı",
+  COP: "Kolombiya pesosu",
+  CZK: "Çek korunası",
+  DKK: "Danimarka kronu",
+  EUR: "Euro",
+  GBP: "İngiliz sterlini",
+  HKD: "Hong Kong doları",
+  HUF: "Macar forinti",
+  IDR: "Endonezya rupiahı",
+  ILS: "İsrail şekeli",
+  INR: "Hindistan rupisi",
+  JPY: "Japon yeni",
+  KRW: "Güney Kore wonu",
+  KWD: "Kuveyt dinarı",
+  MXN: "Meksika pesosu",
+  MYR: "Malezya ringgiti",
+  NOK: "Norveç kronu",
+  NZD: "Yeni Zelanda doları",
+  PHP: "Filipin pesosu",
+  PLN: "Polonya zlotisi",
+  QAR: "Katar riyali",
+  RON: "Rumen leyi",
+  RUB: "Rus rublesi",
+  SAR: "Suudi Arabistan riyali",
+  SEK: "İsveç kronu",
+  SGD: "Singapur doları",
+  THB: "Tayland bahtı",
+  TRY: "Türk lirası",
+  TTD: "Trinidad ve Tobago doları",
+  TWD: "Tayvan doları",
+  USD: "Amerikan doları",
+  VEF: "Venezuela bolivarı",
+  ZAR: "Güney Afrika randı",
+};
+
 export function currencyRowCode(row: CollectapiAllCurrencyRow): string | null {
   const c = (row.code ?? row.currency ?? "").trim().toUpperCase();
   return c.length > 0 ? c : null;
@@ -66,10 +113,19 @@ export function normalizeSymbolRows(
   for (const row of rows) {
     const code = (row.code ?? "").trim().toUpperCase();
     if (!code) continue;
-    const name = (row.name ?? "").trim() || code;
+    const fallbackName = (row.name ?? "").trim() || code;
+    const name = CURRENCY_NAMES_TR[code] ?? fallbackName;
     byCode.set(code, name);
   }
   const out = [...byCode.entries()].map(([code, name]) => ({ code, name }));
-  out.sort((a, b) => a.code.localeCompare(b.code, "tr"));
+  const priority: Record<string, number> = { TRY: 0, USD: 1, EUR: 2 };
+  out.sort((a, b) => {
+    const pa = priority[a.code];
+    const pb = priority[b.code];
+    if (pa !== undefined || pb !== undefined) {
+      return (pa ?? 99) - (pb ?? 99);
+    }
+    return a.code.localeCompare(b.code, "tr");
+  });
   return out;
 }

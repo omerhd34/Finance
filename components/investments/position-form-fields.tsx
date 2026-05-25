@@ -374,7 +374,7 @@ export function PositionFormFields({
             <SelectContent className="max-h-64">
               {currencySymbols.items.map(({ code, name }) => (
                 <SelectItem key={code} value={code} className="cursor-pointer">
-                  {code} — {name}
+                  {code === "TRY" ? "TL" : code} — {name}
                 </SelectItem>
               ))}
             </SelectContent>
