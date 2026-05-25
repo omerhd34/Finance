@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import type { Transaction } from "@/types/transaction";
-import {
-  DEBT_EXPENSE_CATEGORY,
-  formatExpenseCategoryLabel,
-} from "@/lib/domain/categories";
+import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
 import { cn, formatMoneyAmount, formatDateShort } from "@/lib/common/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -137,10 +134,8 @@ export function TransactionsTableCard({
                         t.description?.startsWith(RECURRING_DESC_PREFIX) ===
                           true;
                       const isDebtRow = isDebtMirrorTransaction(t);
-                      const isBorcCategoryRow =
-                        t.category === DEBT_EXPENSE_CATEGORY;
                       const hideEdit = isRecurringTransaction || isDebtRow;
-                      const hideDelete = isDebtRow && !isBorcCategoryRow;
+                      const hideDelete = false;
                       const noActionButtons = hideEdit && hideDelete;
 
                       return (

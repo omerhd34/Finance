@@ -120,24 +120,32 @@ export async function DELETE(_req: Request, context: RouteContext) {
       return NextResponse.json({ error: "Bulunamadı" }, { status: 404 });
     }
     await prisma.$transaction(async (txClient) => {
-      if (
-        existing.debtId &&
-        isReceivableLendingExpense(existing.type, existing.category)
-      ) {
-        await reverseReceivableLendingTransaction(txClient, {
-          userId: session.user.id,
-          debtId: existing.debtId,
-          amount: existing.amount,
+      if (existing.debtId) {
+        const linkedDebt = await txClient.debt.findFirst({
+          where: { id: existing.debtId, userId: session.user.id },
+          select: { assetUnit: true },
         });
-      } else if (
-        existing.debtId &&
-        isReceivableCollectionIncome(existing.type, existing.category)
-      ) {
-        await reverseReceivableCollectionTransaction(txClient, {
-          userId: session.user.id,
-          debtId: existing.debtId,
-          amount: existing.amount,
-        });
+        const isTryDebt =
+          !linkedDebt?.assetUnit || linkedDebt.assetUnit === "TL";
+        if (
+          isTryDebt &&
+          isReceivableLendingExpense(existing.type, existing.category)
+        ) {
+          await reverseReceivableLendingTransaction(txClient, {
+            userId: session.user.id,
+            debtId: existing.debtId,
+            amount: existing.amount,
+          });
+        } else if (
+          isTryDebt &&
+          isReceivableCollectionIncome(existing.type, existing.category)
+        ) {
+          await reverseReceivableCollectionTransaction(txClient, {
+            userId: session.user.id,
+            debtId: existing.debtId,
+            amount: existing.amount,
+          });
+        }
       }
       await txClient.transaction.delete({ where: { id } });
     });
