@@ -5,7 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  trackMetaEmailVerified,
+  trackMetaLogin,
+} from "@/lib/analytics/meta-pixel-events";
 import { FcGoogle } from "react-icons/fc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/schemas/validations";
@@ -19,6 +23,13 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const passwordJustReset = searchParams.get("reset") === "ok";
   const emailVerifiedOk = searchParams.get("email_verified") === "1";
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (emailVerifiedOk) {
+      trackMetaEmailVerified();
+    }
+  }, [emailVerifiedOk]);
+
   const {
     register,
     handleSubmit,
@@ -39,6 +50,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
       setFormError("root", { message: "E-posta veya şifre hatalı" });
       return;
     }
+    trackMetaLogin({ method: "email" });
     router.push("/gosterge-paneli");
     router.refresh();
   }
