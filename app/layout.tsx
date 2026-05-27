@@ -2,6 +2,7 @@ import { Geist } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { ThemeProvider } from "@wrksz/themes/next";
 import { siteMetadata } from "@/lib/site/metadata";
 import { Toaster } from "@/components/ui/sonner";
@@ -36,6 +37,7 @@ export default function RootLayout({
           {sidebarCollapsedBootstrapScript()}
         </Script>
         <GoogleAnalytics />
+        <MetaPixel />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
