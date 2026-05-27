@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { apiClient } from "@/lib/client/api-client";
-import { trackMetaCompleteRegistration } from "@/lib/analytics/meta-pixel-events";
 
 export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
@@ -40,7 +39,6 @@ export function RegisterForm({ googleEnabled }: { googleEnabled: boolean }) {
         email: data.email,
         password: data.password,
       });
-      trackMetaCompleteRegistration({ method: "email" });
     } catch (e: unknown) {
       if (axios.isAxiosError(e) && e.response?.data) {
         const data = e.response.data as { error?: unknown };

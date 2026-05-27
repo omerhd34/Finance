@@ -14,7 +14,6 @@ import {
 } from "@/lib/schemas/validations";
 import { cn } from "@/lib/common/utils";
 import { fireGoogleAdsPurchaseConversion } from "@/lib/analytics/google-ads-conversion";
-import { trackMetaContact } from "@/lib/analytics/meta-pixel-events";
 
 type Props = {
   inboxConfigured: boolean;
@@ -113,7 +112,6 @@ export function SupportContactForm({ inboxConfigured, className }: Props) {
         _contact_hp: "",
       });
       fireGoogleAdsPurchaseConversion();
-      trackMetaContact();
       toast.success("Mesajınız alındı", {
         description: "En kısa sürede size dönüş yapacağız.",
       });
