@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import {
+  ChevronDown,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
@@ -67,6 +69,20 @@ export function DashboardSidebar({
     : "Tema";
   const { unreadCount } = useNotificationUnreadCount();
 
+  const [userToggledHrefs, setUserToggledHrefs] = useState<
+    Record<string, boolean>
+  >({});
+
+  const expandedHrefs: Record<string, boolean> = {};
+  for (const navItem of dashboardNav) {
+    if (navItem.children?.length) {
+      const isActive =
+        pathname === navItem.href || pathname.startsWith(`${navItem.href}/`);
+      const override = userToggledHrefs[navItem.href];
+      expandedHrefs[navItem.href] = override ?? isActive;
+    }
+  }
+
   const reduxUser = useAppSelector((state) => state.auth?.user);
 
   const userName = reduxUser?.name ?? session?.user?.name ?? "Kullanıcı";
@@ -89,13 +105,38 @@ export function DashboardSidebar({
       </span>
     ) : null;
 
+  const themeIconButton = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      disabled={!themeReady}
+      className="h-9 w-9 shrink-0 cursor-pointer rounded-lg text-muted-foreground shadow-none transition-colors hover:bg-muted/50 hover:text-foreground"
+      aria-label={themeLabel}
+      title={themeLabel}
+      onClick={onToggleTheme}
+    >
+      <span className="grid h-5 w-5 shrink-0 place-items-center">
+        {themeResolved ? (
+          resolvedTheme === "dark" ? (
+            <Lightbulb className="h-4 w-4" aria-hidden />
+          ) : (
+            <LightbulbOff className="h-4 w-4" aria-hidden />
+          )
+        ) : (
+          <LightbulbOff className="h-4 w-4 opacity-60" aria-hidden />
+        )}
+      </span>
+    </Button>
+  );
+
   return (
     <div className="flex min-h-full flex-col">
       {!isMobile && (
         <div
           className={cn(
-            "flex h-14 shrink-0 items-center",
-            collapsed ? "justify-center px-2" : "px-3",
+            "flex h-14 shrink-0 items-center gap-1",
+            collapsed ? "justify-center px-2" : "justify-between px-3",
           )}
         >
           <Button
@@ -124,6 +165,13 @@ export function DashboardSidebar({
               )}
             </span>
           </Button>
+          {!collapsed && themeIconButton}
+        </div>
+      )}
+
+      {isMobile && (
+        <div className="flex h-12 shrink-0 items-center justify-end px-3 pt-2">
+          {themeIconButton}
         </div>
       )}
 
@@ -138,101 +186,153 @@ export function DashboardSidebar({
           <Separator className="mb-1 bg-foreground/10 dark:bg-border" />
         )}
 
-        {dashboardNav.flatMap(({ href, label, icon: Icon }) => {
+        {dashboardNav.flatMap(({ href, label, icon: Icon, children }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
+          const hasChildren = !!children?.length;
+          const isExpanded = hasChildren && !collapsed && !!expandedHrefs[href];
 
           const item = (
-            <Link
-              key={href}
-              href={href}
-              onClick={onMobileNavigate}
-              title={collapsed ? label : undefined}
-              className={cn(
-                "flex items-center rounded-lg text-sm font-medium transition-colors",
-                collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
-                active
-                  ? "relative bg-primary/15 text-primary before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l-lg before:bg-primary"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-              )}
-            >
-              <span
-                className={cn(
-                  "grid h-5 w-5 shrink-0 place-items-center",
-                  href === "/bildirimler" &&
-                    collapsed &&
-                    unreadCount > 0 &&
-                    "relative",
-                )}
-              >
-                <Icon
+            <div key={href}>
+              <div className="relative">
+                <Link
+                  href={href}
+                  onClick={onMobileNavigate}
+                  title={collapsed ? label : undefined}
                   className={cn(
-                    "h-4 w-4",
-                    href === "/yapay-zeka-asistani" && "scale-110",
+                    "flex items-center rounded-lg text-sm font-medium transition-colors",
+                    collapsed
+                      ? "justify-center px-2 py-2.5"
+                      : "gap-3 px-3 py-2",
+                    hasChildren && !collapsed && "pr-10",
+                    active
+                      ? "relative bg-primary/15 text-primary before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l-lg before:bg-primary"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   )}
-                />
-                {href === "/bildirimler" &&
-                  collapsed &&
-                  notificationBadge("collapsed")}
-              </span>
-              {!collapsed && label}
-              {href === "/bildirimler" &&
-                !collapsed &&
-                notificationBadge("expanded")}
-            </Link>
+                >
+                  <span
+                    className={cn(
+                      "grid h-5 w-5 shrink-0 place-items-center",
+                      href === "/bildirimler" &&
+                        collapsed &&
+                        unreadCount > 0 &&
+                        "relative",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-4 w-4",
+                        href === "/yapay-zeka-asistani" && "scale-110",
+                      )}
+                    />
+                    {href === "/bildirimler" &&
+                      collapsed &&
+                      notificationBadge("collapsed")}
+                  </span>
+                  {!collapsed && <span className="flex-1">{label}</span>}
+                  {href === "/bildirimler" &&
+                    !collapsed &&
+                    notificationBadge("expanded")}
+                </Link>
+
+                {hasChildren && !collapsed && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUserToggledHrefs((prev) => ({
+                        ...prev,
+                        [href]: !expandedHrefs[href],
+                      }))
+                    }
+                    aria-expanded={isExpanded}
+                    aria-label={
+                      isExpanded
+                        ? `${label} alt menüsünü kapat`
+                        : `${label} alt menüsünü aç`
+                    }
+                    className={cn(
+                      "absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 cursor-pointer place-items-center rounded-md transition-colors",
+                      active
+                        ? "text-primary hover:bg-primary/10"
+                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                    )}
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        isExpanded && "rotate-180",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+                )}
+              </div>
+
+              {hasChildren && !collapsed && (
+                <div
+                  className={cn(
+                    "grid transition-[grid-template-rows,opacity] duration-200 ease-out",
+                    isExpanded
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0",
+                  )}
+                  aria-hidden={!isExpanded}
+                >
+                  <div className="overflow-hidden">
+                    <ul className="mt-1 ml-5.5 flex flex-col gap-0.5 border-l border-border/60 pl-2 pb-1">
+                      {children!.map(
+                        ({
+                          href: childHref,
+                          label: childLabel,
+                          icon: ChildIcon,
+                        }) => {
+                          const childActive = pathname === childHref;
+                          return (
+                            <li key={childHref}>
+                              <Link
+                                href={childHref}
+                                onClick={onMobileNavigate}
+                                tabIndex={isExpanded ? 0 : -1}
+                                className={cn(
+                                  "group/sub relative flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors",
+                                  childActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+                                )}
+                              >
+                                <ChildIcon
+                                  className={cn(
+                                    "h-4 w-4 shrink-0 transition-colors",
+                                    childActive
+                                      ? "text-primary"
+                                      : "text-muted-foreground/80 group-hover/sub:text-foreground",
+                                  )}
+                                  aria-hidden
+                                />
+                                <span className="truncate">{childLabel}</span>
+                              </Link>
+                            </li>
+                          );
+                        },
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
           );
 
-          if (href !== "/bildirimler") {
-            if (href === "/hesaplamalar" || href === "/yapay-zeka-asistani") {
-              return [
-                item,
-                <Separator
-                  key={`divider-${href}`}
-                  className="my-1 bg-foreground/10 dark:bg-border"
-                />,
-              ];
-            }
-            return [item];
+          if (href === "/hesaplamalar" || href === "/yapay-zeka-asistani") {
+            return [
+              item,
+              <Separator
+                key={`divider-${href}`}
+                className="my-1 bg-foreground/10 dark:bg-border"
+              />,
+            ];
           }
 
           return [item];
         })}
-
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={!themeReady}
-          className={cn(
-            "h-9 w-full cursor-pointer rounded-lg text-sm font-medium text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground transition-colors",
-            collapsed
-              ? "justify-center px-2 py-2.5"
-              : "justify-start gap-3 px-3 py-2",
-          )}
-          aria-label={themeLabel}
-          title={themeLabel}
-          onClick={onToggleTheme}
-        >
-          <span className="grid h-5 w-5 shrink-0 place-items-center">
-            {themeResolved ? (
-              resolvedTheme === "dark" ? (
-                <Lightbulb className="h-4 w-4" aria-hidden />
-              ) : (
-                <LightbulbOff className="h-4 w-4" aria-hidden />
-              )
-            ) : (
-              <LightbulbOff className="h-4 w-4 opacity-60" aria-hidden />
-            )}
-          </span>
-          {!collapsed && (
-            <span>
-              {themeResolved
-                ? resolvedTheme === "dark"
-                  ? "Açık tema"
-                  : "Koyu tema"
-                : "Tema"}
-            </span>
-          )}
-        </Button>
-        <Separator className="bg-foreground/10 dark:bg-border" />
       </nav>
 
       <div className="mt-auto" />
