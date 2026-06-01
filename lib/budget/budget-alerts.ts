@@ -1,4 +1,12 @@
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import {
+  addMonths,
+  endOfDay,
+  format,
+  isBefore,
+  startOfDay,
+  subDays,
+  subMonths,
+} from "date-fns";
 import { tr } from "date-fns/locale";
 import { Prisma as PrismaClient } from "@prisma/client";
 import { dedupeTransactionRows } from "@/lib/transactions/dedupe-transactions-display";
@@ -14,6 +22,43 @@ import { formatMoney } from "@/lib/common/utils";
 
 const THRESHOLD = "THRESHOLD" as const;
 const EXCEEDED = "EXCEEDED" as const;
+
+const DEFAULT_MONTH_START_DAY = 1;
+
+function clampMonthStartDay(value: number | null | undefined): number {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return DEFAULT_MONTH_START_DAY;
+  return Math.min(28, Math.max(1, Math.trunc(n)));
+}
+
+async function fetchUserMonthStartDay(userId: string): Promise<number> {
+  const u = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { monthStartDay: true } as { monthStartDay: true },
+  });
+  return clampMonthStartDay(
+    (u as { monthStartDay?: number | null } | null)?.monthStartDay,
+  );
+}
+
+export function getBudgetPeriodForDate(
+  anchor: Date,
+  monthStartDay: number | null | undefined,
+): { start: Date; end: Date; monthKey: string } {
+  const day = clampMonthStartDay(monthStartDay);
+  const candidate = startOfDay(
+    new Date(anchor.getFullYear(), anchor.getMonth(), day),
+  );
+  const periodStart = isBefore(anchor, candidate)
+    ? subMonths(candidate, 1)
+    : candidate;
+  const periodEnd = endOfDay(subDays(addMonths(periodStart, 1), 1));
+  return {
+    start: periodStart,
+    end: periodEnd,
+    monthKey: format(periodStart, "yyyy-MM"),
+  };
+}
 
 function isUniqueViolation(e: unknown): boolean {
   return (
@@ -36,23 +81,17 @@ async function insertAlertLogOrSkip(data: {
   }
 }
 
-function monthKeyFromDate(d: Date): string {
-  return format(d, "yyyy-MM");
-}
-
-function monthRange(d: Date): { start: Date; end: Date } {
-  return {
-    start: startOfMonth(d),
-    end: endOfMonth(d),
-  };
-}
-
 export async function getExpenseTotalForCategoryMonth(
   userId: string,
   category: string,
   monthAnchor: Date,
+  monthStartDay?: number | null,
 ): Promise<number> {
-  const { start, end } = monthRange(monthAnchor);
+  const day =
+    monthStartDay == null
+      ? await fetchUserMonthStartDay(userId)
+      : clampMonthStartDay(monthStartDay);
+  const { start, end } = getBudgetPeriodForDate(monthAnchor, day);
   return sumExpenseForCategoryMonth(userId, category, start, end);
 }
 
@@ -241,19 +280,31 @@ export async function evaluateCategoryBudgetForMonth(
   });
   if (!budget) return;
 
-  const { start, end } = monthRange(monthAnchor);
-  const mk = monthKeyFromDate(monthAnchor);
-  const spent = await sumExpenseForCategoryMonth(userId, category, start, end);
-
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       email: true,
       currency: true,
       notificationsEnabled: true,
-    } as { email: true; currency: true; notificationsEnabled: true },
+      monthStartDay: true,
+    } as {
+      email: true;
+      currency: true;
+      notificationsEnabled: true;
+      monthStartDay: true;
+    },
   });
   if (!user) return;
+
+  const monthStartDay = clampMonthStartDay(
+    (user as { monthStartDay?: number | null }).monthStartDay,
+  );
+  const {
+    start,
+    end,
+    monthKey: mk,
+  } = getBudgetPeriodForDate(monthAnchor, monthStartDay);
+  const spent = await sumExpenseForCategoryMonth(userId, category, start, end);
 
   const emailNotificationsEnabled = user.notificationsEnabled !== false;
 

@@ -3,11 +3,11 @@ import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import {
   evaluateCategoryBudgetForMonth,
+  getBudgetPeriodForDate,
   getExpenseTotalForCategoryMonth,
 } from "@/lib/budget/budget-alerts";
 import { categoryBudget } from "@/lib/db/prisma";
 import { categoryBudgetUpdateSchema } from "@/lib/schemas/validations";
-import { format } from "date-fns";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -51,6 +51,7 @@ export async function PUT(req: Request, context: RouteContext) {
       },
     });
     const now = new Date();
+    const monthStartDay = session.user.monthStartDay ?? 1;
     if (existing.category !== row.category) {
       await evaluateCategoryBudgetForMonth(
         session.user.id,
@@ -63,7 +64,9 @@ export async function PUT(req: Request, context: RouteContext) {
       session.user.id,
       row.category,
       now,
+      monthStartDay,
     );
+    const { monthKey } = getBudgetPeriodForDate(now, monthStartDay);
     return NextResponse.json({
       id: row.id,
       category: row.category,
@@ -71,7 +74,7 @@ export async function PUT(req: Request, context: RouteContext) {
       alertThresholdPercent: row.alertThresholdPercent,
       emailAlertsEnabled: row.emailAlertsEnabled,
       spentThisMonth,
-      monthKey: format(now, "yyyy-MM"),
+      monthKey,
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
     });

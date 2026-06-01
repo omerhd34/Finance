@@ -3,11 +3,11 @@ import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import {
   evaluateCategoryBudgetForMonth,
+  getBudgetPeriodForDate,
   getExpenseTotalForCategoryMonth,
 } from "@/lib/budget/budget-alerts";
 import { categoryBudget } from "@/lib/db/prisma";
 import { categoryBudgetCreateSchema } from "@/lib/schemas/validations";
-import { format } from "date-fns";
 
 export async function GET() {
   try {
@@ -16,7 +16,8 @@ export async function GET() {
       return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
     }
     const now = new Date();
-    const monthKey = format(now, "yyyy-MM");
+    const monthStartDay = session.user.monthStartDay ?? 1;
+    const { monthKey } = getBudgetPeriodForDate(now, monthStartDay);
     const rows = await categoryBudget.findMany({
       where: { userId: session.user.id },
       orderBy: { category: "asc" },
@@ -28,6 +29,7 @@ export async function GET() {
           session.user!.id,
           b.category,
           now,
+          monthStartDay,
         );
         return {
           id: b.id,
@@ -80,12 +82,15 @@ export async function POST(req: Request) {
       },
     });
     const now = new Date();
+    const monthStartDay = session.user.monthStartDay ?? 1;
     await evaluateCategoryBudgetForMonth(session.user.id, row.category, now);
     const spentThisMonth = await getExpenseTotalForCategoryMonth(
       session.user.id,
       row.category,
       now,
+      monthStartDay,
     );
+    const { monthKey } = getBudgetPeriodForDate(now, monthStartDay);
     return NextResponse.json(
       {
         id: row.id,
@@ -94,7 +99,7 @@ export async function POST(req: Request) {
         alertThresholdPercent: row.alertThresholdPercent,
         emailAlertsEnabled: row.emailAlertsEnabled,
         spentThisMonth,
-        monthKey: format(now, "yyyy-MM"),
+        monthKey,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
       },
