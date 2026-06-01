@@ -1,31 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { DashboardKpiSection } from "@/components/dashboard/dashboard-kpi-section";
-import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
-import { DashboardRecurringCard } from "@/components/dashboard/dashboard-recurring-card";
-import { DashboardDebtCard } from "@/components/dashboard/dashboard-debt-card";
-import { DashboardInvestmentSection } from "@/components/dashboard/dashboard-investment-section";
+import { DashboardQuickActions } from "@/components/dashboard/dashboard-quick-actions";
+import { DashboardActionAlertsCard } from "@/components/dashboard/dashboard-action-alerts-card";
 import { DashboardPremiumPromo } from "@/components/dashboard/dashboard-premium-promo";
 import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboard-email-verification-banner";
-import { AiMessagingDigestCopyButton } from "@/components/ai-insights/ai-messaging-digest-copy-button";
-import { DashboardRecentTransactionsCard } from "@/components/dashboard/dashboard-recent-transactions-card";
+import { BudgetFormDialog } from "@/components/budgets/budget-form-dialog";
+import { NewRecurringDialog } from "@/components/recurring/new-recurring-dialog";
+import { NewTransactionDialog } from "@/components/transactions/new-transaction-dialog";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
+import type { UserDisplayCurrency } from "@/lib/common/currency";
+import { buildRecurringRulePayload } from "@/lib/recurring/recurring-payload";
+import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { apiClient } from "@/lib/client/api-client";
-import {
-  aggregatePositionsTry,
-  totalInvestmentPnlTry,
-} from "@/lib/investments/investment-position-math";
+import { totalInvestmentPnlTry } from "@/lib/investments/investment-position-math";
 import { useCommodityLiveQuotes } from "@/hooks/use-commodity-live-quotes";
 import { useCryptoLiveQuotes } from "@/hooks/use-crypto-live-quotes";
 import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
@@ -37,19 +29,22 @@ import { debtRemaining } from "@/lib/debts/debt-remaining";
 import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
 import type { Debt } from "@/types/debt";
 import type { InvestmentPosition } from "@/types/investment";
-import type { RecurringRule } from "@/types/recurring";
 import type { Transaction } from "@/types/transaction";
 import {
-  expenseByCategoryForLastNMonths,
-  formatLastNMonthsPeriodRangeLabel,
   getLastNMonthsPeriodRange,
   lastNMonthsBars,
-  recommendedCategoryPieMonths,
   sumByTypeInRange,
 } from "@/lib/dashboard/dashboard-stats";
 import { computeFinancialHealthScore } from "@/lib/dashboard/financial-health-score";
+import {
+  buildDashboardAlerts,
+  type CategoryBudgetSnapshot,
+} from "@/lib/dashboard/dashboard-anomalies";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { processDueRecurring } from "@/store/slices/recurringSlice";
+import {
+  addRecurringRule,
+  processDueRecurring,
+} from "@/store/slices/recurringSlice";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 
 export default function DashboardPage() {
@@ -69,13 +64,12 @@ export default function DashboardPage() {
     payable: number;
   } | null>(null);
   const [debts, setDebts] = useState<Debt[]>([]);
+  const [budgets, setBudgets] = useState<CategoryBudgetSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recurringRules, setRecurringRules] = useState<RecurringRule[]>([]);
-  const [barsChartMonths, setBarsChartMonths] = useState(6);
-  const [pieChartMonths, setPieChartMonths] = useState(1);
-  const pieChartMonthsTouchedRef = useRef(false);
-  const [digestCopyError, setDigestCopyError] = useState<string | null>(null);
+  const [newTransactionOpen, setNewTransactionOpen] = useState(false);
+  const [newRecurringOpen, setNewRecurringOpen] = useState(false);
+  const [newBudgetOpen, setNewBudgetOpen] = useState(false);
   const goldLive = useGoldLivePrices(planPremium);
   const silverLive = useSilverLivePrices(planPremium);
   const platinumLive = usePlatinumLivePrices(planPremium);
@@ -117,13 +111,16 @@ export default function DashboardPage() {
       try {
         await dispatch(processDueRecurring()).unwrap();
       } catch {}
-      const [txRes, debtRes, recRes] = await Promise.all([
+      const [txRes, debtRes, budgetRes] = await Promise.all([
         apiClient.get<{ items: Transaction[] }>("/api/transactions?limit=2000"),
         apiClient.get<{ items: Debt[] }>("/api/debts"),
-        apiClient.get<{ items: RecurringRule[] }>("/api/recurring"),
+        apiClient
+          .get<{ items: CategoryBudgetSnapshot[] }>("/api/category-budgets")
+          .catch(() => ({ data: { items: [] as CategoryBudgetSnapshot[] } })),
       ]);
       setItems(txRes.data.items);
       setDebts(debtRes.data.items);
+      setBudgets(budgetRes.data.items);
       if (planPremium) {
         try {
           const invRes = await apiClient.get<{ items: InvestmentPosition[] }>(
@@ -136,7 +133,6 @@ export default function DashboardPage() {
       } else {
         setInvestmentPositions([]);
       }
-      setRecurringRules(recRes.data.items);
       let receivable = 0;
       let payable = 0;
       for (const d of debtRes.data.items) {
@@ -151,7 +147,7 @@ export default function DashboardPage() {
       setInvestmentPositions([]);
       setDebtTotals(null);
       setDebts([]);
-      setRecurringRules([]);
+      setBudgets([]);
     } finally {
       setLoading(false);
     }
@@ -160,22 +156,6 @@ export default function DashboardPage() {
   useEffect(() => {
     load();
   }, [load]);
-
-  const handlePieChartMonthsChange = useCallback((months: number) => {
-    pieChartMonthsTouchedRef.current = true;
-    setPieChartMonths(months);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (loading) return;
-    if (pieChartMonthsTouchedRef.current) return;
-    const recommended = recommendedCategoryPieMonths(
-      items,
-      new Date(),
-      monthStartDay,
-    );
-    setPieChartMonths((prev) => (prev === recommended ? prev : recommended));
-  }, [items, monthStartDay, loading]);
 
   const now = new Date();
   const { start: kpiPeriodStart, end: kpiPeriodEnd } =
@@ -198,92 +178,19 @@ export default function DashboardPage() {
     const net =
       sumByTypeInRange(items, "income", epoch, kpiPeriodEnd) -
       sumByTypeInRange(items, "expense", epoch, kpiPeriodEnd);
-    const bars = lastNMonthsBars(items, barsChartMonths, now, monthStartDay);
-    const pie = expenseByCategoryForLastNMonths(
-      items,
-      pieChartMonths,
-      now,
-      monthStartDay,
-    );
-    const recent = [...items]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5);
+    const bars = lastNMonthsBars(items, 6, now, monthStartDay);
     return {
       totalIncome,
       totalExpense,
       net,
       bars,
-      pie,
-      recent,
     };
-  }, [
-    items,
-    kpiPeriodStart,
-    kpiPeriodEnd,
-    now,
-    barsChartMonths,
-    pieChartMonths,
-    monthStartDay,
-  ]);
-
-  const barsRangeLabel = useMemo(
-    () =>
-      formatLastNMonthsPeriodRangeLabel(barsChartMonths, now, monthStartDay),
-    [barsChartMonths, now, monthStartDay],
-  );
-
-  const pieRangeLabel = useMemo(
-    () => formatLastNMonthsPeriodRangeLabel(pieChartMonths, now, monthStartDay),
-    [pieChartMonths, now, monthStartDay],
-  );
+  }, [items, kpiPeriodStart, kpiPeriodEnd, now, monthStartDay]);
 
   const investmentPnl = useMemo(
     () => totalInvestmentPnlTry(investmentPositions, liveQuotes),
     [investmentPositions, liveQuotes],
   );
-
-  const investmentPnlBreakdown = useMemo(() => {
-    const gold = aggregatePositionsTry(investmentPositions, "GOLD", liveQuotes);
-    const fx = aggregatePositionsTry(investmentPositions, "FX", liveQuotes);
-    const stock = aggregatePositionsTry(
-      investmentPositions,
-      "STOCK",
-      liveQuotes,
-    );
-    const crypto = aggregatePositionsTry(
-      investmentPositions,
-      "CRYPTO",
-      liveQuotes,
-    );
-    const c = aggregatePositionsTry(
-      investmentPositions,
-      "COMMODITY",
-      liveQuotes,
-    );
-    const pt = aggregatePositionsTry(
-      investmentPositions,
-      "PLATINUM",
-      liveQuotes,
-    );
-    const ag = aggregatePositionsTry(investmentPositions, "SILVER", liveQuotes);
-    const commodityCount = c.count + pt.count + ag.count;
-    const commodityPnl = c.pnlTry + pt.pnlTry + ag.pnlTry;
-
-    const entries: { label: string; pnlTry: number; count: number }[] = [
-      { label: "Altın", pnlTry: gold.pnlTry, count: gold.count },
-      { label: "Döviz", pnlTry: fx.pnlTry, count: fx.count },
-      { label: "Hisse senedi", pnlTry: stock.pnlTry, count: stock.count },
-      { label: "Emtia", pnlTry: commodityPnl, count: commodityCount },
-      { label: "Kripto", pnlTry: crypto.pnlTry, count: crypto.count },
-    ];
-
-    return entries
-      .filter((e) => e.count > 0)
-      .map(({ label, pnlTry }) => ({
-        label,
-        pnlTry,
-      }));
-  }, [investmentPositions, liveQuotes]);
 
   const financialHealth = useMemo(
     () =>
@@ -298,23 +205,32 @@ export default function DashboardPage() {
     [stats, debtTotals, planPremium, investmentPnl],
   );
 
-  const upcomingRecurring = useMemo(() => {
-    return [...recurringRules]
-      .filter((r) => r.isActive)
-      .sort((a, b) => {
-        if (a.type !== b.type) {
-          return a.type === "income" ? -1 : 1;
-        }
-        return (
-          new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()
-        );
-      })
-      .slice(0, 4);
-  }, [recurringRules]);
+  const dashboardAlerts = useMemo(
+    () =>
+      buildDashboardAlerts({
+        items,
+        debts,
+        budgets,
+        now,
+        monthStartDay,
+        currency,
+      }),
+    [items, debts, budgets, now, monthStartDay, currency],
+  );
 
-  const activeRecurringCount = useMemo(
-    () => recurringRules.filter((r) => r.isActive).length,
-    [recurringRules],
+  const handleCreateRecurring = useCallback(
+    async (
+      values: RecurringFormValues,
+      amountEntryCurrency: UserDisplayCurrency,
+    ) => {
+      await dispatch(
+        addRecurringRule(
+          buildRecurringRulePayload(values, amountEntryCurrency),
+        ),
+      ).unwrap();
+      void load();
+    },
+    [dispatch, load],
   );
 
   if (error) {
@@ -346,60 +262,34 @@ export default function DashboardPage() {
           investmentPnl={planPremium ? investmentPnl : undefined}
         />
 
-        <DashboardChartsSection
-          bars={stats.bars}
-          pie={stats.pie}
-          barsMonths={barsChartMonths}
-          pieMonths={pieChartMonths}
-          barsRangeLabel={barsRangeLabel}
-          pieRangeLabel={pieRangeLabel}
-          onBarsMonthsChange={setBarsChartMonths}
-          onPieMonthsChange={handlePieChartMonthsChange}
+        <DashboardQuickActions
+          onNewTransaction={() => setNewTransactionOpen(true)}
+          onAddRecurring={() => setNewRecurringOpen(true)}
+          onAddBudget={() => setNewBudgetOpen(true)}
         />
 
-        <DashboardRecurringCard
-          activeRecurringCount={activeRecurringCount}
-          upcomingRecurring={upcomingRecurring}
-          currency={currency}
+        <DashboardActionAlertsCard alerts={dashboardAlerts} />
+
+        <NewTransactionDialog
+          hideTrigger
+          open={newTransactionOpen}
+          onOpenChange={setNewTransactionOpen}
+          onCreated={load}
         />
 
-        {debtTotals ? (
-          <DashboardDebtCard items={debts} currency={currency} />
-        ) : null}
-
-        {planPremium && investmentPositions.length > 0 ? (
-          <DashboardInvestmentSection
-            currency={currency}
-            totalPnlTry={investmentPnl}
-            breakdown={investmentPnlBreakdown}
-          />
-        ) : null}
-
-        <DashboardRecentTransactionsCard
-          transactions={stats.recent}
-          currency={currency}
+        <NewRecurringDialog
+          hideTrigger
+          open={newRecurringOpen}
+          onOpenChange={setNewRecurringOpen}
+          onSubmit={handleCreateRecurring}
         />
 
-        <section
-          className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-muted/25 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-          aria-label="Finans özeti — panoya kopyala"
-        >
-          <p className="max-w-full text-sm leading-relaxed text-muted-foreground">
-            Güncel işlemleriniz ile borç ve alacak özetinizi tek tıkla panoya
-            kopyalayın; raporda kullanın, not olarak saklayın veya paylaşın.
-          </p>
-          <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-            <AiMessagingDigestCopyButton
-              className="w-full sm:w-auto"
-              onCopyError={setDigestCopyError}
-            />
-            {digestCopyError ? (
-              <p className="text-sm text-destructive sm:text-end" role="alert">
-                {digestCopyError}
-              </p>
-            ) : null}
-          </div>
-        </section>
+        <BudgetFormDialog
+          open={newBudgetOpen}
+          onOpenChange={setNewBudgetOpen}
+          editing={null}
+          onSaved={load}
+        />
       </div>
     </DataLoadingShell>
   );

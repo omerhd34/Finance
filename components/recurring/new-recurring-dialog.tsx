@@ -35,9 +35,15 @@ type Props = {
     values: RecurringFormValues,
     amountEntryCurrency: UserDisplayCurrency,
   ) => Promise<void>;
+  hideTrigger?: boolean;
 };
 
-export function NewRecurringDialog({ open, onOpenChange, onSubmit }: Props) {
+export function NewRecurringDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  hideTrigger = false,
+}: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const displayCurrency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
   const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
@@ -77,12 +83,14 @@ export function NewRecurringDialog({ open, onOpenChange, onSubmit }: Props) {
         onOpenChange(o);
       }}
     >
-      <DialogTrigger asChild>
-        <Button className="cursor-pointer bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Yeni
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button className="cursor-pointer bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90">
+            <Plus className="mr-2 h-4 w-4" />
+            Yeni
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Tekrarlayan işlem</DialogTitle>

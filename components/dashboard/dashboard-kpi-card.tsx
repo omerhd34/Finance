@@ -17,6 +17,7 @@ export function DashboardKpiCard({
   valueClassName,
   className,
   suppressHoverTransform = false,
+  hoverTransformClassName,
 }: {
   icon: LucideIcon;
   iconClassName: string;
@@ -26,6 +27,7 @@ export function DashboardKpiCard({
   valueClassName?: string;
   className?: string;
   suppressHoverTransform?: boolean;
+  hoverTransformClassName?: string;
 }) {
   return (
     <Card
@@ -36,7 +38,10 @@ export function DashboardKpiCard({
         "hover:border-border hover:shadow-md",
         suppressHoverTransform
           ? "transition-shadow duration-300"
-          : "hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300",
+          : cn(
+              "transition-all duration-300 hover:-translate-y-0.5",
+              hoverTransformClassName ?? "hover:scale-[1.02]",
+            ),
         className,
       )}
     >

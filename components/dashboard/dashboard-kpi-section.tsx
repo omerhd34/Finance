@@ -174,6 +174,11 @@ export function DashboardKpiSection({
             ? "sm:col-span-2 lg:col-span-2 xl:col-span-3"
             : undefined
         }
+        hoverTransformClassName={
+          cardCount === 4
+            ? undefined
+            : "hover:scale-[1.01] xl:hover:scale-[1.0067]"
+        }
       />
     </div>
   );

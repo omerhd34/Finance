@@ -14,16 +14,24 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void | Promise<void>;
+  hideTrigger?: boolean;
 };
 
-export function NewTransactionDialog({ open, onOpenChange, onCreated }: Props) {
+export function NewTransactionDialog({
+  open,
+  onOpenChange,
+  onCreated,
+  hideTrigger = false,
+}: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="cursor-pointer bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90">
-          Yeni İşlem Ekle
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button className="cursor-pointer bg-[#22c55e] text-primary-foreground hover:bg-[#22c55e]/90">
+            Yeni İşlem Ekle
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Yeni işlem</DialogTitle>
