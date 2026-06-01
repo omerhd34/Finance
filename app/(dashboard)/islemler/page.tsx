@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { Transaction } from "@/types/transaction";
 import type { TransactionEditFormValues } from "@/lib/schemas/validations";
 import { displayAmountToTry } from "@/lib/common/currency";
@@ -51,7 +51,10 @@ import { DashboardEmailVerificationBanner } from "@/components/dashboard/dashboa
 
 function TransactionsPageContent() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
   const {
     items,
     loading,
@@ -147,21 +150,25 @@ function TransactionsPageContent() {
   );
 
   useLayoutEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
     const patch: Partial<TransactionFilters> = {};
-    const cat = searchParams.get("category");
+    const cat = params.get("category");
     if (cat !== null) patch.category = cat;
-    const typ = searchParams.get("type");
+    const typ = params.get("type");
     if (typ === "income" || typ === "expense") patch.type = typ;
-    const from = searchParams.get("from");
+    const from = params.get("from");
     if (from !== null) patch.dateFrom = from;
-    const to = searchParams.get("to");
+    const to = params.get("to");
     if (to !== null) patch.dateTo = to;
-    const q = searchParams.get("search");
+    const q = params.get("search");
     if (q !== null) patch.search = q;
     if (Object.keys(patch).length > 0) {
       dispatch(setFilters(patch));
     }
-  }, [searchParams, dispatch]);
+    if (params.get("new") === "1") {
+      setNewTransactionOpen(true);
+    }
+  }, [searchParamsKey, dispatch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -300,7 +307,7 @@ function TransactionsPageContent() {
         <TransactionsFiltersCard
           filters={filters}
           onFiltersChange={(patch) => dispatch(setFilters(patch))}
-          onClearFilters={() =>
+          onClearFilters={() => {
             dispatch(
               setFilters({
                 type: "",
@@ -309,8 +316,11 @@ function TransactionsPageContent() {
                 dateTo: "",
                 search: "",
               }),
-            )
-          }
+            );
+            if (searchParamsKey.length > 0) {
+              router.replace(pathname, { scroll: false });
+            }
+          }}
         />
 
         {error && <p className="text-sm text-destructive">{error}</p>}
