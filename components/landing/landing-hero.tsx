@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Sparkles } from "lucide-react";
@@ -28,11 +29,19 @@ export function LandingHero() {
         aria-hidden
       >
         <div
-          className="absolute inset-0 bg-cover bg-center animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
-          style={{ backgroundImage: "url(/finance.webp)" }}
+          className="absolute inset-0 animate-hero-bg-pan opacity-[0.52] saturate-[0.88] contrast-[0.94] dark:opacity-[0.68] dark:saturate-[0.8] dark:contrast-[0.92]"
           role="img"
           aria-label="Kişisel finans, bütçe ve harcama yönetimi — IQfinansAI arka plan görseli"
-        />
+        >
+          <Image
+            src="/finance.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
         <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/42 to-black/62 dark:from-black/72 dark:via-black/60 dark:to-black/80" />
         <div className="absolute inset-0 bg-linear-to-tr from-emerald-950/28 via-transparent to-teal-950/18 dark:from-emerald-950/42 dark:to-teal-950/28" />
         <div className="absolute inset-y-0 left-0 w-[58%] max-w-3xl bg-linear-to-r from-black/42 to-transparent dark:from-black/55" />
@@ -70,7 +79,8 @@ export function LandingHero() {
             <p className="mx-auto mt-3 max-w-xl text-pretty text-sm leading-relaxed text-white/85 sm:mt-8 sm:text-lg md:text-xl xl:mx-0">
               Yapay zekâ destekli{" "}
               <strong className="font-semibold text-white">IQfinansAI</strong>{" "}
-              ile 10 gün premium denemeni başlat, harcamalarını tek ekrandan gör.
+              ile 10 gün premium denemeni başlat, harcamalarını tek ekrandan
+              gör.
             </p>
 
             <div className="mt-5 flex flex-col items-center justify-center gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-3 xl:justify-start">
