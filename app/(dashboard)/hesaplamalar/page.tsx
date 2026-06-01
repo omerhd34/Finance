@@ -78,14 +78,12 @@ export default function CalculationsPage() {
               <p>
                 Günlük finans kararlarında ihtiyaç duyduğunuz{" "}
                 <span className="font-medium text-foreground/85">
-                  faiz, kredi, vergi ve birikim
+                  faiz, kredi, vergi, birikim, enflasyon ve bireysel emeklilik
                 </span>{" "}
                 hesaplamalarını tek sayfadan başlatın; her araç bağımsız bir
-                forma sahiptir.
-              </p>
-              <p>
-                Tüm hesaplamalar anında çalışır. Banka kampanyaları ve mevzuat
-                değişiklikleri nihai tutarı etkileyebilir.
+                forma sahiptir. Tüm hesaplamalar anında çalışır. Banka
+                kampanyaları ve mevzuat değişiklikleri nihai tutarı
+                etkileyebilir.
               </p>
             </div>
           </div>
