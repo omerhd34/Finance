@@ -1,15 +1,21 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
+  AlertTriangle,
+  ArrowRight,
+  ArrowRightLeft,
+  CalendarClock,
   Coins,
   HandCoins,
-  LineChart as LineChartIcon,
+  PiggyBank,
+  Plus,
   Receipt,
   Scale,
+  Sparkles,
   TrendingUp,
   Wallet,
+  Zap,
 } from "lucide-react";
-import { ExpenseCategoryChart } from "@/components/landing/dashboard-preview/expense-category-chart";
 import { PreviewSectionHeader } from "@/components/landing/dashboard-preview/shared";
 
 type KpiCard = {
@@ -96,12 +102,102 @@ const FULL_BALANCE = {
   description: "Net bakiye + borç/alacak + yatırım (Premium).",
 };
 
-const MONTH_LABELS = ["Aralık", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs"];
-const INCOME_SERIES = [28_400, 19_750, 41_120, 26_840, 67_250, 48_250];
-const EXPENSE_SERIES = [15_200, 26_300, 19_800, 31_400, 14_120, 19_107.26];
-const SAVINGS_RATE = [46, 4, 52, 7, 79, 60];
-const MAX_MONEY = 67_250;
-const MAX_RATE = 100;
+type QuickAction = {
+  id: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  iconClassName: string;
+};
+
+const QUICK_ACTIONS: QuickAction[] = [
+  {
+    id: "new-transaction",
+    label: "Yeni işlem",
+    description: "Gelir veya gider kaydet.",
+    icon: Plus,
+    iconClassName:
+      "bg-emerald-500/15 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400",
+  },
+  {
+    id: "recurring",
+    label: "Tekrarlayan ekle",
+    description: "Sabit gelir/gider tanımla.",
+    icon: CalendarClock,
+    iconClassName:
+      "bg-sky-500/15 text-sky-600 ring-sky-500/25 dark:text-sky-300",
+  },
+  {
+    id: "budgets",
+    label: "Bütçe ekle",
+    description: "Kategori limiti belirle.",
+    icon: PiggyBank,
+    iconClassName:
+      "bg-amber-500/15 text-amber-700 ring-amber-500/25 dark:text-amber-300",
+  },
+  {
+    id: "ai-assistant",
+    label: "Asistana sor",
+    description: "IQfinansAI ile sohbet et.",
+    icon: Sparkles,
+    iconClassName:
+      "bg-violet-500/15 text-violet-600 ring-violet-500/25 dark:text-violet-300",
+  },
+  {
+    id: "fx",
+    label: "Kur dönüşüm",
+    description: "Hızlı çevirim yap.",
+    icon: ArrowRightLeft,
+    iconClassName:
+      "bg-teal-500/15 text-teal-700 ring-teal-500/25 dark:text-teal-300",
+  },
+];
+
+type ActionAlert = {
+  id: string;
+  severity: "danger" | "warning" | "info";
+  title: string;
+  description: string;
+  hrefLabel: string;
+};
+
+const ACTION_ALERTS: ActionAlert[] = [
+  {
+    id: "alert-1",
+    severity: "danger",
+    title: "3 borç ödemesi 7 gün içinde vadesinde",
+    description:
+      "Toplam ₺18.450,00 tutarındaki ödemeler bu hafta içinde vadeye geliyor.",
+    hrefLabel: "Borçlara git",
+  },
+  {
+    id: "alert-2",
+    severity: "warning",
+    title: "Market kategorisi bütçesini %92 doldurdu",
+    description:
+      "Aylık ₺10.000 limitin ₺9.180'i kullanıldı. Ay sonuna 11 gün kaldı.",
+    hrefLabel: "Bütçeye git",
+  },
+];
+
+const SEVERITY_BADGE_CLASS: Record<ActionAlert["severity"], string> = {
+  danger: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300",
+  warning:
+    "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  info: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+};
+
+const SEVERITY_RING_CLASS: Record<ActionAlert["severity"], string> = {
+  danger: "ring-rose-500/30",
+  warning: "ring-amber-500/30",
+  info: "ring-sky-500/30",
+};
+
+const SEVERITY_LABEL: Record<ActionAlert["severity"], string> = {
+  danger: "Acil",
+  warning: "Dikkat",
+  info: "Bilgi",
+};
 
 function KpiCardCell({ card }: { card: KpiCard }) {
   const Icon = card.icon;
@@ -172,207 +268,91 @@ function FullBalanceCard() {
   );
 }
 
-function IncomeExpenseSavingsChart() {
-  const chartWidth = 460;
-  const chartHeight = 220;
-  const padLeft = 44;
-  const padRight = 38;
-  const padTop = 14;
-  const padBottom = 34;
-  const usableW = chartWidth - padLeft - padRight;
-  const usableH = chartHeight - padTop - padBottom;
+function QuickActionsCard() {
+  return (
+    <div className="min-w-0 rounded-xl border border-border/60 bg-card shadow-sm">
+      <PreviewSectionHeader
+        icon={Zap}
+        title="Hızlı eylemler"
+        description="Sık kullandığın işlemlere tek tıkla eriş."
+      />
+      <div className="p-3 sm:p-4">
+        <ul className="grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-5">
+          {QUICK_ACTIONS.map((action) => {
+            const Icon = action.icon;
+            return (
+              <li key={action.id} className="min-w-0">
+                <div className="flex h-full items-start gap-2.5 rounded-xl border border-border/60 bg-muted/15 p-2.5 shadow-sm ring-1 ring-black/5 sm:p-3 dark:ring-white/10">
+                  <span
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-inset ${action.iconClassName}`}
+                    aria-hidden
+                  >
+                    <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[12px] font-semibold leading-tight tracking-tight text-foreground sm:text-[13px]">
+                      {action.label}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[10px] leading-snug text-muted-foreground sm:text-[11px]">
+                      {action.description}
+                    </span>
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
 
-  const xFor = (i: number) =>
-    padLeft + (i / (MONTH_LABELS.length - 1)) * usableW;
-  const yMoney = (v: number) => padTop + usableH - (v / MAX_MONEY) * usableH;
-  const yRate = (v: number) => padTop + usableH - (v / MAX_RATE) * usableH;
-
-  const buildPath = (values: number[], mapY: (v: number) => number): string => {
-    if (values.length === 0) return "";
-    const pts = values.map((v, i) => ({ x: xFor(i), y: mapY(v) }));
-    if (pts.length === 1)
-      return `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-
-    let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p0 = pts[i - 1] ?? pts[i];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[i + 2] ?? pts[i + 1];
-
-      const c1x = p1.x + (p2.x - p0.x) / 6;
-      const c1y = p1.y + (p2.y - p0.y) / 6;
-      const c2x = p2.x - (p3.x - p1.x) / 6;
-      const c2y = p2.y - (p3.y - p1.y) / 6;
-
-      d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
-    }
-    return d;
-  };
-
-  const incomePath = buildPath(INCOME_SERIES, yMoney);
-  const expensePath = buildPath(EXPENSE_SERIES, yMoney);
-  const ratePath = buildPath(SAVINGS_RATE, yRate);
-
-  const moneyTicks = [0, 14_850, 33_625, 50_438, 67_250];
-  const rateTicks = [0, 25, 50, 75, 100];
-
-  const formatMoneyTick = (v: number) =>
-    v === 0
-      ? "₺0,00"
-      : v >= 1000
-        ? `₺${(v / 1000).toFixed(v >= 10_000 ? 1 : 2).replace(".", ",")}K`
-        : `₺${v}`;
+function ActionAlertsCard() {
+  const dangerCount = ACTION_ALERTS.filter(
+    (a) => a.severity === "danger",
+  ).length;
+  const warningCount = ACTION_ALERTS.filter(
+    (a) => a.severity === "warning",
+  ).length;
 
   return (
-    <div className="flex h-full min-w-0 flex-col rounded-xl border border-border/60 bg-card shadow-sm">
+    <div className="min-w-0 rounded-xl border border-border/60 bg-card shadow-sm">
       <PreviewSectionHeader
-        icon={LineChartIcon}
-        title="Gelir, Gider ve Tasarruf Oranı"
-        description="15 Kasım 2025 - 15 Mayıs 2026 döneminin aylık gelir-gider trendi ve tasarruf oranı"
+        icon={AlertTriangle}
+        title="Aksiyon uyarıları"
+        description={`${dangerCount} acil, ${warningCount} dikkat`}
       />
-      <div className="flex-1 p-3 sm:p-4">
-        <svg
-          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-          className="h-44 w-full sm:h-52"
-          aria-hidden
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="income-line-area" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-
-          {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-            <line
-              key={t}
-              x1={padLeft}
-              y1={padTop + usableH * t}
-              x2={chartWidth - padRight}
-              y2={padTop + usableH * t}
-              stroke="currentColor"
-              strokeOpacity={0.08}
-              strokeDasharray="3 3"
-              className="text-muted-foreground"
-            />
+      <div className="p-3 sm:p-4">
+        <ul className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
+          {ACTION_ALERTS.map((alert) => (
+            <li key={alert.id} className="min-w-0">
+              <div
+                className={`flex h-full flex-col gap-2 rounded-xl border border-border/60 bg-muted/15 p-3 shadow-sm ring-1 ${SEVERITY_RING_CLASS[alert.severity]}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span
+                    className={`inline-flex items-center rounded-md border px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide sm:text-[10px] ${SEVERITY_BADGE_CLASS[alert.severity]}`}
+                  >
+                    {SEVERITY_LABEL[alert.severity]}
+                  </span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
+                </div>
+                <p className="text-[12px] font-semibold leading-snug text-foreground sm:text-[13px]">
+                  {alert.title}
+                </p>
+                <p className="text-[10px] leading-relaxed text-muted-foreground sm:text-[11px]">
+                  {alert.description}
+                </p>
+                <span className="mt-auto text-[10px] font-medium text-emerald-600 sm:text-[11px] dark:text-emerald-400">
+                  {alert.hrefLabel}
+                </span>
+              </div>
+            </li>
           ))}
-
-          {moneyTicks.map((tick) => (
-            <text
-              key={`m-${tick}`}
-              x={padLeft - 6}
-              y={yMoney(tick) + 3}
-              textAnchor="end"
-              className="fill-muted-foreground text-[8px] tabular-nums"
-            >
-              {formatMoneyTick(tick)}
-            </text>
-          ))}
-
-          {rateTicks.map((tick) => (
-            <text
-              key={`r-${tick}`}
-              x={chartWidth - padRight + 6}
-              y={yRate(tick) + 3}
-              textAnchor="start"
-              className="fill-muted-foreground text-[8px] tabular-nums"
-            >
-              {tick}%
-            </text>
-          ))}
-
-          <path
-            d={`${incomePath} L${xFor(INCOME_SERIES.length - 1).toFixed(1)},${(padTop + usableH).toFixed(1)} L${xFor(0).toFixed(1)},${(padTop + usableH).toFixed(1)} Z`}
-            fill="url(#income-line-area)"
-          />
-
-          <path
-            d={incomePath}
-            fill="none"
-            stroke="#10b981"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d={expensePath}
-            fill="none"
-            stroke="#ef4444"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d={ratePath}
-            fill="none"
-            stroke="#3b82f6"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {INCOME_SERIES.map((v, i) => (
-            <circle
-              key={`i-${i}`}
-              cx={xFor(i)}
-              cy={yMoney(v)}
-              r={2.5}
-              className="fill-emerald-500"
-            />
-          ))}
-          {EXPENSE_SERIES.map((v, i) => (
-            <circle
-              key={`e-${i}`}
-              cx={xFor(i)}
-              cy={yMoney(v)}
-              r={2.5}
-              className="fill-rose-500"
-            />
-          ))}
-          {SAVINGS_RATE.map((v, i) => (
-            <circle
-              key={`s-${i}`}
-              cx={xFor(i)}
-              cy={yRate(v)}
-              r={2.5}
-              className="fill-sky-500"
-            />
-          ))}
-
-          {MONTH_LABELS.map((m, i) => (
-            <text
-              key={m}
-              x={xFor(i)}
-              y={chartHeight - 16}
-              textAnchor="middle"
-              className="fill-muted-foreground text-[9px]"
-            >
-              {m}
-            </text>
-          ))}
-        </svg>
-
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-border/40 pt-3">
-          {[
-            { label: "Gelir", color: "#10b981" },
-            { label: "Gider", color: "#ef4444" },
-            { label: "Tasarruf Oranı", color: "#3b82f6" },
-          ].map((item) => (
-            <span
-              key={item.label}
-              className="flex items-center gap-2 text-[10px] font-medium text-foreground/90 sm:text-[11px]"
-            >
-              <span
-                className="h-0.5 w-5 rounded-full ring-1 ring-white/15"
-                style={{ backgroundColor: item.color }}
-                aria-hidden
-              />
-              {item.label}
-            </span>
-          ))}
-        </div>
+        </ul>
       </div>
     </div>
   );
@@ -389,10 +369,9 @@ export function AnaPanelPreview() {
 
       <FullBalanceCard />
 
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
-        <IncomeExpenseSavingsChart />
-        <ExpenseCategoryChart />
-      </div>
+      <QuickActionsCard />
+
+      <ActionAlertsCard />
     </div>
   );
 }

@@ -6,6 +6,8 @@ import {
   SlidersHorizontal,
   Wallet,
 } from "lucide-react";
+import { ExpenseCategoryChart } from "@/components/landing/dashboard-preview/expense-category-chart";
+import { IncomeExpenseSavingsChart } from "@/components/landing/dashboard-preview/income-expense-savings-chart";
 import {
   PreviewCard,
   PreviewDisabledButton,
@@ -171,6 +173,11 @@ export function IslemlerPreview() {
           </table>
         </div>
       </PreviewCard>
+
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
+        <IncomeExpenseSavingsChart />
+        <ExpenseCategoryChart />
+      </div>
     </div>
   );
 }

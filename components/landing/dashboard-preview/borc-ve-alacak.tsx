@@ -1,4 +1,5 @@
 import { ArrowDownLeft, ArrowUpRight, HandCoins, Plus } from "lucide-react";
+import { BorcVeAlacakMaturityChart } from "@/components/landing/dashboard-preview/borc-ve-alacak-maturity-chart";
 import {
   PreviewBadge,
   PreviewCard,
@@ -192,6 +193,8 @@ export function BorcVeAlacakPreview() {
           </ul>
         </PreviewCard>
       </div>
+
+      <BorcVeAlacakMaturityChart />
     </div>
   );
 }
