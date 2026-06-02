@@ -415,27 +415,29 @@ export default function DebtsPage() {
           symbolOptionsByGroup={symbolOptionsByGroup}
         />
 
-        <DebtsSummaryCards
-          totalsByUnitReceivable={totalsByUnit.recv}
-          totalsByUnitPayable={totalsByUnit.pay}
-          currency={currency}
-          tryRates={displayRates}
-        />
+        <div className="space-y-4">
+          <DebtsSummaryCards
+            totalsByUnitReceivable={totalsByUnit.recv}
+            totalsByUnitPayable={totalsByUnit.pay}
+            currency={currency}
+            tryRates={displayRates}
+          />
 
-        <DebtsPeriodSummaryCards
-          periodLabel={periodLabel}
-          loadingPaid={periodSummaryLoading && !periodSummary}
-          paidThisPeriodReceivableTry={
-            periodSummary?.paidThisPeriod.receivableTry ?? 0
-          }
-          paidThisPeriodPayableTry={
-            periodSummary?.paidThisPeriod.payableTry ?? 0
-          }
-          dueInPeriodReceivable={dueInPeriodByUnit.recv}
-          dueInPeriodPayable={dueInPeriodByUnit.pay}
-          currency={currency}
-          tryRates={displayRates}
-        />
+          <DebtsPeriodSummaryCards
+            periodLabel={periodLabel}
+            loadingPaid={periodSummaryLoading && !periodSummary}
+            paidThisPeriodReceivableTry={
+              periodSummary?.paidThisPeriod.receivableTry ?? 0
+            }
+            paidThisPeriodPayableTry={
+              periodSummary?.paidThisPeriod.payableTry ?? 0
+            }
+            dueInPeriodReceivable={dueInPeriodByUnit.recv}
+            dueInPeriodPayable={dueInPeriodByUnit.pay}
+            currency={currency}
+            tryRates={displayRates}
+          />
+        </div>
 
         {error && <p className="text-destructive">{error}</p>}
         <DebtsList
