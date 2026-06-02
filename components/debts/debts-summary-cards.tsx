@@ -3,13 +3,11 @@
 import { formatMoneyAmount } from "@/lib/common/utils";
 import {
   convertDebtAssetToTry,
-  formatDebtAssetAmount,
   isTryAssetUnit,
   type DebtAssetTryRates,
 } from "@/lib/debts/debt-asset-units";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -93,34 +91,6 @@ function SummaryCard({
           </p>
         ) : null}
       </CardHeader>
-      {hasOthers ? (
-        <CardContent className="px-6 pb-6 pt-0">
-          <div className="flex flex-wrap gap-2">
-            {others.map((o) => {
-              const tryValue = convertDebtAssetToTry(
-                o.qty,
-                o.unit,
-                tryRates,
-                o.symbol,
-              );
-              const key = `${o.unit}::${o.symbol ?? ""}`;
-              return (
-                <span
-                  key={key}
-                  className="inline-flex flex-col items-start rounded-md border border-border bg-muted/50 px-2 py-1 text-xs font-medium text-foreground tabular-nums"
-                >
-                  <span>{formatDebtAssetAmount(o.qty, o.unit, o.symbol)}</span>
-                  {tryValue != null ? (
-                    <span className="text-[10px] font-normal text-muted-foreground">
-                      ≈ {formatMoneyAmount(tryValue, currency)}
-                    </span>
-                  ) : null}
-                </span>
-              );
-            })}
-          </div>
-        </CardContent>
-      ) : null}
     </Card>
   );
 }
