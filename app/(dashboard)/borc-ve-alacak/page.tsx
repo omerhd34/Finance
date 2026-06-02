@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   displayAmountToTry,
   FALLBACK_TL_PER_FOREIGN_UNIT,
@@ -20,7 +20,10 @@ import { useFxLiveQuotes } from "@/hooks/use-fx-live-quotes";
 import { useGoldLivePrices } from "@/hooks/use-gold-live-prices";
 import { useSilverLivePrices } from "@/hooks/use-silver-live-prices";
 import { useStockLiveQuotes } from "@/hooks/use-stock-live-quotes";
+import { apiClient } from "@/lib/client/api-client";
 import type { NewDebtFormValues } from "@/lib/debts/debts-schema";
+import { getBillingPeriodForDate } from "@/lib/common/billing-period";
+import { formatPeriodRangeLabel } from "@/lib/dashboard/dashboard-stats";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addDebt,
@@ -35,6 +38,7 @@ import {
   DebtsSummaryCards,
   type DebtTotalsByUnit,
 } from "@/components/debts/debts-summary-cards";
+import { DebtsPeriodSummaryCards } from "@/components/debts/debts-period-summary-cards";
 import { DebtsList } from "@/components/debts/debts-list";
 import { buildDebtMaturityRows } from "@/lib/debts/debt-maturity-buckets";
 import { Card } from "@/components/ui/card";
@@ -50,10 +54,21 @@ function maybeConvertToStored(amount: number, unit: string, currency: string) {
   return isTryAssetUnit(unit) ? displayAmountToTry(amount, currency) : amount;
 }
 
+type PeriodSummaryResponse = {
+  monthKey: string;
+  periodStart: string;
+  periodEnd: string;
+  paidThisPeriod: {
+    receivableTry: number;
+    payableTry: number;
+  };
+};
+
 export default function DebtsPage() {
   const dispatch = useAppDispatch();
   const { items, loading, error } = useAppSelector((s) => s.debts);
   const currency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
+  const monthStartDay = useAppSelector((s) => s.auth.user?.monthStartDay ?? 1);
   const [tab, setTab] = useState<"RECEIVABLE" | "PAYABLE">("RECEIVABLE");
   const [newOpen, setNewOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -63,6 +78,22 @@ export default function DebtsPage() {
   );
   const [editingId, setEditingId] = useState<string | null>(null);
   const [initialDebtsReady, setInitialDebtsReady] = useState(false);
+  const [periodSummary, setPeriodSummary] =
+    useState<PeriodSummaryResponse | null>(null);
+  const [periodSummaryLoading, setPeriodSummaryLoading] = useState(true);
+
+  const loadPeriodSummary = useCallback(async () => {
+    setPeriodSummaryLoading(true);
+    try {
+      const { data } = await apiClient.get<PeriodSummaryResponse>(
+        "/api/debts/period-summary",
+      );
+      setPeriodSummary(data);
+    } catch {
+    } finally {
+      setPeriodSummaryLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,10 +105,11 @@ export default function DebtsPage() {
         if (!cancelled) setInitialDebtsReady(true);
       }
     })();
+    void loadPeriodSummary();
     return () => {
       cancelled = true;
     };
-  }, [dispatch]);
+  }, [dispatch, loadPeriodSummary]);
 
   const filtered = useMemo(
     () => items.filter((d) => d.direction === tab),
@@ -195,6 +227,47 @@ export default function DebtsPage() {
     };
   }, [items]);
 
+  const period = useMemo(
+    () => getBillingPeriodForDate(new Date(), monthStartDay),
+    [monthStartDay],
+  );
+
+  const periodLabel = useMemo(
+    () => formatPeriodRangeLabel(period.start, period.end),
+    [period.start, period.end],
+  );
+
+  const dueInPeriodByUnit = useMemo(() => {
+    const startMs = period.start.getTime();
+    const endMs = period.end.getTime();
+    const recv = new Map<
+      string,
+      { unit: string; symbol: string | null; qty: number }
+    >();
+    const pay = new Map<
+      string,
+      { unit: string; symbol: string | null; qty: number }
+    >();
+    for (const d of items) {
+      if (!d.dueDate) continue;
+      const dueMs = new Date(d.dueDate).getTime();
+      if (dueMs < startMs || dueMs > endMs) continue;
+      const r = debtRemaining(d);
+      if (r <= 0) continue;
+      const unit = normalizeDebtAssetUnit(d.assetUnit);
+      const symbol = d.assetSymbol ?? null;
+      const key = `${unit}::${symbol ?? ""}`;
+      const target = d.direction === "RECEIVABLE" ? recv : pay;
+      const cur = target.get(key);
+      if (cur) cur.qty += r;
+      else target.set(key, { unit, symbol, qty: r });
+    }
+    return {
+      recv: Array.from(recv.values()) as DebtTotalsByUnit,
+      pay: Array.from(pay.values()) as DebtTotalsByUnit,
+    };
+  }, [items, period.start, period.end]);
+
   const maturityRows = useMemo(() => buildDebtMaturityRows(items), [items]);
 
   async function onCreate(values: NewDebtFormValues) {
@@ -224,6 +297,7 @@ export default function DebtsPage() {
       }),
     ).unwrap();
     void dispatch(fetchDebts());
+    void loadPeriodSummary();
   }
 
   async function onEditSave(values: NewDebtFormValues) {
@@ -249,6 +323,7 @@ export default function DebtsPage() {
     );
     setEditingId(null);
     void dispatch(fetchDebts());
+    void loadPeriodSummary();
   }
 
   async function onPaySubmit(amountDisplay: number) {
@@ -276,6 +351,7 @@ export default function DebtsPage() {
     ).unwrap();
     setPayingId(null);
     void dispatch(fetchDebts());
+    void loadPeriodSummary();
   }
 
   async function onPrincipalSubmit(amountDisplay: number) {
@@ -303,6 +379,7 @@ export default function DebtsPage() {
     ).unwrap();
     setAddingPrincipalId(null);
     void dispatch(fetchDebts());
+    void loadPeriodSummary();
   }
 
   async function onConfirmDelete() {
@@ -310,6 +387,7 @@ export default function DebtsPage() {
     await dispatch(deleteDebt(deletingId));
     setDeletingId(null);
     void dispatch(fetchDebts());
+    void loadPeriodSummary();
   }
 
   const editingDebt = items.find((x) => x.id === editingId);
@@ -340,6 +418,21 @@ export default function DebtsPage() {
         <DebtsSummaryCards
           totalsByUnitReceivable={totalsByUnit.recv}
           totalsByUnitPayable={totalsByUnit.pay}
+          currency={currency}
+          tryRates={displayRates}
+        />
+
+        <DebtsPeriodSummaryCards
+          periodLabel={periodLabel}
+          loadingPaid={periodSummaryLoading && !periodSummary}
+          paidThisPeriodReceivableTry={
+            periodSummary?.paidThisPeriod.receivableTry ?? 0
+          }
+          paidThisPeriodPayableTry={
+            periodSummary?.paidThisPeriod.payableTry ?? 0
+          }
+          dueInPeriodReceivable={dueInPeriodByUnit.recv}
+          dueInPeriodPayable={dueInPeriodByUnit.pay}
           currency={currency}
           tryRates={displayRates}
         />

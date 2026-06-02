@@ -1,12 +1,4 @@
-import {
-  addMonths,
-  endOfDay,
-  format,
-  isBefore,
-  startOfDay,
-  subDays,
-  subMonths,
-} from "date-fns";
+import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Prisma as PrismaClient } from "@prisma/client";
 import { dedupeTransactionRows } from "@/lib/transactions/dedupe-transactions-display";
@@ -19,17 +11,13 @@ import {
   prisma,
 } from "@/lib/db/prisma";
 import { formatMoney } from "@/lib/common/utils";
+import {
+  clampMonthStartDay,
+  getBillingPeriodForDate,
+} from "@/lib/common/billing-period";
 
 const THRESHOLD = "THRESHOLD" as const;
 const EXCEEDED = "EXCEEDED" as const;
-
-const DEFAULT_MONTH_START_DAY = 1;
-
-function clampMonthStartDay(value: number | null | undefined): number {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return DEFAULT_MONTH_START_DAY;
-  return Math.min(28, Math.max(1, Math.trunc(n)));
-}
 
 async function fetchUserMonthStartDay(userId: string): Promise<number> {
   const u = await prisma.user.findUnique({
@@ -41,24 +29,7 @@ async function fetchUserMonthStartDay(userId: string): Promise<number> {
   );
 }
 
-export function getBudgetPeriodForDate(
-  anchor: Date,
-  monthStartDay: number | null | undefined,
-): { start: Date; end: Date; monthKey: string } {
-  const day = clampMonthStartDay(monthStartDay);
-  const candidate = startOfDay(
-    new Date(anchor.getFullYear(), anchor.getMonth(), day),
-  );
-  const periodStart = isBefore(anchor, candidate)
-    ? subMonths(candidate, 1)
-    : candidate;
-  const periodEnd = endOfDay(subDays(addMonths(periodStart, 1), 1));
-  return {
-    start: periodStart,
-    end: periodEnd,
-    monthKey: format(periodStart, "yyyy-MM"),
-  };
-}
+export const getBudgetPeriodForDate = getBillingPeriodForDate;
 
 function isUniqueViolation(e: unknown): boolean {
   return (
