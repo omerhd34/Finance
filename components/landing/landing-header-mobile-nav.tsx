@@ -24,9 +24,9 @@ export function LandingHeaderMobileNav() {
         <button
           type="button"
           aria-label="Menüyü aç"
-          className="flex h-7.5 w-7.5 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground sm:h-9 sm:w-9 lg:hidden"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground sm:h-10 sm:w-10 lg:hidden"
         >
-          <Menu className="h-4 w-4 sm:h-4.5 sm:w-4.5" aria-hidden />
+          <Menu className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
         </button>
       </SheetTrigger>
       <SheetContent
