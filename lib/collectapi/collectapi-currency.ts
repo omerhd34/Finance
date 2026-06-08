@@ -27,7 +27,7 @@ export type CollectapiSymbolsPayload = {
   result?: CollectapiSymbolRow[];
 };
 
-const CURRENCY_NAMES_TR: Record<string, string> = {
+export const CURRENCY_NAMES_TR: Record<string, string> = {
   AED: "Birleşik Arap Emirlikleri dirhemi",
   ARS: "Arjantin pesosu",
   AUD: "Avustralya doları",

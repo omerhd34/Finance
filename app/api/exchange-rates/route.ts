@@ -6,19 +6,6 @@ import {
 
 const COLLECT_URL = "https://api.collectapi.com/economy/allCurrency";
 
-const DISPLAY_CODES = ["USD", "EUR", "GBP"] as const;
-
-function pickDisplayRates(
-  quotes: Record<string, number>,
-): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const code of DISPLAY_CODES) {
-    const v = quotes[code];
-    if (typeof v === "number" && v > 0) out[code] = v;
-  }
-  return out;
-}
-
 export async function GET() {
   const apiKey = process.env.COLLECTAPI_API_KEY?.trim();
   if (!apiKey) {
@@ -61,8 +48,8 @@ export async function GET() {
     }
 
     const quotes = buildFxTryMap(data.result);
-    const rates = pickDisplayRates(quotes);
-    if (Object.keys(rates).length === 0) {
+    const rates: Record<string, number> = { TL: 1, ...quotes };
+    if (Object.keys(rates).length <= 1) {
       return NextResponse.json(
         { error: "Kurlar çıkarılamadı", rates: null },
         { status: 502 },

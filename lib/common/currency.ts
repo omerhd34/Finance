@@ -1,15 +1,23 @@
 export const STORAGE_CURRENCY = "TL" as const;
 
-const USER_DISPLAY_CURRENCIES = ["TL", "USD", "EUR", "GBP"] as const;
-export type UserDisplayCurrency = (typeof USER_DISPLAY_CURRENCIES)[number];
+export {
+  FALLBACK_USER_CURRENCY_CODES,
+  isUserCurrencyCode,
+  normalizeCurrencyCode,
+  sortUserCurrencyCodes,
+  USER_CURRENCY_PRIORITY,
+} from "@/lib/common/user-currencies";
+
+import {
+  isUserCurrencyCode,
+  normalizeCurrencyCode,
+} from "@/lib/common/user-currencies";
 
 export function normalizeUserCurrency(
   code: string | null | undefined,
-): UserDisplayCurrency {
-  const c = code?.trim();
-  if (c && (USER_DISPLAY_CURRENCIES as readonly string[]).includes(c)) {
-    return c as UserDisplayCurrency;
-  }
+): string {
+  const normalized = normalizeCurrencyCode(code);
+  if (isUserCurrencyCode(normalized)) return normalized;
   return "TL";
 }
 
@@ -52,10 +60,11 @@ export function tryAmountToDisplay(
   amountTry: number,
   displayCode: string,
 ): number {
+  const code = normalizeCurrencyCode(displayCode);
   const table = rateTable();
-  const code = displayCode in FALLBACK_TL_PER_FOREIGN_UNIT ? displayCode : "TL";
+  if (code === "TL") return round2(amountTry);
   const rate = table[code];
-  if (code === "TL" || !rate || rate <= 0) return round2(amountTry);
+  if (!rate || rate <= 0) return round2(amountTry);
   return round2(amountTry / rate);
 }
 
@@ -63,10 +72,10 @@ export function displayAmountToTry(
   amountInUserCurrency: number,
   userCurrencyCode: string,
 ): number {
+  const code = normalizeCurrencyCode(userCurrencyCode);
   const table = rateTable();
-  const code =
-    userCurrencyCode in FALLBACK_TL_PER_FOREIGN_UNIT ? userCurrencyCode : "TL";
+  if (code === "TL") return round2(amountInUserCurrency);
   const rate = table[code];
-  if (code === "TL" || !rate || rate <= 0) return round2(amountInUserCurrency);
+  if (!rate || rate <= 0) return round2(amountInUserCurrency);
   return round2(amountInUserCurrency * rate);
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { type UserDisplayCurrency } from "@/lib/common/currency";
 import { formatExpenseCategoryLabel } from "@/lib/domain/categories";
 import { buildRecurringRulePayload } from "@/lib/recurring/recurring-payload";
 import { isRecurringReminderDue } from "@/lib/recurring/recurring-reminder";
@@ -95,7 +94,7 @@ export default function RecurringPage() {
 
   async function onCreate(
     values: RecurringFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
+    amountEntryCurrency: string,
   ) {
     await dispatch(
       addRecurringRule(buildRecurringRulePayload(values, amountEntryCurrency)),
@@ -106,7 +105,7 @@ export default function RecurringPage() {
   async function onEditSave(
     ruleId: string,
     values: RecurringFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
+    amountEntryCurrency: string,
   ) {
     await dispatch(
       updateRecurringRule({

@@ -13,7 +13,6 @@ import { BudgetFormDialog } from "@/components/budgets/budget-form-dialog";
 import { NewRecurringDialog } from "@/components/recurring/new-recurring-dialog";
 import { NewTransactionDialog } from "@/components/transactions/new-transaction-dialog";
 import { DataLoadingShell } from "@/components/ui/data-loading-shell";
-import type { UserDisplayCurrency } from "@/lib/common/currency";
 import { buildRecurringRulePayload } from "@/lib/recurring/recurring-payload";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { apiClient } from "@/lib/client/api-client";
@@ -221,7 +220,7 @@ export default function DashboardPage() {
   const handleCreateRecurring = useCallback(
     async (
       values: RecurringFormValues,
-      amountEntryCurrency: UserDisplayCurrency,
+      amountEntryCurrency: string,
     ) => {
       await dispatch(
         addRecurringRule(

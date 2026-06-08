@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  isUserCurrencyCode,
+  normalizeCurrencyCode,
+} from "@/lib/common/user-currencies";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/investments/gold-subtypes";
 
 export const COMMODITY_COST_ENTRY_CURRENCIES = [
@@ -27,7 +31,11 @@ export const positionFormSchema = z
     quantity: z.number().positive("Miktar pozitif olmalı"),
     avgCostPerUnit: z.number().positive("Alış fiyatı pozitif olmalı"),
     avgCostEntryCurrency: z
-      .enum(COMMODITY_COST_ENTRY_CURRENCIES)
+      .string()
+      .transform((val) => normalizeCurrencyCode(val))
+      .refine((val) => isUserCurrencyCode(val), {
+        message: "Geçersiz para birimi.",
+      })
       .optional(),
     marketPricePerUnit: z.string().optional(),
     note: z.string().optional(),

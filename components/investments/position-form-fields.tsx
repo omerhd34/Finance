@@ -7,7 +7,6 @@ import {
   displayAmountToTry,
   normalizeUserCurrency,
   tryAmountToDisplay,
-  type UserDisplayCurrency,
 } from "@/lib/common/currency";
 import { cn, sentenceCaseFirstTr } from "@/lib/common/utils";
 import { useCommodityLiveQuotes } from "@/hooks/use-commodity-live-quotes";
@@ -55,7 +54,7 @@ export function PositionFormFields({
   const goldSubtype = form.watch("goldSubtype");
   const ticker = form.watch("ticker");
   const avgCostEntryCurrency = form.watch("avgCostEntryCurrency");
-  const prevAvgCostCurrencyRef = useRef<UserDisplayCurrency | null>(null);
+  const prevAvgCostCurrencyRef = useRef<string | null>(null);
   const goldLive = useGoldLivePrices(assetType === "GOLD");
   const silverLive = useSilverLivePrices(assetType === "SILVER");
   const platinumLive = usePlatinumLivePrices(assetType === "PLATINUM");

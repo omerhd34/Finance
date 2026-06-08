@@ -57,13 +57,13 @@ export const LANDING_FEATURES: LandingFeatureItem[] = [
   {
     title: "Çoklu para birimi",
     description:
-      "TL, USD, EUR ve GBP ile işlem girin; varsayılan para birimini ayarlardan seçin.",
+      "40’tan fazla döviz koduyla kayıt tutun; ana para biriminizi profilden seçin, tutarlar güncel kurla gösterilsin.",
     icon: Globe,
   },
   {
     title: "Anlık kur dönüşümü",
     description:
-      "Güncel kurlarla tutarları ana para biriminize çevirin; panel ve raporlarda gelir-gider dengesini tek bakışta karşılaştırın.",
+      "Güncel kurlarla tutarları ana para biriminize çevirin; panel ve raporlarda gelir-böyle sidebar ve header yapgider dengesini tek bakışta karşılaştırın.",
     icon: ArrowLeftRight,
   },
   {

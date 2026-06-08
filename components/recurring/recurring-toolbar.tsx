@@ -1,6 +1,5 @@
 "use client";
 
-import type { UserDisplayCurrency } from "@/lib/common/currency";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { NewRecurringDialog } from "./new-recurring-dialog";
 
@@ -11,7 +10,7 @@ type Props = {
   onNewOpenChange: (open: boolean) => void;
   onCreate: (
     values: RecurringFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
+    amountEntryCurrency: string,
   ) => Promise<void>;
 };
 

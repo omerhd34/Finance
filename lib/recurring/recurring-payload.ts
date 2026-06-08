@@ -1,13 +1,10 @@
-import {
-  displayAmountToTry,
-  type UserDisplayCurrency,
-} from "@/lib/common/currency";
+import { displayAmountToTry } from "@/lib/common/currency";
 import { formValueToExpenseSubcategory } from "@/lib/domain/categories";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 
 export function buildRecurringRulePayload(
   values: RecurringFormValues,
-  amountEntryCurrency: UserDisplayCurrency,
+  amountEntryCurrency: string,
 ) {
   return {
     type: values.type,

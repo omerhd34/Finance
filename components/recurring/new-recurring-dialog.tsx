@@ -6,10 +6,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import {
-  normalizeUserCurrency,
-  type UserDisplayCurrency,
-} from "@/lib/common/currency";
+import { normalizeUserCurrency } from "@/lib/common/currency";
 import { parseApiErrorForUser } from "@/lib/email/email-verification-client";
 import { defaultRecurringFormValues } from "@/lib/recurring/recurring-defaults";
 import {
@@ -33,7 +30,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   onSubmit: (
     values: RecurringFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
+    amountEntryCurrency: string,
   ) => Promise<void>;
   hideTrigger?: boolean;
 };
@@ -46,7 +43,7 @@ export function NewRecurringDialog({
 }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const displayCurrency = useAppSelector((s) => s.auth.user?.currency ?? "TL");
-  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
+  const [entryCurrency, setEntryCurrency] = useState<string>(() =>
     normalizeUserCurrency(displayCurrency),
   );
 

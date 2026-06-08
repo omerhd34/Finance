@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   normalizeUserCurrency,
   tryAmountToDisplay,
-  type UserDisplayCurrency,
 } from "@/lib/common/currency";
 import { expenseSubcategoryToFormValue } from "@/lib/domain/categories";
 import { defaultRecurringFormValues } from "@/lib/recurring/recurring-defaults";
@@ -33,7 +32,7 @@ type Props = {
   onSave: (
     ruleId: string,
     values: RecurringFormValues,
-    amountEntryCurrency: UserDisplayCurrency,
+    amountEntryCurrency: string,
   ) => Promise<void>;
 };
 
@@ -44,7 +43,7 @@ export function EditRecurringDialog({
   currency,
   onSave,
 }: Props) {
-  const [entryCurrency, setEntryCurrency] = useState<UserDisplayCurrency>(() =>
+  const [entryCurrency, setEntryCurrency] = useState<string>(() =>
     normalizeUserCurrency(currency),
   );
 

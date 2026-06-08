@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { normalizeUserCurrency } from "@/lib/common/currency";
+import { UserCurrencySelect } from "@/components/currency/user-currency-select";
 import { normalizePlanTier } from "@/lib/premium/plan-tier";
 import { apiClient } from "@/lib/client/api-client";
 import { useAppDispatch } from "@/store/hooks";
@@ -221,11 +222,7 @@ export function MemberProfileCard({
         city: form.city,
         country: form.country,
         monthStartDay: monthStartDayNumber,
-        currency: normalizeUserCurrency(form.currency) as
-          | "TL"
-          | "USD"
-          | "EUR"
-          | "GBP",
+        currency: normalizeUserCurrency(form.currency),
       };
       const { data } = await apiClient.patch<ProfilePatchResponse>(
         "/api/user/profile",
@@ -515,7 +512,8 @@ export function MemberProfileCard({
                 <Label htmlFor="member-currency" className="block leading-snug">
                   Para birimi
                 </Label>
-                <Select
+                <UserCurrencySelect
+                  id="member-currency"
                   value={form.currency}
                   onValueChange={(v) =>
                     setForm((p) => ({
@@ -523,30 +521,7 @@ export function MemberProfileCard({
                       currency: normalizeUserCurrency(v),
                     }))
                   }
-                >
-                  <SelectTrigger
-                    id="member-currency"
-                    className={cn(
-                      "h-11 w-full rounded-xl border-border/70 bg-muted/25 shadow-none",
-                    )}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={4}>
-                    <SelectItem value="TL" className="cursor-pointer">
-                      TL (₺)
-                    </SelectItem>
-                    <SelectItem value="USD" className="cursor-pointer">
-                      USD ($)
-                    </SelectItem>
-                    <SelectItem value="EUR" className="cursor-pointer">
-                      EUR (€)
-                    </SelectItem>
-                    <SelectItem value="GBP" className="cursor-pointer">
-                      GBP (£)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
               <div className="flex flex-col gap-3">
                 <Label

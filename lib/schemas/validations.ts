@@ -6,6 +6,10 @@ import {
   DEFAULT_DEBT_ASSET_UNIT,
 } from "@/lib/debts/debt-asset-units";
 import { GOLD_SUBTYPE_VALUES } from "@/lib/investments/gold-subtypes";
+import {
+  isUserCurrencyCode,
+  normalizeCurrencyCode,
+} from "@/lib/common/user-currencies";
 
 export const loginSchema = z.object({
   email: z.string().email("Geçerli bir e-posta girin"),
@@ -233,7 +237,13 @@ export const profileUpdateSchema = z.object({
     .max(28, "Ay başlangıç günü en fazla 28 olmalı.")
     .optional(),
   phone: z.string().max(48, "En fazla 48 karakter.").optional(),
-  currency: z.enum(["TL", "USD", "EUR", "GBP"]).optional(),
+  currency: z
+    .string()
+    .transform((val) => normalizeCurrencyCode(val))
+    .refine((val) => isUserCurrencyCode(val), {
+      message: "Geçersiz para birimi.",
+    })
+    .optional(),
   notificationsEnabled: z.boolean().optional(),
   image: z.union([profileAvatarDataUrlSchema, z.null()]).optional(),
 });

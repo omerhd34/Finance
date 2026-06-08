@@ -5,7 +5,6 @@ import {
   displayAmountToTry,
   normalizeUserCurrency,
   tryAmountToDisplay,
-  type UserDisplayCurrency,
 } from "@/lib/common/currency";
 import {
   DEBT_EXPENSE_CATEGORY,
@@ -13,6 +12,7 @@ import {
   MANUAL_EXPENSE_CATEGORIES,
   MANUAL_INCOME_CATEGORIES,
 } from "@/lib/domain/categories";
+import { UserCurrencySelect } from "@/components/currency/user-currency-select";
 import { ExpenseCategoryPair } from "@/components/transactions/expense-category-pair";
 import type { RecurringFormValues } from "@/lib/recurring/recurring-schema";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -35,8 +35,8 @@ function categoriesFor(t: "income" | "expense") {
 type Props = {
   form: UseFormReturn<RecurringFormValues>;
   variant: "new" | "edit";
-  amountEntryCurrency: UserDisplayCurrency;
-  onAmountEntryCurrencyChange: (c: UserDisplayCurrency) => void;
+  amountEntryCurrency: string;
+  onAmountEntryCurrencyChange: (c: string) => void;
 };
 
 export function RecurringFormFields({
@@ -91,8 +91,9 @@ export function RecurringFormFields({
 
         <div className="space-y-2">
           <Label>Para birimi</Label>
-          <Select
+          <UserCurrencySelect
             value={amountEntryCurrency}
+            triggerClassName="h-10 rounded-md border-input bg-background shadow-xs"
             onValueChange={(v) => {
               const next = normalizeUserCurrency(v);
               if (next === amountEntryCurrency) return;
@@ -105,25 +106,7 @@ export function RecurringFormFields({
                 shouldDirty: true,
               });
             }}
-          >
-            <SelectTrigger className="cursor-pointer">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent position="popper" sideOffset={4}>
-              <SelectItem value="TL" className="cursor-pointer">
-                TL (₺)
-              </SelectItem>
-              <SelectItem value="USD" className="cursor-pointer">
-                USD ($)
-              </SelectItem>
-              <SelectItem value="EUR" className="cursor-pointer">
-                EUR (€)
-              </SelectItem>
-              <SelectItem value="GBP" className="cursor-pointer">
-                GBP (£)
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
