@@ -3,16 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import {
-  ChevronDown,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Lightbulb,
-  User,
-  LightbulbOff,
-  MoreVertical,
-} from "lucide-react";
+import { ChevronDown, LogOut, User, MoreVertical } from "lucide-react";
+import { BrandLockup } from "@/components/branding/brand-lockup";
 import {
   dashboardNav,
   profileInitials,
@@ -35,16 +27,11 @@ export type DashboardSidebarProps = {
   isMobile?: boolean;
   pathname: string;
   onMobileNavigate: () => void;
-  onToggleCollapsed: () => void;
   currency: string;
   currencySaving: boolean;
   profileHref: string;
   sessionUserPresent: boolean;
   onCurrencyChange: (next: string) => void;
-  themeReady: boolean;
-  themeResolved: boolean;
-  resolvedTheme: string | undefined;
-  onToggleTheme: () => void;
   userImage?: string | null;
 };
 
@@ -53,20 +40,10 @@ export function DashboardSidebar({
   isMobile = false,
   pathname,
   onMobileNavigate,
-  onToggleCollapsed,
   profileHref,
-  themeReady,
-  themeResolved,
-  resolvedTheme,
-  onToggleTheme,
   userImage,
 }: DashboardSidebarProps) {
   const { data: session } = useSession();
-  const themeLabel = themeResolved
-    ? resolvedTheme === "dark"
-      ? "Açık temaya geç"
-      : "Koyu temaya geç"
-    : "Tema";
   const { unreadCount } = useNotificationUnreadCount();
 
   const [userToggledHrefs, setUserToggledHrefs] = useState<
@@ -105,87 +82,39 @@ export function DashboardSidebar({
       </span>
     ) : null;
 
-  const themeIconButton = (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      disabled={!themeReady}
-      className="h-9 w-9 shrink-0 cursor-pointer rounded-lg text-muted-foreground shadow-none transition-colors hover:bg-muted/50 hover:text-foreground"
-      aria-label={themeLabel}
-      title={themeLabel}
-      onClick={onToggleTheme}
-    >
-      <span className="grid h-5 w-5 shrink-0 place-items-center">
-        {themeResolved ? (
-          resolvedTheme === "dark" ? (
-            <Lightbulb className="h-4 w-4" aria-hidden />
-          ) : (
-            <LightbulbOff className="h-4 w-4" aria-hidden />
-          )
-        ) : (
-          <LightbulbOff className="h-4 w-4 opacity-60" aria-hidden />
-        )}
-      </span>
-    </Button>
-  );
-
   return (
     <div className="flex min-h-full flex-col">
-      {!isMobile && (
-        <div
-          className={cn(
-            "flex h-14 shrink-0 items-center gap-1",
-            collapsed ? "justify-center px-2" : "justify-between px-3",
-          )}
+      <div
+        className={cn(
+          "flex w-full shrink-0 items-center justify-center py-4",
+          collapsed ? "px-2" : "px-4",
+        )}
+      >
+        <Link
+          href="/gosterge-paneli"
+          onClick={onMobileNavigate}
+          className="inline-flex min-w-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Ana panele git"
+          title="Ana panel"
         >
-          <Button
-            type="button"
-            variant="ghost"
-            size={collapsed ? "icon" : "default"}
+          <BrandLockup
+            variant="sidebar"
+            collapsed={collapsed && !isMobile}
             className={cn(
-              "shrink-0 cursor-pointer rounded-lg text-muted-foreground shadow-none hover:bg-muted/50 hover:text-foreground",
-              collapsed
-                ? "h-9 w-9 [&_svg]:size-5"
-                : "h-9 w-auto justify-start px-3 py-2",
+              collapsed && !isMobile ? "scale-100" : "min-w-0 gap-1.5",
             )}
-            onClick={onToggleCollapsed}
-            aria-label={
-              collapsed ? "Kenar çubuğunu genişlet" : "Kenar çubuğunu daralt"
-            }
-            title={
-              collapsed ? "Kenar çubuğunu genişlet" : "Kenar çubuğunu daralt"
-            }
-          >
-            <span className="grid h-5 w-5 shrink-0 place-items-center">
-              {collapsed ? (
-                <PanelLeftOpen className="h-4 w-4" aria-hidden />
-              ) : (
-                <PanelLeftClose className="h-4 w-4" aria-hidden />
-              )}
-            </span>
-          </Button>
-          {!collapsed && themeIconButton}
-        </div>
-      )}
+          />
+        </Link>
+      </div>
 
-      {isMobile && (
-        <div className="flex h-12 shrink-0 items-center justify-end px-3 pt-2">
-          {themeIconButton}
-        </div>
-      )}
+      <Separator className="bg-foreground/10 dark:bg-border" />
 
       <nav
         className={cn(
           "flex min-h-0 flex-1 flex-col gap-1",
-          collapsed ? "p-2 pt-0" : "p-3 pt-0",
-          isMobile && "pt-4",
+          collapsed ? "p-2 pt-3" : "p-3 pt-3",
         )}
       >
-        {!isMobile && (
-          <Separator className="mb-1 bg-foreground/10 dark:bg-border" />
-        )}
-
         {dashboardNav.flatMap(({ href, label, icon: Icon, children }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           const hasChildren = !!children?.length;

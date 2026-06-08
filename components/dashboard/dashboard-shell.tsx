@@ -146,16 +146,11 @@ export function DashboardShell({
   const sidebarProps = {
     pathname,
     onMobileNavigate: () => setOpen(false),
-    onToggleCollapsed: toggleSidebarCollapsed,
     currency,
     currencySaving,
     profileHref,
     sessionUserPresent: !!session?.user,
     onCurrencyChange: onSidebarCurrencyChange,
-    themeReady,
-    themeResolved,
-    resolvedTheme,
-    onToggleTheme: toggleTheme,
   };
 
   return (
@@ -174,6 +169,12 @@ export function DashboardShell({
         <DashboardShellHeader
           menuOpen={open}
           onMenuToggle={() => setOpen((prev) => !prev)}
+          sidebarCollapsed={sidebarCollapsed}
+          onToggleSidebarCollapsed={toggleSidebarCollapsed}
+          themeReady={themeReady}
+          themeResolved={themeResolved}
+          resolvedTheme={resolvedTheme}
+          onToggleTheme={toggleTheme}
         />
         <main
           className={cn(
