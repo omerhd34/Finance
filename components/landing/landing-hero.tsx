@@ -3,6 +3,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Sparkles } from "lucide-react";
 import { LandingHeroTrust } from "@/components/landing/landing-hero-trust";
+import { LANDING_CONTAINER_CLASS } from "@/components/landing/landing-layout";
 
 const LandingHeroIsometricIllustration = dynamic(
   () =>
@@ -50,9 +51,9 @@ export function LandingHero() {
         <div className="absolute -right-[15%] bottom-0 hidden h-[min(45vw,360px)] w-[min(45vw,360px)] rounded-full bg-teal-400/10 blur-[90px] sm:block" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 xl:px-0">
-        <div className="flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-12 2xl:gap-20">
-          <div className="flex-1 text-center xl:text-left">
+      <div className={`relative z-10 ${LANDING_CONTAINER_CLASS}`}>
+        <div className="flex min-w-0 flex-col gap-8 xl:flex-row xl:items-center xl:gap-8 2xl:gap-12">
+          <div className="min-w-0 flex-1 text-center xl:text-left">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-white/90 px-3 py-1 text-[10px] font-semibold tracking-wide text-emerald-800 shadow-md shadow-black/10 ring-1 ring-emerald-500/25 backdrop-blur-md dark:border-emerald-400/35 dark:bg-emerald-950/40 dark:text-emerald-100 dark:ring-emerald-400/20 sm:px-3.5 md:text-xs">
               <Sparkles
                 className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-300"
@@ -97,7 +98,7 @@ export function LandingHero() {
             <LandingHeroTrust />
           </div>
 
-          <div className="hidden w-full min-w-0 xl:block xl:w-[480px] 2xl:w-[540px] xl:shrink-0">
+          <div className="hidden min-w-0 xl:block xl:w-[min(100%,400px)] xl:max-w-[44%] xl:shrink-0 2xl:w-[460px] 2xl:max-w-none">
             <LandingHeroIsometricIllustration />
           </div>
         </div>

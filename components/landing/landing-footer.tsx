@@ -13,6 +13,7 @@ import { cn } from "@/lib/common/utils";
 import { DEFAULT_SHOPIER_PREMIUM_URL } from "@/lib/premium/shopier";
 import { BrandLockup } from "../branding/brand-lockup";
 import { ShopierLogo } from "../branding/shopier-logo";
+import { LANDING_CONTAINER_CLASS } from "@/components/landing/landing-layout";
 
 const BACK_TO_TOP_REVEAL_AFTER_PX = 72;
 
@@ -104,7 +105,7 @@ export function LandingFooter() {
 
   return (
     <footer className="relative border-t border-border/60 bg-slate-100/95 text-muted-foreground backdrop-blur-xl dark:bg-[#050507]/95">
-      <div className="mx-auto w-full max-w-7xl px-4 xl:px-0 pb-10 pt-14 md:pt-16">
+      <div className={`${LANDING_CONTAINER_CLASS} pb-10 pt-14 md:pt-16`}>
         <div className="grid w-full grid-cols-1 gap-12 sm:gap-x-10 lg:grid-cols-5 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div className="min-w-0 lg:col-span-2 lg:pt-0.5">
             <BrandLockup variant="landing" />

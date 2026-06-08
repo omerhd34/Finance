@@ -1,5 +1,6 @@
 import { landingEyebrow } from "@/components/landing/landing-eyebrow";
 import { LandingProductShowcaseMarquee } from "@/components/landing/landing-product-showcase-marquee";
+import { LANDING_CONTAINER_CLASS } from "@/components/landing/landing-layout";
 
 export function LandingProductShowcaseSection() {
   return (
@@ -7,7 +8,7 @@ export function LandingProductShowcaseSection() {
       className="relative border-t border-border/60 py-16 md:py-24"
       aria-labelledby="landing-product-showcase-heading"
     >
-      <div className="mx-auto w-full max-w-7xl px-4 xl:px-0">
+      <div className={LANDING_CONTAINER_CLASS}>
         <div className="mx-auto max-w-3xl text-center">
           <p className={landingEyebrow}>Ürün tanıtımı</p>
           <h2

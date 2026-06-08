@@ -191,7 +191,7 @@ function ModuleTabContent({ module }: { module: LandingModuleItem }) {
   const highlights = MODULE_HIGHLIGHTS[module.id] ?? [];
 
   return (
-    <div className="flex h-full min-w-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-sm ring-1 ring-black/5 sm:p-7 sm:px-9 sm:py-8 lg:px-10 lg:py-10 dark:ring-white/10">
+    <div className="flex h-full min-w-0 flex-col rounded-2xl border border-border/60 bg-card p-5 shadow-sm ring-1 ring-black/5 sm:p-7 sm:px-8 sm:py-8 lg:px-8 lg:py-9 xl:px-9 xl:py-10 dark:ring-white/10">
       <div className="flex flex-wrap items-center gap-3">
         <ModuleNumberBadge id={module.id} active />
         <h3 className="min-w-0 wrap-break-word text-xl font-bold tracking-tight text-foreground sm:text-2xl lg:text-3xl">
@@ -348,19 +348,21 @@ export function LandingModulesInteractive() {
       <Tabs
         defaultValue={LANDING_MODULES[0].id}
         orientation="vertical"
-        className="mt-16 hidden w-full max-w-full grid-cols-[380px_minmax(0,1fr)] gap-6 lg:grid"
+        className="mt-16 hidden w-full min-w-0 lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)] lg:gap-5 xl:grid-cols-[minmax(0,300px)_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]"
       >
         <ModulesTabsList />
 
-        {LANDING_MODULES.map((module) => (
-          <TabsContent
-            key={module.id}
-            value={module.id}
-            className="mt-0 min-w-0 outline-none"
-          >
-            <ModuleTabContent module={module} />
-          </TabsContent>
-        ))}
+        <div className="min-w-0">
+          {LANDING_MODULES.map((module) => (
+            <TabsContent
+              key={module.id}
+              value={module.id}
+              className="mt-0 min-w-0 outline-none"
+            >
+              <ModuleTabContent module={module} />
+            </TabsContent>
+          ))}
+        </div>
       </Tabs>
     </>
   );

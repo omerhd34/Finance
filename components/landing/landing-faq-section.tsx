@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useId, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { landingEyebrow } from "@/components/landing/landing-eyebrow";
+import { LANDING_CONTAINER_NARROW_CLASS } from "@/components/landing/landing-layout";
 import {
   landingFaqItems,
   type LandingFaqItem,
@@ -79,7 +80,7 @@ export function LandingFaqSection() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-5xl px-4 xl:px-0">
+      <div className={`relative ${LANDING_CONTAINER_NARROW_CLASS}`}>
         <div className="text-center">
           <p className={landingEyebrow}>SSS</p>
           <h2

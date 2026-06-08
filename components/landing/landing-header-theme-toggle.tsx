@@ -30,15 +30,15 @@ export function LandingHeaderThemeToggle() {
     <button
       type="button"
       disabled={!themeReady}
-      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground sm:h-10 sm:w-10 disabled:opacity-60"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition hover:bg-accent hover:text-foreground max-lg:sm:h-10 max-lg:sm:w-10 xl:h-9 xl:w-9 disabled:opacity-60"
       aria-label={themeLabel}
       title={themeLabel}
       onClick={toggleTheme}
     >
       {themeResolved && resolvedTheme === "dark" ? (
-        <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+        <Lightbulb className="h-5 w-5 max-lg:sm:h-6 max-lg:sm:w-6 xl:h-5 xl:w-5" aria-hidden />
       ) : (
-        <LightbulbOff className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+        <LightbulbOff className="h-5 w-5 max-lg:sm:h-6 max-lg:sm:w-6 xl:h-5 xl:w-5" aria-hidden />
       )}
     </button>
   );
