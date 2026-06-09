@@ -99,9 +99,7 @@ export const siteMetadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/FinansIQ-1024.png",
-        width: 1024,
-        height: 630,
+        url: "/opengraph-image.png",
         alt: "IQfinansAI Açılış Görseli",
       },
     ],
