@@ -613,6 +613,9 @@ function buildAutoCompletedEmailHtml(params: {
   const accent = "#16a34a";
   const accentSoft = "#f0fdf4";
   const borderSoft = "#bbf7d0";
+  const autoCompletedEyebrow = "Otomatik tekrarlayan işlem".toLocaleUpperCase(
+    "tr-TR",
+  );
 
   return `<!DOCTYPE html>
 <html lang="tr">
@@ -636,8 +639,8 @@ function buildAutoCompletedEmailHtml(params: {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td style="padding:28px 28px 8px 28px;">
-                    <p style="margin:0 0 8px 0;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:${accent};">
-                      Otomatik tekrarlayan işlem
+                    <p style="margin:0 0 8px 0;font-size:13px;font-weight:600;letter-spacing:0.06em;color:${accent};">
+                      ${autoCompletedEyebrow}
                     </p>
                     <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;font-weight:700;color:#0f172a;">
                       ${safeTitle}
