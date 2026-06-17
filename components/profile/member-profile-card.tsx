@@ -589,7 +589,7 @@ export function MemberProfileCard({
                   >
                     {verifySending
                       ? "Gönderiliyor…"
-                      : "Doğrulama e-postası gönder"}
+                      : "Doğrulama e-postası gönder."}
                   </Button>
                 </div>
                 {verifyMessage ? (

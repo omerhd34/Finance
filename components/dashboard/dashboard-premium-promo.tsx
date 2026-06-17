@@ -9,7 +9,11 @@ import { cn } from "@/lib/common/utils";
 
 export function DashboardPremiumPromo() {
   const { data: session } = useSession();
-  const planHref = session?.user?.id
+
+  if (!session?.user) return null;
+  if (session.user.isEmailVerified !== true) return null;
+
+  const planHref = session.user.id
     ? `/profil/${session.user.id}#plan`
     : "/profil";
 
