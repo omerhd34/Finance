@@ -18,18 +18,18 @@ export type LandingHeaderNavItem = {
 
 export const landingHeaderNavItems: LandingHeaderNavItem[] = [
   {
-    label: "Ana modüllerimiz",
-    shortLabel: "Modüller",
-    href: "/#ana-moduller",
-    description: "Gelir-gider, bütçe, borç ve yatırım araçları",
-    Icon: Boxes,
-  },
-  {
     label: "Canlı dashboard",
     shortLabel: "Dashboard",
     href: "/#canli-dashboard",
     description: "Finansal panoraman tek ekranda",
     Icon: LayoutDashboard,
+  },
+  {
+    label: "Ana modüllerimiz",
+    shortLabel: "Modüller",
+    href: "/#ana-moduller",
+    description: "Gelir-gider, bütçe, borç ve yatırım araçları",
+    Icon: Boxes,
   },
   {
     label: "Neden IQfinansAI",

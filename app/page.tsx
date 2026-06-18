@@ -77,8 +77,8 @@ export default function LandingPage() {
       <LandingHeader />
       <main className="flex-1">
         <LandingHero />
-        <LandingModulesSection />
         <LandingDashboardSection />
+        <LandingModulesSection />
         <LandingWhySection />
         <LandingFeaturesSection />
         <LandingTestimonialsSection />
