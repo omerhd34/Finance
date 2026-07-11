@@ -190,6 +190,7 @@ export const debtCreateSchema = z
       .default(DEFAULT_DEBT_ASSET_UNIT),
     assetSymbol: z.string().trim().max(32).optional().nullable(),
     tryValueAtCreation: z.number().positive().optional(),
+    syncTransactions: z.boolean().optional().default(true),
     dueDate: z.coerce.date().optional().nullable(),
     note: z.string().optional().nullable(),
   })

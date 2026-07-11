@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/auth";
 import { blockIfEmailNotVerified } from "@/lib/auth/require-email-verified";
 import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budget-alerts";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
+import { shouldSyncDebtTransactions } from "@/lib/debts/debt-transaction-sync";
 import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
 import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
 import {
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
       assetUnit,
       assetSymbol,
       tryValueAtCreation,
+      syncTransactions,
       dueDate,
       note,
     } = parsed.data;
@@ -70,11 +72,14 @@ export async function POST(req: Request) {
       );
     }
     const isTryUnit = isTryAssetUnit(unit);
-    const tryDelta = isTryUnit
-      ? totalAmount
-      : tryValueAtCreation && tryValueAtCreation > 0
-        ? tryValueAtCreation
-        : 0;
+    const tryDelta =
+      shouldSyncDebtTransactions({ syncTransactions }) && isTryUnit
+        ? totalAmount
+        : shouldSyncDebtTransactions({ syncTransactions }) &&
+            tryValueAtCreation &&
+            tryValueAtCreation > 0
+          ? tryValueAtCreation
+          : 0;
     const userId = session.user.id;
     const row = await prisma.$transaction(async (tx) => {
       const created = await tx.debt.create({
@@ -87,6 +92,7 @@ export async function POST(req: Request) {
           assetSymbol: symbol,
           dueDate: dueDate ?? null,
           note: note ?? null,
+          syncTransactions,
           userId,
         },
       });

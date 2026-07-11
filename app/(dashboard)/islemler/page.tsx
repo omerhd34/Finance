@@ -329,13 +329,9 @@ function TransactionsPageContent() {
           items={displayItems}
           loading={loading}
           currency={currency}
-          dateSortOrder={
-            listSortBy === "date" ? listSortOrder : null
-          }
+          dateSortOrder={listSortBy === "date" ? listSortOrder : null}
           onDateSortToggle={() => dispatch(toggleDateListSort())}
-          amountSortOrder={
-            listSortBy === "amount" ? listSortOrder : null
-          }
+          amountSortOrder={listSortBy === "amount" ? listSortOrder : null}
           onAmountSortToggle={() => dispatch(toggleAmountListSort())}
           total={total}
           page={page}

@@ -13,6 +13,7 @@ export const newDebtSchema = z
     assetSymbol: z.string().trim().max(32).optional(),
     dueDate: z.string().optional(),
     note: z.string().optional(),
+    syncTransactions: z.boolean(),
   })
   .refine((d) => d.paidAmount <= d.totalAmount, {
     message: "Ödenen tutar toplamı aşamaz",

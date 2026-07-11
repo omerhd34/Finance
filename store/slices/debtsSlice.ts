@@ -39,6 +39,7 @@ export const addDebt = createAsyncThunk(
       assetUnit?: DebtAssetUnit;
       assetSymbol?: string | null;
       tryValueAtCreation?: number;
+      syncTransactions?: boolean;
       dueDate?: Date | null;
       note?: string | null;
     },
@@ -53,6 +54,7 @@ export const addDebt = createAsyncThunk(
         assetUnit: payload.assetUnit,
         assetSymbol: payload.assetSymbol ?? null,
         tryValueAtCreation: payload.tryValueAtCreation,
+        syncTransactions: payload.syncTransactions ?? false,
         dueDate: payload.dueDate ?? null,
         note: payload.note ?? null,
       });

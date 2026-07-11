@@ -14,6 +14,7 @@ import {
   normalizeDebtAssetSymbol,
 } from "@/lib/debts/debt-asset-units";
 import { clearDebtDueAlertHistoryForDebt } from "@/lib/debts/debt-due-alerts";
+import { shouldSyncDebtTransactions } from "@/lib/debts/debt-transaction-sync";
 import { debtUpdateSchema } from "@/lib/schemas/validations";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -83,6 +84,7 @@ export async function PUT(req: Request, context: RouteContext) {
     }
 
     const userId = session.user.id;
+    const syncTransactions = shouldSyncDebtTransactions(existing);
     let payablePaidAdjusted = false;
     let receivableTotalAdjusted = false;
     const row = await prisma.$transaction(async (tx) => {
@@ -112,7 +114,7 @@ export async function PUT(req: Request, context: RouteContext) {
       }
 
       if (assetUnitChanged) {
-        if (isTryNow) {
+        if (isTryNow && syncTransactions) {
           if (nextDirection === "RECEIVABLE") {
             if (nextTotal > 0) {
               receivableTotalAdjusted = true;
@@ -158,7 +160,7 @@ export async function PUT(req: Request, context: RouteContext) {
         return updated;
       }
 
-      if (!wasTry || !isTryNow) {
+      if (!wasTry || !isTryNow || !syncTransactions) {
         return updated;
       }
 

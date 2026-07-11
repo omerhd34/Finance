@@ -227,6 +227,7 @@ model Debt {
   assetSymbol       String?
   dueDate           DateTime?
   note              String?       @db.Text
+  syncTransactions  Boolean       @default(true)
   userId            String
   user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   receivableIncomes Transaction[]

@@ -5,6 +5,7 @@ import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budge
 import { prisma } from "@/lib/db/prisma";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
 import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
+import { shouldSyncDebtTransactions } from "@/lib/debts/debt-transaction-sync";
 import { debtAmountEventServerSchema } from "@/lib/debts/debts-schema";
 import { applyReceivableTotalDelta } from "@/lib/debts/receivable-lending-sync";
 import { applyPayableTotalDelta } from "@/lib/debts/payable-borrowing-sync";
@@ -38,9 +39,12 @@ export async function POST(req: Request, context: RouteContext) {
     }
 
     const added = parsed.data.amount;
-    const tryDelta = isTryAssetUnit(existing.assetUnit)
+    const syncTransactions = shouldSyncDebtTransactions(existing);
+    const tryDelta = syncTransactions && isTryAssetUnit(existing.assetUnit)
       ? added
-      : parsed.data.tryValueDelta && parsed.data.tryValueDelta > 0
+      : syncTransactions &&
+          parsed.data.tryValueDelta &&
+          parsed.data.tryValueDelta > 0
         ? parsed.data.tryValueDelta
         : 0;
     const newTotal = existing.totalAmount + added;

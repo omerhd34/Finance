@@ -10,6 +10,7 @@ export type Debt = {
   assetSymbol: string | null;
   dueDate: string | null;
   note: string | null;
+  syncTransactions: boolean;
   userId: string;
   createdAt: string;
 };

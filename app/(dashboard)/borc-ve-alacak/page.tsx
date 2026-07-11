@@ -292,6 +292,7 @@ export default function DebtsPage() {
         assetUnit: unit,
         assetSymbol: symbol,
         tryValueAtCreation,
+        syncTransactions: values.syncTransactions,
         dueDate: values.dueDate ? new Date(values.dueDate + "T12:00:00") : null,
         note: values.note?.trim() ? values.note.trim() : null,
       }),

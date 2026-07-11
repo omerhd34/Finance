@@ -61,6 +61,7 @@ const DEFAULT_VALUES: NewDebtFormValues = {
   assetSymbol: "",
   dueDate: "",
   note: "",
+  syncTransactions: false,
 };
 
 export function NewDebtDialog({
@@ -210,6 +211,26 @@ export function NewDebtDialog({
             <Label>Not</Label>
             <Textarea rows={3} {...form.register("note")} />
           </div>
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/30 px-3 py-3">
+            <input
+              type="checkbox"
+              className="mt-0.5 size-4 shrink-0 cursor-pointer accent-primary"
+              checked={form.watch("syncTransactions")}
+              onChange={(e) =>
+                form.setValue("syncTransactions", e.target.checked)
+              }
+            />
+            <span className="space-y-1 text-sm">
+              <span className="block font-medium text-foreground">
+                Nakit akışına yansıt
+              </span>
+              <span className="block text-muted-foreground">
+                İşaretlenirse işlem listesine kayıt eklenir. Mevcut borç ve
+                alacaklar için işaretlemeyin; yalnızca bugün para verdiğiniz
+                veya aldığınız kayıtlar için kullanın.
+              </span>
+            </span>
+          </label>
           <DialogFooter>
             <Button
               type="submit"

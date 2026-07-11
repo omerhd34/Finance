@@ -5,6 +5,7 @@ import { evaluateCategoryBudgetsForTransactionContext } from "@/lib/budget/budge
 import { prisma } from "@/lib/db/prisma";
 import { DEBT_EXPENSE_CATEGORY } from "@/lib/domain/categories";
 import { isTryAssetUnit } from "@/lib/debts/debt-asset-units";
+import { shouldSyncDebtTransactions } from "@/lib/debts/debt-transaction-sync";
 import { debtAmountEventServerSchema } from "@/lib/debts/debts-schema";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -45,10 +46,15 @@ export async function POST(req: Request, context: RouteContext) {
     }
 
     const isTryUnit = isTryAssetUnit(existing.assetUnit);
+    const syncTransactions = shouldSyncDebtTransactions(existing);
     let tryAmount = 0;
-    if (isTryUnit) {
+    if (syncTransactions && isTryUnit) {
       tryAmount = applied;
-    } else if (parsed.data.tryValueDelta && parsed.data.tryValueDelta > 0) {
+    } else if (
+      syncTransactions &&
+      parsed.data.tryValueDelta &&
+      parsed.data.tryValueDelta > 0
+    ) {
       const ratio = parsed.data.amount > 0 ? applied / parsed.data.amount : 0;
       tryAmount = parsed.data.tryValueDelta * ratio;
     }
