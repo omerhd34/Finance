@@ -86,7 +86,7 @@ export function DashboardSidebar({
     <div className="flex min-h-full flex-col">
       <div
         className={cn(
-          "flex w-full shrink-0 items-center justify-center py-4",
+          "flex h-14 w-full shrink-0 items-center justify-center border-b border-border",
           collapsed ? "px-2" : "px-4",
         )}
       >
@@ -106,8 +106,6 @@ export function DashboardSidebar({
           />
         </Link>
       </div>
-
-      <Separator className="bg-foreground/10 dark:bg-border" />
 
       <nav
         className={cn(
